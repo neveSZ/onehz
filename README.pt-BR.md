@@ -180,8 +180,13 @@ está tocando.
 - uma sondagem roda ~1,8 s depois de soltar o dedo e uma rechecagem lenta roda a cada 12 s
   enquanto um vídeo está ativo;
 - o piso de vídeo tem prioridade sobre o perfil do app/normal/ECO enquanto a reprodução
-  durar;
-- **PiP ainda não é tratado** (veja o backlog).
+  durar.
+
+Cada regra acima pode ser ativada ou desativada em **Modo vídeo → Configurar detecção**,
+para apps que informam sessões ou decodificadores de forma diferente. A mesma tela guarda
+uma lista de apps que devem ser sempre tratados como vídeo em primeiro plano, mesmo sem
+sessão, decodificador ou áudio. Os padrões reproduzem o comportamento original.
+**PiP ainda não é tratado** (veja o backlog).
 
 ### 8. Pulso de despertar
 
@@ -350,7 +355,9 @@ enviado. Veja [PRIVACY.md](PRIVACY.md).
   uma atualização de firmware pode mudar isso.
 - O brilho do AOD usa uma chave interna da Samsung e pode ser ignorado/resetado por uma
   atualização.
-- A detecção de vídeo depende do comportamento de MediaSession, Codec2 e AudioService.
+- A detecção de vídeo depende do comportamento de MediaSession, Codec2 e AudioService; as
+  regras e uma lista de apps forçados podem ser ajustadas no app, mas os sinais de base
+  precisam existir.
 - Vídeo em PiP ainda não é detectado.
 - Se o Android matar o app enquanto uma taxa não padrão estiver aplicada (por exemplo, por
   gerenciamento agressivo de bateria), a última taxa pode permanecer até o OneHZ abrir de

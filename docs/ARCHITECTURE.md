@@ -146,13 +146,16 @@ enabled. It stops on screen-off, idle, and service loss.
 
 ## Video detection
 
-The UserService resolves the foreground package and gathers:
+The UserService resolves the foreground package and gathers the signals selected by
+`VideoConfig`:
 
-1. `dumpsys media_session` — the app's session state;
-2. `dumpsys media.resource_manager` — processes holding a video codec;
-3. `dumpsys audio` — started `USAGE_MEDIA` players (only when there is no session).
+1. `dumpsys media_session` — the app's session state (when MediaSession is enabled);
+2. `dumpsys media.resource_manager` — processes holding a video codec (when the codec
+   rule is enabled);
+3. `dumpsys audio` — started `USAGE_MEDIA` players (only when no playing session already
+   confirmed playback).
 
-Rules:
+Default rules, all toggleable from Home → Video mode → Configure detection:
 
 - a session that exists but is paused is authoritative → not playing;
 - the foreground app must hold a video decoder;
@@ -160,8 +163,15 @@ Rules:
 - without a session, a started media player confirms playback;
 - audio-only apps, camera, and games do not hold video decoders.
 
-The result is cached for a short time in the UserService. The engine probes after a
-touch and rechecks while a video is active.
+Packages in the forced list bypass every probe and are always treated as playing while
+they are in the foreground. `VideoConfig` is encoded as a single string shared by
+SharedPreferences and the binder call, so the privileged service applies exactly the
+user's rules. Package names are validated and the list is capped at 64 entries. With
+no positive signal enabled, video is not detected except for forced apps.
+
+The result is cached for a short time in the UserService, keyed by package and config.
+When the configuration changes the engine re-probes immediately instead of waiting for
+a touch; otherwise it probes after a touch and rechecks while a video is active.
 
 ## AOD brightness
 
@@ -183,6 +193,7 @@ crash.
 - Shizuku missing/dead → stop control, release settings, show a warning.
 - Touch discovery failure → retry with backoff while monitoring is still wanted.
 - Foreground/video dumps fail twice → clear the video floor rather than getting stuck.
+- No positive video signal enabled → no video, except for packages in the forced list.
 - Settings write failures → keep the pending restore marker.
 
 ## Security notes

@@ -4,6 +4,17 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Configurable video detection rules: MediaSession, paused-session veto, video decoder,
+  and media audio can each be enabled or disabled from the new detection settings sheet.
+- Forced app list: packages that are always treated as video while in the foreground.
+- The video configuration travels to the Shizuku UserService over the binder, with
+  validated package names and a 64-app cap.
+- A configuration change re-probes video immediately instead of waiting for a touch.
+
 ## [1.0.1] - 2026-11-21
 
 ### Added

@@ -175,7 +175,12 @@ playing.
 - a probe runs ~1.8 s after the finger lifts and a slow recheck runs every 12 s while a
   video is active;
 - the video floor has priority over the app/normal/ECO profile while playback lasts.
-- **PiP is not handled yet** (see the backlog).
+
+Every rule above can be toggled from **Video mode → Configure detection** for apps that
+report sessions or decoders differently. The same sheet keeps a list of apps that must
+always be treated as video while in the foreground, even without a session, decoder, or
+audio. The defaults reproduce the original behavior. **PiP is not handled yet** (see the
+backlog).
 
 ### 8. Wake pulse
 
@@ -343,7 +348,8 @@ sent. See [PRIVACY.md](PRIVACY.md).
 - Display detection depends on Samsung firmware settings and `dumpsys` output; a future
   firmware update may change them.
 - AOD brightness uses a hidden Samsung key and may be ignored/reset by an update.
-- Video detection depends on MediaSession, Codec2, and AudioService behavior.
+- Video detection depends on MediaSession, Codec2, and AudioService behavior; the rules
+  and a forced app list can be tuned in the app, but the underlying signals must exist.
 - PiP video is not detected yet.
 - If Android kills the app while a non-default rate is applied (for example, due to
   aggressive battery management), the last rate may remain until OneHZ starts again.

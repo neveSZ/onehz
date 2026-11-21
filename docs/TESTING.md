@@ -11,7 +11,8 @@
 Unit tests cover the pure logic:
 
 - `FrequencyProfile` serialization, validation, defaults;
-- `VideoSignals` parsers (captured real-device fixtures);
+- `VideoSignals` parsers and rule decisions (captured real-device fixtures);
+- `VideoConfig` encoding, validation, and defaults;
 - `MtTouchParser` MT-B edges;
 - `TouchDeviceSelector` device filtering;
 - `AodBrightnessMath`;
@@ -82,6 +83,10 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Switch apps; the old app's video state is cleared.
 - [ ] Play audio only; it does not trigger the floor.
 - [ ] Open the camera; it does not trigger the floor.
+- [ ] Disable each rule in **Configure detection**; the verdict changes as expected.
+- [ ] Add an app to the forced list; the floor applies in that app even when paused.
+- [ ] Change the rules or the forced list while a video plays; the floor updates without
+      a new touch.
 - [ ] Document that PiP is not detected.
 
 ### Wake, screen, and reboot
