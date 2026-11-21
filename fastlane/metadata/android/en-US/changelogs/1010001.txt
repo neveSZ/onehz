@@ -1,0 +1,8 @@
+Version 1.1.0-beta.1
+* Xiaomi/Redmi/POCO support (HyperOS 2/3)
+* Multi-rate displays; LTPO no longer required
+* New default profiles (fresh installs only)
+* Configurable video detection rules
+* Forced list of apps always treated as video
+* Diagnostics: brightness, battery saver, rate route
+* 30 Hz warning in the Xiaomi profile editor

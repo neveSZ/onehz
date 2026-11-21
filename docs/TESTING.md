@@ -125,9 +125,16 @@ Test on the target device with a clean install of the signed release APK.
       network error.
 - [ ] Confirm no background check runs with the app closed.
 
+### Beta and upgrade
+
+- [ ] Install 1.1.0-beta.1 over 1.0.1; settings and profiles are kept.
+- [ ] The stable update channel never offers the beta.
+- [ ] The stable + pre-releases channel offers the beta and labels it as a pre-release.
+- [ ] On Xiaomi, the profile editor warns when a step uses 30 Hz.
+
 ### Release artifacts
 
-- [ ] `versionName=1.0.1`, `versionCode=1000200`.
+- [ ] `versionName=1.1.0-beta.1`, `versionCode=1010001`.
 - [ ] APK signed (v3; minSdk 31).
 - [ ] Certificate SHA-256 matches the documented fingerprint.
 - [ ] SHA-256 file matches the APK.

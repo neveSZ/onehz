@@ -4,7 +4,10 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.1.0-beta.1] - 2026-11-21
+
+First beta after 1.0.1. Adds Xiaomi/Redmi/POCO support, removes the LTPO requirement,
+and makes video detection configurable.
 
 ### Added
 
@@ -36,6 +39,7 @@ All notable changes to OneHZ are documented here. The format follows
 - `BootReceiver` and the keep-alive service respect the strict gate.
 - The Home ECO badge follows the system battery-saver broadcast while the app is open,
   instead of waiting for the next resume.
+- Version 1.1.0-beta.1 (`versionCode 1010001`).
 
 ### Known limitations
 
@@ -116,5 +120,6 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.1.0-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.1.0-beta.1
 [1.0.1]: https://github.com/neveSZ/onehz/releases/tag/v1.0.1
 [1.0.0]: https://github.com/neveSZ/onehz/releases/tag/v1.0.0

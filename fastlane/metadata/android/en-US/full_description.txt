@@ -6,16 +6,23 @@ Features
 * Refresh-rate staircase with 1 to 5 tiers per profile.
 * Independent Normal, ECO (battery saver), and AOD profiles.
 * Per-app profiles and a video mode.
+* Configurable video detection rules and a list of apps always treated as video.
 * Optional AOD brightness control (Samsung only) with a safety band and a restore action.
+* Device-aware default profiles on a fresh install.
 * Guided setup for display compatibility, Shizuku, battery optimization, Doze, and notifications.
 * Diagnostics, light/dark/AMOLED themes, and English, Portuguese (Brazil), and Spanish UI.
 
 Requirements
-* A Samsung phone or a Xiaomi/Redmi/POCO phone whose display exposes at least two refresh rates.
+* A Samsung phone or a Xiaomi/Redmi/POCO phone whose display exposes at least two refresh rates. LTPO is not required.
 * Android 12 (API 31) or newer.
 * Shizuku installed and running.
 
 Shizuku is a separate app and is not bundled with OneHZ. Without Shizuku, OneHZ cannot control the display. OneHZ is tested on the Samsung Galaxy S25+ (SM-S936B) with Android 17 / One UI 9.0 and on the POCO X7 Pro (2412DPC0AG) with Android 16 / HyperOS 3.0; other models and Android versions may work but are not tested.
+
+Notes
+* AOD brightness is Samsung-only and is hidden on Xiaomi.
+* On the tested POCO X7 Pro, 30 Hz is dimmer at the panel level. OneHZ cannot compensate and shows a warning in the profile editor.
+* Video in picture-in-picture is not detected yet.
 
 Privacy
 * No ads, analytics, telemetry, or accounts.
