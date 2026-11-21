@@ -11,6 +11,11 @@
 The README, license, and documentation follow the same policy where applicable.
 Corrections from native speakers are very welcome.
 
+User-facing documentation is bilingual: `docs/FEATURES`, `docs/INSTALL`, `docs/FAQ`, and
+`docs/COMPATIBILITY` have an English file and a `.pt-BR.md` counterpart. Developer
+documentation (architecture, building, testing, releasing, translations, backlog) is
+English-only.
+
 ## Files
 
 - English base: `app/src/main/res/values/strings.xml`

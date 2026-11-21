@@ -22,12 +22,12 @@ desbloqueiam funcionalidades. The same links are available in the app under
 
 OneHZ was developed with help from large language models through the
 [OpenCode](https://opencode.ai) coding agent harness. The author reviewed the code,
-ran the tests, and validated the app on the tested device. LLM assistance does not imply
+ran the tests, and validated the app on the tested devices. LLM assistance does not imply
 endorsement by any model provider.
 
 O OneHZ foi desenvolvido com ajuda de modelos de linguagem através do harness de agente
 de código [OpenCode](https://opencode.ai). O autor revisou o código, executou os testes e
-validou o app no aparelho testado. O auxílio de LLM não implica endosso de nenhum
+validou o app nos aparelhos testados. O auxílio de LLM não implica endosso de nenhum
 fornecedor de modelo.
 
 ## Open-source projects / Projetos de código aberto
@@ -107,10 +107,11 @@ See [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md).
 
 ## Trademarks / Marcas
 
-Samsung, Galaxy, and One UI are trademarks of Samsung Electronics. Android is a
-trademark of Google LLC. OneHZ is not affiliated with, endorsed by, or sponsored by
-Samsung Electronics or Google LLC.
-
-Samsung, Galaxy e One UI são marcas da Samsung Electronics. Android é uma marca da Google
-LLC. O OneHZ não é afiliado, endossado ou patrocinado pela Samsung Electronics nem pela
+Samsung, Galaxy, and One UI are trademarks of Samsung Electronics. Xiaomi, Redmi, POCO,
+HyperOS, and MIUI are trademarks of Xiaomi. Android is a trademark of Google LLC. OneHZ
+is not affiliated with, endorsed by, or sponsored by Samsung Electronics, Xiaomi, or
 Google LLC.
+
+Samsung, Galaxy e One UI são marcas da Samsung Electronics. Xiaomi, Redmi, POCO, HyperOS
+e MIUI são marcas da Xiaomi. Android é uma marca da Google LLC. O OneHZ não é afiliado,
+endossado ou patrocinado pela Samsung Electronics, pela Xiaomi nem pela Google LLC.

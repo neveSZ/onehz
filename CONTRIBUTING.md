@@ -16,7 +16,7 @@ that issues or pull requests will be reviewed or merged.
 Use the bug report template and include:
 
 - OneHZ version, device model, Android/One UI or HyperOS build, and Shizuku version;
-- panel refresh rates (and whether the panel is LTPO);
+- panel refresh rates reported by the system;
 - steps to reproduce and expected/actual behavior;
 - the diagnostic report, sanitized;
 - whether the issue happens after a reboot or after Shizuku restarts.
@@ -47,7 +47,7 @@ devices, and no AccessibilityService.
 - Do not copy code or assets from closed-source apps.
 - If you used an LLM, disclose it in the PR description. You are responsible for
   reviewing and testing the result.
-- Mention the device and Android/One UI version used for testing.
+- Mention the device and Android/One UI or HyperOS version used for testing.
 
 ## Translations
 

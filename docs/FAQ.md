@@ -1,5 +1,7 @@
 # FAQ
 
+**English** · [Português (Brasil)](FAQ.pt-BR.md)
+
 ### Is OneHZ free?
 
 Yes. All features are free and open source (MIT). Donations through
@@ -37,15 +39,44 @@ sensor (`aod_brightness_level` is a factory feature, not a Settings key). The Sa
 
 On the tested POCO X7 Pro the 30 Hz panel mode itself is dimmer: system brightness,
 framebuffer, and reported backlight are identical to 60/120 Hz, but the panel/vendor PQ
-applies a different gamma. The vendor knobs reachable through Shizuku (`shell`, no root) do not
-change it, so no app can compensate. OneHZ keeps 30 Hz available and shows a warning in
-the profile editor. See [COMPATIBILITY](COMPATIBILITY.md#30-hz-brightness-on-hyperos).
+applies a different gamma. The vendor knobs reachable through Shizuku (`shell`, no root)
+do not change it, so no app can compensate. OneHZ keeps 30 Hz available and shows a
+warning in the profile editor. See
+[COMPATIBILITY](COMPATIBILITY.md#30-hz-brightness-on-hyperos).
 
 ### Which device was tested?
 
 A Samsung Galaxy S25+ (`SM-S936B`), Android 17, One UI 9.0, build `S936BXXUDDZJB`,
 and a POCO X7 Pro (`2412DPC0AG`, `rodin`), Android 16, HyperOS 3.0
 (`OS3.0.304.0.WOJMIXM`). See [COMPATIBILITY](COMPATIBILITY.md).
+
+### How do I get beta builds?
+
+Beta builds are published as pre-releases on the same
+[releases page](https://github.com/neveSZ/onehz/releases):
+
+- install the APK manually from the pre-release, or
+- enable **stable + pre-releases** in the in-app update checker, or
+- enable pre-releases for the OneHZ source in Obtainium.
+
+A beta uses the same signing key and a higher `versionCode` than the current stable, so
+it installs over 1.0.1 and keeps your settings. The next stable has a higher
+`versionCode`, so installing it over the beta returns you to the stable channel.
+
+### What changed in 1.1.0?
+
+- Xiaomi/Redmi/POCO support (HyperOS 2/3, with a HyperOS 1 fallback).
+- The LTPO requirement was replaced by a capability check: at least two refresh rates.
+- New default profiles for fresh installs: normal **maximum → 60 Hz → minimum**
+  (2 s / 5 s) and ECO **60 Hz → minimum** (2 s).
+- Configurable video detection rules and a forced-app list.
+- Diagnostics now include screen brightness/mode, battery-saver state, and the active
+  rate route.
+
+### Will updating change my profiles?
+
+No. Existing profiles are kept when you update, including from 1.0.1 to this beta. The
+new defaults are created only on a fresh install.
 
 ### Why does control stop after a reboot?
 
@@ -90,15 +121,22 @@ decision. Please report the app and the diagnostic state.
 No. Running two controllers at the same time causes conflicting writes. Disable the
 other one.
 
-### The rate stayed at 120/60/10 after the app was killed. How do I restore it?
+### The rate stayed at a fixed value after the app was killed. How do I restore it?
 
 Open OneHZ again; on the next Shizuku connection it restores the pending session. If that
-does not work, run:
+does not work, on Samsung run:
 
 ```powershell
 adb shell settings put secure refresh_rate_mode 2
 adb shell settings delete system peak_refresh_rate
 adb shell settings delete system min_refresh_rate
+```
+
+On Xiaomi/Redmi/POCO, check the keys with:
+
+```powershell
+adb shell settings get secure miui_refresh_rate
+adb shell settings get secure user_refresh_rate
 ```
 
 Grant the optional battery exemption to reduce the chance of the app being killed.

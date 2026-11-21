@@ -1,16 +1,21 @@
 # Compatibility
 
+**English** · [Português (Brasil)](COMPATIBILITY.pt-BR.md)
+
 ## Tested configurations
 
-| Item | Samsung | POCO X7 Pro |
+| Item | Samsung Galaxy S25+ | POCO X7 Pro |
 |---|---|---|
-| Device | Galaxy S25+ (`SM-S936B`, `pa2q`) | `2412DPC0AG` (`rodin`) |
+| Device | `SM-S936B` (`pa2q`) | `2412DPC0AG` (`rodin`) |
 | Android | 17 (API 37) | 16 (API 36) |
-| Software | One UI 9.0 | HyperOS 3.0 (`OS3.0.304.0.WOJMIXM`) |
+| Software | One UI 9.0 (`ro.build.version.oneui=90000`) | HyperOS 3.0 (`OS3.0.304.0.WOJMIXM`) |
+| Build | `S936BXXUDDZJB` | `BP2A.250605.031.A3` |
+| Security patch | 2026-10-05 | 2026-10-01 |
+| Resolution tested | 1080 × 2340 (FHD+) | 1220 × 2712 |
 | Panel rates | 120, 80, 60, 48, 40, 30, 26.67, 24, 20, 10 Hz | 120, 90, 60, 30 Hz |
 | Control route | `refresh_rate_mode` + `peak/min` | `secure/miui_refresh_rate` |
 | Shizuku | thedjchi fork `v13.7.0-thedjchi` | thedjchi fork `v13.7.0-thedjchi` |
-| OneHZ | 1.0.1 | 1.0.1 |
+| OneHZ | 1.1.0-beta.1 | 1.1.0-beta.1 |
 
 Everything else is **untested**.
 
@@ -69,6 +74,30 @@ profile editor shows a warning on Xiaomi devices when a step uses 30 Hz. At maxi
 brightness there is no headroom to compensate upward, and dimming 60/120 Hz to match
 30 Hz would only make the whole screen darker.
 
+## Known limitations
+
+- **Samsung, Xiaomi, Redmi and POCO only.** Other manufacturers are rejected by the
+  compatibility gate.
+- **Multi-rate display required.** The gate requires at least two refresh rates; LTPO
+  is not required.
+- **Two devices tested.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) and
+  POCO X7 Pro `2412DPC0AG` (Android 16 / HyperOS 3.0).
+- Other Android/One UI/HyperOS versions and WQHD+ are untested.
+- Shizuku must be running. After a reboot, it may need to be restarted through wireless
+  debugging/ADB.
+- Display detection depends on firmware settings and `dumpsys` output; a future
+  firmware update may change them. HyperOS uses `miui_refresh_rate` (or
+  `user_refresh_rate` on HyperOS 1).
+- AOD brightness is **Samsung-only** (`debug_aod_brightness`); it is hidden on Xiaomi.
+- Video detection depends on MediaSession, Codec2, and AudioService behavior; the rules
+  and a forced app list can be tuned in the app, but the underlying signals must exist.
+- PiP video is not detected yet.
+- If Android kills the app while a non-default rate is applied (for example, due to
+  aggressive battery management), the last rate may remain until OneHZ starts again.
+  Grant the optional battery exemption or reopen the app to restore the system default.
+- Do not run another refresh-rate controller at the same time.
+- No warranty. This is a personal project.
+
 ## Not supported / untested
 
 - other manufacturers (blocked by the gate);
@@ -103,9 +132,10 @@ the diagnostic report.
 
 ## Shizuku
 
-- Tested with the thedjchi fork on both the S25+ and the POCO X7 Pro.
-- The official Shizuku should work because the app uses the standard API, but it was
-  not tested.
+- Tested with the **thedjchi fork `v13.7.0-thedjchi`** on both the S25+ and the POCO X7
+  Pro: <https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi>
+- The official [Shizuku](https://github.com/RikkaApps/Shizuku) should work because the
+  app uses the standard API, but it was not tested.
 - After a reboot, Shizuku may need to be started again through wireless debugging or
   ADB. OneHZ reconnects when Shizuku becomes available.
 
