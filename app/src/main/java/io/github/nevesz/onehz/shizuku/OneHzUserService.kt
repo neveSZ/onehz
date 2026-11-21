@@ -2,6 +2,7 @@ package io.github.nevesz.onehz.shizuku
 
 import android.os.IBinder
 import android.os.RemoteException
+import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -94,90 +95,137 @@ class OneHzUserService : IOneHzService.Stub() {
     @Volatile
     private var cachedVideoResult: String? = null
 
+    @Volatile
+    private var cachedVideoConfig: String? = null
+
     /**
      * Video detection for the app currently in the foreground, without an app whitelist.
      *
-     * 1. A MediaSession that exists but is paused is authoritative: no video.
-     * 2. The foreground app must hold a video codec (Codec2 ResourceManager). This rules out
-     *    audio-only sessions, the camera and games.
-     * 3. With a playing session the codec is enough. Without a MediaSession (Instagram), a
-     *    started USAGE_MEDIA player confirms that the video is not paused.
+     * The user config selects which signals are consulted. The default rules are:
+     * 1. a MediaSession that exists but is paused is authoritative: no video;
+     * 2. the foreground app must hold a video codec (Codec2 ResourceManager);
+     * 3. with a playing session the codec is enough; without a session, a started
+     *    USAGE_MEDIA player confirms that the video is not paused.
+     *
+     * Packages in the forced list skip every probe and are always reported as playing.
      */
-    override fun videoPlayback(): String {
+    override fun videoPlaybackWithConfig(config: String?): String {
+        val cfg = VideoConfig.decode(config)
         val pkg = foregroundPackage()
         if (pkg.isBlank()) {
             return VideoSignals.Verdict(VideoSignals.Source.NONE, null, "no-foreground").encode()
         }
-        val now = System.currentTimeMillis()
-        cachedVideoResult?.let { cached ->
-            if (cachedVideoPackage == pkg && now - cachedVideoAt < 800L) return cached
-        }
-
-        val ps = exec(
-            "/system/bin/ps",
-            "-A",
-            "-o",
-            "PID,NAME",
-            maxBytes = 131_072,
-            timeoutMs = 2_500
-        ).output
-        val pids = VideoSignals.processPids(ps, pkg)
-
-        val sessions = exec(
-            "/system/bin/dumpsys",
-            "media_session",
-            maxBytes = 131_072,
-            timeoutMs = 2_500
-        ).output
-        val session = VideoSignals.sessionState(sessions, pkg)
-
-        // A session that exists but is not playing is authoritative.
-        if (session != null && !VideoSignals.isActive(session)) {
+        if (pkg in cfg.forcedPackages) {
             return cacheVideo(
                 pkg,
+                cfg,
+                VideoSignals.Verdict(VideoSignals.Source.PLAYING, pkg, "forced")
+            )
+        }
+        if (!cfg.hasPositiveSignal) {
+            return cacheVideo(
+                pkg,
+                cfg,
+                VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "no-signal")
+            )
+        }
+
+        val now = System.currentTimeMillis()
+        cachedVideoResult?.let { cached ->
+            if (cachedVideoPackage == pkg && cachedVideoConfig == cfg.encode() && now - cachedVideoAt < 800L) {
+                return cached
+            }
+        }
+
+        val sessions = if (cfg.useMediaSession) {
+            exec(
+                "/system/bin/dumpsys",
+                "media_session",
+                maxBytes = 131_072,
+                timeoutMs = 2_500
+            ).output
+        } else {
+            ""
+        }
+        val session = if (cfg.useMediaSession) VideoSignals.sessionState(sessions, pkg) else null
+
+        // A session that exists but is not playing is authoritative when the rule is on.
+        if (cfg.useMediaSession && cfg.pausedSessionBlocks &&
+            session != null && !VideoSignals.isActive(session)
+        ) {
+            return cacheVideo(
+                pkg,
+                cfg,
                 VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "session:$session")
             )
         }
 
-        val codecDump = exec(
-            "/system/bin/sh",
-            "-c",
-            "dumpsys media.resource_manager | sed -n '/Processes:/,/Process Pid override:/p'",
-            maxBytes = 32_768,
-            timeoutMs = 2_500
-        ).output
-        val codecs = VideoSignals.videoCodecPids(codecDump)
-        val codecName = codecs.entries.firstOrNull { it.key in pids }?.value
-        if (codecName == null) {
-            val detail = if (session != null) "audio-only" else "no-video-codec"
-            return cacheVideo(pkg, VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, detail))
-        }
-
-        if (session != null) {
-            return cacheVideo(
-                pkg,
-                VideoSignals.Verdict(VideoSignals.Source.PLAYING, pkg, "$session+$codecName")
+        val pids = if (cfg.requireVideoCodec || cfg.requireStartedAudio) {
+            VideoSignals.processPids(
+                exec(
+                    "/system/bin/ps",
+                    "-A",
+                    "-o",
+                    "PID,NAME",
+                    maxBytes = 131_072,
+                    timeoutMs = 2_500
+                ).output,
+                pkg
             )
+        } else {
+            emptySet()
         }
 
-        val audio = exec(
-            "/system/bin/sh",
-            "-c",
-            "dumpsys audio | grep AudioPlaybackConfiguration",
-            maxBytes = 32_768,
-            timeoutMs = 2_500
-        ).output
-        val audioStarted = VideoSignals.mediaAudioStarted(audio, pids)
+        val codecs = if (cfg.requireVideoCodec) {
+            VideoSignals.videoCodecPids(
+                exec(
+                    "/system/bin/sh",
+                    "-c",
+                    "dumpsys media.resource_manager | sed -n '/Processes:/,/Process Pid override:/p'",
+                    maxBytes = 32_768,
+                    timeoutMs = 2_500
+                ).output
+            )
+        } else {
+            emptyMap()
+        }
+
+        // Audio only confirms playback when there is no playing session to confirm it.
+        val sessionPlaying = cfg.useMediaSession && session != null && VideoSignals.isActive(session)
+        val audioStarted = if (cfg.requireStartedAudio && !sessionPlaying) {
+            VideoSignals.mediaAudioStarted(
+                exec(
+                    "/system/bin/sh",
+                    "-c",
+                    "dumpsys audio | grep AudioPlaybackConfiguration",
+                    maxBytes = 32_768,
+                    timeoutMs = 2_500
+                ).output,
+                pids
+            )
+        } else {
+            false
+        }
+
         return cacheVideo(
             pkg,
-            VideoSignals.decide(pkg, session, pids, codecs, audioStarted)
+            cfg,
+            VideoSignals.decide(cfg, pkg, session, pids, codecs, audioStarted)
         )
     }
 
-    private fun cacheVideo(pkg: String, verdict: VideoSignals.Verdict): String {
+    /** Kept for an app process started by a previous version: defaults apply. */
+    override fun videoPlayback(): String = videoPlaybackWithConfig(null)
+
+    private fun cacheVideo(
+        pkg: String,
+        config: VideoConfig,
+        verdict: VideoSignals.Verdict
+    ): String {
         val encoded = verdict.encode()
         cachedVideoPackage = pkg
         cachedVideoResult = encoded
+        cachedVideoConfig = config.encode()
         cachedVideoAt = System.currentTimeMillis()
         return encoded
     }

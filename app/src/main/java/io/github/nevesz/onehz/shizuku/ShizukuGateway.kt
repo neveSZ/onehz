@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import io.github.nevesz.onehz.BuildConfig
+import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.diagnostic.InputMonitorState
@@ -28,7 +29,7 @@ object ShizukuGateway {
     private const val TAG = "Shizuku"
     private const val SERVICE_TAG = "onehz_privileged_service"
     private const val PROCESS_SUFFIX = "onehz_core"
-    private const val API_REVISION = 11
+    private const val API_REVISION = 12
     private const val TOUCH_ACTION_DOWN = 0
     private const val TOUCH_ACTION_UP = 1
     private const val TOUCH_ACTION_STOPPED = 2
@@ -241,9 +242,16 @@ object ShizukuGateway {
     fun serviceStats(): String =
         runCatching { service?.serviceStats() }.getOrNull() ?: "—"
 
-    /** One binder call that resolves the foreground and checks the two video signals. */
-    fun videoPlayback(): VideoSignals.Verdict =
-        VideoSignals.Verdict.decode(runCatching { service?.videoPlayback() }.getOrNull())
+    /** One binder call that resolves the foreground and applies the user's video rules. */
+    fun videoPlayback(config: VideoConfig = VideoConfig.DEFAULT): VideoSignals.Verdict {
+        // A service kept alive from a previous app version does not know the new call;
+        // falling back to the default rules keeps video mode working during the upgrade.
+        val configured = runCatching {
+            service?.videoPlaybackWithConfig(config.encode())
+        }.getOrNull()
+        if (configured != null) return VideoSignals.Verdict.decode(configured)
+        return VideoSignals.Verdict.decode(runCatching { service?.videoPlayback() }.getOrNull())
+    }
 
     fun writeAodBrightness(value: Int): Boolean =
         runCatching { service?.writeAodBrightness(value) == true }.getOrDefault(false)

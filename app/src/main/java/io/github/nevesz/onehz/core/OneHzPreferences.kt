@@ -26,6 +26,7 @@ object OneHzPreferences {
     private const val KEY_AOD_BRIGHTNESS_WRITTEN = "aod_brightness_written"
     private const val KEY_VIDEO_ENABLED = "video_enabled"
     private const val KEY_VIDEO_MIN_HZ = "video_min_hz"
+    private const val KEY_VIDEO_CONFIG = "video_config"
     private const val KEY_SESSION_PENDING = "session_pending"
     private const val KEY_ECO_GLOBAL_BACKUP = "eco_global_backup"
     private const val KEY_LOGS_PAUSED = "logs_paused"
@@ -190,6 +191,13 @@ object OneHzPreferences {
 
     fun setVideoMinHz(context: Context, value: Int) =
         prefs(context).edit { putInt(KEY_VIDEO_MIN_HZ, value) }
+
+    /** Detection rules and the forced app list. Missing or invalid data falls back to defaults. */
+    fun videoConfig(context: Context): VideoConfig =
+        VideoConfig.decode(prefs(context).getString(KEY_VIDEO_CONFIG, null))
+
+    fun setVideoConfig(context: Context, config: VideoConfig) =
+        prefs(context).edit { putString(KEY_VIDEO_CONFIG, config.encode()) }
 
     /**
      * Set while a session is active. If the process dies without a clean release, the next

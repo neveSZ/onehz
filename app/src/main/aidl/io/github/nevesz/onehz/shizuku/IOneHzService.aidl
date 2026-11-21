@@ -29,4 +29,7 @@ interface IOneHzService {
 
     void registerClient(IBinder client);
     void destroy();
+
+    /** Video detection with user-tunable rules, encoded by VideoConfig. */
+    String videoPlaybackWithConfig(String config);
 }

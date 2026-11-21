@@ -366,6 +366,14 @@ object OneHzEngine {
 
     fun reapply() = handler.post { if (started) applyCurrent("manual") }
 
+    /** Video rules or the forced app list changed: probe again instead of waiting for a touch. */
+    fun onVideoConfigChanged() = handler.post {
+        val ctx = appContext ?: return@post
+        if (!started) return@post
+        if (!screenOff && videoEligible(ctx)) updateVideoState(ctx, "video-config")
+        applyCurrent("video-config")
+    }
+
     /** The privileged service was recreated: force a monitor check and a fresh apply. */
     fun onServiceAvailable() = handler.post {
         monitoringNeeded = false
@@ -580,7 +588,7 @@ object OneHzEngine {
         }
         videoCheckInFlight = true
         val verdict = try {
-            ShizukuGateway.videoPlayback()
+            ShizukuGateway.videoPlayback(OneHzPreferences.videoConfig(ctx))
         } finally {
             videoCheckInFlight = false
         }
