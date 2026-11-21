@@ -5,7 +5,6 @@
 > [LICENSE](LICENSE) é o que prevalece.
 
 Copyright (c) 2026 neveSZ
-Porções copyright (c) 2025 Mahmut Alperen Ünal (Adaptive Hz, MIT)
 
 É concedida permissão, gratuitamente, a qualquer pessoa que obtenha uma cópia deste
 software e dos arquivos de documentação associados (o "Software"), para lidar com o
