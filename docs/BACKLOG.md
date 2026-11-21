@@ -28,8 +28,8 @@ These are documented as known limitations rather than promises.
 
 ### Equal brightness at 30 Hz
 
-- On the tested POCO, 30 Hz is dimmer at the panel level even though system brightness,
-  framebuffer, and backlight are identical to 60/120 Hz.
+- On the tested POCO X7 Pro, 30 Hz is dimmer at the panel level even though system
+  brightness, framebuffer, and backlight are identical to 60/120 Hz.
 - The vendor dimming/gamma routes reachable through Shizuku do not change it, and the
   root-only routes are out of scope.
 - OneHZ keeps 30 Hz available and warns in the profile editor instead of faking a

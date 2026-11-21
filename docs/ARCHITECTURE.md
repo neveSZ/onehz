@@ -57,7 +57,7 @@ want to understand, audit, or modify the app.
 - Doze whitelist;
 - refresh-rate settings (allowlisted keys);
 - display mode;
-- global settings (allowlisted Samsung keys, read/write);
+- global settings (allowlisted Samsung and HyperOS keys, read/write);
 - video detection;
 - AOD brightness key;
 - client registration and destroy.
@@ -110,6 +110,18 @@ settings delete system min_refresh_rate
 
 Deleting peak/min lets the system use its stock adaptive range instead of replaying
 captured values (which could be our own AOD state).
+
+### Xiaomi/HyperOS route
+
+HyperOS does not use Samsung's peak/min pair. OneHZ writes a single secure setting:
+
+```text
+settings put secure miui_refresh_rate <hz>
+```
+
+On HyperOS 1 the key may be `user_refresh_rate`; the resolver picks whichever exists.
+Before the first write, the original value (or its absence) is snapshotted, and release
+replays that snapshot exactly, deleting the key when it did not exist.
 
 ### Samsung ECO keys
 
@@ -189,7 +201,7 @@ crash.
 
 ## Fail-closed behavior
 
-- No LTPO eligibility → no control.
+- No vendor/display eligibility → no control.
 - Shizuku missing/dead → stop control, release settings, show a warning.
 - Touch discovery failure → retry with backoff while monitoring is still wanted.
 - Foreground/video dumps fail twice → clear the video floor rather than getting stuck.

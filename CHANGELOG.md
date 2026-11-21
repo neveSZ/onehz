@@ -39,9 +39,9 @@ All notable changes to OneHZ are documented here. The format follows
 
 ### Known limitations
 
-- On the tested POCO, 30 Hz is dimmer at the panel level. System brightness, framebuffer,
-  and backlight are identical to 60/120 Hz, and the vendor knobs reachable through
-  Shizuku do not change it. See [COMPATIBILITY](docs/COMPATIBILITY.md#30-hz-brightness-on-hyperos).
+- On the tested POCO X7 Pro, 30 Hz is dimmer at the panel level. System brightness,
+  framebuffer, and backlight are identical to 60/120 Hz, and the vendor knobs reachable
+  through Shizuku do not change it. See [COMPATIBILITY](docs/COMPATIBILITY.md#30-hz-brightness-on-hyperos).
 
 ## [1.0.1] - 2026-11-21
 

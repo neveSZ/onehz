@@ -23,14 +23,14 @@ body:
     id: device
     attributes:
       label: Device model
-      placeholder: "Samsung Galaxy S25+ (SM-S936B)"
+      placeholder: "Samsung Galaxy S25+ (SM-S936B) or POCO X7 Pro (2412DPC0AG)"
     validations:
       required: true
 
   - type: input
     id: android
     attributes:
-      label: Android / One UI / build
+      label: Android / One UI or HyperOS / build
       placeholder: "Android 17, One UI 9.0, S936BXXUDDZJB"
     validations:
       required: true
@@ -46,7 +46,7 @@ body:
   - type: dropdown
     id: ltpo
     attributes:
-      label: Does the app show LTPO compatibility as OK?
+      label: Does the app show the display compatibility gate as OK?
       options:
         - "Yes"
         - "No"

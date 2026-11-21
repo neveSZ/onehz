@@ -24,13 +24,15 @@ from the app, no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 ## Project status
 
 - Latest stable release: **1.0.1**.
-- Tested on a Samsung Galaxy S25+ (`SM-S936B`) and a POCO `2412DPC0AG` (`rodin`).
+- Tested on a Samsung Galaxy S25+ (`SM-S936B`) and a POCO X7 Pro (`2412DPC0AG`, `rodin`).
 - Runs only on **Samsung or Xiaomi/Redmi/POCO** devices whose display exposes **at
   least two refresh rates**. Other brands are blocked and the app fails closed (no
   changes). LTPO is **not** required.
 - Future beta builds will be published as pre-releases.
 
-## Tested device and software
+## Tested devices and software
+
+### Samsung Galaxy S25+
 
 | Item | Value |
 |---|---|
@@ -44,9 +46,23 @@ from the app, no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 | Shizuku | `13.7.0-thedjchi` fork |
 | OneHZ | 1.0.1 |
 
-**What was not tested:** other Samsung models, other Android/One UI versions, WQHD+,
-foldables, cover screens, tablets, and other brands. They may work, but I cannot
-guarantee it.
+### POCO X7 Pro
+
+| Item | Value |
+|---|---|
+| Device | POCO X7 Pro (`2412DPC0AG`, product `rodin_global`, device `rodin`) |
+| Android | 16 (API 36) |
+| Software | HyperOS 3.0 (`OS3.0.304.0.WOJMIXM`) |
+| Build | `BP2A.250605.031.A3` |
+| Security patch | 2026-10-01 |
+| Resolution tested | 1220 × 2712 |
+| Panel rates exposed by the system | 120, 90, 60, 30 Hz |
+| Shizuku | `13.7.0-thedjchi` fork |
+| OneHZ | 1.0.1 |
+
+**What was not tested:** other Samsung or Xiaomi models, other Android/One UI/HyperOS
+versions, WQHD+, foldables, cover screens, tablets, and other brands. They may work, but I
+cannot guarantee it.
 
 ## Requirements
 
@@ -349,8 +365,8 @@ sent. See [PRIVACY.md](PRIVACY.md).
   compatibility gate.
 - **Multi-rate display required.** The gate requires at least two refresh rates; LTPO
   is not required.
-- **Two devices tested.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) and POCO
-  `2412DPC0AG` (Android 16 / HyperOS 3.0).
+- **Two devices tested.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) and
+  POCO X7 Pro `2412DPC0AG` (Android 16 / HyperOS 3.0).
 - Other Android/One UI versions and WQHD+ are untested.
 - Shizuku must be running. After a reboot, it may need to be restarted through wireless
   debugging/ADB.

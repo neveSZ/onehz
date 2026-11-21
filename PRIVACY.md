@@ -19,7 +19,8 @@ OneHZ stores its settings in Android `SharedPreferences`:
 - profiles (normal, ECO, AOD, and per-app);
 - feature toggles and theme/language preferences;
 - session markers used to restore system settings after a crash;
-- a small backup of Samsung battery-saver settings that OneHZ changed;
+- a small backup of the Samsung battery-saver settings and the HyperOS rate key that
+  OneHZ changed;
 - update-check settings (enabled, interval, channel, last attempt) and the last release
   metadata returned by GitHub.
 

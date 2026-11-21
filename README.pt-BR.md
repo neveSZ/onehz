@@ -26,13 +26,15 @@ pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
 ## Status do projeto
 
 - Versão estável mais recente: **1.0.1**.
-- Testado em um Samsung Galaxy S25+ (`SM-S936B`) e em um POCO `2412DPC0AG` (`rodin`).
+- Testado em um Samsung Galaxy S25+ (`SM-S936B`) e em um POCO X7 Pro (`2412DPC0AG`, `rodin`).
 - Funciona **apenas em Samsung ou Xiaomi/Redmi/POCO** com tela que exponha **pelo
   menos duas taxas de atualização**. Outras marcas são bloqueadas e o app falha fechado
   (não altera nada). **LTPO não é obrigatório.**
 - Futuras versões beta serão publicadas como pré-releases.
 
-## Aparelho e software testados
+## Aparelhos e softwares testados
+
+### Samsung Galaxy S25+
 
 | Item | Valor |
 |---|---|
@@ -46,9 +48,23 @@ pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
 | Shizuku | fork `13.7.0-thedjchi` |
 | OneHZ | 1.0.1 |
 
-**O que não foi testado:** outros modelos Samsung, outras versões de Android/One UI,
-WQHD+, dobráveis, tela de capa, tablets e outras marcas. Podem funcionar, mas não posso
-garantir.
+### POCO X7 Pro
+
+| Item | Valor |
+|---|---|
+| Aparelho | POCO X7 Pro (`2412DPC0AG`, produto `rodin_global`, device `rodin`) |
+| Android | 16 (API 36) |
+| Software | HyperOS 3.0 (`OS3.0.304.0.WOJMIXM`) |
+| Build | `BP2A.250605.031.A3` |
+| Patch de segurança | 2026-10-01 |
+| Resolução testada | 1220 × 2712 |
+| Taxas expostas pelo sistema | 120, 90, 60, 30 Hz |
+| Shizuku | fork `13.7.0-thedjchi` |
+| OneHZ | 1.0.1 |
+
+**O que não foi testado:** outros modelos Samsung ou Xiaomi, outras versões de
+Android/One UI/HyperOS, WQHD+, dobráveis, tela de capa, tablets e outras marcas. Podem
+funcionar, mas não posso garantir.
 
 ## Requisitos
 
@@ -356,8 +372,8 @@ enviado. Veja [PRIVACY.md](PRIVACY.md).
   verificação de compatibilidade.
 - **Tela multi-taxa obrigatória.** A verificação exige pelo menos duas taxas; LTPO não
   é obrigatório.
-- **Dois aparelhos testados.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) e POCO
-  `2412DPC0AG` (Android 16 / HyperOS 3.0).
+- **Dois aparelhos testados.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) e
+  POCO X7 Pro `2412DPC0AG` (Android 16 / HyperOS 3.0).
 - Outras versões de Android/One UI e WQHD+ não foram testadas.
 - O Shizuku precisa estar rodando. Após reiniciar, pode ser necessário iniciá-lo de novo
   via depuração sem fio/ADB.

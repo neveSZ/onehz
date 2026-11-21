@@ -35,16 +35,16 @@ sensor (`aod_brightness_level` is a factory feature, not a Settings key). The Sa
 
 ### Why is the screen darker at 30 Hz on Xiaomi?
 
-On the tested POCO the 30 Hz panel mode itself is dimmer: system brightness, framebuffer,
-and reported backlight are identical to 60/120 Hz, but the panel/vendor PQ applies a
-different gamma. The vendor knobs reachable through Shizuku (`shell`, no root) do not
+On the tested POCO X7 Pro the 30 Hz panel mode itself is dimmer: system brightness,
+framebuffer, and reported backlight are identical to 60/120 Hz, but the panel/vendor PQ
+applies a different gamma. The vendor knobs reachable through Shizuku (`shell`, no root) do not
 change it, so no app can compensate. OneHZ keeps 30 Hz available and shows a warning in
 the profile editor. See [COMPATIBILITY](COMPATIBILITY.md#30-hz-brightness-on-hyperos).
 
 ### Which device was tested?
 
 A Samsung Galaxy S25+ (`SM-S936B`), Android 17, One UI 9.0, build `S936BXXUDDZJB`,
-and a POCO `2412DPC0AG` (`rodin`), Android 16, HyperOS 3.0
+and a POCO X7 Pro (`2412DPC0AG`, `rodin`), Android 16, HyperOS 3.0
 (`OS3.0.304.0.WOJMIXM`). See [COMPATIBILITY](COMPATIBILITY.md).
 
 ### Why does control stop after a reboot?
@@ -55,8 +55,8 @@ reconnects when Shizuku becomes available and fails closed until then.
 ### Why is OneHZ not on Google Play?
 
 It uses Shizuku, `QUERY_ALL_PACKAGES`, and a battery-optimization exemption, and it
-modifies hidden Samsung settings. Sideloading through GitHub Releases keeps the project
-simple and transparent.
+modifies hidden Samsung and HyperOS settings. Sideloading through GitHub Releases keeps
+the project simple and transparent.
 
 ### Does OneHZ collect data?
 

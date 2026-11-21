@@ -36,7 +36,7 @@ Test on the target device with a clean install of the signed release APK.
 
 - [ ] Uninstall any debug build first (`adb uninstall io.github.nevesz.onehz`).
 - [ ] Install the release APK.
-- [ ] LTPO compatibility shows OK.
+- [ ] Vendor/display compatibility shows OK.
 - [ ] Shizuku permission is requested and granted.
 - [ ] Battery exemption is optional and works.
 - [ ] Doze whitelist toggle works.
@@ -59,11 +59,13 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Mark an app “Ignore ECO”; its profile stays while battery saver is on.
 - [ ] Disable the ECO profile; control stops during battery saver.
 - [ ] Confirm Samsung ECO settings are restored after turning OneHZ off.
+- [ ] On Xiaomi, confirm `secure/miui_refresh_rate` is restored after turning OneHZ off.
 
 ### AOD
 
 - [ ] Enable AOD frequency; lock the screen and confirm the AOD rate.
-- [ ] Enable AOD brightness; lock and check `adb shell settings get system debug_aod_brightness`.
+- [ ] Enable AOD brightness (Samsung only); lock and check
+      `adb shell settings get system debug_aod_brightness`.
 - [ ] Change screen brightness while awake; the target updates.
 - [ ] Use “Restore system brightness”; the key is removed.
 - [ ] Confirm no timers/touch monitor run with the screen off.
@@ -133,8 +135,9 @@ Test on the target device with a clean install of the signed release APK.
 
 ## Device matrix
 
-| Device | Android | One UI | Build | Status |
+| Device | Android | Software | Build | Status |
 |---|---|---|---|---|
-| SM-S936B (S25+) | 17 / API 37 | 9.0 | `S936BXXUDDZJB` | Tested |
+| SM-S936B (S25+) | 17 / API 37 | One UI 9.0 | `S936BXXUDDZJB` | Tested |
+| POCO X7 Pro (`2412DPC0AG`, `rodin`) | 16 / API 36 | HyperOS 3.0 (`OS3.0.304.0.WOJMIXM`) | `BP2A.250605.031.A3` | Tested |
 
 Other devices are **untested**. Report results with the bug report template.
