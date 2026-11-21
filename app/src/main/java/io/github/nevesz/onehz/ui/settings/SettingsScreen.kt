@@ -34,6 +34,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,15 +43,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.LanguageManager
 import io.github.nevesz.onehz.core.ThemeMode
+import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.update.UpdateSettingsCard
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
 import io.github.nevesz.onehz.ui.theme.OneHzBg
 import io.github.nevesz.onehz.ui.theme.OneHzDarkBg
@@ -71,6 +75,8 @@ fun SettingsScreen(
 ) {
     var showAppearance by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val context = LocalContext.current
+    val updateState by UpdateCenter.state.collectAsState()
 
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
         item {
@@ -104,6 +110,26 @@ fun SettingsScreen(
                     onClick = onOpenSetup
                 )
             }
+        }
+
+        item {
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.update_section_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+            )
+        }
+        item {
+            UpdateSettingsCard(
+                state = updateState,
+                onEnabledChange = { UpdateCenter.setEnabled(context, it) },
+                onIntervalChange = { UpdateCenter.setInterval(context, it) },
+                onChannelChange = { UpdateCenter.setChannel(context, it) },
+                onCheckNow = { UpdateCenter.checkNow(context) },
+                onDismiss = { UpdateCenter.dismiss(context, it) }
+            )
         }
 
         if (diagnosticsEnabled) {

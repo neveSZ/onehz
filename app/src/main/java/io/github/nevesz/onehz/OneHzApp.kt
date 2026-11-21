@@ -3,6 +3,7 @@ package io.github.nevesz.onehz
 import android.app.Application
 import io.github.nevesz.onehz.core.LtpoGate
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.AodBrightnessController
 import io.github.nevesz.onehz.engine.OneHzEngine
@@ -19,6 +20,7 @@ class OneHzApp : Application() {
         Diagnostics.ltpoEligible.value = gate.eligible
         Diagnostics.setPaused(OneHzPreferences.logsPaused(this))
         Diagnostics.log("LTPO", gate.summary)
+        UpdateCenter.init(this)
 
         ShizukuGateway.init(
             context = this,

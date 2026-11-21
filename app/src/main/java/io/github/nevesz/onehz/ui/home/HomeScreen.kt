@@ -65,6 +65,7 @@ import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.LtpoGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.VideoSignals
+import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.AodBrightnessController
 import io.github.nevesz.onehz.engine.IdleReason
@@ -79,6 +80,7 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.update.UpdateBanner
 import kotlin.math.roundToInt
 
 private data class HomeState(
@@ -133,6 +135,7 @@ fun HomeScreen(
     onEditEco: () -> Unit
 ) {
     val shizuku by ShizukuGateway.state.collectAsState()
+    val update by UpdateCenter.state.collectAsState()
     val gate = remember { LtpoGate.evaluate(context) }
     val activeKey by Diagnostics.activeTierKey.collectAsState()
     val activeStep by Diagnostics.activeStep.collectAsState()
@@ -198,6 +201,15 @@ fun HomeScreen(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        if (update.showBanner) {
+            item {
+                UpdateBanner(
+                    state = update,
+                    onDismiss = { UpdateCenter.dismiss(context, it) }
+                )
+            }
+        }
+
         item {
             HeroCard(
                 state = state,

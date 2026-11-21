@@ -20,6 +20,7 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Extension
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.NewReleases
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.BuildConfig
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.update.ReleaseSelector
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 
@@ -113,6 +115,13 @@ fun AboutScreen(
                     title = stringResource(R.string.about_repo_title),
                     subtitle = stringResource(R.string.about_repo_subtitle),
                     url = REPO_URL
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                LinkRow(
+                    icon = Icons.Outlined.NewReleases,
+                    title = stringResource(R.string.about_releases_title),
+                    subtitle = stringResource(R.string.about_releases_subtitle),
+                    url = ReleaseSelector.RELEASES_PAGE
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(

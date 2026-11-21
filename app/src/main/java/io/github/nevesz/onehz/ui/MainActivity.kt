@@ -58,6 +58,7 @@ import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.SamsungDisplayRates
 import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.apps.AppCatalog
+import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.about.AboutScreen
 import io.github.nevesz.onehz.ui.apps.AppsScreen
@@ -85,6 +86,11 @@ private fun editorTarget(key: String?): EditorTarget? = when {
 }
 
 class MainActivity : AppCompatActivity() {
+    override fun onStart() {
+        super.onStart()
+        UpdateCenter.maybeCheckOnOpen(this)
+    }
+
     override fun onResume() {
         super.onResume()
         OneHzEngine.refreshSystemState()
