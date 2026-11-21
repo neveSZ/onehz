@@ -34,6 +34,10 @@ want to understand, audit, or modify the app.
 ## Processes and threads
 
 - **App process:** UI, preferences, engine, AOD controller, diagnostics.
+- **Update checker (`UpdateCenter`):** opt-in, runs on a background dispatcher only when
+  the activity starts; no service, worker, or periodic task. It reads the public GitHub
+  Releases API, respects the stored interval, caches the newest release in preferences,
+  and exposes a `StateFlow` to Settings and Home.
 - **`onehz_core` process:** Shizuku UserService. It exits when the app process dies
   through a binder death recipient, so updates/restarts do not leave orphans.
 - **`OneHzEngine` thread:** all engine state, timers, policy evaluation, and video
@@ -183,7 +187,8 @@ crash.
 
 ## Security notes
 
-- No `INTERNET` permission in 1.0.0.
+- `INTERNET` is declared only for the opt-in update checker; there is no background
+  network use.
 - No AccessibilityService.
 - Command allowlists for secure/global/system keys.
 - Device paths must match `/dev/input/event[0-9]+`.

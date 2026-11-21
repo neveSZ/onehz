@@ -58,6 +58,21 @@ final release). Tag format: `v1.0.0`, `v1.0.1-beta.1`, `v1.1.0-beta.2`. Tags con
 The same package (`io.github.nevesz.onehz`) and signing key are used for both channels.
 Beta and stable cannot be installed side by side.
 
+## In-app update checker
+
+The optional in-app checker reads the public GitHub Releases API:
+
+- stable channel: `/repos/neveSZ/onehz/releases/latest`;
+- stable plus pre-releases: `/repos/neveSZ/onehz/releases?per_page=30`, compared locally.
+
+Drafts are ignored. Pre-releases are offered only when the user selects the pre-release
+channel. The app compares the tag against `versionName`, so a release must use a tag that
+matches `version.properties` (`v1.0.0` for `1.0.0`). Publishing a new APK with the same
+`versionName` will not trigger an update warning.
+
+The repository must stay public for anonymous users to read releases. Never add a GitHub
+token to the app. If the repository becomes private, the in-app check cannot work.
+
 ## Keystore
 
 The release keystore is stored outside the repository, for example:

@@ -4,14 +4,6 @@ OneHZ is a personal project. Items here are intentions, not commitments.
 
 ## Planned
 
-### Automatic update check via GitHub Releases
-
-- Check the latest release in the background or on demand.
-- Opt-in, no telemetry.
-- Will require the `INTERNET` permission.
-- Show a notification/link when a newer version exists.
-- Never download or install automatically.
-
 ### PiP (picture-in-picture) video handling
 
 - Current video detection relies on the foreground app and its media/codec state.

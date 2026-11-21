@@ -273,6 +273,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
 Install the new APK over the old one. Updates require the same signing key. Your
 settings are kept. If Shizuku is running, the app reconnects automatically.
 
+OneHZ can optionally check GitHub for a newer release when you open the app. The check
+is **off by default**: enable it in **Settings → Updates**, accept the explanation, and
+choose the interval (24 hours, 3 days, 7 days, or 30 days) and the channel (stable only
+or stable plus pre-releases). It never runs in the background.
+
 ## Uninstall
 
 1. Turn off AOD brightness and use “Restore system brightness”.
@@ -284,9 +289,9 @@ settings are kept. If Shizuku is running, the app reconnects automatically.
 
 ## Privacy and permissions
 
-OneHZ **does not request the `INTERNET` permission** in 1.0.0. There is no analytics, no
-advertising, no telemetry, and no account. Configuration is stored locally in
-`SharedPreferences`; diagnostics live in memory only.
+OneHZ requests the `INTERNET` permission **only for the optional update checker**, which
+is off by default. There is no analytics, no advertising, no telemetry, and no account.
+Configuration is stored locally in `SharedPreferences`; diagnostics live in memory only.
 
 | Permission | Why |
 |---|---|
@@ -295,13 +300,15 @@ advertising, no telemetry, and no account. Configuration is stored locally in
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_SPECIAL_USE` | Keep the optional engine service alive. |
 | `POST_NOTIFICATIONS` | Show the persistent service notification. |
 | `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` | Optional battery exemption requested by you. |
+| `INTERNET` | Optional GitHub update check, off by default. |
 | Shizuku permission | Perform the privileged display/settings operations. |
 
 The app does **not** use AccessibilityService, overlay, storage, contacts, location,
-camera, microphone, or network.
+camera, or microphone. The network is used only when you enable the update checker.
 
-A future update checker will require network access; it will be opt-in and documented
-when implemented. See [PRIVACY.md](PRIVACY.md).
+The update checker contacts the public GitHub API only when you open OneHZ, respects the
+chosen interval, and never runs in the background. No token, account, or identifier is
+sent. See [PRIVACY.md](PRIVACY.md).
 
 ---
 
@@ -326,7 +333,6 @@ when implemented. See [PRIVACY.md](PRIVACY.md).
 
 ## Backlog
 
-- automatic update check via GitHub Releases (opt-in, no telemetry);
 - PiP support in video detection;
 - more Samsung devices/brands (unlikely: I have no other test devices);
 - removing the LTPO dependency (unlikely: it would need a different control path).

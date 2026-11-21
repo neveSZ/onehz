@@ -4,6 +4,24 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Optional GitHub update check, enabled only after explicit consent.
+- Automatic checks happen only when the app opens, respecting a user-selected minimum
+  interval (24 hours, 3 days, 7 days, or 30 days).
+- Update channel setting: stable only, or stable plus pre-releases.
+- Dismissible Home banner and a Settings status card with a manual "Check now" action.
+- SemVer comparison with pre-release precedence, ETag caching, and release-link
+  validation.
+- Manual GitHub Releases links in Settings and About.
+
+### Changed
+
+- Added the `INTERNET` permission, used only by the opt-in update checker.
+- Updated privacy documentation and README permissions.
+
 ## [1.0.0] - 2026-11-21
 
 First public stable release.

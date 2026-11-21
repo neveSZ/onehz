@@ -279,6 +279,11 @@ Veja [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para detalhes.
 Instale o novo APK por cima do antigo. Atualizações exigem a mesma chave de assinatura.
 Suas configurações são mantidas. Se o Shizuku estiver rodando, o app reconecta sozinho.
 
+O OneHZ pode checar opcionalmente se há uma versão nova no GitHub quando você abre o
+app. A checagem fica **desligada por padrão**: ative em **Ajustes → Atualizações**, aceite
+a explicação e escolha o intervalo (24 horas, 3 dias, 7 dias ou 30 dias) e o canal
+(somente estáveis ou estáveis + pré-releases). Ela nunca roda em segundo plano.
+
 ## Desinstalação
 
 1. Desative o brilho do AOD e use “Restaurar brilho do sistema”.
@@ -290,9 +295,9 @@ Suas configurações são mantidas. Se o Shizuku estiver rodando, o app reconect
 
 ## Privacidade e permissões
 
-O OneHZ **não pede a permissão `INTERNET`** na 1.0.0. Não há analytics, propaganda,
-telemetria nem conta. A configuração fica local em `SharedPreferences`; o diagnóstico
-fica apenas em memória.
+O OneHZ pede a permissão `INTERNET` **somente para a checagem opcional de atualizações**,
+que fica desligada por padrão. Não há analytics, propaganda, telemetria nem conta. A
+configuração fica local em `SharedPreferences`; o diagnóstico fica apenas em memória.
 
 | Permissão | Motivo |
 |---|---|
@@ -301,13 +306,15 @@ fica apenas em memória.
 | `FOREGROUND_SERVICE` / `FOREGROUND_SERVICE_SPECIAL_USE` | Manter o serviço opcional do motor vivo. |
 | `POST_NOTIFICATIONS` | Mostrar a notificação persistente do serviço. |
 | `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` | Isenção opcional solicitada por você. |
+| `INTERNET` | Checagem opcional de atualizações no GitHub, desligada por padrão. |
 | Permissão do Shizuku | Executar as operações privilegiadas de tela/settings. |
 
 O app **não** usa AccessibilityService, overlay, armazenamento, contatos, localização,
-câmera, microfone ou rede.
+câmera ou microfone. A rede é usada somente quando você ativa a checagem de atualizações.
 
-Uma futura checagem de atualizações vai exigir rede; ela será opt-in e documentada quando
-for implementada. Veja [PRIVACY.md](PRIVACY.md).
+A checagem consulta a API pública do GitHub apenas quando você abre o OneHZ, respeita o
+intervalo escolhido e nunca roda em segundo plano. Nenhum token, conta ou identificador é
+enviado. Veja [PRIVACY.md](PRIVACY.md).
 
 ---
 
@@ -333,7 +340,6 @@ for implementada. Veja [PRIVACY.md](PRIVACY.md).
 
 ## Backlog
 
-- checagem automática de atualizações pelo GitHub Releases (opt-in, sem telemetria);
 - suporte a PiP na detecção de vídeo;
 - mais aparelhos/marcas Samsung (improvável: não tenho outros aparelhos para testar);
 - remover a dependência de LTPO (improvável: exigiria outro caminho de controle).

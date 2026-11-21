@@ -41,6 +41,17 @@ Out of scope:
 - devices modified with root or custom ROMs;
 - builds downloaded from unofficial sources.
 
+## Network access
+
+The only outbound request is the opt-in update check:
+
+- `https://api.github.com/repos/neveSZ/onehz/releases...`;
+- enabled only after explicit consent, only when the app opens, and never in the
+  background;
+- no GitHub token or account is shipped in the APK;
+- response URLs are accepted only from `https://github.com/neveSZ/onehz/releases/...`;
+- OneHZ never downloads or installs an APK automatically.
+
 ## Verifying releases
 
 Only install APKs from the official GitHub Releases page. Each release includes a

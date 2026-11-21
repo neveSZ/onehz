@@ -15,7 +15,10 @@ Unit tests cover the pure logic:
 - `MtTouchParser` MT-B edges;
 - `TouchDeviceSelector` device filtering;
 - `AodBrightnessMath`;
-- `PolicyResolver` precedence.
+- `PolicyResolver` precedence;
+- `SemanticVersion` and pre-release precedence;
+- `ReleaseSelector` channel filtering and URL validation;
+- update interval gating.
 
 CI runs unit tests and lint on every push/PR.
 
@@ -96,6 +99,24 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Diagnostics: filters, pause, clear, copy report.
 - [ ] Test first/resting/full cycle buttons.
 - [ ] About: links, donate link, third-party licenses, translation note.
+
+### Updates
+
+- [ ] With the option off, confirm no request is made (fresh install).
+- [ ] Enable it and accept the consent dialog; the first check runs immediately.
+- [ ] Confirm the status reports the installed version as up to date.
+- [ ] Change the interval; confirm the next automatic check waits for it.
+- [ ] Reopen the app before the interval; no new request is made.
+- [ ] Switch to the pre-release channel; confirm the check uses the release list and
+      clearly labels pre-releases.
+- [ ] Use “Check now”; it bypasses the interval and restarts it.
+- [ ] Publish/test a newer release; the Home banner appears with “Ver release”.
+- [ ] “Agora não” hides the banner for that version; Settings still reports it.
+- [ ] Confirm only `https://github.com/neveSZ/onehz/releases/...` opens.
+- [ ] Disable the option; no further checks are made.
+- [ ] Airplane mode; the automatic check fails silently and the manual check reports a
+      network error.
+- [ ] Confirm no background check runs with the app closed.
 
 ### Release artifacts
 

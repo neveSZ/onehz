@@ -44,8 +44,8 @@ simple and transparent.
 
 ### Does OneHZ collect data?
 
-No. Version 1.0.0 has no `INTERNET` permission, no analytics, no ads, and no telemetry.
-See [PRIVACY](../PRIVACY.md).
+No personal data is collected. The optional update checker uses the internet only after
+you enable it; there are no analytics, ads, or telemetry. See [PRIVACY](../PRIVACY.md).
 
 ### The AOD brightness is stuck after uninstalling. What do I do?
 
