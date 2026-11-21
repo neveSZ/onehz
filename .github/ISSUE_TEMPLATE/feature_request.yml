@@ -1,0 +1,43 @@
+name: Feature request
+description: Suggest a feature or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        OneHZ is a personal project. Feature requests are welcome but are not
+        commitments. Please explain the problem before the solution.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android/One UI version you can test on
+      placeholder: "Samsung SM-S936B, Android 17, One UI 9.0"
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope
+      options:
+        - label: This does not require root, accessibility service, ads, or telemetry.
+          required: true

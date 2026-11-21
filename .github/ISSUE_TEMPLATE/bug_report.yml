@@ -1,0 +1,97 @@
+name: Bug report
+description: Report a reproducible problem with OneHZ
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. OneHZ is a personal project with best-effort support.
+        Please do not paste secrets or personal data. Remove private package names,
+        account names, and tokens from logs.
+
+  - type: input
+    id: version
+    attributes:
+      label: OneHZ version
+      description: From About or the APK filename.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: device
+    attributes:
+      label: Device model
+      placeholder: "Samsung Galaxy S25+ (SM-S936B)"
+    validations:
+      required: true
+
+  - type: input
+    id: android
+    attributes:
+      label: Android / One UI / build
+      placeholder: "Android 17, One UI 9.0, S936BXXUDDZJB"
+    validations:
+      required: true
+
+  - type: input
+    id: shizuku
+    attributes:
+      label: Shizuku version
+      placeholder: "13.7.0-thedjchi"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: ltpo
+    attributes:
+      label: Does the app show LTPO compatibility as OK?
+      options:
+        - "Yes"
+        - "No"
+        - "I don't know"
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Touch ...
+        3. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics report
+      description: Settings → Diagnostics → Copy diagnostics (sanitized).
+      render: text
+
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirmation
+      options:
+        - label: I removed secrets and personal data from this report.
+          required: true
+        - label: I tested with the latest release and Shizuku running.
+          required: true
