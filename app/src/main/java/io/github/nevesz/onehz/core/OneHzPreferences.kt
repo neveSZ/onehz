@@ -2,6 +2,11 @@ package io.github.nevesz.onehz.core
 
 import android.content.Context
 import androidx.core.content.edit
+import io.github.nevesz.onehz.core.update.ReleaseInfo
+import io.github.nevesz.onehz.core.update.ReleaseSelector
+import io.github.nevesz.onehz.core.update.UpdateChannel
+import io.github.nevesz.onehz.core.update.UpdateInterval
+import io.github.nevesz.onehz.core.update.UpdateStatus
 
 /** Local configuration for OneHZ. All values are stored on-device only. */
 object OneHzPreferences {
@@ -27,6 +32,18 @@ object OneHzPreferences {
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_THEME_MODE = "theme_mode"
     private const val KEY_DIAGNOSTICS_ENABLED = "diagnostics_enabled"
+    private const val KEY_UPDATES_ENABLED = "updates_enabled"
+    private const val KEY_UPDATE_INTERVAL_MINUTES = "update_interval_minutes"
+    private const val KEY_UPDATE_CHANNEL = "update_channel"
+    private const val KEY_UPDATE_LAST_ATTEMPT = "update_last_attempt"
+    private const val KEY_UPDATE_LAST_STATUS = "update_last_status"
+    private const val KEY_UPDATE_ETAG = "update_etag"
+    private const val KEY_UPDATE_CACHED_TAG = "update_cached_tag"
+    private const val KEY_UPDATE_CACHED_URL = "update_cached_url"
+    private const val KEY_UPDATE_CACHED_NAME = "update_cached_name"
+    private const val KEY_UPDATE_CACHED_PRERELEASE = "update_cached_prerelease"
+    private const val KEY_UPDATE_CACHED_CHANNEL = "update_cached_channel"
+    private const val KEY_UPDATE_DISMISSED_VERSION = "update_dismissed_version"
     private const val APP_PREFIX = "app_"
     private const val APP_PROFILE = "_profile"
     private const val APP_IGNORE_ECO = "_ignore_eco"
@@ -208,6 +225,114 @@ object OneHzPreferences {
 
     fun setDiagnosticsEnabled(context: Context, value: Boolean) =
         prefs(context).edit { putBoolean(KEY_DIAGNOSTICS_ENABLED, value) }
+
+    // ---------------------------------------------------------------- updates
+
+    /** Off by default: no request is made before the user accepts the update check. */
+    fun updatesEnabled(context: Context) =
+        prefs(context).getBoolean(KEY_UPDATES_ENABLED, false)
+
+    fun setUpdatesEnabled(context: Context, value: Boolean) =
+        prefs(context).edit { putBoolean(KEY_UPDATES_ENABLED, value) }
+
+    fun updateInterval(context: Context): UpdateInterval =
+        UpdateInterval.fromMinutes(
+            prefs(context).getInt(KEY_UPDATE_INTERVAL_MINUTES, UpdateInterval.DEFAULT.minutes)
+        )
+
+    fun setUpdateInterval(context: Context, interval: UpdateInterval) =
+        prefs(context).edit { putInt(KEY_UPDATE_INTERVAL_MINUTES, interval.minutes) }
+
+    fun updateChannel(context: Context): UpdateChannel =
+        UpdateChannel.fromStored(prefs(context).getString(KEY_UPDATE_CHANNEL, null))
+
+    /**
+     * Changing the channel invalidates both the conditional request and the cached
+     * release, otherwise a stable-only response could be offered while pre-releases are
+     * enabled (or the other way around).
+     */
+    fun setUpdateChannel(context: Context, channel: UpdateChannel) {
+        prefs(context).edit {
+            putString(KEY_UPDATE_CHANNEL, channel.stored)
+            remove(KEY_UPDATE_ETAG)
+            remove(KEY_UPDATE_CACHED_TAG)
+            remove(KEY_UPDATE_CACHED_URL)
+            remove(KEY_UPDATE_CACHED_NAME)
+            remove(KEY_UPDATE_CACHED_PRERELEASE)
+            remove(KEY_UPDATE_CACHED_CHANNEL)
+        }
+    }
+
+    fun updateLastAttempt(context: Context): Long =
+        prefs(context).getLong(KEY_UPDATE_LAST_ATTEMPT, 0L)
+
+    fun setUpdateLastAttempt(context: Context, value: Long) =
+        prefs(context).edit { putLong(KEY_UPDATE_LAST_ATTEMPT, value) }
+
+    fun updateLastStatus(context: Context): UpdateStatus =
+        UpdateStatus.entries.firstOrNull {
+            it.name == prefs(context).getString(KEY_UPDATE_LAST_STATUS, null)
+        } ?: UpdateStatus.IDLE
+
+    fun setUpdateLastStatus(context: Context, status: UpdateStatus) =
+        prefs(context).edit { putString(KEY_UPDATE_LAST_STATUS, status.name) }
+
+    fun updateEtag(context: Context): String? =
+        prefs(context).getString(KEY_UPDATE_ETAG, null)
+
+    fun setUpdateEtag(context: Context, value: String?) {
+        prefs(context).edit {
+            if (value.isNullOrBlank()) remove(KEY_UPDATE_ETAG) else putString(KEY_UPDATE_ETAG, value)
+        }
+    }
+
+    fun updateCachedRelease(context: Context): ReleaseInfo? {
+        val p = prefs(context)
+        if (p.getString(KEY_UPDATE_CACHED_CHANNEL, null) != updateChannel(context).stored) {
+            return null
+        }
+        val tag = p.getString(KEY_UPDATE_CACHED_TAG, null) ?: return null
+        val url = p.getString(KEY_UPDATE_CACHED_URL, null) ?: return null
+        if (!ReleaseSelector.isAllowedReleaseUrl(url)) return null
+        return ReleaseInfo(
+            tag = tag,
+            url = url,
+            name = p.getString(KEY_UPDATE_CACHED_NAME, null),
+            prereleaseFlag = p.getBoolean(KEY_UPDATE_CACHED_PRERELEASE, false)
+        )
+    }
+
+    fun setUpdateCachedRelease(context: Context, release: ReleaseInfo) {
+        val channel = updateChannel(context).stored
+        prefs(context).edit {
+            putString(KEY_UPDATE_CACHED_TAG, release.tag)
+            putString(KEY_UPDATE_CACHED_URL, release.url)
+            if (release.name != null) putString(KEY_UPDATE_CACHED_NAME, release.name)
+            else remove(KEY_UPDATE_CACHED_NAME)
+            putBoolean(KEY_UPDATE_CACHED_PRERELEASE, release.isPrerelease)
+            putString(KEY_UPDATE_CACHED_CHANNEL, channel)
+        }
+    }
+
+    fun clearUpdateCache(context: Context) {
+        prefs(context).edit {
+            remove(KEY_UPDATE_CACHED_TAG)
+            remove(KEY_UPDATE_CACHED_URL)
+            remove(KEY_UPDATE_CACHED_NAME)
+            remove(KEY_UPDATE_CACHED_PRERELEASE)
+            remove(KEY_UPDATE_CACHED_CHANNEL)
+        }
+    }
+
+    fun updateDismissedVersion(context: Context): String? =
+        prefs(context).getString(KEY_UPDATE_DISMISSED_VERSION, null)
+
+    fun setUpdateDismissedVersion(context: Context, tag: String?) {
+        prefs(context).edit {
+            if (tag.isNullOrBlank()) remove(KEY_UPDATE_DISMISSED_VERSION)
+            else putString(KEY_UPDATE_DISMISSED_VERSION, tag)
+        }
+    }
 
     // ------------------------------------------------------------ per-app profile
 
