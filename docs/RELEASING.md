@@ -9,19 +9,54 @@ versionName=1.0.0
 versionCode=10000
 ```
 
-Use Semantic Versioning and monotonically increasing `versionCode` values:
+Use Semantic Versioning and monotonically increasing `versionCode` values.
+
+From **1.0.1 onward**, the release workflow expects:
+
+```text
+base  = major*1,000,000 + minor*10,000 + patch*100
+beta  = base + 1..99
+final = base + 100
+```
+
+Examples:
 
 | Version | versionCode |
 |---|---|
-| 1.0.0 | 10000 |
-| 1.0.1 | 10001 |
-| 1.1.0 | 10100 |
-| 1.1.0-beta.1 | 10091 |
-| 1.1.0-beta.2 | 10092 |
+| 1.0.0 (already published) | 10000 |
+| 1.0.1-beta.1 | 1,000,101 |
+| 1.0.1-beta.2 | 1,000,102 |
+| 1.0.1 | 1,000,200 |
+| 1.1.0-beta.1 | 1,010,001 |
+| 1.1.0-beta.2 | 1,010,002 |
+| 1.1.0 | 1,010,100 |
 
-A beta must use a `versionCode` lower than the upcoming stable so beta users can upgrade
-to the final release. Tag format: `v1.0.0`, `v1.1.0-beta.1`. Tags containing `-` are
-published as pre-releases.
+`1.0.0` is the historical exception (published as `10000`). The jump to
+`1,000,200` is valid because Android only requires the new `versionCode` to be higher
+than the installed one.
+
+A beta must use a `versionCode` higher than the current stable (so testers can install it
+over the stable APK) and lower than the upcoming stable (so beta users can move to the
+final release). Tag format: `v1.0.0`, `v1.0.1-beta.1`, `v1.1.0-beta.2`. Tags containing
+`-` are published as **pre-releases**; stable tags become the “Latest” release.
+
+### Beta flow
+
+1. Bump `version.properties` to the beta version and code.
+2. Commit on `main`.
+3. Create and push the beta tag:
+   ```powershell
+   git tag -a v1.0.1-beta.1 -m "OneHZ 1.0.1-beta.1"
+   git push origin main --tags
+   ```
+4. Testers install the pre-release APK manually.
+5. When validated, bump `version.properties` to the stable version/code, commit, and tag
+   `v1.0.1`.
+6. Stable users never receive beta automatically. Beta users upgrade to stable because the
+   stable `versionCode` is higher.
+
+The same package (`io.github.nevesz.onehz`) and signing key are used for both channels.
+Beta and stable cannot be installed side by side.
 
 ## Keystore
 
