@@ -4,7 +4,7 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.0.1] - 2026-11-21
 
 ### Added
 
@@ -13,14 +13,18 @@ All notable changes to OneHZ are documented here. The format follows
   interval (24 hours, 3 days, 7 days, or 30 days).
 - Update channel setting: stable only, or stable plus pre-releases.
 - Dismissible Home banner and a Settings status card with a manual "Check now" action.
-- SemVer comparison with pre-release precedence, ETag caching, and release-link
+- SemVer comparison with pre-release support, ETag caching, and release-link
   validation.
 - Manual GitHub Releases links in Settings and About.
+- GitHub Sponsors and LivePix support links, with clear regional labels in the app and
+  README.
+- Standardized the About → Credits section with consistent titles and subtitles.
 
 ### Changed
 
 - Added the `INTERNET` permission, used only by the opt-in update checker.
 - Updated privacy documentation and README permissions.
+- Version 1.0.1 (`versionCode 1000200`).
 
 ## [1.0.0] - 2026-11-21
 
@@ -73,4 +77,5 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.0.1]: https://github.com/neveSZ/onehz/releases/tag/v1.0.1
 [1.0.0]: https://github.com/neveSZ/onehz/releases/tag/v1.0.0
