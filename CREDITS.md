@@ -76,6 +76,17 @@ app em **Sobre → Licenças de terceiros**.
 - Project: <https://github.com/junit-team/junit4>
 - Not distributed in the app / não é distribuído no app.
 
+### Obtainium badge
+
+- Copyright © ImranR98 and Obtainium contributors
+- License: GPL-3.0
+- Project: <https://github.com/ImranR98/Obtainium>
+- Used only in the README/download page to link to the Obtainium app. It is not
+  distributed in the APK.
+
+O badge do Obtainium é usado apenas no README/página de download para linkar ao app
+Obtainium. Ele não é distribuído no APK.
+
 ## No closed-source code / Sem código closed-source
 
 No source code, assets, icons, or resources from closed-source applications are included

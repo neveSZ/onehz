@@ -1,0 +1,7 @@
+Versão 1.0.1
+* Verificação opcional de atualizações no GitHub, desligada por padrão
+* Verifica apenas ao abrir o app, no máximo uma vez por intervalo
+* Canal somente estável ou estável + pré-releases
+* Banner dispensável na tela inicial e ação "Verificar agora"
+* Links de apoio GitHub Sponsors e LivePix
+* Seção "Sobre > Créditos" padronizada

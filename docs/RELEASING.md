@@ -115,6 +115,10 @@ Paste the clipboard into the GitHub secret. Do not paste it into issues, chat, o
 
 - [ ] `version.properties` updated.
 - [ ] `CHANGELOG.md` updated.
+- [ ] `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` updated.
+- [ ] `fastlane/metadata/android/pt-BR/changelogs/<versionCode>.txt` updated.
+- [ ] Screenshots updated if the UI changed.
+- [ ] `python3 scripts/validate-fastlane.py` passes.
 - [ ] `docs/releases/<version>.md` created (optional release notes).
 - [ ] README known limitations/device table updated if needed.
 - [ ] Tests and lint pass locally.
@@ -144,6 +148,15 @@ Paste the clipboard into the GitHub secret. Do not paste it into issues, chat, o
 5. Download the published APK, verify the SHA-256 and signature, and install it.
 6. Keep `mapping.txt` from the workflow artifact for crash deobfuscation (not attached
    publicly).
+
+> The release tag must include the `fastlane/` directory. F-Droid-compatible stores read
+> the description, icon, screenshots, and changelog from the tagged commit.
+
+## Obtainium
+
+Obtainium tracks the GitHub Releases API directly. Once a release is published, users can
+pick it up from Obtainium; no extra workflow step is needed. The optional in-app update
+checker and Obtainium are independent, and both point to GitHub Releases.
 
 ## Verifying the release
 

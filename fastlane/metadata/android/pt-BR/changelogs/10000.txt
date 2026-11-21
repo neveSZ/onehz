@@ -1,0 +1,7 @@
+Primeira versão estável pública.
+* Escada de taxa de atualização com 1 a 5 níveis
+* Perfis Normal, ECO e AOD
+* Brilho do AOD com faixa de segurança e restauração
+* Perfis por aplicativo e modo vídeo
+* Configuração guiada do Shizuku
+* Diagnóstico, temas e interface em PT-BR/EN/ES

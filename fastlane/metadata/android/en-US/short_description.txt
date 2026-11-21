@@ -1,0 +1,1 @@
+Refresh-rate control for Samsung LTPO screens via Shizuku

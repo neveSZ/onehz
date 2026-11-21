@@ -1,0 +1,34 @@
+O OneHZ mantém a taxa de atualização das telas LTPO da Samsung sob controle: mais fluida quando você toca na tela, mais tranquila no repouso e mais econômica com a tela desligada.
+
+Ele altera a taxa de atualização exclusivamente pelo Shizuku. Não exige root, não usa ADB direto pelo app, não usa WRITE_SECURE_SETTINGS e não usa AccessibilityService.
+
+Recursos
+* Escada de taxa de atualização com 1 a 5 níveis por perfil.
+* Perfis Normal, ECO (economia de bateria) e AOD independentes.
+* Perfis por aplicativo e modo vídeo.
+* Controle opcional de brilho do AOD com faixa de segurança e ação de restauração.
+* Configuração guiada para compatibilidade LTPO, Shizuku, otimização de bateria, Doze e notificações.
+* Diagnóstico, temas claro/escuro/AMOLED e interface em português (Brasil), inglês e espanhol.
+
+Requisitos
+* Um celular Samsung com painel LTPO.
+* Android 12 (API 31) ou mais recente.
+* Shizuku instalado e em execução.
+
+O Shizuku é um app separado e não vem incluído no OneHZ. Sem o Shizuku, o OneHZ não consegue controlar a tela. O OneHZ foi testado no Samsung Galaxy S25+ (SM-S936B) com Android 17 / One UI 9.0; outros modelos Samsung com LTPO e outras versões do Android podem funcionar, mas não foram testados.
+
+Privacidade
+* Sem anúncios, analytics, telemetria ou contas.
+* Perfis e ajustes ficam no aparelho.
+* A verificação opcional de atualizações vem desligada. Quando ativada, ela só consulta a API pública de releases do GitHub quando o app é aberto. Ela nunca baixa nem instala um APK e nunca roda em segundo plano.
+
+Permissões
+* QUERY_ALL_PACKAGES: listar os apps instalados para criar perfis por aplicativo.
+* RECEIVE_BOOT_COMPLETED: reaplicar o perfil depois de reiniciar.
+* FOREGROUND_SERVICE / FOREGROUND_SERVICE_SPECIAL_USE: manter o serviço opcional do motor ativo.
+* POST_NOTIFICATIONS: mostrar a notificação do serviço em primeiro plano.
+* REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: opcional, para o sistema não encerrar o motor.
+* INTERNET: apenas para a verificação opcional de atualizações no GitHub.
+* Permissão do Shizuku: executar as operações privilegiadas de tela e ajustes.
+
+O OneHZ é software livre sob a licença MIT. Código-fonte e releases: https://github.com/neveSZ/onehz

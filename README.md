@@ -9,6 +9,8 @@
 [![GitHub Sponsors](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/neveSZ)
 [![LivePix (Brazil)](https://img.shields.io/badge/support-LivePix%20Brazil-ff69b4.svg)](https://livepix.gg/onehz)
 
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Get it on Obtainium" height="48"></a>
+
 OneHZ is a refresh-rate controller for **Samsung LTPO displays**. It changes the
 display refresh rate through **Shizuku only** — no root, no direct ADB from the app,
 no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
@@ -51,6 +53,7 @@ guarantee it.
 - **Android 12 (API 31) or newer** (`minSdk 31`; only Android 17 was tested).
 - **Shizuku installed and running.**
 - OneHZ is distributed as a signed APK on GitHub Releases. It is not on Google Play.
+- [Obtainium](https://obtainium.imranr.dev/) is supported for automatic updates.
 
 ### Shizuku recommendation
 
@@ -269,6 +272,19 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for details.
 > If you are coming from a debug build signed with a different key, uninstall it first:
 > `adb uninstall io.github.nevesz.onehz`.
 
+### Automatic updates with Obtainium
+
+[Obtainium](https://obtainium.imranr.dev/) can track OneHZ releases and notify you when a
+new version is available:
+
+1. Install Obtainium.
+2. Add `https://github.com/neveSZ/onehz` as an app source, or use the badge at the top.
+3. Let Obtainium check for updates and install new releases.
+
+GitHub Releases and Obtainium use the same signed APK and signing key. The optional
+in-app update checker is separate: it only opens the GitHub release page when you enable
+it. Obtainium is the recommended way to receive automatic updates.
+
 ## Update
 
 Install the new APK over the old one. Updates require the same signing key. Your
@@ -278,6 +294,9 @@ OneHZ can optionally check GitHub for a newer release when you open the app. The
 is **off by default**: enable it in **Settings → Updates**, accept the explanation, and
 choose the interval (24 hours, 3 days, 7 days, or 30 days) and the channel (stable only
 or stable plus pre-releases). It never runs in the background.
+
+For automatic updates, use [Obtainium](#automatic-updates-with-obtainium). The in-app
+checker only notifies you about a release; it never downloads or installs an APK.
 
 ## Uninstall
 

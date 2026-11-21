@@ -1,0 +1,7 @@
+First public stable release.
+* Refresh-rate staircase with 1-5 tiers
+* Normal, ECO and AOD profiles
+* AOD brightness with safety band and restore
+* Per-app profiles and video mode
+* Guided Shizuku setup
+* Diagnostics, themes and EN/PT-BR/ES UI

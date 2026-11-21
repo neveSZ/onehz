@@ -1,0 +1,34 @@
+OneHZ keeps the refresh rate of Samsung LTPO displays under control: smoother when you touch the screen, quieter when you rest, and lighter when the screen is off.
+
+It changes the display refresh rate through Shizuku only. There is no root requirement, no direct ADB from the app, no WRITE_SECURE_SETTINGS, and no AccessibilityService.
+
+Features
+* Refresh-rate staircase with 1 to 5 tiers per profile.
+* Independent Normal, ECO (battery saver), and AOD profiles.
+* Per-app profiles and a video mode.
+* Optional AOD brightness control with a safety band and a restore action.
+* Guided setup for LTPO compatibility, Shizuku, battery optimization, Doze, and notifications.
+* Diagnostics, light/dark/AMOLED themes, and English, Portuguese (Brazil), and Spanish UI.
+
+Requirements
+* A Samsung phone with an LTPO panel.
+* Android 12 (API 31) or newer.
+* Shizuku installed and running.
+
+Shizuku is a separate app and is not bundled with OneHZ. Without Shizuku, OneHZ cannot control the display. OneHZ is tested on the Samsung Galaxy S25+ (SM-S936B) with Android 17 / One UI 9.0; other Samsung LTPO models and Android versions may work but are not tested.
+
+Privacy
+* No ads, analytics, telemetry, or accounts.
+* Profiles and settings stay on the device.
+* An optional update check is off by default. When enabled, it only reads the public GitHub Releases API when the app opens. It never downloads or installs an APK and never runs in the background.
+
+Permissions
+* QUERY_ALL_PACKAGES: list installed apps so you can create per-app profiles.
+* RECEIVE_BOOT_COMPLETED: reapply the profile after a reboot.
+* FOREGROUND_SERVICE / FOREGROUND_SERVICE_SPECIAL_USE: keep the optional engine service alive.
+* POST_NOTIFICATIONS: show the foreground-service notification.
+* REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: optional, so the system does not kill the engine.
+* INTERNET: only for the optional GitHub update check.
+* Shizuku permission: perform the privileged display and settings operations.
+
+OneHZ is free software under the MIT license. Source code and releases: https://github.com/neveSZ/onehz

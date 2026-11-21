@@ -9,6 +9,8 @@
 [![GitHub Sponsors](https://img.shields.io/badge/patrocine-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/neveSZ)
 [![LivePix (Brasil)](https://img.shields.io/badge/apoio-LivePix%20Brasil-ff69b4.svg)](https://livepix.gg/onehz)
 
+<a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Obter no Obtainium" height="48"></a>
+
 O OneHZ é um controlador de taxa de atualização para **telas LTPO da Samsung**. Ele
 altera a taxa de atualização **exclusivamente pelo Shizuku** — sem root, sem ADB direto
 pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
@@ -52,6 +54,7 @@ garantir.
 - **Android 12 (API 31) ou superior** (`minSdk 31`; somente Android 17 foi testado).
 - **Shizuku instalado e em execução.**
 - O OneHZ é distribuído como APK assinado no GitHub Releases. Não está no Google Play.
+- O [Obtainium](https://obtainium.imranr.dev/) é suportado para atualizações automáticas.
 
 ### Recomendação de Shizuku
 
@@ -275,6 +278,19 @@ Veja [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para detalhes.
 > Se você vem de uma versão debug assinada com outra chave, desinstale primeiro:
 > `adb uninstall io.github.nevesz.onehz`.
 
+### Atualizações automáticas com o Obtainium
+
+O [Obtainium](https://obtainium.imranr.dev/) pode acompanhar os releases do OneHZ e avisar
+quando houver uma versão nova:
+
+1. Instale o Obtainium.
+2. Adicione `https://github.com/neveSZ/onehz` como fonte, ou use o badge no topo.
+3. Deixe o Obtainium verificar e instalar as novas versões.
+
+O GitHub Releases e o Obtainium usam o mesmo APK assinado e a mesma chave. A checagem
+opcional dentro do app é separada: ela só abre a página do release no GitHub quando você
+ativa. O Obtainium é a forma recomendada de receber atualizações automáticas.
+
 ## Atualização
 
 Instale o novo APK por cima do antigo. Atualizações exigem a mesma chave de assinatura.
@@ -284,6 +300,9 @@ O OneHZ pode checar opcionalmente se há uma versão nova no GitHub quando você
 app. A checagem fica **desligada por padrão**: ative em **Ajustes → Atualizações**, aceite
 a explicação e escolha o intervalo (24 horas, 3 dias, 7 dias ou 30 dias) e o canal
 (somente estáveis ou estáveis + pré-releases). Ela nunca roda em segundo plano.
+
+Para atualizações automáticas, use o Obtainium (veja a seção de instalação acima). A
+checagem interna apenas avisa sobre um release; ela nunca baixa nem instala um APK.
 
 ## Desinstalação
 
