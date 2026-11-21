@@ -172,16 +172,17 @@
     <string name="about_repo_subtitle">github.com/neveSZ/onehz</string>
     <string name="about_dev_subtitle">github.com/neveSZ</string>
     <string name="about_license">OneHZ license (%1$s)</string>
-    <string name="credits_inspired">Acknowledgements</string>
-    <string name="credits_adaptive">Adaptive Hz (MIT) — derived portions</string>
-    <string name="credits_adaptive_subtitle">Copyright © 2025 Mahmut Alperen Ünal</string>
-    <string name="credits_shizuku">Shizuku - @RikkaApps</string>
-    <string name="credits_shizuku_fork">Shizuku fork - @thedjchi</string>
-    <string name="credits_shizuku_fork_subtitle">v13.7.0-thedjchi</string>
-    <string name="credits_androidx">AndroidX, Compose, Kotlin — Apache 2.0</string>
+    <string name="credits_inspired">Credits</string>
+    <string name="credits_adaptive">Adaptive Hz (MIT)</string>
+    <string name="credits_adaptive_subtitle">Derived portions · © 2025 Mahmut Alperen Ünal</string>
+    <string name="credits_shizuku">Shizuku</string>
+    <string name="credits_shizuku_subtitle">Privileged API · @RikkaApps</string>
+    <string name="credits_shizuku_fork">Shizuku fork</string>
+    <string name="credits_shizuku_fork_subtitle">v13.7.0-thedjchi · @thedjchi</string>
+    <string name="credits_androidx">AndroidX, Compose, Kotlin</string>
     <string name="credits_androidx_subtitle">Apache License 2.0</string>
     <string name="credits_license_value">MIT</string>
-    <string name="about_thanks_body">Projects OneHZ derives from or uses.</string>
+    <string name="about_thanks_body">Projects and libraries OneHZ uses or derives from.</string>
     <string name="about_third_party">Third-party licenses</string>
     <string name="about_made_by_handle">OneHZ by @neveSZ</string>
 
@@ -315,9 +316,12 @@
     <string name="about_releases_subtitle">github.com/neveSZ/onehz/releases</string>
     <!-- Project and support -->
     <string name="about_support_title">Support OneHZ</string>
-    <string name="about_support_link">Open LivePix</string>
-    <string name="about_support_subtitle">livepix.gg/onehz</string>
-    <string name="about_support_note">All features are free and open source. Donations support the developer and never unlock features.</string>
+    <string name="about_support_body">OneHZ is free and open source. If it helps you, you can support development:</string>
+    <string name="about_support_github_title">GitHub Sponsors</string>
+    <string name="about_support_github_subtitle">International · monthly or one-time</string>
+    <string name="about_support_livepix_title">LivePix (Brazil)</string>
+    <string name="about_support_livepix_subtitle">Brazil · Pix (BRL)</string>
+    <string name="about_support_note">Both options are optional and never unlock features.</string>
     <string name="about_project_status">Personal project, provided as-is. There is no maintenance guarantee, but bug reports and suggestions are welcome.</string>
     <string name="about_translation_note">Português was reviewed by the author. English and Español are AI-generated and were not reviewed by native speakers.</string>
     <string name="about_llm_note">Developed with LLM assistance through the OpenCode harness, then reviewed and tested by the author on a single device.</string>
