@@ -1,7 +1,7 @@
 package io.github.nevesz.onehz
 
 import android.app.Application
-import io.github.nevesz.onehz.core.LtpoGate
+import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
@@ -15,19 +15,19 @@ class OneHzApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        val gate = LtpoGate.evaluate(this)
-        Diagnostics.ltpoState.value = gate.summary
-        Diagnostics.ltpoEligible.value = gate.eligible
+        val gate = DisplayGate.evaluate(this)
+        Diagnostics.displayState.value = gate.summary
+        Diagnostics.displayEligible.value = gate.eligible
         Diagnostics.setPaused(OneHzPreferences.logsPaused(this))
-        Diagnostics.log("LTPO", gate.summary)
+        Diagnostics.log("display", gate.summary)
         UpdateCenter.init(this)
 
         ShizukuGateway.init(
             context = this,
             onReady = {
-                val fresh = LtpoGate.evaluate(this)
-                Diagnostics.ltpoState.value = fresh.summary
-                Diagnostics.ltpoEligible.value = fresh.eligible
+                val fresh = DisplayGate.evaluate(this)
+                Diagnostics.displayState.value = fresh.summary
+                Diagnostics.displayEligible.value = fresh.eligible
                 if (fresh.eligible) {
                     SessionArbiter.invalidate()
                     SessionArbiter.restorePending(this)

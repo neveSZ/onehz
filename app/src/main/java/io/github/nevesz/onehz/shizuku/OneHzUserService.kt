@@ -424,6 +424,30 @@ class OneHzUserService : IOneHzService.Stub() {
         return exec("/system/bin/settings", "delete", "system", key).success
     }
 
+    /**
+     * HyperOS exposes its user-facing rate limit in Settings.Secure. The values are integers;
+     * the two keys below are the only ones accepted, so this cannot become a generic secure
+     * settings writer.
+     */
+    override fun readSecureSetting(key: String?): String {
+        if (key == null || key !in SECURE_RATE_KEYS) return ""
+        val raw = exec("/system/bin/settings", "get", "secure", key).output.trim()
+        return if (raw == "null") "" else raw
+    }
+
+    override fun writeSecureSetting(key: String?, value: String?): Boolean {
+        if (key == null || key !in SECURE_RATE_KEYS || value == null) return false
+        val safe = value.toIntOrNull()?.takeIf { it in 1..240 }?.toString() ?: return false
+        val result = exec("/system/bin/settings", "put", "secure", key, safe)
+        if (!result.success) return false
+        return exec("/system/bin/settings", "get", "secure", key).output.trim() == safe
+    }
+
+    override fun deleteSecureSetting(key: String?): Boolean {
+        if (key == null || key !in SECURE_RATE_KEYS) return false
+        return exec("/system/bin/settings", "delete", "secure", key).success
+    }
+
     override fun writeGlobalString(key: String?, value: String?): Boolean {
         if (key == null || value == null || key !in GLOBAL_KEYS) return false
         val result = exec("/system/bin/settings", "put", "global", key, value)
@@ -563,7 +587,8 @@ class OneHzUserService : IOneHzService.Stub() {
         val DEVICE_PATH = Regex("/dev/input/event[0-9]+")
         val PACKAGE_NAME = Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")
         val SECURE_KEYS = setOf("refresh_rate_mode", "refresh_rate_mode_cover")
-        val RATE_KEYS = setOf("min_refresh_rate", "peak_refresh_rate", "user_refresh_rate")
+        val RATE_KEYS = setOf("min_refresh_rate", "peak_refresh_rate")
+        val SECURE_RATE_KEYS = setOf("miui_refresh_rate", "user_refresh_rate")
         val GLOBAL_KEYS = setOf(
             "pms_settings_refresh_rate_enabled",
             "pms_settings_refresh_rate_cover_enabled",

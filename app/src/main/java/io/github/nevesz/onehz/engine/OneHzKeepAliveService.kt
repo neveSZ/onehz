@@ -15,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.ui.MainActivity
 
@@ -29,8 +30,13 @@ class OneHzKeepAliveService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        val eligible = DisplayGate.evaluate(this).eligible
         createChannel()
         startInForeground()
+        if (!eligible) {
+            stopSelf()
+            return
+        }
 
         val filter = IntentFilter().apply {
             addAction(Intent.ACTION_SCREEN_OFF)

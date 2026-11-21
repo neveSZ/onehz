@@ -64,7 +64,7 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import io.github.nevesz.onehz.R
-import io.github.nevesz.onehz.core.LtpoGate
+import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
@@ -83,7 +83,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val shizuku by ShizukuGateway.state.collectAsState()
-    val gate = remember { LtpoGate.evaluate(context) }
+    val gate = remember { DisplayGate.evaluate(context) }
 
     var refresh by remember { mutableIntStateOf(0) }
     var dozeWhitelisted by remember { mutableStateOf(false) }

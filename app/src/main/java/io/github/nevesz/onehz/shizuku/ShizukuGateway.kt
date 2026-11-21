@@ -224,6 +224,15 @@ object ShizukuGateway {
     fun deleteSystemRate(key: String): Boolean =
         runCatching { service?.deleteRefreshRateSetting(key) == true }.getOrDefault(false)
 
+    fun readSecureSetting(key: String): String? =
+        runCatching { service?.readSecureSetting(key) }.getOrNull()?.takeIf { it.isNotBlank() }
+
+    fun writeSecureSetting(key: String, value: String): Boolean =
+        runCatching { service?.writeSecureSetting(key, value) == true }.getOrDefault(false)
+
+    fun deleteSecureSetting(key: String): Boolean =
+        runCatching { service?.deleteSecureSetting(key) == true }.getOrDefault(false)
+
     fun writeMode(key: String, mode: Int): Boolean =
         runCatching { service?.writeSecureMode(key, mode) == true }.getOrDefault(false)
 

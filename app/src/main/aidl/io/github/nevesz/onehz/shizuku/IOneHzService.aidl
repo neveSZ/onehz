@@ -17,6 +17,9 @@ interface IOneHzService {
     String readRefreshRateSetting(String key);
     boolean writeRefreshRateSetting(String key, String value);
     boolean deleteRefreshRateSetting(String key);
+    String readSecureSetting(String key);
+    boolean writeSecureSetting(String key, String value);
+    boolean deleteSecureSetting(String key);
     boolean writeGlobalString(String key, String value);
     String readGlobalString(String key);
     String verifySettings();

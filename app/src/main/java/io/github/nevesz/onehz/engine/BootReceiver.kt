@@ -3,6 +3,7 @@ package io.github.nevesz.onehz.engine
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 
@@ -12,6 +13,7 @@ class BootReceiver : BroadcastReceiver() {
             intent.action != Intent.ACTION_MY_PACKAGE_REPLACED
         ) return
         if (!OneHzPreferences.isEnabled(context)) return
+        if (!DisplayGate.evaluate(context).eligible) return
 
         ShizukuGateway.init(
             context = context,

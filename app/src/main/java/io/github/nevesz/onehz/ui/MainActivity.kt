@@ -55,7 +55,7 @@ import androidx.core.graphics.drawable.toDrawable
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.LanguageManager
 import io.github.nevesz.onehz.core.OneHzPreferences
-import io.github.nevesz.onehz.core.SamsungDisplayRates
+import io.github.nevesz.onehz.core.DisplayRates
 import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.update.UpdateCenter
@@ -186,7 +186,7 @@ private fun OneHzShell(
     var diagnosticsEnabled by remember { mutableStateOf(OneHzPreferences.diagnosticsEnabled(context)) }
     val editor = editorTarget(editorKey)
     var dataVersion by remember { mutableIntStateOf(0) }
-    val rates = remember { SamsungDisplayRates.main(context).ifEmpty { listOf(60, 96, 120) } }
+    val rates = remember { DisplayRates.main(context).ifEmpty { listOf(60, 90, 120) } }
     val diagnosticsUnlockedMessage = stringResource(R.string.diagnostics_unlocked)
 
     BackHandler(enabled = showSetup && setupDone) { showSetup = false }
