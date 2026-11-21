@@ -11,9 +11,9 @@
 
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Get it on Obtainium" height="48"></a>
 
-OneHZ is a refresh-rate controller for **Samsung LTPO displays**. It changes the
-display refresh rate through **Shizuku only** — no root, no direct ADB from the app,
-no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
+OneHZ is a refresh-rate controller for **Samsung and Xiaomi/Redmi/POCO displays**.
+It changes the display refresh rate through **Shizuku only** — no root, no direct ADB
+from the app, no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 
 > **Personal project.** I built OneHZ for my own daily use. I do not provide a
 > maintenance guarantee, but I am open to bug reports and suggestions. Use it at your
@@ -24,9 +24,10 @@ no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 ## Project status
 
 - Latest stable release: **1.0.1**.
-- Tested on **one device only**: Samsung Galaxy S25+ (`SM-S936B`).
-- Runs **only on Samsung phones with an LTPO panel**. The app checks this and fails
-  closed (no changes) when the device is not eligible.
+- Tested on a Samsung Galaxy S25+ (`SM-S936B`) and a POCO `2412DPC0AG` (`rodin`).
+- Runs only on **Samsung or Xiaomi/Redmi/POCO** devices whose display exposes **at
+  least two refresh rates**. Other brands are blocked and the app fails closed (no
+  changes). LTPO is **not** required.
 - Future beta builds will be published as pre-releases.
 
 ## Tested device and software
@@ -49,8 +50,10 @@ guarantee it.
 
 ## Requirements
 
-- Samsung phone with an **LTPO panel**.
-- **Android 12 (API 31) or newer** (`minSdk 31`; only Android 17 was tested).
+- Samsung phone **or** Xiaomi/Redmi/POCO phone (HyperOS/MIUI).
+- A display that exposes **at least two refresh rates** (for example 120/90/60/30).
+  LTPO is not required.
+- **Android 12 (API 31) or newer** (`minSdk 31`; Android 16 and 17 were tested).
 - **Shizuku installed and running.**
 - OneHZ is distributed as a signed APK on GitHub Releases. It is not on Google Play.
 - [Obtainium](https://obtainium.imranr.dev/) is supported for automatic updates.
@@ -97,6 +100,9 @@ except the last one, a hold time.
 When disabled, OneHZ stops controlling the rate in that situation and restores the
 system adaptive behavior.
 
+The default normal profile is **device maximum → 60 Hz → device minimum**, holding each
+level for **2 s and 5 s**.
+
 ### 3. ECO profile (battery saver)
 
 **What it does:** the profile used while the system battery saver is active.
@@ -104,8 +110,8 @@ system adaptive behavior.
 **How it works:**
 
 - the app listens to the system battery-saver broadcast and reapplies the policy;
-- the default ECO profile caps the top tier at 90 Hz (or the nearest supported rate
-  below it) and then uses the device minimum;
+- the default ECO profile starts at 60 Hz (or the nearest supported rate below it),
+  holds it for 2 s and then uses the device minimum;
 - an app can opt out with **“Ignore ECO”**, keeping its own/normal profile while battery
   saver is on;
 - while ECO is active, OneHZ disables Samsung's own battery-saver refresh-rate caps and
@@ -339,15 +345,19 @@ sent. See [PRIVACY.md](PRIVACY.md).
 
 ## Known limitations
 
-- **Samsung only.** Other manufacturers are rejected by the compatibility gate.
-- **LTPO only.** The gate requires a Samsung LTPO panel with a minimum rate ≤ 30 Hz.
-- **One device tested.** Only the S25+ `SM-S936B` on Android 17 / One UI 9.0.
+- **Samsung, Xiaomi, Redmi and POCO only.** Other manufacturers are rejected by the
+  compatibility gate.
+- **Multi-rate display required.** The gate requires at least two refresh rates; LTPO
+  is not required.
+- **Two devices tested.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) and POCO
+  `2412DPC0AG` (Android 16 / HyperOS 3.0).
 - Other Android/One UI versions and WQHD+ are untested.
 - Shizuku must be running. After a reboot, it may need to be restarted through wireless
   debugging/ADB.
-- Display detection depends on Samsung firmware settings and `dumpsys` output; a future
-  firmware update may change them.
-- AOD brightness uses a hidden Samsung key and may be ignored/reset by an update.
+- Display detection depends on firmware settings and `dumpsys` output; a future
+  firmware update may change them. HyperOS uses `miui_refresh_rate` (or
+  `user_refresh_rate` on HyperOS 1).
+- AOD brightness is **Samsung-only** (`debug_aod_brightness`); it is hidden on Xiaomi.
 - Video detection depends on MediaSession, Codec2, and AudioService behavior; the rules
   and a forced app list can be tuned in the app, but the underlying signals must exist.
 - PiP video is not detected yet.
@@ -360,8 +370,9 @@ sent. See [PRIVACY.md](PRIVACY.md).
 ## Backlog
 
 - PiP support in video detection;
-- more Samsung devices/brands (unlikely: I have no other test devices);
-- removing the LTPO dependency (unlikely: it would need a different control path).
+- more Samsung/Xiaomi models (needs real-device testing);
+- AOD brightness on Xiaomi (no Settings route was found; it would require a
+  different privileged path).
 
 Donations are optional. Supporters outside Brazil can use
 [GitHub Sponsors](https://github.com/sponsors/neveSZ); supporters in Brazil can use

@@ -1,6 +1,9 @@
 package io.github.nevesz.onehz.ui.home
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.PowerManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -58,12 +61,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.AodBrightnessMath
 import io.github.nevesz.onehz.core.FrequencyProfile
-import io.github.nevesz.onehz.core.LtpoGate
+import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
@@ -140,7 +144,7 @@ fun HomeScreen(
 ) {
     val shizuku by ShizukuGateway.state.collectAsState()
     val update by UpdateCenter.state.collectAsState()
-    val gate = remember { LtpoGate.evaluate(context) }
+    val gate = remember { DisplayGate.evaluate(context) }
     val activeKey by Diagnostics.activeTierKey.collectAsState()
     val activeStep by Diagnostics.activeStep.collectAsState()
     val activeStepCount by Diagnostics.activeStepCount.collectAsState()
@@ -159,6 +163,23 @@ fun HomeScreen(
     }
     var state by remember(refresh, dataVersion) { mutableStateOf(loadState(context, rates)) }
     var showVideoConfig by rememberSaveable { mutableStateOf(false) }
+
+    // Battery saver can change while the app stays open (quick settings, automation).
+    // Refresh the banner state immediately instead of waiting for the next resume.
+    DisposableEffect(context) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(receiverContext: Context?, intent: Intent?) {
+                refresh++
+            }
+        }
+        ContextCompat.registerReceiver(
+            context,
+            receiver,
+            IntentFilter(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+        onDispose { runCatching { context.unregisterReceiver(receiver) } }
+    }
 
     val activeProfile = when {
         state.ecoActive && state.ecoEnabled -> state.eco
@@ -419,6 +440,7 @@ fun HomeScreen(
                 context = context,
                 state = state,
                 rates = rates,
+                showAodBrightness = gate.profile.supportsAodBrightness,
                 onStateChange = { state = it }
             )
         }
@@ -502,6 +524,7 @@ private fun AodCard(
     context: Context,
     state: HomeState,
     rates: List<Int>,
+    showAodBrightness: Boolean,
     onStateChange: (HomeState) -> Unit
 ) {
     var showLimits by rememberSaveable { mutableStateOf(false) }
@@ -538,6 +561,7 @@ private fun AodCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+                if (showAodBrightness) {
                 HorizontalDivider(Modifier.padding(vertical = 12.dp))
                 ToggleRow(
                     icon = Icons.Outlined.BrightnessMedium,
@@ -642,6 +666,7 @@ private fun AodCard(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
                 }
             }
         }

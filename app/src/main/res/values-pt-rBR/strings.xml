@@ -116,6 +116,8 @@
     <string name="profile_step_number">Nível %1$d</string>
     <string name="profile_how_title">Como funciona</string>
     <string name="profile_how_body">Ao tocar na tela, a frequência vai para o primeiro nível. Depois do tempo definido, desce para o próximo. O último nível fica em repouso, sem limite de tempo.</string>
+    <string name="profile_low_rate_warning_title">Brilho em 30 Hz</string>
+    <string name="profile_low_rate_warning_body">Neste aparelho, 30 Hz pode reduzir o brilho do painel. É uma limitação de hardware; o OneHZ não consegue compensar.</string>
     <string name="profile_issue_too_many">Máximo de 5 níveis.</string>
     <string name="profile_issue_not_descending">Os níveis precisam ser decrescentes (por exemplo, 120 para 60).</string>
     <string name="profile_issue_unsupported">Uma das frequências não é suportada por este aparelho.</string>
@@ -237,7 +239,7 @@
     <string name="setup_pending">Pendente</string>
 
     <string name="unsupported_title">Aparelho incompatível</string>
-    <string name="unsupported_body">O OneHZ só funciona em aparelhos com tela LTPO. Nenhum controle de frequência foi aplicado.</string>
+    <string name="unsupported_body">O OneHZ só funciona em Samsung ou Xiaomi/Redmi/POCO com uma tela que exponha pelo menos duas taxas de atualização. Nada foi alterado.</string>
 
     <string name="notification_service_text">Mantendo o controle de frequência ativo. O Doze não é bloqueado.</string>
     <string name="notification_channel_name">Serviço do OneHZ</string>
@@ -253,13 +255,20 @@
     <string name="update_info">Atualizar</string>
     <string name="report_copied">Diagnóstico copiado</string>
     <string name="diag_shizuku">Serviço Shizuku</string>
-    <string name="diag_ltpo">Tela LTPO</string>
+    <string name="diag_ltpo">Tela multi-taxa</string>
     <string name="diag_tier">Nível atual</string>
     <string name="diag_observed">Frequência observada: %1$d Hz</string>
     <string name="diag_last_write">Última alteração</string>
     <string name="diag_control_method">Método de controle da tela</string>
     <string name="diag_aod_brightness">Brilho do AOD</string>
     <string name="diag_not_available">Indisponível</string>
+    <string name="diag_system_state">Brilho e energia</string>
+    <string name="diag_brightness">Brilho</string>
+    <string name="diag_battery_saver">Economia de bateria</string>
+    <string name="diag_route">Rota da taxa</string>
+    <string name="diag_state_on">Ativo</string>
+    <string name="diag_state_off">Inativo</string>
+    <string name="diag_low_rate_note">Neste painel, 30 Hz pode reduzir o brilho. É uma limitação de hardware; nenhum app consegue compensar.</string>
     <string name="log_filter_all">Tudo</string>
     <string name="log_search">Filtrar registro</string>
     <string name="log_tag_touch">Toque</string>

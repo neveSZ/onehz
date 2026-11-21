@@ -8,12 +8,40 @@ All notable changes to OneHZ are documented here. The format follows
 
 ### Added
 
+- Xiaomi/Redmi/POCO support through `secure/miui_refresh_rate` (HyperOS 2/3) and
+  `secure/user_refresh_rate` (HyperOS 1 fallback).
+- Capability-based compatibility gate: Samsung or Xiaomi/Redmi/POCO with at least two
+  refresh rates.
+- Exact snapshot/restore of the HyperOS rate key on release and after a crash.
+- HyperOS diagnostics route and observed-rate reporting.
+- Default profiles: normal **device maximum → 60 Hz → minimum** (2 s / 5 s) and ECO
+  **60 Hz → minimum** (2 s).
+- Profile editor warning on Xiaomi when a step uses 30 Hz: the panel can reduce the
+  brightness and OneHZ cannot compensate.
+- Diagnostics now report screen brightness/mode, battery-saver state, and the active
+  rate route.
 - Configurable video detection rules: MediaSession, paused-session veto, video decoder,
   and media audio can each be enabled or disabled from the new detection settings sheet.
 - Forced app list: packages that are always treated as video while in the foreground.
 - The video configuration travels to the Shizuku UserService over the binder, with
   validated package names and a 64-app cap.
 - A configuration change re-probes video immediately instead of waiting for a touch.
+
+### Changed
+
+- LTPO is no longer required; a multi-rate panel is enough.
+- The AOSP/generic backend was removed. Unsupported manufacturers are blocked and
+  warned instead of receiving experimental writes.
+- AOD brightness is Samsung-only and is hidden on Xiaomi.
+- `BootReceiver` and the keep-alive service respect the strict gate.
+- The Home ECO badge follows the system battery-saver broadcast while the app is open,
+  instead of waiting for the next resume.
+
+### Known limitations
+
+- On the tested POCO, 30 Hz is dimmer at the panel level. System brightness, framebuffer,
+  and backlight are identical to 60/120 Hz, and the vendor knobs reachable through
+  Shizuku do not change it. See [COMPATIBILITY](docs/COMPATIBILITY.md#30-hz-brightness-on-hyperos).
 
 ## [1.0.1] - 2026-11-21
 

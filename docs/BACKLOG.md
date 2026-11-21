@@ -13,17 +13,27 @@ OneHZ is a personal project. Items here are intentions, not commitments.
 
 These are documented as known limitations rather than promises.
 
-### Support for other brands/devices
+### Support for other models
 
-- OneHZ is tied to Samsung's display settings and the S25+ was the only device tested.
-- Without test devices, I cannot validate other models.
-- PRs with real-device fixtures and testing are welcome.
+- OneHZ supports Samsung and Xiaomi/Redmi/POCO devices with at least two refresh rates.
+- LTPO is no longer required.
+- Other models still need real-device validation; PRs with fixtures and testing are
+  welcome.
 
-### Remove the LTPO dependency
+### AOD brightness on Xiaomi
 
-- The staircase and AOD behavior assume an LTPO panel with a low minimum rate.
-- Removing this dependency would require a different control path and a different
-  product decision.
+- Xiaomi controls AOD brightness in its own AOD process/light sensor
+  (`aod_brightness_level` is a factory feature, not a Settings key).
+- There is no tested Settings/Shizuku route, so the option stays Samsung-only.
+
+### Equal brightness at 30 Hz
+
+- On the tested POCO, 30 Hz is dimmer at the panel level even though system brightness,
+  framebuffer, and backlight are identical to 60/120 Hz.
+- The vendor dimming/gamma routes reachable through Shizuku do not change it, and the
+  root-only routes are out of scope.
+- OneHZ keeps 30 Hz available and warns in the profile editor instead of faking a
+  compensation by dimming the other rates.
 
 ## Non-goals
 

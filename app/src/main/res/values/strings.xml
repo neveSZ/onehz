@@ -116,6 +116,8 @@
     <string name="profile_step_number">Level %1$d</string>
     <string name="profile_how_title">How it works</string>
     <string name="profile_how_body">When you touch the screen, the rate goes to the first level. After the set time it drops to the next level. The last level rests with no time limit.</string>
+    <string name="profile_low_rate_warning_title">30 Hz brightness</string>
+    <string name="profile_low_rate_warning_body">On this device, 30 Hz can reduce the panel brightness. It is a hardware limitation; OneHZ cannot compensate for it.</string>
     <string name="profile_issue_too_many">Maximum of 5 levels.</string>
     <string name="profile_issue_not_descending">Levels must decrease (for example, 120 to 60).</string>
     <string name="profile_issue_unsupported">One of the frequencies is not supported by this device.</string>
@@ -234,7 +236,7 @@
     <string name="setup_pending">Pending</string>
 
     <string name="unsupported_title">Device not supported</string>
-    <string name="unsupported_body">OneHZ only works on devices with an LTPO panel. No refresh-rate control was applied.</string>
+    <string name="unsupported_body">OneHZ only works on Samsung or Xiaomi/Redmi/POCO devices with a display that exposes at least two refresh rates. Nothing was changed.</string>
 
     <string name="notification_service_text">Keeping refresh-rate control active. Doze is not blocked.</string>
     <string name="notification_channel_name">OneHZ service</string>
@@ -250,13 +252,20 @@
     <string name="update_info">Refresh</string>
     <string name="report_copied">Diagnostics copied</string>
     <string name="diag_shizuku">Shizuku service</string>
-    <string name="diag_ltpo">LTPO display</string>
+    <string name="diag_ltpo">Multi-rate display</string>
     <string name="diag_tier">Current level</string>
     <string name="diag_observed">Observed frequency: %1$d Hz</string>
     <string name="diag_last_write">Last change</string>
     <string name="diag_control_method">Display control method</string>
     <string name="diag_aod_brightness">AOD brightness</string>
     <string name="diag_not_available">Not available</string>
+    <string name="diag_system_state">Brightness and power</string>
+    <string name="diag_brightness">Brightness</string>
+    <string name="diag_battery_saver">Battery saver</string>
+    <string name="diag_route">Rate route</string>
+    <string name="diag_state_on">On</string>
+    <string name="diag_state_off">Off</string>
+    <string name="diag_low_rate_note">On this panel, 30 Hz can reduce the brightness. It is a hardware limitation; no app can compensate for it.</string>
     <string name="log_filter_all">All</string>
     <string name="log_search">Filter log</string>
     <string name="log_tag_touch">Touch</string>

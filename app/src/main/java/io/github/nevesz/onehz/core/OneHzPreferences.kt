@@ -29,6 +29,7 @@ object OneHzPreferences {
     private const val KEY_VIDEO_CONFIG = "video_config"
     private const val KEY_SESSION_PENDING = "session_pending"
     private const val KEY_ECO_GLOBAL_BACKUP = "eco_global_backup"
+    private const val KEY_RATE_BACKUP = "rate_backup"
     private const val KEY_LOGS_PAUSED = "logs_paused"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_THEME_MODE = "theme_mode"
@@ -58,14 +59,14 @@ object OneHzPreferences {
     // ---------------------------------------------------------------- profiles
 
     /**
-     * Default profile for a fresh install: device ceiling -> ~60 Hz -> device minimum.
-     * The ECO default caps the first step at 90 Hz on panels that support it.
+     * Default profile for a fresh install: device ceiling -> ~60 Hz -> device minimum,
+     * with 2 s and 5 s holds. The ECO default starts at 60 Hz and holds it for 2 s.
      */
     fun defaultNormalProfile(context: Context): FrequencyProfile =
-        FrequencyProfile.deviceDefault(SamsungDisplayRates.main(context), cap = null)
+        FrequencyProfile.deviceDefault(DisplayRates.main(context), cap = null)
 
     fun defaultEcoProfile(context: Context): FrequencyProfile =
-        FrequencyProfile.deviceDefault(SamsungDisplayRates.main(context), cap = 90)
+        FrequencyProfile.deviceDefault(DisplayRates.main(context), cap = 60)
 
     fun normalProfile(context: Context): FrequencyProfile =
         readProfile(context, KEY_PROFILE_NORMAL, defaultNormalProfile(context))
@@ -97,8 +98,27 @@ object OneHzPreferences {
      * Original values of the Samsung battery-saver refresh-rate keys changed by OneHZ.
      * Kept so a crash or process death cannot leave the system settings modified forever.
      */
-    fun ecoGlobalBackup(context: Context): Map<String, String> {
-        val raw = prefs(context).getString(KEY_ECO_GLOBAL_BACKUP, null) ?: return emptyMap()
+    fun ecoGlobalBackup(context: Context): Map<String, String> =
+        readSnapshot(context, KEY_ECO_GLOBAL_BACKUP)
+
+    fun setEcoGlobalBackup(context: Context, values: Map<String, String>) =
+        writeSnapshot(context, KEY_ECO_GLOBAL_BACKUP, values)
+
+    /**
+     * Original values of the non-Samsung refresh-rate keys touched by a session
+     * (HyperOS uses `secure/miui_refresh_rate` or `secure/user_refresh_rate`).
+     * An empty value means the key did not exist and must be deleted on restore.
+     */
+    fun rateBackup(context: Context): Map<String, String> =
+        readSnapshot(context, KEY_RATE_BACKUP)
+
+    fun setRateBackup(context: Context, values: Map<String, String>) =
+        writeSnapshot(context, KEY_RATE_BACKUP, values)
+
+    fun hasRateBackup(context: Context): Boolean = rateBackup(context).isNotEmpty()
+
+    private fun readSnapshot(context: Context, key: String): Map<String, String> {
+        val raw = prefs(context).getString(key, null) ?: return emptyMap()
         return raw.lineSequence()
             .mapNotNull { line ->
                 val separator = line.indexOf('=')
@@ -108,11 +128,11 @@ object OneHzPreferences {
             .toMap()
     }
 
-    fun setEcoGlobalBackup(context: Context, values: Map<String, String>) {
+    private fun writeSnapshot(context: Context, key: String, values: Map<String, String>) {
         prefs(context).edit {
-            if (values.isEmpty()) remove(KEY_ECO_GLOBAL_BACKUP)
+            if (values.isEmpty()) remove(key)
             else putString(
-                KEY_ECO_GLOBAL_BACKUP,
+                key,
                 values.entries.joinToString("\n") { "${it.key}=${it.value}" }
             )
         }

@@ -39,6 +39,7 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -52,6 +53,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
@@ -69,12 +72,15 @@ import io.github.nevesz.onehz.ui.components.StatusTone
 @Composable
 fun DiagnosticsScreen() {
     val context = LocalContext.current
+    val profile = remember { DisplayProfileResolver.detect(context) }
+    val supportsAodBrightness = profile.supportsAodBrightness
+    val isXiaomi = profile.vendor == DisplayVendor.XIAOMI
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val entries by Diagnostics.entries.collectAsState()
     val paused by Diagnostics.paused.collectAsState()
     val shizuku by Diagnostics.shizukuState.collectAsState()
-    val ltpo by Diagnostics.ltpoState.collectAsState()
-    val ltpoEligible by Diagnostics.ltpoEligible.collectAsState()
+    val display by Diagnostics.displayState.collectAsState()
+    val displayEligible by Diagnostics.displayEligible.collectAsState()
     val controlMethod by Diagnostics.controlMethod.collectAsState()
     val tierKey by Diagnostics.activeTierKey.collectAsState()
     val observedHz by Diagnostics.observedHz.collectAsState()
@@ -88,6 +94,10 @@ fun DiagnosticsScreen() {
     val aodInfo by Diagnostics.aodBrightness.collectAsState()
     val videoSource by Diagnostics.videoSource.collectAsState()
     val videoDetail by Diagnostics.videoDetail.collectAsState()
+    val brightness by Diagnostics.screenBrightness.collectAsState()
+    val batterySaver by Diagnostics.batterySaver.collectAsState()
+    val route by Diagnostics.displayRoute.collectAsState()
+    LaunchedEffect(Unit) { Diagnostics.refreshSystem(context) }
 
     var query by rememberSaveable { mutableStateOf("") }
     var tag by rememberSaveable { mutableStateOf("all") }
@@ -121,9 +131,9 @@ fun DiagnosticsScreen() {
                         MetricBox(
                             Icons.Outlined.Shield,
                             stringResource(R.string.diag_ltpo),
-                            if (ltpoEligible) stringResource(R.string.status_ok) else stringResource(R.string.status_error),
+                            if (displayEligible) stringResource(R.string.status_ok) else stringResource(R.string.status_error),
                             Modifier.weight(1f),
-                            accent = if (ltpoEligible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            accent = if (displayEligible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -147,7 +157,7 @@ fun DiagnosticsScreen() {
                     OneHzCard {
                         Text(stringResource(R.string.diag_ltpo), style = MaterialTheme.typography.titleSmall)
                         Spacer(Modifier.height(4.dp))
-                        Text(ltpo, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(display, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 item {
@@ -162,6 +172,29 @@ fun DiagnosticsScreen() {
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily.Monospace
                         )
+                    }
+                }
+                item {
+                    OneHzCard {
+                        Text(
+                            stringResource(R.string.diag_system_state),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text("${stringResource(R.string.diag_brightness)}: $brightness")
+                        Text(
+                            "${stringResource(R.string.diag_battery_saver)}: " +
+                                stringResource(if (batterySaver) R.string.diag_state_on else R.string.diag_state_off)
+                        )
+                        Text("${stringResource(R.string.diag_route)}: $route")
+                        if (isXiaomi) {
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                text = stringResource(R.string.diag_low_rate_note),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
                 item {
@@ -186,6 +219,7 @@ fun DiagnosticsScreen() {
                         }
                     }
                 }
+                if (supportsAodBrightness) {
                 item {
                     OneHzCard {
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -237,6 +271,7 @@ fun DiagnosticsScreen() {
                             Text(stringResource(R.string.aod_brightness_restore))
                         }
                     }
+                }
                 }
                 item {
                     OneHzCard {
@@ -400,6 +435,7 @@ fun DiagnosticsScreen() {
 }
 
 private fun copyReport(context: Context) {
+    Diagnostics.refreshSystem(context)
     val report = Diagnostics.report()
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboard.setPrimaryClip(ClipData.newPlainText("OneHZ diagnostics", report))

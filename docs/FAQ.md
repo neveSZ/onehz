@@ -15,21 +15,37 @@ required.
 AccessibilityService can interfere with banking apps and other sensitive applications.
 OneHZ deliberately avoids it. Shizuku provides a narrower, explicit privileged channel.
 
-### Why only Samsung?
+### Why only Samsung and Xiaomi/Redmi/POCO?
 
-The display control uses Samsung's own settings and feature list. Other manufacturers
-have different APIs, so the app rejects them instead of pretending to work.
+The display control uses vendor-specific settings: Samsung's `refresh_rate_mode` plus
+`peak/min`, and HyperOS's `miui_refresh_rate` (or `user_refresh_rate`). Other
+manufacturers have different routes, so the app blocks them instead of pretending to
+work.
 
-### Why only LTPO panels?
+### Why does the display need two refresh rates?
 
-The staircase and AOD features depend on a panel that can drop to a low rate (≤ 30 Hz).
-The app checks manufacturer, Samsung HFR mode, and the minimum panel rate, and fails
-closed otherwise.
+The staircase switches between rates. A single-rate panel has nothing to switch to, so
+the app fails closed. **LTPO is not required**; a 120/90/60/30 panel is enough.
+
+### Does AOD brightness work on Xiaomi?
+
+No. Xiaomi's AOD brightness is automatic and controlled by the AOD process/light
+sensor (`aod_brightness_level` is a factory feature, not a Settings key). The Samsung
+`debug_aod_brightness` route does not exist there, so the option is hidden on Xiaomi.
+
+### Why is the screen darker at 30 Hz on Xiaomi?
+
+On the tested POCO the 30 Hz panel mode itself is dimmer: system brightness, framebuffer,
+and reported backlight are identical to 60/120 Hz, but the panel/vendor PQ applies a
+different gamma. The vendor knobs reachable through Shizuku (`shell`, no root) do not
+change it, so no app can compensate. OneHZ keeps 30 Hz available and shows a warning in
+the profile editor. See [COMPATIBILITY](COMPATIBILITY.md#30-hz-brightness-on-hyperos).
 
 ### Which device was tested?
 
-Only a Samsung Galaxy S25+ (`SM-S936B`), Android 17, One UI 9.0, build
-`S936BXXUDDZJB`. See [COMPATIBILITY](COMPATIBILITY.md).
+A Samsung Galaxy S25+ (`SM-S936B`), Android 17, One UI 9.0, build `S936BXXUDDZJB`,
+and a POCO `2412DPC0AG` (`rodin`), Android 16, HyperOS 3.0
+(`OS3.0.304.0.WOJMIXM`). See [COMPATIBILITY](COMPATIBILITY.md).
 
 ### Why does control stop after a reboot?
 
@@ -97,10 +113,10 @@ invent rates the firmware does not report.
 
 Yes. See [BUILDING](BUILDING.md). You need JDK 25, SDK 37, and build-tools 36.0.0.
 
-### Can I use it on another Samsung model?
+### Can I use it on another Samsung or Xiaomi model?
 
-Maybe, if it has an LTPO panel and passes the gate. It is untested. Report your model,
-build, panel rates, and diagnostics if you try.
+Yes, if it has at least two refresh rates and the vendor route exists. It is untested
+on other models. Report your model, build, panel rates, and diagnostics if you try.
 
 ### Why are English and Spanish marked as AI-generated?
 

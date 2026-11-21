@@ -41,10 +41,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.ProfileIssue
 import io.github.nevesz.onehz.core.TierStep
@@ -79,6 +82,9 @@ fun ProfileEditorScreen(
     var showDiscard by remember { mutableStateOf(false) }
     var confirmRemoveProfile by remember { mutableStateOf(false) }
     val dirty = steps != initial.steps
+    val context = LocalContext.current
+    val isXiaomi = remember { DisplayProfileResolver.detect(context).vendor == DisplayVendor.XIAOMI }
+    val showsLowRateWarning = isXiaomi && steps.any { it.hz <= 30 } && rates.any { it > 30 }
 
     fun tryBack() {
         if (dirty) showDiscard = true else onBack()
@@ -168,6 +174,32 @@ fun ProfileEditorScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                }
+            }
+
+            if (showsLowRateWarning) {
+                item {
+                    OneHzCard {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                Icons.Outlined.Info,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.profile_low_rate_warning_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.profile_low_rate_warning_body),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
 

@@ -76,16 +76,24 @@ class FrequencyProfileTest {
     fun `device default goes ceiling then 60 then minimum`() {
         val profile = FrequencyProfile.deviceDefault(listOf(10, 24, 30, 48, 60, 80, 120))
         assertEquals(listOf(120, 60, 10), profile.steps.map { it.hz })
-        assertEquals(listOf(1_000L, 10_000L, null), profile.steps.map { it.holdMs })
+        assertEquals(listOf(2_000L, 5_000L, null), profile.steps.map { it.holdMs })
     }
 
     @Test
-    fun `eco default caps at the highest supported rate up to 90`() {
-        val with90 = FrequencyProfile.deviceDefault(listOf(10, 24, 30, 48, 60, 90, 120), cap = 90)
-        assertEquals(listOf(90, 60, 10), with90.steps.map { it.hz })
+    fun `poco default is ceiling then 60 then 30`() {
+        val profile = FrequencyProfile.deviceDefault(listOf(30, 60, 90, 120))
+        assertEquals(listOf(120, 60, 30), profile.steps.map { it.hz })
+        assertEquals(listOf(2_000L, 5_000L, null), profile.steps.map { it.holdMs })
+    }
 
-        val with80 = FrequencyProfile.deviceDefault(listOf(10, 24, 30, 48, 60, 80, 120), cap = 90)
-        assertEquals(listOf(80, 60, 10), with80.steps.map { it.hz })
+    @Test
+    fun `eco default caps at the highest supported rate up to 60`() {
+        val with60 = FrequencyProfile.deviceDefault(listOf(10, 24, 30, 48, 60, 90, 120), cap = 60)
+        assertEquals(listOf(60, 10), with60.steps.map { it.hz })
+        assertEquals(listOf(2_000L, null), with60.steps.map { it.holdMs })
+
+        val with48 = FrequencyProfile.deviceDefault(listOf(10, 30, 48, 120), cap = 60)
+        assertEquals(listOf(48, 10), with48.steps.map { it.hz })
     }
 
     @Test

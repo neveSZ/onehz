@@ -11,7 +11,8 @@
 
 <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Obter no Obtainium" height="48"></a>
 
-O OneHZ é um controlador de taxa de atualização para **telas LTPO da Samsung**. Ele
+O OneHZ é um controlador de taxa de atualização para **telas Samsung e
+Xiaomi/Redmi/POCO**. Ele
 altera a taxa de atualização **exclusivamente pelo Shizuku** — sem root, sem ADB direto
 pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
 
@@ -25,9 +26,10 @@ pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
 ## Status do projeto
 
 - Versão estável mais recente: **1.0.1**.
-- Testado em **um único aparelho**: Samsung Galaxy S25+ (`SM-S936B`).
-- Funciona **apenas em Samsung com painel LTPO**. O app verifica isso e falha fechado
-  (não altera nada) quando o aparelho não é compatível.
+- Testado em um Samsung Galaxy S25+ (`SM-S936B`) e em um POCO `2412DPC0AG` (`rodin`).
+- Funciona **apenas em Samsung ou Xiaomi/Redmi/POCO** com tela que exponha **pelo
+  menos duas taxas de atualização**. Outras marcas são bloqueadas e o app falha fechado
+  (não altera nada). **LTPO não é obrigatório.**
 - Futuras versões beta serão publicadas como pré-releases.
 
 ## Aparelho e software testados
@@ -50,8 +52,10 @@ garantir.
 
 ## Requisitos
 
-- Samsung com **painel LTPO**.
-- **Android 12 (API 31) ou superior** (`minSdk 31`; somente Android 17 foi testado).
+- Samsung **ou** Xiaomi/Redmi/POCO (HyperOS/MIUI).
+- Tela que exponha **pelo menos duas taxas de atualização** (por exemplo 120/90/60/30).
+  LTPO não é obrigatório.
+- **Android 12 (API 31) ou superior** (`minSdk 31`; Android 16 e 17 foram testados).
 - **Shizuku instalado e em execução.**
 - O OneHZ é distribuído como APK assinado no GitHub Releases. Não está no Google Play.
 - O [Obtainium](https://obtainium.imranr.dev/) é suportado para atualizações automáticas.
@@ -100,6 +104,9 @@ ativa.
 desativado, o OneHZ para de controlar a taxa nessa situação e devolve o comportamento
 adaptativo do sistema.
 
+O perfil normal padrão é **máximo do aparelho → 60 Hz → mínimo do aparelho**, segurando
+cada nível por **2 s e 5 s**.
+
 ### 3. Perfil ECO (economia de bateria)
 
 **O que faz:** é o perfil usado enquanto a economia de bateria do sistema está ativa.
@@ -107,8 +114,8 @@ adaptativo do sistema.
 **Como funciona:**
 
 - o app escuta o broadcast de economia do sistema e reaplica a política;
-- o perfil ECO padrão limita a faixa máxima a 90 Hz (ou à taxa suportada mais próxima
-  abaixo disso) e depois usa o mínimo do aparelho;
+- o perfil ECO padrão começa em 60 Hz (ou na taxa suportada mais próxima abaixo disso),
+  segura por 2 s e depois usa o mínimo do aparelho;
 - um app pode optar por **“Ignorar ECO”**, mantendo o próprio perfil/normal enquanto a
   economia está ativa;
 - enquanto o ECO está ativo, o OneHZ desativa os limites de taxa da economia da Samsung e
@@ -345,16 +352,20 @@ enviado. Veja [PRIVACY.md](PRIVACY.md).
 
 ## Limitações conhecidas
 
-- **Somente Samsung.** Outras marcas são rejeitadas pela verificação de compatibilidade.
-- **Somente LTPO.** A verificação exige painel LTPO Samsung com taxa mínima ≤ 30 Hz.
-- **Um aparelho testado.** Apenas o S25+ `SM-S936B` em Android 17 / One UI 9.0.
+- **Somente Samsung, Xiaomi, Redmi e POCO.** Outras marcas são rejeitadas pela
+  verificação de compatibilidade.
+- **Tela multi-taxa obrigatória.** A verificação exige pelo menos duas taxas; LTPO não
+  é obrigatório.
+- **Dois aparelhos testados.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) e POCO
+  `2412DPC0AG` (Android 16 / HyperOS 3.0).
 - Outras versões de Android/One UI e WQHD+ não foram testadas.
 - O Shizuku precisa estar rodando. Após reiniciar, pode ser necessário iniciá-lo de novo
   via depuração sem fio/ADB.
-- A detecção do display depende de settings do firmware Samsung e da saída do `dumpsys`;
-  uma atualização de firmware pode mudar isso.
-- O brilho do AOD usa uma chave interna da Samsung e pode ser ignorado/resetado por uma
-  atualização.
+- A detecção do display depende de settings do firmware e da saída do `dumpsys`; uma
+  atualização de firmware pode mudar isso. O HyperOS usa `miui_refresh_rate` (ou
+  `user_refresh_rate` no HyperOS 1).
+- O brilho do AOD é **exclusivo da Samsung** (`debug_aod_brightness`); no Xiaomi a
+  opção fica oculta.
 - A detecção de vídeo depende do comportamento de MediaSession, Codec2 e AudioService; as
   regras e uma lista de apps forçados podem ser ajustadas no app, mas os sinais de base
   precisam existir.
@@ -368,8 +379,9 @@ enviado. Veja [PRIVACY.md](PRIVACY.md).
 ## Backlog
 
 - suporte a PiP na detecção de vídeo;
-- mais aparelhos/marcas Samsung (improvável: não tenho outros aparelhos para testar);
-- remover a dependência de LTPO (improvável: exigiria outro caminho de controle).
+- mais modelos Samsung/Xiaomi (precisa de teste em aparelho real);
+- brilho do AOD no Xiaomi (não foi encontrada rota via Settings; exigiria outro
+  caminho privilegiado).
 
 Doações são opcionais. Apoiadores fora do Brasil podem usar o
 [GitHub Sponsors](https://github.com/sponsors/neveSZ); apoiadores no Brasil podem usar o

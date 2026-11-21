@@ -116,6 +116,8 @@
     <string name="profile_step_number">Nivel %1$d</string>
     <string name="profile_how_title">Cómo funciona</string>
     <string name="profile_how_body">Al tocar la pantalla, la frecuencia pasa al primer nivel. Tras el tiempo definido, baja al siguiente. El último nivel queda en reposo, sin límite de tiempo.</string>
+    <string name="profile_low_rate_warning_title">Brillo a 30 Hz</string>
+    <string name="profile_low_rate_warning_body">En este dispositivo, 30 Hz puede reducir el brillo del panel. Es una limitación de hardware; OneHZ no puede compensarlo.</string>
     <string name="profile_issue_too_many">Máximo de 5 niveles.</string>
     <string name="profile_issue_not_descending">Los niveles deben ser decrecientes (por ejemplo, 120 a 60).</string>
     <string name="profile_issue_unsupported">Una de las frecuencias no es compatible con este dispositivo.</string>
@@ -237,7 +239,7 @@
     <string name="setup_pending">Pendiente</string>
 
     <string name="unsupported_title">Dispositivo no compatible</string>
-    <string name="unsupported_body">OneHZ solo funciona en dispositivos con panel LTPO. No se aplicó ningún control de frecuencia.</string>
+    <string name="unsupported_body">OneHZ solo funciona en dispositivos Samsung o Xiaomi/Redmi/POCO con una pantalla que exponga al menos dos tasas de actualización. No se cambió nada.</string>
 
     <string name="notification_service_text">Manteniendo el control de frecuencia activo. Doze no se bloquea.</string>
     <string name="notification_channel_name">Servicio OneHZ</string>
@@ -253,13 +255,20 @@
     <string name="update_info">Actualizar</string>
     <string name="report_copied">Diagnóstico copiado</string>
     <string name="diag_shizuku">Servicio Shizuku</string>
-    <string name="diag_ltpo">Pantalla LTPO</string>
+    <string name="diag_ltpo">Pantalla multi-tasa</string>
     <string name="diag_tier">Nivel actual</string>
     <string name="diag_observed">Frecuencia observada: %1$d Hz</string>
     <string name="diag_last_write">Último cambio</string>
     <string name="diag_control_method">Método de control de pantalla</string>
     <string name="diag_aod_brightness">Brillo del AOD</string>
     <string name="diag_not_available">No disponible</string>
+    <string name="diag_system_state">Brillo y energía</string>
+    <string name="diag_brightness">Brillo</string>
+    <string name="diag_battery_saver">Ahorro de batería</string>
+    <string name="diag_route">Ruta de la frecuencia</string>
+    <string name="diag_state_on">Activo</string>
+    <string name="diag_state_off">Inactivo</string>
+    <string name="diag_low_rate_note">En este panel, 30 Hz puede reducir el brillo. Es una limitación de hardware; ninguna app puede compensarlo.</string>
     <string name="log_filter_all">Todo</string>
     <string name="log_search">Filtrar registro</string>
     <string name="log_tag_touch">Toque</string>
