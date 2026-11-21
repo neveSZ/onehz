@@ -73,6 +73,26 @@
     <string name="video_diag_state">State</string>
     <string name="video_diag_test">Test detection</string>
     <string name="video_diag_hint">Run it with a video playing to see the package, session, codec, and audio state.</string>
+    <string name="video_diag_config">Rules: %1$s · forced: %2$d</string>
+    <string name="video_config_manage">Configure detection</string>
+    <string name="video_rules_title">Detection rules</string>
+    <string name="video_rules_desc">Choose which signals OneHZ uses to decide that a video is playing.</string>
+    <string name="video_rules_summary">%1$d of %2$d rules active</string>
+    <string name="video_rule_session_title">Use MediaSession</string>
+    <string name="video_rule_session_desc">Reads the playback state reported by the app\'s media session.</string>
+    <string name="video_rule_paused_title">Paused session blocks video</string>
+    <string name="video_rule_paused_desc">A paused session is treated as not playing, even if a decoder is still held.</string>
+    <string name="video_rule_codec_title">Require a video decoder</string>
+    <string name="video_rule_codec_desc">The foreground app must hold a video codec. Disable for apps that reuse decoders or report them late.</string>
+    <string name="video_rule_audio_title">Require playing media audio without a session</string>
+    <string name="video_rule_audio_desc">Without a session, a started USAGE_MEDIA player confirms playback. Disable to accept a decoder alone.</string>
+    <string name="video_rules_none_warning">No positive signal is enabled. Video will not be detected unless the app is in the forced list.</string>
+    <string name="video_forced_title">Apps always treated as video</string>
+    <string name="video_forced_desc">The video floor applies whenever one of these apps is in the foreground, even without a session, decoder, or audio.</string>
+    <string name="video_forced_manage">Manage apps</string>
+    <string name="video_forced_clear">Clear</string>
+    <string name="video_forced_missing">Not installed</string>
+    <string name="video_forced_limit">Up to 64 apps</string>
 
     <string name="profile_normal_title">Normal profile</string>
     <string name="profile_eco_title">Battery saver profile (ECO)</string>
@@ -141,6 +161,10 @@
     <plurals name="removed_count">
         <item quantity="one">%1$d app removed</item>
         <item quantity="other">%1$d apps removed</item>
+    </plurals>
+    <plurals name="video_forced_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
     </plurals>
 
     <string name="settings_preferences">Preferences</string>

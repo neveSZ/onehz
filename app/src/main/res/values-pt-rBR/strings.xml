@@ -73,6 +73,26 @@
     <string name="video_diag_state">Estado</string>
     <string name="video_diag_test">Testar detecção</string>
     <string name="video_diag_hint">Use com um vídeo tocando para ver o pacote, a sessão, o codec e o áudio.</string>
+    <string name="video_diag_config">Regras: %1$s · forçados: %2$d</string>
+    <string name="video_config_manage">Configurar detecção</string>
+    <string name="video_rules_title">Regras de detecção</string>
+    <string name="video_rules_desc">Escolha quais sinais o OneHZ usa para decidir que um vídeo está tocando.</string>
+    <string name="video_rules_summary">%1$d de %2$d regras ativas</string>
+    <string name="video_rule_session_title">Usar MediaSession</string>
+    <string name="video_rule_session_desc">Lê o estado de reprodução informado pela sessão de mídia do app.</string>
+    <string name="video_rule_paused_title">Sessão pausada bloqueia vídeo</string>
+    <string name="video_rule_paused_desc">Uma sessão pausada é tratada como não reproduzindo, mesmo que um decodificador ainda esteja aberto.</string>
+    <string name="video_rule_codec_title">Exigir decodificador de vídeo</string>
+    <string name="video_rule_codec_desc">O app em primeiro plano precisa manter um codec de vídeo. Desative para apps que reutilizam decodificadores ou os informam tarde.</string>
+    <string name="video_rule_audio_title">Sem sessão, exigir áudio de mídia tocando</string>
+    <string name="video_rule_audio_desc">Sem sessão, um player USAGE_MEDIA iniciado confirma a reprodução. Desative para aceitar apenas o decodificador.</string>
+    <string name="video_rules_none_warning">Nenhum sinal positivo está ativo. O vídeo não será detectado, exceto para apps da lista forçada.</string>
+    <string name="video_forced_title">Apps sempre tratados como vídeo</string>
+    <string name="video_forced_desc">O piso de vídeo se aplica enquanto um destes apps estiver em primeiro plano, mesmo sem sessão, decodificador ou áudio.</string>
+    <string name="video_forced_manage">Gerenciar apps</string>
+    <string name="video_forced_clear">Limpar</string>
+    <string name="video_forced_missing">Não instalados</string>
+    <string name="video_forced_limit">Até 64 apps</string>
 
     <string name="profile_normal_title">Perfil normal</string>
     <string name="profile_eco_title">Perfil de economia (ECO)</string>
@@ -143,6 +163,11 @@
         <item quantity="one">%1$d aplicativo removido</item>
         <item quantity="other">%1$d aplicativos removidos</item>
         <item quantity="many">%1$d aplicativos removidos</item>
+    </plurals>
+    <plurals name="video_forced_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
+        <item quantity="many">%1$d apps</item>
     </plurals>
 
     <string name="settings_preferences">Preferências</string>

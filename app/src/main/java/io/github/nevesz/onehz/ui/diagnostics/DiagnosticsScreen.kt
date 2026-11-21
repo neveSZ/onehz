@@ -53,6 +53,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.diagnostic.InputMonitorState
@@ -260,9 +261,23 @@ fun DiagnosticsScreen() {
                             fontFamily = FontFamily.Monospace,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        val videoConfig = OneHzPreferences.videoConfig(context)
+                        Text(
+                            text = stringResource(
+                                R.string.video_diag_config,
+                                stringResource(
+                                    R.string.video_rules_summary,
+                                    videoConfig.activeRuleCount,
+                                    VideoConfig.RULE_COUNT
+                                ),
+                                videoConfig.forcedPackages.size
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                         Spacer(Modifier.height(8.dp))
                         OutlinedButton(onClick = {
-                            val verdict = ShizukuGateway.videoPlayback()
+                            val verdict = ShizukuGateway.videoPlayback(OneHzPreferences.videoConfig(context))
                             videoTest = verdict.encode()
                             Diagnostics.log("video", "manual test: ${verdict.encode()}")
                         }) {

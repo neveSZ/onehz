@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -64,6 +65,7 @@ import io.github.nevesz.onehz.core.AodBrightnessMath
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.LtpoGate
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
@@ -97,6 +99,7 @@ private data class HomeState(
     val aodBrightnessMaxPct: Int,
     val videoEnabled: Boolean,
     val videoMinHz: Int,
+    val videoConfig: VideoConfig,
     val ecoActive: Boolean
 )
 
@@ -121,6 +124,7 @@ private fun loadState(context: Context, rates: List<Int>): HomeState {
         aodBrightnessMaxPct = OneHzPreferences.aodBrightnessMaxPct(context),
         videoEnabled = OneHzPreferences.videoEnabled(context),
         videoMinHz = videoMinHz,
+        videoConfig = OneHzPreferences.videoConfig(context),
         ecoActive = (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
     )
 }
@@ -154,6 +158,7 @@ fun HomeScreen(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
     var state by remember(refresh, dataVersion) { mutableStateOf(loadState(context, rates)) }
+    var showVideoConfig by rememberSaveable { mutableStateOf(false) }
 
     val activeProfile = when {
         state.ecoActive && state.ecoEnabled -> state.eco
@@ -372,6 +377,38 @@ fun HomeScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        Spacer(Modifier.height(12.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(Modifier.height(8.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.video_rules_title),
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Text(
+                                    text = stringResource(
+                                        R.string.video_rules_summary,
+                                        state.videoConfig.activeRuleCount,
+                                        VideoConfig.RULE_COUNT
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Text(
+                                    text = pluralStringResource(
+                                        R.plurals.video_forced_count,
+                                        state.videoConfig.forcedPackages.size,
+                                        state.videoConfig.forcedPackages.size
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            TextButton(onClick = { showVideoConfig = true }) {
+                                Text(stringResource(R.string.video_config_manage))
+                            }
+                        }
                     }
                 }
             }
@@ -387,6 +424,19 @@ fun HomeScreen(
         }
 
         item { Spacer(Modifier.height(8.dp)) }
+    }
+
+    if (showVideoConfig) {
+        VideoConfigSheet(
+            context = context,
+            config = state.videoConfig,
+            onDismiss = { showVideoConfig = false },
+            onConfigChange = { updated ->
+                state = state.copy(videoConfig = updated)
+                OneHzPreferences.setVideoConfig(context, updated)
+                OneHzEngine.onVideoConfigChanged()
+            }
+        )
     }
 }
 
