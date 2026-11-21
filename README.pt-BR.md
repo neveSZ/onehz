@@ -210,16 +210,16 @@ chegam juntos.
 
 **Como funciona:**
 
-- lê a lista estática de recursos da Samsung para as taxas do painel, com fallback para
-  `Display.supportedModes`;
-- o perfil normal padrão é **máximo do painel → ~60 Hz → mínimo do painel** (no S25+
-  testado: 120 → 60 → 10);
-- o ECO padrão limita a taxa máxima a 90 Hz quando suportado;
+- lê as taxas do painel da lista estática da Samsung ou do fallback
+  `Display.supportedModes` no Xiaomi;
+- o perfil normal padrão é **máximo do painel → 60 Hz → mínimo do painel**, com esperas
+  de 2 s e 5 s (no S25+ testado: 120 → 60 → 10);
+- o ECO padrão começa em 60 Hz, segura por 2 s e depois usa o mínimo do painel;
 - taxas não suportadas são rejeitadas no editor.
 
 ### 10. Configuração guiada
 
-- verificação de compatibilidade LTPO;
+- verificação de compatibilidade do fabricante/tela;
 - status e permissão do Shizuku;
 - isenção opcional de otimização de bateria;
 - whitelist opcional do Doze (pelo Shizuku);

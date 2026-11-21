@@ -203,16 +203,16 @@ together.
 
 **How it works:**
 
-- reads the static Samsung feature list for the panel rates, falling back to
-  `Display.supportedModes`;
-- the default normal profile is **panel maximum → ~60 Hz → panel minimum** (on the
-  tested S25+: 120 → 60 → 10);
-- the ECO default caps the top rate at 90 Hz when supported;
+- reads the panel rates from the static Samsung feature list or from the Xiaomi
+  `Display.supportedModes` fallback;
+- the default normal profile is **panel maximum → 60 Hz → panel minimum**, with 2 s and
+  5 s holds (on the tested S25+: 120 → 60 → 10);
+- the ECO default starts at 60 Hz, holds it for 2 s and then uses the panel minimum;
 - unsupported rates are rejected in the editor.
 
 ### 10. Guided setup
 
-- LTPO compatibility check;
+- vendor/display compatibility check;
 - Shizuku status and permission request;
 - optional battery-optimization exemption;
 - optional Doze whitelist (through Shizuku);
