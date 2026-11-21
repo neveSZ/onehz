@@ -1,0 +1,40 @@
+# Gradle / Android
+.gradle/
+build/
+**/build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+.kotlin/
+*.iml
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Signing material: never commit
+*.jks
+*.keystore
+keystore.properties
+signing/
+keys/
+
+# Build outputs and symbols
+*.apk
+*.aab
+*.ap_
+*.idsig
+mapping.txt
+*.hprof
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local analysis / private notes
+analysis/
+analysis*
+*.jks.bak
