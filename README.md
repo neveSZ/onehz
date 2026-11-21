@@ -6,7 +6,8 @@
 [![Android](https://img.shields.io/badge/Android-12%2B-green.svg)](https://developer.android.com)
 [![No root](https://img.shields.io/badge/root-not%20required-brightgreen.svg)](#requirements)
 [![No telemetry](https://img.shields.io/badge/telemetry-none-brightgreen.svg)](PRIVACY.md)
-[![Support](https://img.shields.io/badge/support-LivePix-ff69b4.svg)](https://livepix.gg/onehz)
+[![GitHub Sponsors](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ea4aaa.svg)](https://github.com/sponsors/neveSZ)
+[![LivePix (Brazil)](https://img.shields.io/badge/support-LivePix%20Brazil-ff69b4.svg)](https://livepix.gg/onehz)
 
 OneHZ is a refresh-rate controller for **Samsung LTPO displays**. It changes the
 display refresh rate through **Shizuku only** — no root, no direct ADB from the app,
@@ -20,7 +21,7 @@ no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 
 ## Project status
 
-- First public stable release: **1.0.0**.
+- Latest stable release: **1.0.1**.
 - Tested on **one device only**: Samsung Galaxy S25+ (`SM-S936B`).
 - Runs **only on Samsung phones with an LTPO panel**. The app checks this and fails
   closed (no changes) when the device is not eligible.
@@ -38,7 +39,7 @@ no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 | Resolution tested | 1080 × 2340 (FHD+) |
 | Panel rates exposed by the system | 120, 80, 60, 48, 40, 30, 26.67, 24, 20, 10 Hz |
 | Shizuku | `13.7.0-thedjchi` fork |
-| OneHZ | 1.0.0 |
+| OneHZ | 1.0.1 |
 
 **What was not tested:** other Samsung models, other Android/One UI versions, WQHD+,
 foldables, cover screens, tablets, and other brands. They may work, but I cannot
@@ -337,8 +338,9 @@ sent. See [PRIVACY.md](PRIVACY.md).
 - more Samsung devices/brands (unlikely: I have no other test devices);
 - removing the LTPO dependency (unlikely: it would need a different control path).
 
-Donations are already available through [LivePix](https://livepix.gg/onehz) and are
-optional. They **never** unlock features.
+Donations are optional. Supporters outside Brazil can use
+[GitHub Sponsors](https://github.com/sponsors/neveSZ); supporters in Brazil can use
+[LivePix](https://livepix.gg/onehz) (Pix/BRL). They **never** unlock features.
 
 ---
 
@@ -364,7 +366,7 @@ Signing is read from `keystore.properties` (never committed), from
 variables. See [docs/BUILDING.md](docs/BUILDING.md) and
 [keystore.properties.example](keystore.properties.example).
 
-Current release size: about **3.1 MB**.
+Current release size: about **3.2 MB**.
 
 ## Documentation
 
@@ -384,7 +386,7 @@ Current release size: about **3.1 MB**.
 Every release includes a `.sha256` file. You can also inspect the signer:
 
 ```powershell
-apksigner verify --print-certs OneHZ-1.0.0.apk
+apksigner verify --print-certs OneHZ-1.0.1.apk
 ```
 
 Certificate SHA-256:
@@ -394,9 +396,14 @@ Certificate SHA-256:
 
 ## Support
 
-All features are free and open source. If OneHZ is useful to you, you can support the
-developer at **<https://livepix.gg/onehz>**. Donations are optional and do not unlock
-anything.
+All features are free and open source. Donations are optional and never unlock anything.
+
+- **International:** [GitHub Sponsors](https://github.com/sponsors/neveSZ) — monthly or
+  one-time.
+- **Brazil:** [LivePix](https://livepix.gg/onehz) — Pix in BRL.
+
+Choose the option that works best for you. Both links are also available in the app under
+**About → Support OneHZ**.
 
 Bug reports and suggestions are welcome through GitHub Issues. Please include your
 device model, Android/One UI build, Shizuku version, OneHZ version, and the diagnostic

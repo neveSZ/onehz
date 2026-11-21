@@ -75,9 +75,9 @@ microphone. It does not use the network for anything other than the opt-in updat
 
 ## External links
 
-The About and Updates screens link to GitHub, Shizuku, Adaptive Hz, and LivePix. Opening a
-link hands the URL to your browser; OneHZ does not send data with it. Those sites have
-their own privacy policies.
+The About and Updates screens link to GitHub, GitHub Releases, GitHub Sponsors, LivePix,
+Shizuku, and Adaptive Hz. Opening a link hands the URL to your browser; OneHZ does not
+send data with it. Those sites have their own privacy policies.
 
 ## Changes
 

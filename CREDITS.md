@@ -8,6 +8,16 @@
   [unofficial Portuguese translation](LICENSE.pt-BR.md)
 - **Copyright:** © 2026 neveSZ
 
+## Support / Apoio
+
+- **International / Internacional:** [GitHub Sponsors](https://github.com/sponsors/neveSZ)
+  — monthly or one-time / mensal ou única.
+- **Brazil / Brasil:** [LivePix](https://livepix.gg/onehz) — Pix in BRL / Pix em BRL.
+
+Donations are optional and never unlock features. Doações são opcionais e nunca
+desbloqueiam funcionalidades. The same links are available in the app under
+**About → Support OneHZ** / **Sobre → Apoiar o OneHZ**.
+
 ## LLM-assisted development / Desenvolvimento assistido por LLM
 
 OneHZ was developed with help from large language models through the

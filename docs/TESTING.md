@@ -120,7 +120,7 @@ Test on the target device with a clean install of the signed release APK.
 
 ### Release artifacts
 
-- [ ] `versionName=1.0.0`, `versionCode=10000`.
+- [ ] `versionName=1.0.1`, `versionCode=1000200`.
 - [ ] APK signed (v3; minSdk 31).
 - [ ] Certificate SHA-256 matches the documented fingerprint.
 - [ ] SHA-256 file matches the APK.

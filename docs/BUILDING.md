@@ -81,11 +81,11 @@ keyPassword=...
 `version.properties` is the single source of truth:
 
 ```properties
-versionName=1.0.0
-versionCode=10000
+versionName=1.0.1
+versionCode=1000200
 ```
 
-The release workflow checks that the tag (`v1.0.0`) matches `versionName`.
+The release workflow checks that the tag (`v1.0.1`) matches `versionName`.
 
 ## R8
 
@@ -93,7 +93,7 @@ Release builds use R8 full mode by default, plus resource shrinking. The rules i
 `app/proguard-rules.pro` keep AIDL stubs, the UserService, Shizuku, and Binder plumbing.
 Do not remove these keeps without testing a full release build on a device.
 
-The current APK is about **3.1 MB**. `mapping.txt` is generated under
+The current APK is about **3.2 MB**. `mapping.txt` is generated under
 `app/build/outputs/mapping/release/`; keep it for crash deobfuscation and do not commit
 it.
 

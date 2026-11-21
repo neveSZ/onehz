@@ -12,7 +12,7 @@
 | Resolution | 1080 × 2340 (FHD+) |
 | Panel rates | 120, 80, 60, 48, 40, 30, 26.67, 24, 20, 10 Hz |
 | Shizuku | thedjchi fork `v13.7.0-thedjchi` |
-| OneHZ | 1.0.0 |
+| OneHZ | 1.0.1 |
 
 Everything else is **untested**.
 

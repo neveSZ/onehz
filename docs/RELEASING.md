@@ -132,8 +132,8 @@ Paste the clipboard into the GitHub secret. Do not paste it into issues, chat, o
 3. Create and push the tag:
 
    ```powershell
-   git tag -a v1.0.0 -m "OneHZ 1.0.0"
-   git push origin main --tags
+   git tag -a v1.0.1 -m "OneHZ 1.0.1"
+   git push origin main v1.0.1
    ```
 
 4. The workflow builds and publishes the GitHub Release with:
@@ -148,9 +148,9 @@ Paste the clipboard into the GitHub secret. Do not paste it into issues, chat, o
 ## Verifying the release
 
 ```powershell
-Get-FileHash .\OneHZ-1.0.0.apk -Algorithm SHA256
-apksigner verify --print-certs .\OneHZ-1.0.0.apk
-aapt2 dump badging .\OneHZ-1.0.0.apk | Select-String "package:"
+Get-FileHash .\OneHZ-1.0.1.apk -Algorithm SHA256
+apksigner verify --print-certs .\OneHZ-1.0.1.apk
+aapt2 dump badging .\OneHZ-1.0.1.apk | Select-String "package:"
 ```
 
 ## Beta releases
