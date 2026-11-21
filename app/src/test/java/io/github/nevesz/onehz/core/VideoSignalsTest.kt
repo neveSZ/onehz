@@ -245,6 +245,124 @@ class VideoSignalsTest {
     }
 
     @Test
+    fun `forced app is video even with a paused session and no codec`() {
+        val config = VideoConfig.DEFAULT.copy(forcedPackages = setOf("com.google.android.youtube"))
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.google.android.youtube",
+            sessionState = "PAUSED(2)",
+            pids = emptySet(),
+            codecPids = emptyMap(),
+            audioStarted = false
+        )
+        assertEquals(VideoSignals.Source.PLAYING, verdict.source)
+        assertEquals("forced", verdict.detail)
+    }
+
+    @Test
+    fun `forced apps still work when every signal is disabled`() {
+        val config = VideoConfig(
+            useMediaSession = false,
+            pausedSessionBlocks = false,
+            requireVideoCodec = false,
+            requireStartedAudio = false,
+            forcedPackages = setOf("com.instagram.android")
+        )
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.instagram.android",
+            sessionState = null,
+            pids = emptySet(),
+            codecPids = emptyMap(),
+            audioStarted = false
+        )
+        assertEquals(VideoSignals.Source.PLAYING, verdict.source)
+    }
+
+    @Test
+    fun `a paused session can fall back to the audio signal`() {
+        val config = VideoConfig.DEFAULT.copy(pausedSessionBlocks = false)
+        val pids = VideoSignals.processPids(ps, "com.google.android.youtube")
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.google.android.youtube",
+            sessionState = "PAUSED(2)",
+            pids = pids,
+            codecPids = VideoSignals.videoCodecPids(processes),
+            audioStarted = true
+        )
+        assertEquals(VideoSignals.Source.PLAYING, verdict.source)
+        assertTrue(verdict.detail.orEmpty().startsWith("audio+"))
+    }
+
+    @Test
+    fun `the media session can be ignored entirely`() {
+        val config = VideoConfig.DEFAULT.copy(useMediaSession = false)
+        val pids = VideoSignals.processPids(ps, "com.google.android.youtube")
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.google.android.youtube",
+            sessionState = "PLAYING(3)",
+            pids = pids,
+            codecPids = VideoSignals.videoCodecPids(processes),
+            audioStarted = false
+        )
+        assertEquals(VideoSignals.Source.NONE, verdict.source)
+    }
+
+    @Test
+    fun `the video codec requirement can be disabled`() {
+        val config = VideoConfig.DEFAULT.copy(requireVideoCodec = false)
+        val pids = VideoSignals.processPids(ps, "com.google.android.apps.youtube.music")
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.google.android.apps.youtube.music",
+            sessionState = "PLAYING(3)",
+            pids = pids,
+            codecPids = VideoSignals.videoCodecPids(processes),
+            audioStarted = false
+        )
+        assertEquals(VideoSignals.Source.PLAYING, verdict.source)
+    }
+
+    @Test
+    fun `a decoder alone can be accepted without a session`() {
+        val config = VideoConfig.DEFAULT.copy(requireStartedAudio = false)
+        val pids = VideoSignals.processPids(ps, "com.instagram.android")
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.instagram.android",
+            sessionState = null,
+            pids = pids,
+            codecPids = VideoSignals.videoCodecPids(instagramProcesses),
+            audioStarted = false
+        )
+        assertEquals(VideoSignals.Source.PLAYING, verdict.source)
+        assertTrue(verdict.detail.orEmpty().startsWith("codec+"))
+    }
+
+    @Test
+    fun `no positive signal never detects video`() {
+        val config = VideoConfig(
+            useMediaSession = false,
+            pausedSessionBlocks = false,
+            requireVideoCodec = false,
+            requireStartedAudio = false
+        )
+        val pids = VideoSignals.processPids(ps, "com.google.android.youtube")
+        val verdict = VideoSignals.decide(
+            config = config,
+            packageName = "com.google.android.youtube",
+            sessionState = "PLAYING(3)",
+            pids = pids,
+            codecPids = VideoSignals.videoCodecPids(processes),
+            audioStarted = true
+        )
+        assertEquals(VideoSignals.Source.NONE, verdict.source)
+        assertEquals("no-signal", verdict.detail)
+    }
+
+    @Test
     fun `video rule is a floor and never lowers a tier`() {
         assertEquals(20, VideoSignals.floorHz(10, 20))
         assertEquals(60, VideoSignals.floorHz(60, 20))

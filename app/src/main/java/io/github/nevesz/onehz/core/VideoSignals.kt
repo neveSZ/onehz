@@ -8,9 +8,11 @@ package io.github.nevesz.onehz.core
  *  - which processes currently hold a video codec (Codec2 ResourceManager);
  *  - which media audio player is actually started (AudioService).
  *
- * A video is considered active when the foreground app has a video codec and either a playing
- * MediaSession or a started USAGE_MEDIA player. Audio-only apps have no video codec; camera and
- * games hold the screen but use encoders, not video decoders.
+ * With the default [VideoConfig] a video is considered active when the foreground app
+ * has a video codec and either a playing MediaSession or a started USAGE_MEDIA player.
+ * Audio-only apps have no video codec; camera and games hold the screen but use
+ * encoders, not video decoders. Every rule can be disabled by the user, and packages
+ * in [VideoConfig.forcedPackages] are always reported as playing.
  */
 object VideoSignals {
 
@@ -170,10 +172,14 @@ object VideoSignals {
     }
 
     /**
-     * Final decision for the foreground app. A session that exists but is not playing is
-     * authoritative, so a paused YouTube never falls through to the audio heuristic.
+     * Final decision for the foreground app applying the user-tunable [VideoConfig].
+     *
+     * With the default config a session that exists but is not playing is authoritative,
+     * so a paused YouTube never falls through to the audio heuristic. Each rule can be
+     * disabled individually; [VideoConfig.forcedPackages] bypasses every rule.
      */
     fun decide(
+        config: VideoConfig = VideoConfig.DEFAULT,
         packageName: String?,
         sessionState: String?,
         pids: Set<Int>,
@@ -183,21 +189,38 @@ object VideoSignals {
         if (packageName.isNullOrBlank()) {
             return Verdict(Source.NONE, null, "no-foreground")
         }
-        if (sessionState != null && !isActive(sessionState)) {
+        if (packageName in config.forcedPackages) {
+            return Verdict(Source.PLAYING, packageName, "forced")
+        }
+        if (!config.hasPositiveSignal) {
+            return Verdict(Source.NONE, packageName, "no-signal")
+        }
+
+        val sessionPlaying = sessionState != null && isActive(sessionState)
+        if (config.useMediaSession && sessionState != null && !sessionPlaying &&
+            config.pausedSessionBlocks
+        ) {
             return Verdict(Source.NONE, packageName, "session:$sessionState")
         }
+
         val codec = codecPids.entries.firstOrNull { it.key in pids }?.value
-        if (codec == null) {
+        if (config.requireVideoCodec && codec == null) {
             val detail = if (sessionState != null) "audio-only" else "no-video-codec"
             return Verdict(Source.NONE, packageName, detail)
         }
-        if (sessionState != null) {
-            return Verdict(Source.PLAYING, packageName, "$sessionState+$codec")
+        if (config.useMediaSession && sessionPlaying) {
+            return Verdict(Source.PLAYING, packageName, "$sessionState+${codec ?: "session"}")
         }
-        if (audioStarted) {
-            return Verdict(Source.PLAYING, packageName, "audio+$codec")
+        if (config.requireStartedAudio && !audioStarted) {
+            return Verdict(Source.NONE, packageName, "paused+${codec ?: "media"}")
         }
-        return Verdict(Source.NONE, packageName, "paused+$codec")
+        if (config.requireStartedAudio) {
+            return Verdict(Source.PLAYING, packageName, "audio+${codec ?: "media"}")
+        }
+        if (codec != null) {
+            return Verdict(Source.PLAYING, packageName, "codec+$codec")
+        }
+        return Verdict(Source.NONE, packageName, "no-signal")
     }
 
     /** The video rule is a floor: it never lowers a tier, only raises it to the minimum. */
