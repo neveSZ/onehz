@@ -1,6 +1,7 @@
 Versão 1.2.1-beta.2
 * Segunda beta do 1.2.1: interior modernizado, sem funções novas
-* As configurações usam DataStore com migração automática; exporte um backup antes de instalar (voltar atrás restaura os padrões)
-* Novo conjunto de ícones, edge-to-edge e Baseline Profile para inicialização mais rápida
-* Telas mais fluidas e ferramentas de publicação e CI mais seguras
-* Mantém as correções de AOD e Sleep da 1.2.1-beta.1
+* Configurações com DataStore e migração automática; exporte um backup antes (voltar atrás restaura os padrões)
+* Ícones, edge-to-edge e Baseline Profile para inicialização mais rápida
+* O switch de taxa do AOD aparece em todos os aparelhos; brilho não suportado é explicado
+* Telas mais fluidas e publicação/CI mais seguros
+* Mantém as correções de AOD e Sleep da beta.1

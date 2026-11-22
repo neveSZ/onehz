@@ -148,31 +148,18 @@ fun AodScreen(
 
             item {
                 OneHzCard {
-                    if (gate.profile.supportsAodBrightness) {
-                        ToggleRow(
-                            icon = AppIcons.nightlight(),
-                            title = stringResource(R.string.aod_rate_title),
-                            description = stringResource(R.string.aod_hint),
-                            checked = state.rateEnabled,
-                            enabled = oneHzEnabled,
-                            onCheckedChange = { on ->
-                                OneHzPreferences.setAodRateEnabled(context, on)
-                                state = loadAod(context)
-                                OneHzEngine.reapply()
-                            }
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.aod_rate_title),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(R.string.aod_rate_master_desc),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    ToggleRow(
+                        icon = AppIcons.nightlight(),
+                        title = stringResource(R.string.aod_rate_title),
+                        description = stringResource(R.string.aod_hint),
+                        checked = state.rateEnabled,
+                        enabled = oneHzEnabled,
+                        onCheckedChange = { on ->
+                            OneHzPreferences.setAodRateEnabled(context, on)
+                            state = loadAod(context)
+                            OneHzEngine.reapply()
+                        }
+                    )
                     if (state.rateEnabled || !gate.profile.supportsAodBrightness) {
                         Column {
                             Spacer(Modifier.height(12.dp))
@@ -342,6 +329,19 @@ fun AodScreen(
                                 Text(stringResource(R.string.aod_brightness_restore))
                             }
                         }
+                    }
+                }
+            } else {
+                item {
+                    OneHzCard {
+                        ToggleRow(
+                            icon = AppIcons.brightnessMedium(),
+                            title = stringResource(R.string.aod_brightness_title),
+                            description = stringResource(R.string.aod_brightness_unsupported),
+                            checked = false,
+                            enabled = false,
+                            onCheckedChange = {}
+                        )
                     }
                 }
             }

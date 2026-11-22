@@ -78,7 +78,7 @@
     <string name="aod_master_title">Control del AOD</string>
     <string name="aod_control_off">Control del AOD desactivado. Actívalo desde la pantalla de inicio.</string>
     <string name="aod_requires_master">Activa OneHZ para controlar el AOD.</string>
-    <string name="aod_rate_master_desc">Controlado por el interruptor del AOD en la pantalla de inicio.</string>
+    <string name="aod_brightness_unsupported">No se puede ajustar en este dispositivo. El panel gestiona el brillo del AOD automáticamente.</string>
     <string name="aod_rate_title">Tasa en AOD</string>
     <string name="aod_brightness_restore_confirm">Restaurar brillo</string>
     <string name="aod_brightness_restore_confirm_title">¿Restaurar brillo del sistema?</string>

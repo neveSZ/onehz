@@ -1,6 +1,7 @@
 Version 1.2.1-beta.2
 * Second 1.2.1 beta: modernized internals, no new features
-* Settings now use DataStore with an automatic one-time migration; export a backup before installing (downgrading restores defaults)
-* New bundled icon set, edge-to-edge layout and Baseline Profile for faster startup
+* Settings use DataStore with automatic migration; export a backup before installing (downgrading restores defaults)
+* Bundled icons, edge-to-edge and Baseline Profile for faster startup
+* AOD rate switch now appears on all devices; unsupported brightness is explained
 * Smoother screens plus safer release and CI tooling
 * Keeps the AOD and Sleep fixes from 1.2.1-beta.1

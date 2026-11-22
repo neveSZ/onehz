@@ -30,6 +30,11 @@ edge-to-edge, Baseline Profile, and release tooling.
 - Package queries use the typed `ApplicationInfoFlags` APIs.
 - Bottom sheets use explicit `SheetState`s instead of the deprecated helper.
 
+### Fixed
+
+- The AOD rate switch is available on every supported device. Devices without the
+  Samsung AOD brightness key now show an explanation instead of hiding the option.
+
 ### Removed
 
 - `compose-material-icons-extended`; the 57 used icons are bundled as vector

@@ -78,7 +78,7 @@
     <string name="aod_master_title">AOD control</string>
     <string name="aod_control_off">AOD control is off. Turn it on from the Home screen.</string>
     <string name="aod_requires_master">Turn on OneHZ to control AOD.</string>
-    <string name="aod_rate_master_desc">Controlled by the AOD switch on the Home screen.</string>
+    <string name="aod_brightness_unsupported">Not adjustable on this device. The panel manages AOD brightness automatically.</string>
     <string name="aod_rate_title">AOD rate</string>
     <string name="aod_brightness_restore_confirm">Restore brightness</string>
     <string name="aod_brightness_restore_confirm_title">Restore system brightness?</string>
