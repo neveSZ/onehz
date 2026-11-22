@@ -1,5 +1,6 @@
 package io.github.nevesz.onehz.core
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
@@ -108,6 +109,7 @@ object DisplayProfileResolver {
             .firstOrNull()
     }
 
+    @SuppressLint("PrivateApi")
     private fun systemProperty(key: String): String? = runCatching {
         val clazz = Class.forName("android.os.SystemProperties")
         val get = clazz.getMethod("get", String::class.java, String::class.java)

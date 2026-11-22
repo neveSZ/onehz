@@ -34,6 +34,9 @@ devices, and no AccessibilityService.
 - Put user-facing text in `app/src/main/res/values/` and add PT-BR/ES translations when
   possible.
 - Add or update unit tests for pure logic.
+- When behavior or visible UI changes, update `CHANGELOG.md`, the relevant docs
+  (`FEATURES`, `FAQ`, `SLEEP`, `INSTALL`) and the `fastlane` metadata. Screenshots come
+  from the final build; see [docs/RELEASING.md](docs/RELEASING.md).
 - Run:
 
   ```powershell

@@ -133,7 +133,7 @@ object ProfileCodec {
             null
         }
         val frequency = decodeFrequency(json.optJSONObject("frequency")) ?: return null
-        val video = decodeVideo(json.optJSONObject("video")) ?: return null
+        val video = decodeVideo(json.optJSONObject("video"))
         return DeviceProfile(
             id = id,
             kind = kind,

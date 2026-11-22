@@ -14,15 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.Code
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Extension
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.NewReleases
-import androidx.compose.material.icons.outlined.Payments
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -49,6 +40,7 @@ import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.update.ReleaseSelector
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 private const val DEV_URL = "https://github.com/neveSZ"
 private const val REPO_URL = "https://github.com/neveSZ/onehz"
@@ -114,21 +106,21 @@ fun AboutScreen(
                 Text(stringResource(R.string.about_links), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(4.dp))
                 LinkRow(
-                    icon = Icons.Outlined.Code,
+                    icon = AppIcons.code(),
                     title = stringResource(R.string.about_repo_title),
                     subtitle = stringResource(R.string.about_repo_subtitle),
                     url = REPO_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.NewReleases,
+                    icon = AppIcons.newReleases(),
                     title = stringResource(R.string.about_releases_title),
                     subtitle = stringResource(R.string.about_releases_subtitle),
                     url = ReleaseSelector.RELEASES_PAGE
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Description,
+                    icon = AppIcons.description(),
                     title = stringResource(R.string.about_license, stringResource(R.string.credits_license_value)),
                     url = LICENSE_URL
                 )
@@ -150,14 +142,14 @@ fun AboutScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 LinkRow(
-                    icon = Icons.Outlined.FavoriteBorder,
+                    icon = AppIcons.favoriteBorder(),
                     title = stringResource(R.string.about_support_github_title),
                     subtitle = stringResource(R.string.about_support_github_subtitle),
                     url = SPONSORS_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Payments,
+                    icon = AppIcons.payments(),
                     title = stringResource(R.string.about_support_livepix_title),
                     subtitle = stringResource(R.string.about_support_livepix_subtitle),
                     url = LIVEPIX_URL
@@ -183,42 +175,42 @@ fun AboutScreen(
                 )
                 Spacer(Modifier.height(8.dp))
                 LinkRow(
-                    icon = Icons.Outlined.Person,
+                    icon = AppIcons.person(),
                     title = stringResource(R.string.about_made_by_handle),
                     subtitle = stringResource(R.string.about_dev_subtitle),
                     url = DEV_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Extension,
+                    icon = AppIcons.extension(),
                     title = stringResource(R.string.credits_adaptive),
                     subtitle = stringResource(R.string.credits_adaptive_subtitle),
                     url = ADAPTIVE_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Extension,
+                    icon = AppIcons.extension(),
                     title = stringResource(R.string.credits_shizuku_api),
                     subtitle = stringResource(R.string.credits_shizuku_api_subtitle),
                     url = SHIZUKU_API_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Extension,
+                    icon = AppIcons.extension(),
                     title = stringResource(R.string.credits_shizuku),
                     subtitle = stringResource(R.string.credits_shizuku_subtitle),
                     url = SHIZUKU_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Extension,
+                    icon = AppIcons.extension(),
                     title = stringResource(R.string.credits_shizuku_fork),
                     subtitle = stringResource(R.string.credits_shizuku_fork_subtitle),
                     url = SHIZUKU_FORK_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(
-                    icon = Icons.Outlined.Extension,
+                    icon = AppIcons.extension(),
                     title = stringResource(R.string.credits_androidx),
                     subtitle = stringResource(R.string.credits_androidx_subtitle),
                     url = ANDROIDX_URL
@@ -228,7 +220,7 @@ fun AboutScreen(
                     onClick = { showLicenses = true },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Outlined.Description, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(AppIcons.description(), contentDescription = null, modifier = Modifier.size(18.dp))
                     Text(stringResource(R.string.about_third_party), Modifier.padding(start = 6.dp))
                 }
             }
@@ -311,7 +303,7 @@ private fun LinkRow(
         onClick = { runCatching { uriHandler.openUri(url) } },
         trailing = {
             Icon(
-                Icons.AutoMirrored.Outlined.OpenInNew,
+                AppIcons.openInNew(),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(18.dp)

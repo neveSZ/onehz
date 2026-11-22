@@ -19,13 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Backup
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.RocketLaunch
-import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,9 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -48,6 +39,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.LanguageManager
 import io.github.nevesz.onehz.core.ThemeMode
@@ -55,12 +48,15 @@ import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
-import io.github.nevesz.onehz.ui.update.UpdateSettingsCard
+import io.github.nevesz.onehz.ui.components.rememberFullHeightSheetState
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
 import io.github.nevesz.onehz.ui.theme.OneHzBg
 import io.github.nevesz.onehz.ui.theme.OneHzDarkBg
-import io.github.nevesz.onehz.ui.theme.OneHzSurface
 import io.github.nevesz.onehz.ui.theme.OneHzDarkSurface
+import io.github.nevesz.onehz.ui.theme.OneHzSurface
+import io.github.nevesz.onehz.ui.update.UpdateSettingsCard
+import io.github.nevesz.onehz.ui.viewmodel.SettingsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,10 +71,11 @@ fun SettingsScreen(
     onOpenDiagnostics: () -> Unit,
     onOpenBackup: () -> Unit
 ) {
+    val vm: SettingsViewModel = viewModel()
     var showAppearance by rememberSaveable { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetState = rememberFullHeightSheetState()
     val context = LocalContext.current
-    val updateState by UpdateCenter.state.collectAsState()
+    val updateState by vm.updateState.collectAsStateWithLifecycle()
 
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
         item {
@@ -92,21 +89,21 @@ fun SettingsScreen(
         item {
             OneHzCard {
                 SettingRow(
-                    icon = Icons.Outlined.Palette,
+                    icon = AppIcons.palette(),
                     title = stringResource(R.string.settings_appearance),
                     subtitle = stringResource(themeMode.labelRes()),
                     onClick = { showAppearance = true }
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    icon = Icons.Outlined.Translate,
+                    icon = AppIcons.translate(),
                     title = stringResource(R.string.language),
                     subtitle = languageLabel(),
                     onClick = onOpenLanguage
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    icon = Icons.Outlined.RocketLaunch,
+                    icon = AppIcons.rocketLaunch(),
                     title = stringResource(R.string.settings_setup),
                     subtitle = stringResource(R.string.settings_setup_desc),
                     onClick = onOpenSetup
@@ -126,7 +123,7 @@ fun SettingsScreen(
         item {
             OneHzCard {
                 SettingRow(
-                    icon = Icons.Outlined.Backup,
+                    icon = AppIcons.backup(),
                     title = stringResource(R.string.settings_backup),
                     subtitle = stringResource(R.string.settings_backup_desc),
                     onClick = onOpenBackup
@@ -167,7 +164,7 @@ fun SettingsScreen(
             item {
                 OneHzCard {
                     SettingRow(
-                        icon = Icons.Outlined.BugReport,
+                        icon = AppIcons.bugReport(),
                         title = stringResource(R.string.settings_diagnostics),
                         subtitle = stringResource(R.string.settings_diagnostics_desc),
                         onClick = onOpenDiagnostics
@@ -189,7 +186,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
             OneHzCard {
                 SettingRow(
-                    icon = Icons.Outlined.Info,
+                    icon = AppIcons.info(),
                     title = stringResource(R.string.about_title),
                     subtitle = stringResource(R.string.settings_about_desc),
                     onClick = onOpenAbout

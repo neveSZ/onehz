@@ -1,6 +1,7 @@
 package io.github.nevesz.onehz.core.profile
 
 import android.content.Context
+import androidx.core.content.edit
 import io.github.nevesz.onehz.core.DisplayRates
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.OneHzPreferences
@@ -36,9 +37,9 @@ object ProfileStore {
 
     fun save(context: Context, state: ProfileState) {
         val normalized = normalize(state, rates(context))
-        OneHzPreferences.prefs(context).edit()
-            .putString(KEY_STATE, ProfileCodec.encode(normalized))
-            .apply()
+        OneHzPreferences.prefs(context).edit {
+            putString(KEY_STATE, ProfileCodec.encode(normalized))
+        }
     }
 
     fun activeProfile(context: Context): DeviceProfile? =

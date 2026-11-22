@@ -13,14 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLengthTrim
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +61,7 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +99,7 @@ fun ProfilesScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            AppIcons.arrowBack(),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -175,7 +175,7 @@ fun ProfilesScreen(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Outlined.Add, contentDescription = null)
+                    Icon(AppIcons.add(), contentDescription = null)
                     Text(stringResource(R.string.profile_new), Modifier.padding(start = 8.dp))
                 }
             }
@@ -356,7 +356,7 @@ private fun ProfileRow(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             TextButton(onClick = onEdit) {
-                Icon(Icons.Outlined.Tune, contentDescription = null, modifier = Modifier.size(18.dp))
+                Icon(AppIcons.tune(), contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(stringResource(R.string.profile_edit), Modifier.padding(start = 6.dp))
             }
             onReset?.let {
@@ -367,7 +367,7 @@ private fun ProfileRow(
             onDelete?.let {
                 TextButton(onClick = it) {
                     Icon(
-                        Icons.Outlined.Delete,
+                        AppIcons.delete(),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(18.dp)
@@ -390,7 +390,8 @@ private fun CreateProfileDialog(
     onDismiss: () -> Unit,
     onCreate: (String) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
+    val nameState = rememberTextFieldState()
+    val name = nameState.text.toString()
     val trimmed = name.trim()
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -408,12 +409,12 @@ private fun CreateProfileDialog(
                 )
                 Spacer(Modifier.height(10.dp))
                 OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it.take(ProfileCodec.MAX_NAME_LENGTH) },
+                    state = nameState,
+                    inputTransformation = InputTransformation.maxLengthTrim(ProfileCodec.MAX_NAME_LENGTH),
                     label = { Text(stringResource(R.string.profile_name)) },
                     placeholder = { Text(stringResource(R.string.profile_name_hint)) },
                     isError = trimmed.isEmpty(),
-                    singleLine = true
+                    lineLimits = TextFieldLineLimits.SingleLine
                 )
                 if (error) {
                     Spacer(Modifier.height(6.dp))

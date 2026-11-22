@@ -85,6 +85,16 @@ Apache License, Version 2.0
 ======================================================================
 
 ======================================================================
+Material Symbols
+https://fonts.google.com/icons
+Copyright (c) Google LLC
+Apache License, Version 2.0
+
+OneHZ bundles a subset of Material Symbols Outlined as vector drawables
+in res/drawable. The Apache License 2.0 text is reproduced below.
+======================================================================
+
+======================================================================
 AndroidX, Jetpack Compose, Kotlin and kotlinx.coroutines
 https://github.com/androidx/androidx
 https://github.com/JetBrains/kotlin

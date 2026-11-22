@@ -28,6 +28,18 @@ The feature is opt-in, off by default, and only runs while OneHZ itself is enabl
 first enable shows a confirmation dialog explaining that notifications and internet calls
 may be delayed; regular calls and alarms still work.
 
+## Detail screen
+
+- The Sleep switch on **Home** is the only master. The detail screen does not duplicate it.
+- The behavior options, wake-up list and measurements stay visible and editable while
+  Sleep is off; only "Test now" and pause/resume require Sleep to be on.
+- When Sleep is off, the detail shows a compact note. A status line appears only for
+  active, paused, charging, music, outside-window or failure states.
+- The delay warning lives inside the "How it works" card and can be dismissed with
+  "Got it"; the choice is persisted, so it does not reopen on every visit.
+- Behavior switches use the same icons and typography as the rest of the app; sub-options
+  inside a labeled group stay icon-free.
+
 ## Options and defaults
 
 | Option | Default | Notes |

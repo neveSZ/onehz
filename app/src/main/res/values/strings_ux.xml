@@ -26,9 +26,7 @@
     <string name="profile_auto_economy_desc">Use Economy while the system battery saver is on.</string>
     <string name="profile_auto_economy_footer">Apps can keep their own profile with the option below.</string>
     <string name="profile_reference_hint">This app uses profile %1$s. Editing it changes every app that uses it.</string>
-    <string name="profile_reference_global">The forced-video app list is global and applies to every profile.</string>
     <string name="profile_video_link">Profile video: %1$d Hz minimum</string>
-    <string name="profile_video_advanced">Detection rules (advanced)</string>
     <string name="profile_times_label">Holds: %1$s</string>
     <string name="profile_delete_active_note">This is the selected profile. %1$s will be selected.</string>
     <string name="profile_reset_editor_body">The fields return to the device defaults. Review and tap Save.</string>
@@ -72,13 +70,13 @@
     <string name="sleep_whitelist_effect">This changes the system Doze exceptions and may increase battery use.</string>
     <string name="sleep_failure_hint">This can happen on some system builds. Check the diagnostics or try light Doze.</string>
     <string name="sleep_details_hint">Last 5 sleep sessions. Short sessions are also listed.</string>
-    <string name="sleep_warning_toggle">Important warning</string>
+    <string name="sleep_warning_dismiss">Got it</string>
 
     <!-- AOD detail. -->
     <string name="aod_master_title">AOD control</string>
     <string name="aod_control_off">AOD control is off. Turn it on from the Home screen.</string>
     <string name="aod_requires_master">Turn on OneHZ to control AOD.</string>
-    <string name="aod_rate_master_desc">Controlled by the AOD switch on the Home screen.</string>
+    <string name="aod_brightness_unsupported">Not adjustable on this device. The panel manages AOD brightness automatically.</string>
     <string name="aod_rate_title">AOD rate</string>
     <string name="aod_brightness_restore_confirm">Restore brightness</string>
     <string name="aod_brightness_restore_confirm_title">Restore system brightness?</string>

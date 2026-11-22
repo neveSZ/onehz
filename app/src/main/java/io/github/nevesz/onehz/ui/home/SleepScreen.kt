@@ -4,8 +4,8 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.os.PowerManager
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,13 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,13 +23,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.DozeState
@@ -62,10 +60,13 @@ import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
 import io.github.nevesz.onehz.ui.components.BannerTone
+import io.github.nevesz.onehz.ui.components.HowItWorksCard
 import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.viewmodel.SleepViewModel
 import kotlinx.coroutines.delay
 
 private data class SleepUi(
@@ -98,9 +99,10 @@ fun SleepScreen(
     dataVersion: Int,
     onBack: () -> Unit,
 ) {
-    val phase by Diagnostics.dozePhase.collectAsState()
-    val activeSince by Diagnostics.dozeActiveSince.collectAsState()
-    val shizuku by ShizukuGateway.state.collectAsState()
+    val vm: SleepViewModel = viewModel()
+    val phase by vm.phase.collectAsStateWithLifecycle()
+    val activeSince by vm.activeSince.collectAsStateWithLifecycle()
+    val shizuku by vm.shizuku.collectAsStateWithLifecycle()
 
     var ui by remember(dataVersion) { mutableStateOf(loadSleep(context)) }
     var refresh by remember { mutableIntStateOf(0) }
@@ -116,8 +118,8 @@ fun SleepScreen(
 
     var showDetails by rememberSaveable { mutableStateOf(false) }
     var showWhitelist by rememberSaveable { mutableStateOf(false) }
-    var showWarning by rememberSaveable {
-        mutableStateOf(!SleepPreferences.warningSeen(context))
+    var warningSeen by rememberSaveable {
+        mutableStateOf(SleepPreferences.warningSeen(context))
     }
     var pickStart by rememberSaveable { mutableStateOf(false) }
     var pickEnd by rememberSaveable { mutableStateOf(false) }
@@ -160,7 +162,7 @@ fun SleepScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            AppIcons.arrowBack(),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -173,45 +175,112 @@ fun SleepScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                OneHzCard {
-                    Text(
-                        text = statusText(masterEnabled, ui, phase, activeSince, shizuku),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    TextButton(onClick = { showWarning = !showWarning }) {
-                        Text(stringResource(R.string.sleep_warning_toggle))
+            if (!masterEnabled || !ui.enabled) {
+                item {
+                    OneHzCard {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = MaterialTheme.shapes.small,
+                                color = MaterialTheme.colorScheme.primaryContainer
+                            ) {
+                                Box(Modifier.size(38.dp), contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        AppIcons.bedtime(),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Text(
+                                text = stringResource(
+                                    if (!masterEnabled) R.string.sleep_requires_master
+                                    else R.string.sleep_state_off
+                                ),
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 12.dp)
+                            )
+                        }
                     }
-                    AnimatedVisibility(visible = showWarning) {
-                        InfoBanner(
-                            body = stringResource(R.string.sleep_delay_warning),
-                            tone = BannerTone.WARN,
-                        )
-                    }
-                    if (ui.enabled && phase == DozePhase.FAILED) {
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(R.string.sleep_failure_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.error
-                        )
+                }
+            } else {
+                val now = System.currentTimeMillis()
+                val paused = ui.pausedUntil > now
+                val active = phase == DozePhase.ACTIVE && activeSince > 0
+                val exceptional = paused || active ||
+                    phase == DozePhase.CHARGING ||
+                    phase == DozePhase.MUSIC ||
+                    phase == DozePhase.OUTSIDE_WINDOW ||
+                    phase == DozePhase.FAILED ||
+                    shizuku != ShizukuState.READY
+                if (exceptional) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                when {
+                                    phase == DozePhase.FAILED -> AppIcons.warning()
+                                    paused || phase == DozePhase.MUSIC -> AppIcons.pause()
+                                    phase == DozePhase.CHARGING -> AppIcons.bolt()
+                                    phase == DozePhase.OUTSIDE_WINDOW -> AppIcons.schedule()
+                                    active -> AppIcons.bedtime()
+                                    else -> AppIcons.bolt()
+                                },
+                                contentDescription = null,
+                                tint = if (phase == DozePhase.FAILED) {
+                                    MaterialTheme.colorScheme.error
+                                } else {
+                                    MaterialTheme.colorScheme.primary
+                                },
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(
+                                    text = statusText(masterEnabled, ui, phase, activeSince, shizuku),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = if (phase == DozePhase.FAILED) {
+                                        MaterialTheme.colorScheme.error
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurfaceVariant
+                                    }
+                                )
+                                if (phase == DozePhase.FAILED) {
+                                    Spacer(Modifier.height(2.dp))
+                                    Text(
+                                        text = stringResource(R.string.sleep_failure_hint),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             item {
-                OneHzCard {
-                    Text(
-                        text = stringResource(R.string.sleep_how_title),
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = stringResource(R.string.sleep_how_body),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                HowItWorksCard(
+                    title = stringResource(R.string.sleep_how_title),
+                    body = stringResource(R.string.sleep_how_body)
+                ) {
+                    if (!warningSeen) {
+                        Spacer(Modifier.height(10.dp))
+                        InfoBanner(
+                            body = stringResource(R.string.sleep_delay_warning),
+                            tone = BannerTone.WARN,
+                            action = {
+                                TextButton(onClick = {
+                                    SleepPreferences.setWarningSeen(context)
+                                    warningSeen = true
+                                }) {
+                                    Text(stringResource(R.string.sleep_warning_dismiss))
+                                }
+                            }
+                        )
+                    }
                 }
             }
 
@@ -219,7 +288,7 @@ fun SleepScreen(
                 OneHzCard {
                     Text(
                         text = stringResource(R.string.sleep_options_title),
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleMedium
                     )
                     Spacer(Modifier.height(6.dp))
                     if (!ui.enabled) {
@@ -231,6 +300,7 @@ fun SleepScreen(
                         Spacer(Modifier.height(6.dp))
                     }
                     ToggleRow(
+                        icon = AppIcons.bedtime(),
                         title = stringResource(R.string.sleep_deep_title),
                         description = stringResource(R.string.sleep_deep_desc),
                         checked = ui.deep,
@@ -241,6 +311,7 @@ fun SleepScreen(
                         },
                     )
                     ToggleRow(
+                        icon = AppIcons.bolt(),
                         title = stringResource(R.string.sleep_skip_charging_title),
                         description = stringResource(R.string.sleep_skip_charging_desc),
                         checked = ui.skipCharging,
@@ -251,6 +322,7 @@ fun SleepScreen(
                         },
                     )
                     ToggleRow(
+                        icon = AppIcons.pause(),
                         title = stringResource(R.string.sleep_skip_music_title),
                         description = stringResource(R.string.sleep_skip_music_desc),
                         checked = ui.skipMusic,
@@ -261,7 +333,7 @@ fun SleepScreen(
                         },
                     )
                     ToggleRow(
-                        icon = Icons.Outlined.Schedule,
+                        icon = AppIcons.schedule(),
                         title = stringResource(R.string.sleep_window_title),
                         description = stringResource(R.string.sleep_window_desc),
                         checked = ui.windowEnabled,
@@ -274,13 +346,13 @@ fun SleepScreen(
                     if (ui.windowEnabled) {
                         Column(Modifier.padding(start = 4.dp)) {
                             SettingRow(
-                                icon = Icons.Outlined.Schedule,
+                                icon = AppIcons.schedule(),
                                 title = stringResource(R.string.sleep_window_start),
                                 onClick = { pickStart = true },
                                 trailing = { Text(formatSleepMinute(ui.window.startMinute)) },
                             )
                             SettingRow(
-                                icon = Icons.Outlined.Schedule,
+                                icon = AppIcons.schedule(),
                                 title = stringResource(R.string.sleep_window_end),
                                 onClick = { pickEnd = true },
                                 trailing = { Text(formatSleepMinute(ui.window.endMinute)) },
@@ -293,16 +365,10 @@ fun SleepScreen(
             item {
                 OneHzCard {
                     SettingRow(
-                        icon = Icons.Outlined.NotificationsActive,
+                        icon = AppIcons.notificationsActive(),
                         title = stringResource(R.string.sleep_whitelist_title),
                         subtitle = stringResource(R.string.sleep_whitelist_desc),
                         onClick = { showWhitelist = true },
-                    )
-                    Text(
-                        text = stringResource(R.string.sleep_whitelist_effect),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
                     )
                 }
             }
@@ -330,7 +396,7 @@ fun SleepScreen(
                     OneHzCard {
                         Text(
                             text = stringResource(R.string.sleep_advanced_title),
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(Modifier.height(8.dp))
                         OutlinedButton(
@@ -341,7 +407,7 @@ fun SleepScreen(
                             enabled = !testing && shizuku == ShizukuState.READY,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                            Icon(AppIcons.playArrow(), contentDescription = null)
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 stringResource(
@@ -398,7 +464,7 @@ private fun MeasurementsCard(
     OneHzCard {
         Text(
             text = stringResource(R.string.sleep_measurements_title),
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleMedium
         )
         Spacer(Modifier.height(6.dp))
         if (usage.partial) {

@@ -13,9 +13,9 @@ import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.diagnostic.InputMonitorState
 import io.github.nevesz.onehz.engine.OneHzEngine
+import java.util.concurrent.Executors
 import kotlinx.coroutines.flow.MutableStateFlow
 import rikka.shizuku.Shizuku
-import java.util.concurrent.Executors
 
 enum class ShizukuState { NOT_RUNNING, PERMISSION_REQUIRED, READY, SERVICE_UNAVAILABLE }
 

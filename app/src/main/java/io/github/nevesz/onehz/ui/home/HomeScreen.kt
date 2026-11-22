@@ -8,7 +8,6 @@ import android.os.PowerManager
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,15 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Bedtime
-import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.material.icons.outlined.ChevronRight
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.outlined.Movie
-import androidx.compose.material.icons.outlined.Nightlight
-import androidx.compose.material.icons.outlined.Speed
-import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -46,7 +37,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +58,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.DisplayProfileResolver
@@ -88,16 +80,19 @@ import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
-import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.BannerTone
+import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.components.rememberPartialSheetState
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.profile.profileLabel
 import io.github.nevesz.onehz.ui.profile.profileSummary
 import io.github.nevesz.onehz.ui.update.UpdateBanner
+import io.github.nevesz.onehz.ui.viewmodel.HomeViewModel
 import kotlin.math.roundToInt
 
 private data class HomeState(
@@ -150,18 +145,19 @@ fun HomeScreen(
     onOpenAod: () -> Unit,
     onOpenSleep: () -> Unit
 ) {
-    val shizuku by ShizukuGateway.state.collectAsState()
-    val update by UpdateCenter.state.collectAsState()
+    val vm: HomeViewModel = viewModel()
+    val shizuku by vm.shizuku.collectAsStateWithLifecycle()
+    val update by vm.update.collectAsStateWithLifecycle()
     val gate = remember { DisplayGate.evaluate(context) }
-    val activeKey by Diagnostics.activeTierKey.collectAsState()
-    val activeStep by Diagnostics.activeStep.collectAsState()
-    val activeStepCount by Diagnostics.activeStepCount.collectAsState()
-    val appliedHz by Diagnostics.appliedHz.collectAsState()
-    val idleReason by Diagnostics.idleReason.collectAsState()
-    val videoSource by Diagnostics.videoSource.collectAsState()
-    val activeLayer by Diagnostics.activeLayer.collectAsState()
-    val activeProfileId by Diagnostics.activeProfileId.collectAsState()
-    val activeAppPackage by Diagnostics.activeAppPackage.collectAsState()
+    val activeKey by vm.activeTierKey.collectAsStateWithLifecycle()
+    val activeStep by vm.activeStep.collectAsStateWithLifecycle()
+    val activeStepCount by vm.activeStepCount.collectAsStateWithLifecycle()
+    val appliedHz by vm.appliedHz.collectAsStateWithLifecycle()
+    val idleReason by vm.idleReason.collectAsStateWithLifecycle()
+    val videoSource by vm.videoSource.collectAsStateWithLifecycle()
+    val activeLayer by vm.activeLayer.collectAsStateWithLifecycle()
+    val activeProfileId by vm.activeProfileId.collectAsStateWithLifecycle()
+    val activeAppPackage by vm.activeAppPackage.collectAsStateWithLifecycle()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var refresh by remember { mutableIntStateOf(0) }
@@ -263,7 +259,7 @@ fun HomeScreen(
                 OneHzCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Outlined.ErrorOutline,
+                            AppIcons.errorOutline(),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -336,7 +332,7 @@ fun HomeScreen(
                         }
                     ),
                     tone = BannerTone.WARN,
-                    icon = Icons.Outlined.Bolt,
+                    icon = AppIcons.bolt(),
                     action = {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             OutlinedButton(onClick = { ShizukuGateway.refresh() }) {
@@ -386,7 +382,7 @@ fun HomeScreen(
         item {
             OneHzCard {
                 SettingRow(
-                    icon = Icons.Outlined.Nightlight,
+                    icon = AppIcons.nightlight(),
                     title = stringResource(R.string.aod_title),
                     subtitle = aodSummary(state, gate.profile.supportsAodBrightness),
                     onClick = onOpenAod,
@@ -406,7 +402,7 @@ fun HomeScreen(
                                 }
                             )
                             Icon(
-                                Icons.Outlined.ChevronRight,
+                                AppIcons.chevronRight(),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
@@ -416,7 +412,7 @@ fun HomeScreen(
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
-                    icon = Icons.Outlined.Bedtime,
+                    icon = AppIcons.bedtime(),
                     title = stringResource(R.string.sleep_title),
                     subtitle = sleepRowSummary(context, state.enabled, state.sleepEnabled),
                     onClick = onOpenSleep,
@@ -440,7 +436,7 @@ fun HomeScreen(
                                 }
                             )
                             Icon(
-                                Icons.Outlined.ChevronRight,
+                                AppIcons.chevronRight(),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
@@ -533,7 +529,7 @@ private fun ProfileCard(
     OneHzCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                Icons.Outlined.Tune,
+                AppIcons.tune(),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp)
@@ -595,7 +591,7 @@ private fun ProfileCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    Icons.Outlined.Movie,
+                    AppIcons.movie(),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
@@ -607,7 +603,7 @@ private fun ProfileCard(
                     modifier = Modifier.weight(1f).padding(start = 6.dp)
                 )
                 Icon(
-                    Icons.Outlined.ChevronRight,
+                    AppIcons.chevronRight(),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
@@ -644,7 +640,7 @@ private fun ProfileSwitcherSheet(
     onSelect: (DeviceProfile) -> Unit,
     onManage: () -> Unit
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
             Text(
                 text = stringResource(R.string.home_section_profiles),
@@ -791,7 +787,7 @@ private fun HeroCard(
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Spacer(Modifier.height(8.dp))
         ToggleRow(
-            icon = Icons.Outlined.Speed,
+            icon = AppIcons.speed(),
             title = stringResource(R.string.master_switch),
             description = stringResource(R.string.master_switch_desc),
             checked = state.enabled,

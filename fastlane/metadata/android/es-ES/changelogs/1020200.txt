@@ -1,0 +1,7 @@
+Versión 1.2.1
+* AOD: interruptor de tasa en todos los dispositivos; brillo no compatible desactivado
+* Sueño: un solo maestro en Inicio, opciones siempre disponibles y tarjetas más limpias
+* Vídeo: tasa mínima separada de las reglas de detección, ahora en una hoja dedicada
+* Ajustes en DataStore con migración automática; exporta una copia antes
+* Arranque más rápido con Baseline Profile y menos dependencia de iconos
+* Nuevo: instala y actualiza desde Shizu Store

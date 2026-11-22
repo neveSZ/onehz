@@ -1,0 +1,7 @@
+Version 1.2.1
+* AOD: rate switch on all devices; unsupported brightness is shown disabled
+* Sleep detail redesigned: one master on Home, options always available, cleaner cards
+* Video: minimum rate separated from detection rules, now in a focused sheet
+* Settings moved to DataStore with one-time migration; export a backup before updating
+* Faster startup with Baseline Profile and a smaller icon dependency
+* New: install and update from Shizu Store

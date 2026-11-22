@@ -17,17 +17,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Remove
-import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -40,6 +37,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.theme.OneHzWarningDark
 import io.github.nevesz.onehz.ui.theme.OneHzWarningLight
 
@@ -76,6 +75,38 @@ fun OneHzCard(
         tonalElevation = 0.dp
     ) {
         Column(modifier = Modifier.padding(18.dp), content = content)
+    }
+}
+
+/** Card with the shared "How it works" layout: info icon, title and body. */
+@Composable
+fun HowItWorksCard(
+    title: String,
+    body: String,
+    modifier: Modifier = Modifier,
+    footer: @Composable ColumnScope.() -> Unit = {}
+) {
+    OneHzCard(modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                AppIcons.info(),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        footer()
     }
 }
 
@@ -226,7 +257,7 @@ fun SettingRow(
             trailing()
         } else if (onClick != null) {
             Icon(
-                Icons.AutoMirrored.Filled.ArrowForward,
+                AppIcons.arrowForward(),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
@@ -262,7 +293,7 @@ fun InfoBanner(
     ) {
         Row(Modifier.padding(14.dp), verticalAlignment = Alignment.Top) {
             Icon(
-                icon ?: if (tone == BannerTone.INFO) Icons.Outlined.Info else Icons.Outlined.Warning,
+                icon ?: if (tone == BannerTone.INFO) AppIcons.info() else AppIcons.warning(),
                 contentDescription = null,
                 tint = accent,
                 modifier = Modifier.size(20.dp)
@@ -362,14 +393,15 @@ fun HzPicker(
     onSelect: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
+    val textState = rememberTextFieldState("$value Hz")
+    LaunchedEffect(value) { textState.setTextAndPlaceCursorAtEnd("$value Hz") }
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = it },
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = "$value Hz",
-            onValueChange = {},
+            state = textState,
             readOnly = true,
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
@@ -451,7 +483,7 @@ fun DurationStepper(
             onClick = { onSecondsChange((seconds - 0.5f).coerceIn(range)) },
             enabled = seconds > range.start
         ) {
-            Icon(Icons.Outlined.Remove, contentDescription = stringResource(R.string.step_decrease))
+            Icon(AppIcons.remove(), contentDescription = stringResource(R.string.step_decrease))
         }
         Text(
             text = formatStepSeconds(seconds),
@@ -463,7 +495,7 @@ fun DurationStepper(
             onClick = { onSecondsChange((seconds + 0.5f).coerceIn(range)) },
             enabled = seconds < range.endInclusive
         ) {
-            Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.step_increase))
+            Icon(AppIcons.add(), contentDescription = stringResource(R.string.step_increase))
         }
     }
 }

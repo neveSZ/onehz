@@ -24,7 +24,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OneHZ"
         android:usesCleartextTraffic="false"
-        tools:targetApi="33">
+        android:enableOnBackInvokedCallback="true"
+        tools:ignore="UnusedAttribute">
+
+        <profileable android:shell="true" />
 
         <activity
             android:name=".ui.MainActivity"

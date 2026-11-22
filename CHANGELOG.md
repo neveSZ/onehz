@@ -4,6 +4,49 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.1] - 2026-11-22
+
+First stable release of the 1.2.1 patch. Includes the AOD/Sleep fixes from 1.2.1-beta.1
+and a broad internal modernization: storage, UI state, icons, edge-to-edge, Baseline
+Profile, and release tooling.
+
+### Added
+
+- Baseline Profile module, generator, and `profileinstaller` integration.
+- `scripts/validate-version.py` and `scripts/bump-version.py`, also used by CI.
+- Secret scanning (gitleaks) and dependency review in CI.
+- `scripts/generate-material-symbols.py` for the bundled icon set.
+
+### Changed
+
+- Preferences moved to DataStore behind a synchronous facade, with a one-time
+  migration from the legacy `onehz_prefs.xml`. Downgrading after the migration
+  restores defaults, so export a backup before installing this release.
+- Screens collect state through small ViewModels with
+  `collectAsStateWithLifecycle`.
+- Edge-to-edge layout, predictive back, and theme-driven system bars.
+- Text fields use `TextFieldState`; sliders use `SliderState`/`RangeSliderState`.
+- Compiled against SDK 37.1 with AGP 9.5.2, Gradle 9.9.2, and Kotlin 2.4.21.
+- Package queries use the typed `ApplicationInfoFlags` APIs.
+- Bottom sheets use explicit `SheetState`s instead of the deprecated helper.
+- The Sleep detail screen uses the shared "How it works" card, a compact note only when
+  Sleep is off, a status line only for active/paused/failure states, one dismissible
+  warning, consistent icons on its switches, and less repeated copy.
+- Primary switches now use icons consistently; sub-options stay icon-free.
+- The video card now separates the minimum rate from the detection rules. The rules and
+  the global forced-app list open in a focused sheet, and the card shows the active rule
+  count plus a warning when no positive signal is enabled.
+
+### Fixed
+
+- The AOD rate switch is available on every supported device. Devices without the
+  Samsung AOD brightness key now show an explanation instead of hiding the option.
+
+### Removed
+
+- `compose-material-icons-extended`; the 57 used icons are bundled as vector
+  drawables.
+
 ## [1.2.1-beta.1] - 2026-11-22
 
 First beta of the 1.2.1 patch. Fixes the AOD switch hierarchy and keeps the Sleep
@@ -27,6 +70,34 @@ options available while the feature is off.
 ### Changed
 
 - Backup includes the AOD master switch (`aodMasterEnabled`).
+=======
+## [Unreleased]
+
+Modernization pass preparing 1.3.0. No user-facing feature changes yet.
+
+### Added
+
+- Baseline Profile module, generator, and `profileinstaller` integration.
+- `scripts/validate-version.py` and `scripts/bump-version.py`, also used by CI.
+- Secret scanning (gitleaks) and dependency review in CI.
+- `scripts/generate-material-symbols.py` for the bundled icon set.
+
+### Changed
+
+- Preferences moved to DataStore behind a synchronous facade, with a one-time migration
+  from the legacy `onehz_prefs.xml`.
+- Screens collect state through small ViewModels with
+  `collectAsStateWithLifecycle`.
+- Edge-to-edge layout, predictive back, and theme-driven system bars.
+- Text fields use `TextFieldState`; sliders use `SliderState`/`RangeSliderState`.
+- Compiled against SDK 37.1 with AGP 9.5.2, Gradle 9.9.2, and Kotlin 2.4.21.
+- Package queries use the typed `ApplicationInfoFlags` APIs.
+- Bottom sheets use explicit `SheetState`s instead of the deprecated helper.
+
+### Removed
+
+- `compose-material-icons-extended`; the 57 used icons are bundled as vector drawables.
+
 
 ## [1.2.0] - 2026-11-22
 

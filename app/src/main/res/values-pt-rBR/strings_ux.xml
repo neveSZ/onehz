@@ -26,9 +26,7 @@
     <string name="profile_auto_economy_desc">Usar Economia enquanto a economia de bateria do sistema estiver ativa.</string>
     <string name="profile_auto_economy_footer">Apps podem manter o próprio perfil com a opção abaixo.</string>
     <string name="profile_reference_hint">Este app usa o perfil %1$s. Editar esse perfil muda todos os apps que o usam.</string>
-    <string name="profile_reference_global">A lista de apps sempre tratados como vídeo é global e vale para todos os perfis.</string>
     <string name="profile_video_link">Vídeo do perfil: mínimo %1$d Hz</string>
-    <string name="profile_video_advanced">Regras de detecção (avançado)</string>
     <string name="profile_times_label">Tempos: %1$s</string>
     <string name="profile_delete_active_note">Este é o perfil selecionado. %1$s será selecionado.</string>
     <string name="profile_reset_editor_body">Os campos voltam ao padrão do aparelho. Revise e toque em Salvar.</string>
@@ -72,13 +70,13 @@
     <string name="sleep_whitelist_effect">Isso altera as exceções do Doze do sistema e pode aumentar o consumo.</string>
     <string name="sleep_failure_hint">Isso pode acontecer em algumas versões do sistema. Veja o diagnóstico ou tente o Doze leve.</string>
     <string name="sleep_details_hint">Últimas 5 sessões de sono. Sessões curtas também aparecem.</string>
-    <string name="sleep_warning_toggle">Aviso importante</string>
+    <string name="sleep_warning_dismiss">Entendi</string>
 
     <!-- AOD: detalhe. -->
     <string name="aod_master_title">Controle do AOD</string>
     <string name="aod_control_off">Controle do AOD desligado. Ative na tela inicial.</string>
     <string name="aod_requires_master">Ative o OneHZ para controlar o AOD.</string>
-    <string name="aod_rate_master_desc">Controlado pelo switch do AOD na tela inicial.</string>
+    <string name="aod_brightness_unsupported">Não ajustável neste aparelho. O painel controla o brilho do AOD automaticamente.</string>
     <string name="aod_rate_title">Taxa no AOD</string>
     <string name="aod_brightness_restore_confirm">Restaurar brilho</string>
     <string name="aod_brightness_restore_confirm_title">Restaurar brilho do sistema?</string>

@@ -2,15 +2,17 @@ package io.github.nevesz.onehz.ui.home
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
+import io.github.nevesz.onehz.ui.viewmodel.SleepViewModel
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -26,6 +28,7 @@ fun sleepQuickStatus(
     masterEnabled: Boolean,
     sleepEnabled: Boolean,
 ): String {
+    val vm: SleepViewModel = viewModel()
     if (!masterEnabled) return stringResource(R.string.sleep_requires_master)
     if (!sleepEnabled) return stringResource(R.string.home_sleep_summary_off)
 
@@ -37,9 +40,9 @@ fun sleepQuickStatus(
         )
     }
 
-    val phase by Diagnostics.dozePhase.collectAsState()
-    val activeSince by Diagnostics.dozeActiveSince.collectAsState()
-    val shizuku by ShizukuGateway.state.collectAsState()
+    val phase by vm.phase.collectAsStateWithLifecycle()
+    val activeSince by vm.activeSince.collectAsStateWithLifecycle()
+    val shizuku by vm.shizuku.collectAsStateWithLifecycle()
     return when {
         phase == DozePhase.ACTIVE && activeSince > 0 ->
             stringResource(

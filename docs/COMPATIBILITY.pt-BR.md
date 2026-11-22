@@ -15,7 +15,7 @@
 | Taxas do painel | 120, 80, 60, 48, 40, 30, 26,67, 24, 20, 10 Hz | 120, 90, 60, 30 Hz |
 | Rota de controle | `refresh_rate_mode` + `peak/min` | `secure/miui_refresh_rate` |
 | Shizuku | fork thedjchi `v13.7.0-thedjchi` | fork thedjchi `v13.7.0-thedjchi` |
-| OneHZ | 1.2.1-beta.1 | 1.2.1-beta.1 |
+| OneHZ | 1.2.1 | 1.2.1 |
 
 Todo o resto é **não testado**.
 
@@ -92,7 +92,8 @@ deixaria a tela inteira mais escura.
 - A detecção da tela depende de ajustes do firmware e da saída do `dumpsys`; uma
   atualização de firmware pode mudar isso. O HyperOS usa `miui_refresh_rate` (ou
   `user_refresh_rate` no HyperOS 1).
-- O brilho do AOD é **somente Samsung** (`debug_aod_brightness`); fica oculto no Xiaomi.
+- O brilho do AOD é **somente Samsung** (`debug_aod_brightness`). No Xiaomi a linha
+  aparece como um switch desabilitado explicando que o painel cuida disso.
 - **O Sono (Doze forçado) depende do fabricante.** Algumas ROMs ignoram ou revertem o
   idle forçado; o card mostra “A ROM não entrou em Doze” em vez de fingir que funcionou.
 - **Light idle no HyperOS:** no POCO X7 Pro testado, o deep idle é forçado
@@ -121,7 +122,7 @@ deixaria a tela inteira mais escura.
 - aparelhos com uma única taxa de atualização (bloqueados);
 - Samsung sem `refresh_rate_mode` (bloqueado);
 - Xiaomi sem `miui_refresh_rate`/`user_refresh_rate` (bloqueado);
-- brilho do AOD no Xiaomi (somente Samsung; oculto);
+- brilho do AOD no Xiaomi (somente Samsung; aparece desabilitado com explicação);
 - dobráveis e telas de capa (não testados);
 - tablets (não testados);
 - modo WQHD+ no Samsung testado (não testado);

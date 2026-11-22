@@ -47,7 +47,9 @@ class OneHzKeepAliveService : Service() {
             addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
             addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
         }
-        receiver = ScreenStateReceiver().also { registerReceiver(it, filter) }
+        receiver = ScreenStateReceiver().also {
+            ContextCompat.registerReceiver(this, it, filter, ContextCompat.RECEIVER_NOT_EXPORTED)
+        }
 
         OneHzEngine.start(this)
         AodBrightnessController.start(this)

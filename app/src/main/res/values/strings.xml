@@ -56,9 +56,9 @@
     <string name="aod_brightness_restore">Restore system brightness</string>
 
     <string name="video_mode_title">Video mode</string>
-    <string name="video_mode_desc">Prevents the refresh rate from dropping too low while a video plays.</string>
-    <string name="video_min_hz">Minimum during video</string>
-    <string name="video_min_hint">While a video plays, this minimum overrides the profile\'s rate.</string>
+    <string name="video_mode_desc">Recognizes videos automatically using the detection rules.</string>
+    <string name="video_min_hz">Minimum rate during video</string>
+    <string name="video_min_hint">Replaces the profile rate while the video is playing.</string>
     <string name="video_state_playing">playing</string>
     <string name="video_state_idle">idle</string>
     <string name="video_diag_title">Video detection</string>
@@ -67,6 +67,7 @@
     <string name="video_diag_hint">Run it with a video playing to see the package, session, codec, and audio state.</string>
     <string name="video_diag_config">Rules: %1$s · forced: %2$d</string>
     <string name="video_rules_title">Detection rules</string>
+    <string name="video_detection_title">Video detection</string>
     <string name="video_rules_desc">Choose which signals OneHZ uses to decide that a video is playing.</string>
     <string name="video_rules_summary">%1$d of %2$d rules active</string>
     <string name="video_rule_session_title">Use MediaSession</string>
@@ -79,7 +80,7 @@
     <string name="video_rule_audio_desc">Without a session, a started USAGE_MEDIA player confirms playback. Disable to accept a decoder alone.</string>
     <string name="video_rules_none_warning">No detection rule is enabled. Video will not be detected unless the app is in the forced list.</string>
     <string name="video_forced_title">Apps always treated as video</string>
-    <string name="video_forced_desc">The video minimum applies whenever one of these apps is in the foreground, even without a session, decoder, or audio.</string>
+    <string name="video_forced_desc">The minimum video rate applies whenever one of these apps is in the foreground, even without a session, decoder, or audio.</string>
     <string name="video_forced_manage">Manage apps</string>
     <string name="video_forced_clear">Clear</string>
     <string name="video_forced_missing">Not installed</string>
@@ -366,7 +367,7 @@
     <string name="profile_battery_override_hint">The system battery saver is on. OneHZ is using Economy.</string>
     <string name="profile_idle_off">No profile is selected: frequency is not controlled.</string>
     <string name="profile_video_title">Video</string>
-    <string name="profile_video_desc">The video minimum for this profile.</string>
+    <string name="profile_video_desc">Keeps the refresh rate above a minimum while a video is playing.</string>
     <string name="profile_video_summary">Video: %1$d Hz minimum</string>
     <string name="profile_app_assigned">Profile: %1$s</string>
     <string name="profile_app_choose">Profile for this app</string>

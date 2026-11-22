@@ -24,14 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BatteryFull
-import androidx.compose.material.icons.outlined.Bedtime
-import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,7 +35,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -64,6 +54,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
@@ -74,6 +67,8 @@ import io.github.nevesz.onehz.shizuku.ShizukuState
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
+import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.viewmodel.SetupViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -81,10 +76,11 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SetupScreen(context: Context, onDone: () -> Unit) {
+    val vm: SetupViewModel = viewModel()
     val lifecycleOwner = LocalLifecycleOwner.current
     val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
-    val shizuku by ShizukuGateway.state.collectAsState()
+    val shizuku by vm.shizuku.collectAsStateWithLifecycle()
     val gate = remember { DisplayGate.evaluate(context) }
 
     var refresh by remember { mutableIntStateOf(0) }
@@ -144,7 +140,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                 StepHeader(number = 1, title = stringResource(R.string.setup_required))
                 Spacer(Modifier.height(10.dp))
                 SetupCheckItem(
-                    icon = Icons.Outlined.Smartphone,
+                    icon = AppIcons.smartphone(),
                     title = stringResource(R.string.setup_compat_title),
                     description = gate.summary,
                     statusText = if (gate.eligible) {
@@ -165,7 +161,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                 if (gate.eligible) {
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
                     SetupCheckItem(
-                        icon = Icons.Outlined.Bolt,
+                        icon = AppIcons.bolt(),
                         title = stringResource(R.string.setup_shizuku_title),
                         description = stringResource(R.string.setup_shizuku_desc),
                         statusText = when (shizuku) {
@@ -217,7 +213,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                     Spacer(Modifier.height(10.dp))
 
                     PermissionItem(
-                        icon = Icons.Outlined.BatteryFull,
+                        icon = AppIcons.batteryFull(),
                         title = stringResource(R.string.setup_battery_title),
                         description = stringResource(R.string.setup_battery_desc),
                         granted = batteryExempt,
@@ -227,7 +223,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                     )
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
                     PermissionItem(
-                        icon = Icons.Outlined.Bedtime,
+                        icon = AppIcons.bedtime(),
                         title = stringResource(R.string.setup_doze_title),
                         description = stringResource(R.string.setup_doze_desc),
                         granted = dozeWhitelisted,
@@ -248,7 +244,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                     )
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
                     PermissionItem(
-                        icon = Icons.Outlined.Notifications,
+                        icon = AppIcons.notifications(),
                         title = stringResource(R.string.setup_notif_title),
                         description = stringResource(R.string.setup_notif_desc),
                         granted = notifications,
@@ -289,7 +285,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                     enabled = shizuku == ShizukuState.READY,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Outlined.Check, contentDescription = null)
+                    Icon(AppIcons.check(), contentDescription = null)
                     Text(stringResource(R.string.setup_finish), Modifier.padding(start = 8.dp))
                 }
                 Spacer(Modifier.height(4.dp))
@@ -357,7 +353,7 @@ private fun SetupCheckItem(
             StatusBadge(
                 text = statusText,
                 tone = tone,
-                icon = if (tone == StatusTone.OK) Icons.Outlined.CheckCircle else null
+                icon = if (tone == StatusTone.OK) AppIcons.checkCircle() else null
             )
             if (action != null) {
                 Spacer(Modifier.height(8.dp))
@@ -400,7 +396,7 @@ private fun PermissionItem(
                     if (granted) R.string.setup_granted else R.string.setup_pending
                 ),
                 tone = if (granted) StatusTone.OK else StatusTone.NEUTRAL,
-                icon = if (granted) Icons.Outlined.CheckCircle else null
+                icon = if (granted) AppIcons.checkCircle() else null
             )
             Spacer(Modifier.height(6.dp))
             if (showAction || secondaryLabel != null) {

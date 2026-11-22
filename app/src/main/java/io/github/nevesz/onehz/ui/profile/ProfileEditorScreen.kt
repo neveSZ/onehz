@@ -15,12 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Movie
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLengthTrim
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
@@ -51,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.ProfileIssue
@@ -61,12 +61,16 @@ import io.github.nevesz.onehz.core.profile.ProfileCodec
 import io.github.nevesz.onehz.core.profile.ProfileKind
 import io.github.nevesz.onehz.core.profile.VideoRules
 import io.github.nevesz.onehz.core.profile.VideoSettings
+import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.DurationStepper
+import io.github.nevesz.onehz.ui.components.HowItWorksCard
 import io.github.nevesz.onehz.ui.components.HzPicker
 import io.github.nevesz.onehz.ui.components.OneHzCard
+import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
-import io.github.nevesz.onehz.ui.home.VideoForcedAppsSheet
+import io.github.nevesz.onehz.ui.home.VideoConfigSheet
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 /**
  * Editor for one saved profile. Frequency, video and name are saved together so a profile
@@ -85,12 +89,15 @@ fun ProfileEditorScreen(
     onDelete: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    var name by rememberSaveable(initial.id) { mutableStateOf(initial.name.orEmpty()) }
+    val nameState = rememberSaveable(initial.id, saver = TextFieldState.Saver) {
+        TextFieldState(initial.name.orEmpty())
+    }
+    val name = nameState.text.toString()
     var steps by rememberSaveable(initial.id, saver = stepsSaver) {
         mutableStateOf(initial.frequency.steps)
     }
     var videoEnabled by rememberSaveable(initial.id) { mutableStateOf(initial.video.enabled) }
-    var videoMinHz by rememberSaveable(initial.id) { mutableStateOf(initial.video.minHz) }
+    var videoMinHz by rememberSaveable(initial.id) { mutableIntStateOf(initial.video.minHz) }
     var useSession by rememberSaveable(initial.id) {
         mutableStateOf(initial.video.rules.useMediaSession)
     }
@@ -107,7 +114,9 @@ fun ProfileEditorScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     var confirmReset by remember { mutableStateOf(false) }
     var showVideoRules by rememberSaveable { mutableStateOf(false) }
-    var showForcedApps by rememberSaveable { mutableStateOf(false) }
+    var forcedPackages by remember {
+        mutableStateOf(OneHzPreferences.forcedVideoPackages(context))
+    }
 
     val frequency = FrequencyProfile(steps)
     val video = VideoSettings(
@@ -154,7 +163,7 @@ fun ProfileEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = { tryBack() }) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            AppIcons.arrowBack(),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -197,8 +206,8 @@ fun ProfileEditorScreen(
             if (isCustom) {
                 item {
                     OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it.take(ProfileCodec.MAX_NAME_LENGTH) },
+                        state = nameState,
+                        inputTransformation = InputTransformation.maxLengthTrim(ProfileCodec.MAX_NAME_LENGTH),
                         label = { Text(stringResource(R.string.profile_name)) },
                         placeholder = { Text(stringResource(R.string.profile_name_hint)) },
                         isError = nameIssue,
@@ -207,7 +216,7 @@ fun ProfileEditorScreen(
                         } else {
                             null
                         },
-                        singleLine = true,
+                        lineLimits = TextFieldLineLimits.SingleLine,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -272,27 +281,10 @@ fun ProfileEditorScreen(
             }
 
             item {
-                OneHzCard {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            Icons.Outlined.Info,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.profile_how_title),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.profile_how_body),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                HowItWorksCard(
+                    title = stringResource(R.string.profile_how_title),
+                    body = stringResource(R.string.profile_how_body)
+                )
             }
 
             if (showsLowRateWarning) {
@@ -300,12 +292,12 @@ fun ProfileEditorScreen(
                     OneHzCard {
                         Text(
                             text = stringResource(R.string.profile_low_rate_warning_title),
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = stringResource(R.string.profile_low_rate_warning_body),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -352,7 +344,7 @@ fun ProfileEditorScreen(
                     enabled = steps.size < FrequencyProfile.MAX_STEPS,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Outlined.Add, contentDescription = null)
+                    Icon(AppIcons.add(), contentDescription = null)
                     Text(stringResource(R.string.profile_add_step), Modifier.padding(start = 8.dp))
                 }
             }
@@ -361,24 +353,25 @@ fun ProfileEditorScreen(
                 OneHzCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Outlined.Movie,
+                            AppIcons.ondemandVideo(),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = stringResource(R.string.profile_video_title),
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
                     Text(
                         text = stringResource(R.string.profile_video_desc),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     ToggleRow(
+                        icon = AppIcons.movie(),
                         title = stringResource(R.string.video_mode_title),
                         description = stringResource(R.string.video_mode_desc),
                         checked = videoEnabled,
@@ -399,68 +392,24 @@ fun ProfileEditorScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(Modifier.height(4.dp))
-                        TextButton(onClick = { showVideoRules = !showVideoRules }) {
-                            Text(stringResource(R.string.profile_video_advanced))
-                        }
-                        if (showVideoRules) {
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = stringResource(R.string.video_rules_title),
-                                style = MaterialTheme.typography.titleSmall
-                            )
-                            Text(
-                                text = stringResource(
-                                    R.string.video_rules_summary,
-                                    video.rules.activeRuleCount,
-                                    VideoConfig.RULE_COUNT
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_session_title),
-                                description = stringResource(R.string.video_rule_session_desc),
-                                checked = useSession,
-                                onCheckedChange = { useSession = it }
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_paused_title),
-                                description = stringResource(R.string.video_rule_paused_desc),
-                                checked = pausedBlocks,
-                                enabled = useSession,
-                                onCheckedChange = { pausedBlocks = it }
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_codec_title),
-                                description = stringResource(R.string.video_rule_codec_desc),
-                                checked = requireCodec,
-                                onCheckedChange = { requireCodec = it }
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_audio_title),
-                                description = stringResource(R.string.video_rule_audio_desc),
-                                checked = requireAudio,
-                                onCheckedChange = { requireAudio = it }
-                            )
-                            if (!video.rules.hasPositiveSignal) {
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = stringResource(R.string.video_rules_none_warning),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(R.string.profile_reference_global),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Spacer(Modifier.height(8.dp))
+                        SettingRow(
+                            icon = AppIcons.tune(),
+                            title = stringResource(R.string.video_detection_title),
+                            subtitle = stringResource(
+                                R.string.video_rules_summary,
+                                video.rules.activeRuleCount,
+                                VideoConfig.RULE_COUNT
+                            ),
+                            onClick = { showVideoRules = true }
                         )
-                        TextButton(onClick = { showForcedApps = true }) {
-                            Text(stringResource(R.string.video_forced_manage))
+                        if (!video.rules.hasPositiveSignal) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(R.string.video_rules_none_warning),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     }
                 }
@@ -555,8 +504,29 @@ fun ProfileEditorScreen(
             )
         }
 
-        if (showForcedApps) {
-            VideoForcedAppsSheet(context = context, onDismiss = { showForcedApps = false })
+        if (showVideoRules) {
+            VideoConfigSheet(
+                context = context,
+                config = VideoConfig(
+                    useMediaSession = useSession,
+                    pausedSessionBlocks = pausedBlocks,
+                    requireVideoCodec = requireCodec,
+                    requireStartedAudio = requireAudio,
+                    forcedPackages = forcedPackages
+                ),
+                onDismiss = { showVideoRules = false },
+                onConfigChange = { updated ->
+                    useSession = updated.useMediaSession
+                    pausedBlocks = updated.pausedSessionBlocks
+                    requireCodec = updated.requireVideoCodec
+                    requireAudio = updated.requireStartedAudio
+                    if (updated.forcedPackages != forcedPackages) {
+                        forcedPackages = updated.forcedPackages
+                        OneHzPreferences.setForcedVideoPackages(context, updated.forcedPackages)
+                        OneHzEngine.onVideoConfigChanged()
+                    }
+                }
+            )
         }
     }
 }
@@ -597,7 +567,7 @@ private fun StepCard(
             )
             IconButton(onClick = onRemove) {
                 Icon(
-                    Icons.Outlined.Delete,
+                    AppIcons.delete(),
                     contentDescription = stringResource(R.string.profile_remove_step)
                 )
             }

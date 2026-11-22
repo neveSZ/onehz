@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "OneHZ"
 include(":app")
+include(":baselineprofile")

@@ -10,7 +10,7 @@ want to understand, audit, or modify the app.
 │                                                                              │
 │  MainActivity / Compose UI                                                   │
 │        │                                                                     │
-│        ├── OneHzPreferences (SharedPreferences)                              │
+│        ├── PreferencesStore (DataStore + prefs)                              │
 │        ├── ProfileStore (profiles, active profile, app assignments)          │
 │        ├── Diagnostics (StateFlow, in-memory)                                │
 │        └── OneHzEngine (HandlerThread "OneHzEngine")                         │
@@ -52,6 +52,20 @@ want to understand, audit, or modify the app.
 - **Per-device `getevent` threads:** one monitor per accepted touchscreen, owned by the
   UserService.
 
+## UI state and preferences
+
+- **Preferences:** `OneHzPreferences` and `SleepPreferences` keep their synchronous
+  `SharedPreferences`-style API, backed by `PreferencesStore`. DataStore is the source of
+  truth; an in-memory snapshot serves the engine and the UI. On first start the old
+  `onehz_prefs.xml` is migrated once and the XML is cleared.
+- **UI state:** screens collect the `StateFlow`s owned by `Diagnostics`,
+  `ShizukuGateway`, and `UpdateCenter` through small ViewModels
+  (`HomeViewModel`, `DiagnosticsViewModel`, ...) and
+  `collectAsStateWithLifecycle`, so collection stops when the screen is not visible.
+- **Icons:** Material Symbols Outlined are bundled as vector drawables and exposed by
+  `AppIcons` (`scripts/generate-material-symbols.py`), so the app no longer depends on
+  `compose-material-icons-extended`.
+
 ## AIDL boundary
 
 `IOneHzService` is deliberately narrow and validated on the privileged side:
@@ -75,7 +89,7 @@ an outdated service after an app update.
 
 ## Profiles and app assignments
 
-`ProfileStore` owns a versioned JSON blob in SharedPreferences:
+`ProfileStore` owns a versioned JSON blob in the preferences store (DataStore):
 
 - three built-in profiles (`economy`, `balanced`, `performance`);
 - custom profiles;
@@ -88,7 +102,7 @@ Customized built-ins and custom profiles are kept. Deleting a custom profile rea
 apps to Balanced. App assignments never copy a staircase, so editing a shared profile
 updates every app that references it.
 
-`ProfileCodec` serializes the same model for SharedPreferences and for the backup file.
+`ProfileCodec` serializes the same model for the preferences store and for the backup file.
 `ProfileDefaults` is pure and generates the three profiles from a rate list; it is covered
 by unit tests for two-rate and multi-rate panels.
 

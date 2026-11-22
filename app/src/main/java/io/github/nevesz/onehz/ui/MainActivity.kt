@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -19,13 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -77,6 +71,7 @@ import io.github.nevesz.onehz.ui.diagnostics.DiagnosticsScreen
 import io.github.nevesz.onehz.ui.home.AodScreen
 import io.github.nevesz.onehz.ui.home.HomeScreen
 import io.github.nevesz.onehz.ui.home.SleepScreen
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.profile.ProfileEditorScreen
 import io.github.nevesz.onehz.ui.profile.ProfilesScreen
 import io.github.nevesz.onehz.ui.settings.BackupScreen
@@ -86,12 +81,12 @@ import io.github.nevesz.onehz.ui.theme.OneHZTheme
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
 import io.github.nevesz.onehz.ui.theme.OneHzBg
 import io.github.nevesz.onehz.ui.theme.OneHzDarkBg
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     override fun onStart() {
@@ -109,6 +104,7 @@ class MainActivity : AppCompatActivity() {
         val initialMode = OneHzPreferences.themeMode(this)
         applyNightMode(initialMode)
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         applyWindowColors(initialMode)
 
         setContent {
@@ -145,13 +141,11 @@ class MainActivity : AppCompatActivity() {
         (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
             Configuration.UI_MODE_NIGHT_YES
 
-    @Suppress("DEPRECATION")
     private fun applyWindowColors(mode: ThemeMode) {
         applyWindowAppearance(window, mode, systemDark())
     }
 }
 
-@Suppress("DEPRECATION")
 private fun applyWindowAppearance(window: android.view.Window, mode: ThemeMode, systemDark: Boolean) {
     val dark = mode.isDark(systemDark)
     val color = when {
@@ -160,8 +154,6 @@ private fun applyWindowAppearance(window: android.view.Window, mode: ThemeMode, 
         else -> OneHzBg
     }
     window.setBackgroundDrawable(color.toArgb().toDrawable())
-    window.statusBarColor = color.toArgb()
-    window.navigationBarColor = color.toArgb()
     WindowCompat.getInsetsController(window, window.decorView).apply {
         isAppearanceLightStatusBars = !dark
         isAppearanceLightNavigationBars = !dark
@@ -286,7 +278,7 @@ private fun OneHzShell(
                     navigationIcon = {
                         if (setupDone) {
                             IconButton(onClick = { showSetup = false }) {
-                                Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.close))
+                                Icon(AppIcons.close(), contentDescription = stringResource(R.string.close))
                             }
                         }
                     }
@@ -412,7 +404,7 @@ private fun OneHzShell(
                     navigationIcon = {
                         IconButton(onClick = { settingsPage = null }) {
                             Icon(
-                                Icons.AutoMirrored.Outlined.ArrowBack,
+                                AppIcons.arrowBack(),
                                 contentDescription = stringResource(R.string.back)
                             )
                         }
@@ -466,19 +458,19 @@ private fun OneHzShell(
                 NavigationBarItem(
                     selected = tab == 0,
                     onClick = { tab = 0 },
-                    icon = { Icon(Icons.Outlined.Home, contentDescription = null) },
+                    icon = { Icon(AppIcons.home(), contentDescription = null) },
                     label = { Text(stringResource(R.string.tab_home)) }
                 )
                 NavigationBarItem(
                     selected = tab == 1,
                     onClick = { tab = 1 },
-                    icon = { Icon(Icons.AutoMirrored.Outlined.List, contentDescription = null) },
+                    icon = { Icon(AppIcons.list(), contentDescription = null) },
                     label = { Text(stringResource(R.string.tab_apps)) }
                 )
                 NavigationBarItem(
                     selected = tab == 2,
                     onClick = { tab = 2 },
-                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                    icon = { Icon(AppIcons.settings(), contentDescription = null) },
                     label = { Text(stringResource(R.string.tab_settings)) }
                 )
             }
@@ -611,7 +603,7 @@ private fun LanguageDialog(onDismiss: () -> Unit) {
                         Text(text = label, modifier = Modifier.weight(1f))
                         if (selected == tag) {
                             Icon(
-                                Icons.Outlined.Check,
+                                AppIcons.check(),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary
                             )

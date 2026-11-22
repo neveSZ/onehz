@@ -15,7 +15,7 @@
 | Panel rates | 120, 80, 60, 48, 40, 30, 26.67, 24, 20, 10 Hz | 120, 90, 60, 30 Hz |
 | Control route | `refresh_rate_mode` + `peak/min` | `secure/miui_refresh_rate` |
 | Shizuku | thedjchi fork `v13.7.0-thedjchi` | thedjchi fork `v13.7.0-thedjchi` |
-| OneHZ | 1.2.1-beta.1 | 1.2.1-beta.1 |
+| OneHZ | 1.2.1 | 1.2.1 |
 
 Everything else is **untested**.
 
@@ -93,7 +93,8 @@ brightness there is no headroom to compensate upward, and dimming 60/120 Hz to m
 - Display detection depends on firmware settings and `dumpsys` output; a future
   firmware update may change them. HyperOS uses `miui_refresh_rate` (or
   `user_refresh_rate` on HyperOS 1).
-- AOD brightness is **Samsung-only** (`debug_aod_brightness`); it is hidden on Xiaomi.
+- AOD brightness is **Samsung-only** (`debug_aod_brightness`). On Xiaomi the row is
+  shown as a disabled switch that explains the panel manages it.
 - **Sleep (forced Doze) is vendor-dependent.** Some ROMs ignore or quickly revert the
   forced idle; the card reports “The ROM did not enter Doze” instead of pretending it
   worked.
@@ -122,7 +123,7 @@ brightness there is no headroom to compensate upward, and dimming 60/120 Hz to m
 - devices with a single refresh rate (blocked);
 - Samsung without `refresh_rate_mode` (blocked);
 - Xiaomi without `miui_refresh_rate`/`user_refresh_rate` (blocked);
-- AOD brightness on Xiaomi (Samsung-only; hidden);
+- AOD brightness on Xiaomi (Samsung-only; shown disabled with an explanation);
 - foldables and cover screens (untested);
 - tablets (untested);
 - WQHD+ mode on the tested Samsung (untested);

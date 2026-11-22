@@ -26,9 +26,7 @@
     <string name="profile_auto_economy_desc">Usar Economía mientras el ahorro de batería del sistema esté activo.</string>
     <string name="profile_auto_economy_footer">Las apps pueden mantener su propio perfil con la opción de abajo.</string>
     <string name="profile_reference_hint">Esta app usa el perfil %1$s. Editarlo cambia todas las apps que lo usan.</string>
-    <string name="profile_reference_global">La lista de apps siempre tratadas como vídeo es global y se aplica a todos los perfiles.</string>
     <string name="profile_video_link">Vídeo del perfil: mínimo %1$d Hz</string>
-    <string name="profile_video_advanced">Reglas de detección (avanzado)</string>
     <string name="profile_times_label">Tiempos: %1$s</string>
     <string name="profile_delete_active_note">Este es el perfil seleccionado. %1$s será seleccionado.</string>
     <string name="profile_reset_editor_body">Los campos vuelven a los valores del dispositivo. Revisa y toca Guardar.</string>
@@ -72,13 +70,13 @@
     <string name="sleep_whitelist_effect">Esto cambia las excepciones de Doze del sistema y puede aumentar el consumo.</string>
     <string name="sleep_failure_hint">Esto puede pasar en algunas versiones del sistema. Revisa el diagnóstico o prueba Doze ligero.</string>
     <string name="sleep_details_hint">Últimas 5 sesiones de sueño. Las sesiones cortas también aparecen.</string>
-    <string name="sleep_warning_toggle">Aviso importante</string>
+    <string name="sleep_warning_dismiss">Entendido</string>
 
     <!-- AOD: detalle. -->
     <string name="aod_master_title">Control del AOD</string>
     <string name="aod_control_off">Control del AOD desactivado. Actívalo desde la pantalla de inicio.</string>
     <string name="aod_requires_master">Activa OneHZ para controlar el AOD.</string>
-    <string name="aod_rate_master_desc">Controlado por el interruptor del AOD en la pantalla de inicio.</string>
+    <string name="aod_brightness_unsupported">No se puede ajustar en este dispositivo. El panel gestiona el brillo del AOD automáticamente.</string>
     <string name="aod_rate_title">Tasa en AOD</string>
     <string name="aod_brightness_restore_confirm">Restaurar brillo</string>
     <string name="aod_brightness_restore_confirm_title">¿Restaurar brillo del sistema?</string>

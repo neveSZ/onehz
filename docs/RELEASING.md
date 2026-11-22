@@ -38,6 +38,18 @@ Examples:
 `1,000,200` is valid because Android only requires the new `versionCode` to be higher
 than the installed one.
 
+The formulas are implemented by the release tooling:
+
+```bash
+python scripts/validate-version.py          # validates name, code, changelogs
+python scripts/bump-version.py --part patch # rewrites version.properties
+python scripts/bump-version.py 1.3.0 --changelog "What changed"
+```
+
+`bump-version.py` refuses to write a `versionCode` that does not increase, and CI runs
+`validate-version.py` before every build. Prefer the scripts over editing
+`version.properties` by hand so the metadata stays consistent.
+
 A beta must use a `versionCode` higher than the current stable (so testers can install it
 over the stable APK) and lower than the upcoming stable (so beta users can move to the
 final release). Tag format: `v1.0.0`, `v1.0.1-beta.1`, `v1.1.0-beta.2`. Tags containing
@@ -60,6 +72,27 @@ final release). Tag format: `v1.0.0`, `v1.0.1-beta.1`, `v1.1.0-beta.2`. Tags con
 
 The same package (`io.github.nevesz.onehz`) and signing key are used for both channels.
 Beta and stable cannot be installed side by side.
+
+## Release checklist
+
+1. Run `python scripts/bump-version.py <version>` and confirm `scripts/validate-version.py`.
+2. Update `CHANGELOG.md`, `docs/releases/<version>.md`, `docs/FEATURES*`, `docs/FAQ*`,
+   `docs/INSTALL*`, `docs/SLEEP.md` and `docs/COMPATIBILITY*` for user-facing changes.
+3. Update the `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt` files.
+4. Refresh the store screenshots from the **final build** on a physical device:
+   - five files per locale: `1` Home, `2` Profiles, `3` AOD, `4` Sleep, `5` Backup;
+   - locales: `en-US`, `es-ES`, `pt-BR`;
+   - normalize to 1170×2340 (aspect 2.0) so `validate-fastlane.py` accepts them;
+   - the README uses `1`, `2` and `4` directly from `fastlane`, so do not keep a second
+     screenshot set under `docs/assets/`.
+5. Regenerate the Baseline Profile after startup or main-screen changes
+   (`docs/BASELINE_PROFILE.md`).
+6. Run `scripts/validate-fastlane.py`, `testDebugUnitTest`, `lintDebug`,
+   `assembleDebug` and `assembleRelease`.
+7. Test the signed release on the target devices; check the Shizu Store listing after the
+   release is published.
+8. Merge, tag `v<version>` and let the release workflow publish the signed APK and
+   SHA-256. Verify the tag matches `versionName` and that the release is marked stable.
 
 ## In-app update checker
 
