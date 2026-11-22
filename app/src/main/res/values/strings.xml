@@ -421,5 +421,6 @@
     <string name="backup_import_failed">Could not import: %1$s</string>
     <string name="backup_import_adapted">%1$d profiles were adapted to this screen.</string>
     <string name="backup_import_missing">%1$d app assignments were moved to Balanced.</string>
-    <string name="backup_scope_note">Includes profiles, app assignments, video and AOD. Theme and language are not included.</string>
+    <string name="backup_import_sleep">Sleep settings restored.</string>
+    <string name="backup_scope_note">Includes profiles, app assignments, video, AOD and Sleep. The system Doze whitelist is not included. Theme and language are not included.</string>
 </resources>

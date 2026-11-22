@@ -209,7 +209,8 @@ Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 - Ajustes → **Backup e restauração** grava um JSON versionado pelo seletor de arquivos do
   sistema, sem permissão de armazenamento;
 - o arquivo inclui todos os perfis, o perfil ativo, atribuições de apps, vídeo, AOD,
-  switch mestre e a lista global de apps forçados como vídeo;
+  configurações do Sono, switch mestre e a lista global de apps forçados como vídeo;
+- a lista de exceções do Doze, as medições e o estado de pausa do Sono não entram;
 - tema, idioma, diagnóstico, cache de atualização e snapshots internos de restauração do
   sistema não entram;
 - a importação substitui a configuração atual depois de uma confirmação;
@@ -222,7 +223,7 @@ Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 Português (Brasil), inglês e espanhol. Veja o
 [status das traduções](TRANSLATIONS.md).
 
-## 15. Sono (Doze forçado)
+## 16. Sono (Doze forçado)
 
 Opcional e desligado por padrão. Ao apagar a tela, o OneHZ pede ao sistema para entrar em
 Doze na hora, em vez de esperar os temporizadores de inatividade:

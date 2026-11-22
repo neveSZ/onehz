@@ -20,6 +20,8 @@ publication yet.
 - Per-profile video settings: enabled flag, minimum refresh rate and detection rules.
 - AOD now always uses the lowest rate exposed by the panel.
 - Backup and restore through a versioned JSON file using the Storage Access Framework.
+- Configuration backup now includes the Sleep settings; the system Doze whitelist is not
+  included.
 - Import adapts unsupported refresh rates to the current panel and reports the result.
 - Migration from the legacy Normal/ECO profiles and copied per-app staircases.
 - Sleep: optional forced Doze on screen-off, with deep/light idle, pause, a cross-midnight

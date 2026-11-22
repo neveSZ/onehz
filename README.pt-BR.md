@@ -88,7 +88,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Sono (Doze forçado)** | Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
 | **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca, com regras de detecção configuráveis. |
-| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo e AOD. |
+| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo, AOD e Sono. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
 | **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze e notificações. |

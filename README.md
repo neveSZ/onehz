@@ -87,7 +87,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **Sleep (forced Doze)** | Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
 | **Video mode** | A per-profile refresh-rate floor while a video plays, with configurable detection rules. |
-| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video and AOD. |
+| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video, AOD and Sleep. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
 | **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |
