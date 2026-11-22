@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sleep_title">Sono</string>
+    <string name="sleep_hint">Entra em Doze assim que a tela apaga.</string>
+    <string name="sleep_state_off">Desligado</string>
+    <string name="sleep_state_ready">Pronto</string>
+    <string name="sleep_state_active">Ativo há %1$s</string>
+    <string name="sleep_state_paused_until">Pausado até %1$s</string>
+    <string name="sleep_state_charging">Pausado: carregando</string>
+    <string name="sleep_state_music">Pausado: música tocando</string>
+    <string name="sleep_state_outside_window">Fora do horário permitido</string>
+    <string name="sleep_state_waiting_service">Aguardando o Shizuku</string>
+    <string name="sleep_state_failed">A ROM não entrou em Doze</string>
+    <string name="sleep_requires_master">Ative o OneHZ primeiro.</string>
+
+    <string name="sleep_deep_title">Doze profundo</string>
+    <string name="sleep_deep_desc">Usa o estado de repouso mais profundo. Desligue se o AOD congelar.</string>
+    <string name="sleep_skip_charging_title">Não forçar ao carregar</string>
+    <string name="sleep_skip_charging_desc">Não força o Doze com o aparelho na tomada.</string>
+    <string name="sleep_skip_music_title">Não forçar com música</string>
+    <string name="sleep_skip_music_desc">Não força o Doze com áudio tocando em segundo plano.</string>
+    <string name="sleep_window_title">Só dentro de um horário</string>
+    <string name="sleep_window_desc">Útil para rotina fixa. O intervalo pode cruzar a meia-noite.</string>
+    <string name="sleep_window_start">Início</string>
+    <string name="sleep_window_end">Fim</string>
+
+    <string name="sleep_pause">Pausar por 1 hora</string>
+    <string name="sleep_resume">Retomar</string>
+    <string name="sleep_whitelist_title">Apps que podem acordar o aparelho</string>
+    <string name="sleep_whitelist_desc">Mantém as notificações desses apps fora do Doze.</string>
+
+    <string name="sleep_usage_title">Últimas 24h</string>
+    <string name="sleep_usage_values">%1$s com a tela apagada · %2$s em Doze</string>
+    <string name="sleep_usage_empty">Ainda sem medições.</string>
+    <string name="sleep_rest_title">Último descanso</string>
+    <string name="sleep_rest_min_suffix">(≥ 30 min)</string>
+    <string name="sleep_rest_rate">%1$s%%/h</string>
+    <string name="sleep_rest_battery">%1$d%% → %2$d%%</string>
+    <string name="sleep_rest_none">Nenhum descanso de 30 min ou mais nas últimas 24h.</string>
+    <string name="sleep_rest_hint">Descanso = 30 min ou mais com a tela apagada. Pausas curtas entram apenas no total de 24h.</string>
+    <string name="sleep_measured_hint">Medido pelo OneHZ · inclui o AOD</string>
+    <string name="sleep_details">Detalhes</string>
+
+    <string name="sleep_details_title">Descanso — últimas sessões</string>
+    <string name="sleep_details_empty">Nenhuma sessão registrada ainda.</string>
+    <string name="sleep_test">Testar agora</string>
+    <string name="sleep_test_hint">Força o Doze por 10 segundos e sai em seguida.</string>
+    <string name="sleep_whitelist_search">Buscar apps</string>
+    <string name="sleep_whitelist_empty">Nenhum app encontrado.</string>
+    <string name="sleep_whitelist_waiting">Aguardando o Shizuku…</string>
+    <string name="sleep_whitelist_failed">Não foi possível atualizar a whitelist de Doze.</string>
+    <string name="sleep_whitelist_note">Esses apps entram na whitelist de Doze do sistema pelo Shizuku.</string>
+    <string name="sleep_partial">parcial · </string>
+    <plurals name="sleep_maintenance_count">
+        <item quantity="one">%1$d manutenção</item>
+        <item quantity="other">%1$d manutenções</item>
+    </plurals>
+    <string name="sleep_session_light">leve</string>
+    <string name="sleep_session_deep">profundo</string>
+</resources>
