@@ -4,9 +4,10 @@
 
 - **Author / Autor:** [neveSZ](https://github.com/neveSZ)
 - **Repository / Repositório:** <https://github.com/neveSZ/onehz>
-- **License / Licença:** MIT — see [LICENSE](LICENSE) and the
-  [unofficial Portuguese translation](LICENSE.pt-BR.md)
-- **Copyright:** © 2026 neveSZ
+- **License / Licença:** MIT for the OneHZ source code — see [LICENSE](LICENSE) and the
+  [unofficial Portuguese translation](LICENSE.pt-BR.md). Third-party components and the
+  Obtainium badge keep their own licenses; see below.
+- **Copyright:** © 2026 neveSZ; portions © 2025 Mahmut Alperen Ünal
 
 ## Support / Apoio
 
@@ -47,14 +48,31 @@ O OneHZ inclui porções derivadas do Adaptive Hz. O aviso de copyright e a perm
 originais estão em [NOTICE](NOTICE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) e no
 app em **Sobre → Licenças de terceiros**.
 
-### Shizuku
+### Shizuku API (bundled / embutida)
+
+- Copyright © 2021 RikkaW
+- License: MIT
+- Project: <https://github.com/RikkaApps/Shizuku-API>
+- License text: <https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE>
+
+OneHZ bundles the Shizuku API client library. The Shizuku app itself is a separate
+application and is not bundled.
+
+O OneHZ embute a biblioteca cliente Shizuku API. O app Shizuku em si é um aplicativo
+separado e não é incluído.
+
+### Shizuku app (not bundled / não incluído)
 
 - Copyright © RikkaApps
 - License: Apache License 2.0
 - Project: <https://github.com/RikkaApps/Shizuku>
 - License text: <https://github.com/RikkaApps/Shizuku/blob/master/LICENSE>
 
-### Shizuku fork used for testing / Fork do Shizuku usado nos testes
+The Shizuku app is installed separately by the user; it is not part of the OneHZ APK.
+
+O app Shizuku é instalado separadamente pelo usuário; ele não faz parte do APK do OneHZ.
+
+### Shizuku fork used for testing (not bundled / não incluído)
 
 - Copyright © thedjchi and contributors
 - Version tested: `v13.7.0-thedjchi`
@@ -76,16 +94,27 @@ app em **Sobre → Licenças de terceiros**.
 - Project: <https://github.com/junit-team/junit4>
 - Not distributed in the app / não é distribuído no app.
 
+### Gradle Wrapper (build only / somente build)
+
+- Copyright © Gradle Inc.
+- License: Apache License 2.0
+- Project: <https://github.com/gradle/gradle>
+- `gradle/wrapper/gradle-wrapper.jar` is build tooling and is not distributed in the APK.
+  / É ferramenta de build e não é distribuído no APK.
+
 ### Obtainium badge
 
 - Copyright © ImranR98 and Obtainium contributors
 - License: GPL-3.0
 - Project: <https://github.com/ImranR98/Obtainium>
-- Used only in the README/download page to link to the Obtainium app. It is not
-  distributed in the APK.
+- License text: <https://github.com/ImranR98/Obtainium/blob/main/LICENSE.txt>
+- GPL-3.0 text in this repository: [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt)
+- Used only in the README/docs to link to the Obtainium app. It is not distributed in the
+  APK and is not covered by the MIT license of the OneHZ source code.
 
-O badge do Obtainium é usado apenas no README/página de download para linkar ao app
-Obtainium. Ele não é distribuído no APK.
+O badge do Obtainium é usado apenas no README/documentação para linkar ao app
+Obtainium. Ele não é distribuído no APK e não é coberto pela licença MIT do código do
+OneHZ. Veja [docs/assets/README.md](docs/assets/README.md).
 
 ## Prior art / Trabalhos anteriores
 

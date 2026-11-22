@@ -24,7 +24,7 @@
 
 <p align="center">
   <a href="docs/assets/screenshots/home-pt.png"><img src="docs/assets/screenshots/home-pt.png" width="230" alt="Tela inicial"></a>
-  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Editor de perfil"></a>
+  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Tela de perfis"></a>
   <a href="docs/assets/screenshots/video-pt.png"><img src="docs/assets/screenshots/video-pt.png" width="230" alt="Regras de detecção de vídeo"></a>
 </p>
 
@@ -80,13 +80,15 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | Recurso | O que faz |
 |---|---|
 | **Escada de taxa de atualização** | 1 a 5 faixas decrescentes por perfil, com tempo de espera em cada faixa. |
-| **Perfil normal** | Usado quando a economia de bateria está desligada; pode ser desativado. |
-| **Perfil ECO** | Aplicado com a economia de bateria ligada, com exceção “Ignorar ECO” por app. |
-| **Taxa do AOD** | Uma taxa fixa enquanto a tela está desligada. |
+| **Economia / Balanceado / Performance** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
+| **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada, com a opção por app de não usar Economia durante a economia de bateria. |
+| **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
+| **Taxa do AOD** | Sempre a menor taxa exposta pela tela. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
 | **Sono (Doze forçado)** | Entra em Doze assim que a tela apaga, com filtros e medições locais. |
-| **Perfis por aplicativo** | Um perfil por app instalado, sem polling periódico. |
-| **Modo vídeo** | Piso de taxa enquanto um vídeo toca, com regras de detecção configuráveis. |
+| **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
+| **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca, com regras de detecção configuráveis. |
+| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo e AOD. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
 | **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze e notificações. |
@@ -101,10 +103,11 @@ Detalhes, padrões e comportamento: [docs/FEATURES.pt-BR.md](docs/FEATURES.pt-BR
 
 | Projeto | Papel no OneHZ | Licença |
 |---|---|---|
-| [Shizuku](https://github.com/RikkaApps/Shizuku) da RikkaApps | Ponte privilegiada de tela e ajustes | Apache-2.0 |
-| [Fork do Shizuku](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi) do thedjchi | Build usada nos testes | Apache-2.0 |
+| [Shizuku API](https://github.com/RikkaApps/Shizuku-API) por RikkaW | Cliente privilegiado embutido | MIT |
+| [Shizuku](https://github.com/RikkaApps/Shizuku) por RikkaApps | App externo necessário em execução (não incluído) | Apache-2.0 |
+| [Fork do Shizuku](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi) do thedjchi | App externo usado nos testes (não incluído) | Apache-2.0 |
 | [Adaptive Hz](https://github.com/mahmutaunal/Adaptive-Hz) de Mahmut Alperen Ünal | Porções derivadas no OneHZ | MIT |
-| [Obtainium](https://github.com/ImranR98/Obtainium) | Atualizações automáticas pelo GitHub Releases | GPL-3.0 |
+| [Obtainium](https://github.com/ImranR98/Obtainium) | Cliente de atualizações; badge só na documentação | GPL-3.0 |
 | [Jetpack Compose](https://developer.android.com/jetpack/compose) | Toolkit de interface | Apache-2.0 |
 
 Créditos completos: [CREDITS.md](CREDITS.md) e
@@ -157,15 +160,24 @@ Remova dados pessoais antes de publicar.
 ## Licença e créditos
 
 O OneHZ é distribuído sob a **Licença MIT**. Veja [LICENSE](LICENSE) e a
-[tradução não oficial em português](LICENSE.pt-BR.md).
+[tradução não oficial em português](LICENSE.pt-BR.md). Inclui porções derivadas do
+Adaptive Hz (MIT, © 2025 Mahmut Alperen Ünal). Componentes de terceiros e assets de
+documentação permanecem sob suas próprias licenças; veja
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 - **Autor:** [neveSZ](https://github.com/neveSZ).
 - **Auxílio de LLM:** desenvolvido com ajuda de LLMs pelo harness
   [OpenCode](https://opencode.ai), depois revisado e testado pelo autor.
 - **Adaptive Hz**, de Mahmut Alperen Ünal (MIT): o OneHZ inclui porções derivadas dele.
-- **Shizuku**, de RikkaApps (Apache 2.0) e o **fork do thedjchi** (Apache 2.0).
+- **Shizuku API**, de RikkaW (MIT): embutida no app.
+- **App Shizuku**, de RikkaApps (Apache 2.0), e o **fork do thedjchi** (Apache 2.0):
+  instalados separadamente; não incluídos.
 - **AndroidX / Jetpack Compose / Kotlin / kotlinx.coroutines** (Apache 2.0).
 - **JUnit 4** (somente testes, Eclipse Public License 1.0; não distribuído no app).
+- **Badge do Obtainium** (GPL-3.0): somente documentação, fora do APK e não coberto pela
+  licença MIT; veja [docs/assets/README.md](docs/assets/README.md) e
+  [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt).
+- **Gradle Wrapper** (Apache 2.0): somente build, fora do APK.
 
 Nenhum código ou asset de aplicativos closed-source está incluído.
 

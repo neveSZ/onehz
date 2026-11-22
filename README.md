@@ -26,7 +26,7 @@
 
 <p align="center">
   <a href="docs/assets/screenshots/home-en.png"><img src="docs/assets/screenshots/home-en.png" width="230" alt="Home screen"></a>
-  <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profile editor"></a>
+  <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profiles screen"></a>
   <a href="docs/assets/screenshots/video-en.png"><img src="docs/assets/screenshots/video-en.png" width="230" alt="Video detection rules"></a>
 </p>
 
@@ -79,13 +79,15 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | Feature | What it does |
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
-| **Normal profile** | Used when the system battery saver is off; can be disabled. |
-| **ECO profile** | Applied while battery saver is on, with a per-app “Ignore ECO” exception. |
-| **AOD refresh rate** | A fixed rate while the screen is off. |
+| **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
+| **Automatic Economy** | Switches to Economy while the system battery saver is on, with a per-app option to not use Economy during battery saver. |
+| **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
+| **AOD refresh rate** | Always the lowest rate exposed by the panel. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
 | **Sleep (forced Doze)** | Enters Doze as soon as the screen turns off, with guards and local measurements. |
-| **Per-app profiles** | A profile per installed app, without periodic polling. |
-| **Video mode** | A refresh-rate floor while a video plays, with configurable detection rules. |
+| **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
+| **Video mode** | A per-profile refresh-rate floor while a video plays, with configurable detection rules. |
+| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video and AOD. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
 | **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |
@@ -100,10 +102,11 @@ Details, defaults, and behavior: [docs/FEATURES.md](docs/FEATURES.md).
 
 | Project | Role in OneHZ | License |
 |---|---|---|
-| [Shizuku](https://github.com/RikkaApps/Shizuku) by RikkaApps | Privileged display and settings bridge | Apache-2.0 |
-| [Shizuku fork](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi) by thedjchi | Build used for testing | Apache-2.0 |
+| [Shizuku API](https://github.com/RikkaApps/Shizuku-API) by RikkaW | Bundled privileged API client | MIT |
+| [Shizuku](https://github.com/RikkaApps/Shizuku) by RikkaApps | External app required at runtime (not bundled) | Apache-2.0 |
+| [Shizuku fork](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi) by thedjchi | External app used for testing (not bundled) | Apache-2.0 |
 | [Adaptive Hz](https://github.com/mahmutaunal/Adaptive-Hz) by Mahmut Alperen Ünal | Portions derived into OneHZ | MIT |
-| [Obtainium](https://github.com/ImranR98/Obtainium) | Automatic updates from GitHub Releases | GPL-3.0 |
+| [Obtainium](https://github.com/ImranR98/Obtainium) | Update client; badge only in the docs | GPL-3.0 |
 | [Jetpack Compose](https://developer.android.com/jetpack/compose) | UI toolkit | Apache-2.0 |
 
 Full credits: [CREDITS.md](CREDITS.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
@@ -153,16 +156,24 @@ personal data before posting.
 ## License and credits
 
 OneHZ is released under the **MIT License**. See [LICENSE](LICENSE) and the
-[unofficial Portuguese translation](LICENSE.pt-BR.md).
+[unofficial Portuguese translation](LICENSE.pt-BR.md). Portions are derived from Adaptive
+Hz (MIT, © 2025 Mahmut Alperen Ünal). Third-party components and documentation assets
+remain under their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 - **Author:** [neveSZ](https://github.com/neveSZ).
 - **LLM assistance:** developed with help from LLMs through the
   [OpenCode](https://opencode.ai) coding agent harness, then reviewed and tested by the
   author.
 - **Adaptive Hz** by Mahmut Alperen Ünal (MIT): OneHZ includes portions derived from it.
-- **Shizuku** by RikkaApps (Apache 2.0) and the **thedjchi fork** (Apache 2.0).
+- **Shizuku API** by RikkaW (MIT): bundled in the app.
+- **Shizuku app** by RikkaApps (Apache 2.0) and the **thedjchi fork** (Apache 2.0):
+  installed separately; not bundled.
 - **AndroidX / Jetpack Compose / Kotlin / kotlinx.coroutines** (Apache 2.0).
 - **JUnit 4** (test only, Eclipse Public License 1.0; not distributed in the app).
+- **Obtainium badge** (GPL-3.0): documentation only, not part of the APK and not covered
+  by the MIT license; see [docs/assets/README.md](docs/assets/README.md) and
+  [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt).
+- **Gradle Wrapper** (Apache 2.0): build only, not part of the APK.
 
 No code or assets from closed-source applications are included.
 

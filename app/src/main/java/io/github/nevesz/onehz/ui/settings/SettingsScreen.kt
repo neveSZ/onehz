@@ -20,9 +20,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -71,7 +73,9 @@ fun SettingsScreen(
     onOpenLanguage: () -> Unit,
     onOpenSetup: () -> Unit,
     onOpenAbout: () -> Unit,
-    onOpenDiagnostics: () -> Unit
+    onOpenDiagnostics: () -> Unit,
+    onExportBackup: () -> Unit,
+    onImportBackup: () -> Unit
 ) {
     var showAppearance by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -108,6 +112,33 @@ fun SettingsScreen(
                     title = stringResource(R.string.settings_setup),
                     subtitle = stringResource(R.string.settings_setup_desc),
                     onClick = onOpenSetup
+                )
+            }
+        }
+
+        item {
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.settings_backup),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+            )
+        }
+        item {
+            OneHzCard {
+                SettingRow(
+                    icon = Icons.Outlined.Backup,
+                    title = stringResource(R.string.backup_export),
+                    subtitle = stringResource(R.string.settings_backup_desc),
+                    onClick = onExportBackup
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                SettingRow(
+                    icon = Icons.Outlined.Restore,
+                    title = stringResource(R.string.backup_import),
+                    subtitle = stringResource(R.string.backup_scope_note),
+                    onClick = onImportBackup
                 )
             }
         }

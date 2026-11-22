@@ -17,7 +17,7 @@ Requisitos
 * Android 12 (API 31) ou mais recente.
 * Shizuku instalado e em execução.
 
-O Shizuku é um app separado e não vem incluído no OneHZ. Sem o Shizuku, o OneHZ não consegue controlar a tela. O OneHZ foi testado no Samsung Galaxy S25+ (SM-S936B) com Android 17 / One UI 9.0 e no POCO X7 Pro (2412DPC0AG) com Android 16 / HyperOS 3.0; outros modelos e versões do Android podem funcionar, mas não foram testados.
+O app Shizuku é separado e não vem incluído no OneHZ. O OneHZ inclui apenas a biblioteca cliente Shizuku API, licenciada sob MIT. Sem o app Shizuku, o OneHZ não consegue controlar a tela. O OneHZ foi testado no Samsung Galaxy S25+ (SM-S936B) com Android 17 / One UI 9.0 e no POCO X7 Pro (2412DPC0AG) com Android 16 / HyperOS 3.0; outros modelos e versões do Android podem funcionar, mas não foram testados.
 
 Observações
 * O brilho do AOD é somente Samsung e fica oculto no Xiaomi.

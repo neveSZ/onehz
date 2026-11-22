@@ -20,12 +20,15 @@ import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -51,6 +55,12 @@ import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.ProfileIssue
 import io.github.nevesz.onehz.core.TierStep
+import io.github.nevesz.onehz.core.VideoConfig
+import io.github.nevesz.onehz.core.profile.DeviceProfile
+import io.github.nevesz.onehz.core.profile.ProfileCodec
+import io.github.nevesz.onehz.core.profile.ProfileKind
+import io.github.nevesz.onehz.core.profile.VideoRules
+import io.github.nevesz.onehz.core.profile.VideoSettings
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.DurationStepper
 import io.github.nevesz.onehz.ui.components.HzPicker
@@ -58,32 +68,66 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.ToggleRow
 
 /**
- * Single place to create and maintain one frequency profile.
- * Used for the normal profile, the battery-saver profile and per-app profiles.
+ * Editor for one saved profile. Frequency, video and name are saved together so a profile
+ * remains a single reusable unit. Built-in profiles expose "Restore default"; custom
+ * profiles expose deletion.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileEditorScreen(
-    title: String,
-    initial: FrequencyProfile,
+    initial: DeviceProfile,
+    defaultProfile: DeviceProfile?,
     rates: List<Int>,
-    defaultProfile: FrequencyProfile,
-    onSave: (FrequencyProfile) -> Unit,
+    usageCount: Int,
+    onSave: (DeviceProfile) -> Unit,
     onBack: () -> Unit,
-    enabled: Boolean? = null,
-    onEnabledChange: ((Boolean) -> Unit)? = null,
-    copyFrom: FrequencyProfile? = null,
-    copyLabel: String? = null,
-    onRemove: (() -> Unit)? = null
+    onDelete: (() -> Unit)? = null
 ) {
-    var steps by rememberSaveable(saver = stepsSaver) { mutableStateOf(initial.steps) }
-    val profile = FrequencyProfile(steps)
-    val issues = profile.issues(rates).filter { it != ProfileIssue.EMPTY }
-    var showDiscard by remember { mutableStateOf(false) }
-    var confirmRemoveProfile by remember { mutableStateOf(false) }
-    val dirty = steps != initial.steps
     val context = LocalContext.current
-    val isXiaomi = remember { DisplayProfileResolver.detect(context).vendor == DisplayVendor.XIAOMI }
+    var name by rememberSaveable(initial.id) { mutableStateOf(initial.name.orEmpty()) }
+    var steps by rememberSaveable(initial.id, saver = stepsSaver) {
+        mutableStateOf(initial.frequency.steps)
+    }
+    var videoEnabled by rememberSaveable(initial.id) { mutableStateOf(initial.video.enabled) }
+    var videoMinHz by rememberSaveable(initial.id) { mutableStateOf(initial.video.minHz) }
+    var useSession by rememberSaveable(initial.id) {
+        mutableStateOf(initial.video.rules.useMediaSession)
+    }
+    var pausedBlocks by rememberSaveable(initial.id) {
+        mutableStateOf(initial.video.rules.pausedSessionBlocks)
+    }
+    var requireCodec by rememberSaveable(initial.id) {
+        mutableStateOf(initial.video.rules.requireVideoCodec)
+    }
+    var requireAudio by rememberSaveable(initial.id) {
+        mutableStateOf(initial.video.rules.requireStartedAudio)
+    }
+    var showDiscard by remember { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    var confirmReset by remember { mutableStateOf(false) }
+
+    val frequency = FrequencyProfile(steps)
+    val video = VideoSettings(
+        enabled = videoEnabled,
+        minHz = videoMinHz,
+        rules = VideoRules(
+            useMediaSession = useSession,
+            pausedSessionBlocks = pausedBlocks,
+            requireVideoCodec = requireCodec,
+            requireStartedAudio = requireAudio
+        )
+    )
+    val isCustom = initial.kind == ProfileKind.CUSTOM
+    val cleanName = name.trim()
+    val nameIssue = isCustom && cleanName.isEmpty()
+    val issues = frequency.issues(rates).filter { it != ProfileIssue.EMPTY }
+    val canSave = issues.isEmpty() && !nameIssue
+    val dirty = steps != initial.frequency.steps ||
+        video != initial.video ||
+        (isCustom && cleanName != initial.name.orEmpty())
+    val isXiaomi = remember {
+        DisplayProfileResolver.detect(context).vendor == DisplayVendor.XIAOMI
+    }
     val showsLowRateWarning = isXiaomi && steps.any { it.hz <= 30 } && rates.any { it > 30 }
 
     fun tryBack() {
@@ -95,10 +139,21 @@ fun ProfileEditorScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(title) },
+                title = {
+                    Text(
+                        if (isCustom) {
+                            cleanName.ifBlank { stringResource(R.string.profile_edit) }
+                        } else {
+                            stringResource(profileTitle(initial))
+                        }
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { tryBack() }) {
-                        Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(
+                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
                     }
                 }
             )
@@ -106,8 +161,24 @@ fun ProfileEditorScreen(
         bottomBar = {
             Surface(tonalElevation = 3.dp) {
                 Button(
-                    onClick = { onSave(profile) },
-                    enabled = issues.isEmpty(),
+                    onClick = {
+                        val customized = if (initial.isBuiltIn) {
+                            defaultProfile == null ||
+                                frequency != defaultProfile.frequency ||
+                                video != defaultProfile.video
+                        } else {
+                            true
+                        }
+                        onSave(
+                            initial.copy(
+                                name = if (isCustom) cleanName else null,
+                                frequency = frequency,
+                                video = video,
+                                customized = customized
+                            )
+                        )
+                    },
+                    enabled = canSave,
                     modifier = Modifier.fillMaxWidth().padding(16.dp)
                 ) {
                     Text(stringResource(R.string.profile_save))
@@ -120,31 +191,62 @@ fun ProfileEditorScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (enabled != null && onEnabledChange != null) {
+            if (isCustom) {
                 item {
-                    OneHzCard {
-                        ToggleRow(
-                            title = stringResource(R.string.profile_use),
-                            checked = enabled,
-                            onCheckedChange = onEnabledChange
-                        )
-                    }
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it.take(ProfileCodec.MAX_NAME_LENGTH) },
+                        label = { Text(stringResource(R.string.profile_name)) },
+                        placeholder = { Text(stringResource(R.string.profile_name_hint)) },
+                        isError = nameIssue,
+                        supportingText = if (nameIssue) {
+                            { Text(stringResource(R.string.profile_name_required)) }
+                        } else {
+                            null
+                        },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
 
             item {
                 OneHzCard {
                     Text(
-                        text = preview(profile),
+                        text = profileSummary(initial.copy(frequency = frequency)),
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
-                    if (profile.totalHoldMs > 0) {
+                    if (frequency.totalHoldMs > 0) {
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = stringResource(
                                 R.string.profile_rest_total,
-                                formatSeconds(profile.totalHoldMs)
+                                formatSeconds(frequency.totalHoldMs)
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    if (initial.isBuiltIn) {
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = if (initial.customized) {
+                                stringResource(R.string.profile_modified)
+                            } else {
+                                stringResource(R.string.profile_default)
+                            },
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    if (usageCount > 0) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = pluralStringResource(
+                                R.plurals.profile_used_by_apps,
+                                usageCount,
+                                usageCount
                             ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -180,20 +282,11 @@ fun ProfileEditorScreen(
             if (showsLowRateWarning) {
                 item {
                     OneHzCard {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Outlined.Info,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.tertiary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = stringResource(R.string.profile_low_rate_warning_title),
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
-                        }
-                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.profile_low_rate_warning_title),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Spacer(Modifier.height(4.dp))
                         Text(
                             text = stringResource(R.string.profile_low_rate_warning_body),
                             style = MaterialTheme.typography.bodySmall,
@@ -225,7 +318,9 @@ fun ProfileEditorScreen(
                     onHoldChange = { seconds ->
                         steps = steps.mapIndexed { i, s ->
                             if (i == index) {
-                                s.copy(holdMs = FrequencyProfile.normalizeHold((seconds * 1000).toLong()))
+                                s.copy(
+                                    holdMs = FrequencyProfile.normalizeHold((seconds * 1000).toLong())
+                                )
                             } else {
                                 s
                             }
@@ -246,10 +341,97 @@ fun ProfileEditorScreen(
                 }
             }
 
-            if (copyFrom != null && copyLabel != null) {
-                item {
-                    TextButton(onClick = { steps = copyFrom.steps }, modifier = Modifier.fillMaxWidth()) {
-                        Text(copyLabel)
+            item {
+                OneHzCard {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Outlined.Movie,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.profile_video_title),
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
+                    Text(
+                        text = stringResource(R.string.profile_video_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    ToggleRow(
+                        title = stringResource(R.string.video_mode_title),
+                        description = stringResource(R.string.video_mode_desc),
+                        checked = videoEnabled,
+                        onCheckedChange = { videoEnabled = it }
+                    )
+                    if (videoEnabled) {
+                        Spacer(Modifier.height(10.dp))
+                        HzPicker(
+                            label = stringResource(R.string.video_min_hz),
+                            value = videoMinHz,
+                            options = rates,
+                            onSelect = { videoMinHz = it },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.video_min_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(R.string.video_rules_title),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = stringResource(
+                                R.string.video_rules_summary,
+                                video.rules.activeRuleCount,
+                                VideoConfig.RULE_COUNT
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        ToggleRow(
+                            title = stringResource(R.string.video_rule_session_title),
+                            description = stringResource(R.string.video_rule_session_desc),
+                            checked = useSession,
+                            onCheckedChange = { useSession = it }
+                        )
+                        ToggleRow(
+                            title = stringResource(R.string.video_rule_paused_title),
+                            description = stringResource(R.string.video_rule_paused_desc),
+                            checked = pausedBlocks,
+                            enabled = useSession,
+                            onCheckedChange = { pausedBlocks = it }
+                        )
+                        ToggleRow(
+                            title = stringResource(R.string.video_rule_codec_title),
+                            description = stringResource(R.string.video_rule_codec_desc),
+                            checked = requireCodec,
+                            onCheckedChange = { requireCodec = it }
+                        )
+                        ToggleRow(
+                            title = stringResource(R.string.video_rule_audio_title),
+                            description = stringResource(R.string.video_rule_audio_desc),
+                            checked = requireAudio,
+                            onCheckedChange = { requireAudio = it }
+                        )
+                        if (!video.rules.hasPositiveSignal) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(R.string.video_rules_none_warning),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                     }
                 }
             }
@@ -268,22 +450,27 @@ fun ProfileEditorScreen(
                 }
             }
 
-            item {
-                TextButton(
-                    onClick = { steps = defaultProfile.steps },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(stringResource(R.string.profile_restore_default))
+            if (defaultProfile != null) {
+                item {
+                    TextButton(
+                        onClick = { confirmReset = true },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.profile_restore_default))
+                    }
                 }
             }
 
-            if (onRemove != null) {
+            if (onDelete != null) {
                 item {
                     OutlinedButton(
-                        onClick = { confirmRemoveProfile = true },
+                        onClick = { confirmDelete = true },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(stringResource(R.string.remove), color = MaterialTheme.colorScheme.error)
+                        Text(
+                            text = stringResource(R.string.remove),
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
                 }
             }
@@ -300,16 +487,41 @@ fun ProfileEditorScreen(
             )
         }
 
-        if (confirmRemoveProfile && onRemove != null) {
+        if (confirmReset && defaultProfile != null) {
             ConfirmDialog(
-                title = stringResource(R.string.profile_remove_title),
-                body = stringResource(R.string.profile_remove_body),
-                confirmLabel = stringResource(R.string.remove),
-                onConfirm = onRemove,
-                onDismiss = { confirmRemoveProfile = false }
+                title = stringResource(R.string.profile_reset_title),
+                body = stringResource(R.string.profile_reset_body),
+                confirmLabel = stringResource(R.string.profile_reset_confirm),
+                onConfirm = {
+                    steps = defaultProfile.frequency.steps
+                    videoEnabled = defaultProfile.video.enabled
+                    videoMinHz = defaultProfile.video.minHz
+                    useSession = defaultProfile.video.rules.useMediaSession
+                    pausedBlocks = defaultProfile.video.rules.pausedSessionBlocks
+                    requireCodec = defaultProfile.video.rules.requireVideoCodec
+                    requireAudio = defaultProfile.video.rules.requireStartedAudio
+                },
+                onDismiss = { confirmReset = false }
+            )
+        }
+
+        if (confirmDelete && onDelete != null) {
+            ConfirmDialog(
+                title = stringResource(R.string.profile_delete_title),
+                body = stringResource(R.string.profile_delete_body_unused),
+                confirmLabel = stringResource(R.string.profile_delete_confirm),
+                onConfirm = onDelete,
+                onDismiss = { confirmDelete = false }
             )
         }
     }
+}
+
+private fun profileTitle(profile: DeviceProfile): Int = when (profile.kind) {
+    ProfileKind.ECONOMY -> R.string.profile_economy_title
+    ProfileKind.BALANCED -> R.string.profile_balanced_title
+    ProfileKind.PERFORMANCE -> R.string.profile_performance_title
+    ProfileKind.CUSTOM -> R.string.profile_edit
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -340,7 +552,10 @@ private fun StepCard(
                 modifier = Modifier.weight(1f).padding(start = 10.dp)
             )
             IconButton(onClick = onRemove) {
-                Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.profile_remove_step))
+                Icon(
+                    Icons.Outlined.Delete,
+                    contentDescription = stringResource(R.string.profile_remove_step)
+                )
             }
         }
         Spacer(Modifier.height(4.dp))
@@ -375,21 +590,6 @@ private fun StepCard(
 }
 
 @Composable
-private fun preview(profile: FrequencyProfile): String {
-    if (profile.steps.isEmpty()) return stringResource(R.string.profile_empty)
-    if (profile.isFixed) return stringResource(R.string.profile_preview_fixed, profile.steps[0].hz)
-    val chain = profile.steps.mapIndexed { index, step ->
-        val rate = "${step.hz} Hz"
-        if (index == profile.steps.lastIndex) {
-            rate
-        } else {
-            "$rate · ${formatSeconds(step.holdMs ?: 0L)}"
-        }
-    }.joinToString(" → ")
-    return stringResource(R.string.profile_preview, chain)
-}
-
-@Composable
 private fun issueText(issue: ProfileIssue): String = when (issue) {
     ProfileIssue.EMPTY -> stringResource(R.string.profile_empty_warning)
     ProfileIssue.TOO_MANY -> stringResource(R.string.profile_issue_too_many)
@@ -405,13 +605,15 @@ private fun issueText(issue: ProfileIssue): String = when (issue) {
 
 private fun appendStep(steps: List<TierStep>, rates: List<Int>): List<TierStep> {
     if (steps.size >= FrequencyProfile.MAX_STEPS) return steps
-    if (steps.isEmpty()) {
-        return listOf(TierStep(rates.maxOrNull() ?: 120, null))
-    }
+    if (steps.isEmpty()) return listOf(TierStep(rates.maxOrNull() ?: 120, null))
     val lastHz = steps.last().hz
     val nextHz = rates.lastOrNull { it < lastHz } ?: lastHz
     val prepared = steps.mapIndexed { index, step ->
-        if (index == steps.lastIndex) step.copy(holdMs = step.holdMs ?: FrequencyProfile.DEFAULT_HOLD_MS) else step
+        if (index == steps.lastIndex) {
+            step.copy(holdMs = step.holdMs ?: FrequencyProfile.DEFAULT_HOLD_MS)
+        } else {
+            step
+        }
     }
     return prepared + TierStep(nextHz, null)
 }
@@ -426,9 +628,6 @@ private fun removeAt(steps: List<TierStep>, index: Int): List<TierStep> {
         }
     }
 }
-
-private fun formatSeconds(ms: Long): String =
-    String.format(java.util.Locale.getDefault(), "%.1f s", ms / 1000f)
 
 /** Keeps the in-progress edition alive across configuration changes. */
 private val stepsSaver = listSaver<MutableState<List<TierStep>>, String>(

@@ -36,14 +36,19 @@ English-only.
 - Keep placeholders exactly as in the base string (`%1$s`, `%1$d`, `%%`).
 - Keep `plurals` quantities (`one`, `other`).
 - Do not translate:
-  - `OneHZ`, `Shizuku`, `ECO`, `AOD`, `AMOLED`, `Doze`;
+  - `OneHZ`, `Shizuku`, `AOD`, `AMOLED`, `Doze`;
   - package names, commands, or settings keys;
   - the `debug_aod_brightness` key.
 - Use the platform's own term for battery saver:
   - en: battery saver;
   - pt-BR: economia de bateria;
   - es: ahorro de batería.
-- “ECO” is the app's short name for its battery-saver profile; keep the acronym.
+- Translate the profile names:
+  - Economy / Economia / Economía;
+  - Balanced / Balanceado / Equilibrado;
+  - Performance / Performance / Rendimiento.
+- “ECO” may appear only in historical changelog entries and legacy key names; it is no
+  longer the user-facing profile name.
 - User-facing text belongs in resources, never hardcoded in Kotlin.
 
 ## Glossary
@@ -55,7 +60,11 @@ English-only.
 | hold | tempo de espera | tiempo de espera |
 | resting rate | taxa de repouso | tasa de reposo |
 | profile | perfil | perfil |
+| economy profile | perfil Economia | perfil Economía |
+| balanced profile | perfil Balanceado | perfil Equilibrado |
+| performance profile | perfil Performance | perfil Rendimiento |
 | battery saver | economia de bateria | ahorro de batería |
+| backup and restore | backup e restauração | copia de seguridad y restauración |
 | AOD brightness | brilho do AOD | brillo del AOD |
 | foreground app | app em primeiro plano | aplicación en primer plano |
 | diagnostics | diagnóstico | diagnóstico |
