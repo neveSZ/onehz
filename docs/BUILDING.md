@@ -82,7 +82,7 @@ keyPassword=...
 
 ```properties
 versionName=1.2.0
-versionCode=1020000
+versionCode=1020100
 ```
 
 The release workflow checks that the tag (`v1.2.0`) matches `versionName`. The
