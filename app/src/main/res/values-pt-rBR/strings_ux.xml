@@ -23,7 +23,8 @@
     <string name="profile_in_use_auto">Em uso: %1$s (automática)</string>
     <string name="profile_low_rate_home">30 Hz pode deixar a tela mais escura neste aparelho.</string>
     <string name="profile_auto_economy_title">Economia automática</string>
-    <string name="profile_auto_economy_desc">Usar Economia enquanto a economia de bateria do sistema estiver ativa.</string>
+    <string name="profile_auto_economy_desc_on">Ativa Economia quando a economia de bateria do sistema liga.</string>
+    <string name="profile_auto_economy_desc_off">Mantém o perfil escolhido quando a economia de bateria do sistema liga.</string>
     <string name="profile_auto_economy_footer">Apps podem manter o próprio perfil com a opção abaixo.</string>
     <string name="profile_reference_hint">Este app usa o perfil %1$s. Editar esse perfil muda todos os apps que o usam.</string>
     <string name="profile_video_link">Vídeo do perfil: mínimo %1$d Hz</string>

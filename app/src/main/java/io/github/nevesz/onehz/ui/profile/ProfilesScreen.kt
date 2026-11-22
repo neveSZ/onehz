@@ -126,7 +126,8 @@ fun ProfilesScreen(
                 OneHzCard {
                     ToggleRow(
                         title = stringResource(R.string.profile_auto_economy_title),
-                        description = stringResource(R.string.profile_auto_economy_desc),
+                        descriptionOn = stringResource(R.string.profile_auto_economy_desc_on),
+                        descriptionOff = stringResource(R.string.profile_auto_economy_desc_off),
                         checked = state.autoEconomyOnBatterySaver,
                         onCheckedChange = { enabled ->
                             ProfileStore.setAutoEconomy(context, enabled)

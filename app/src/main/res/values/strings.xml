@@ -137,6 +137,8 @@
     <string name="app_removed">App removed</string>
     <string name="eco_ignored">Economy ignored</string>
     <string name="ignore_eco_label">Keep this app\'s profile during battery saver</string>
+    <string name="ignore_eco_desc_on">Keeps this app\'s profile even while system battery saver is on.</string>
+    <string name="ignore_eco_desc_off">Follows the automatic Economy setting while battery saver is on.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d selected</item>
         <item quantity="other">%1$d selected</item>

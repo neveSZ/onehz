@@ -137,6 +137,8 @@
     <string name="app_removed">Aplicativo removido</string>
     <string name="eco_ignored">Economia ignorada</string>
     <string name="ignore_eco_label">Manter o perfil deste app durante a economia de bateria</string>
+    <string name="ignore_eco_desc_on">Mantém o perfil deste app mesmo com a economia de bateria ligada.</string>
+    <string name="ignore_eco_desc_off">Segue a Economia automática enquanto a economia de bateria está ligada.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d selecionado</item>
         <item quantity="other">%1$d selecionados</item>
