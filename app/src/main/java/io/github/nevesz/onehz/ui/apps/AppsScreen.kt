@@ -3,9 +3,6 @@ package io.github.nevesz.onehz.ui.apps
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -19,15 +16,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.BatterySaver
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material.icons.outlined.DeleteSweep
-import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material.icons.outlined.SearchOff
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,12 +55,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.apps.AppCatalog
+import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.core.profile.AppAssignment
 import io.github.nevesz.onehz.core.profile.DeviceProfile
 import io.github.nevesz.onehz.core.profile.ProfileKind
 import io.github.nevesz.onehz.core.profile.ProfileStore
-import io.github.nevesz.onehz.core.apps.AppCatalog
-import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.EmptyState
@@ -75,6 +69,8 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.components.rememberPartialSheetState
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.profile.profileLabel
 import io.github.nevesz.onehz.ui.profile.profileSummary
 import kotlinx.coroutines.Dispatchers
@@ -90,7 +86,8 @@ fun AppsScreen(
     dataVersion: Int,
     onEditProfile: (String) -> Unit
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
+    val queryState = rememberTextFieldState()
+    val query = queryState.text.toString()
     var filterName by rememberSaveable { mutableStateOf(AppFilter.ALL.name) }
     var selectionMode by rememberSaveable { mutableStateOf(false) }
     var selected by remember { mutableStateOf(setOf<String>()) }
@@ -133,17 +130,16 @@ fun AppsScreen(
     ) {
         item {
             OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
+                state = queryState,
                 label = { Text(stringResource(R.string.search_apps)) },
                 leadingIcon = {
-                    Icon(Icons.Outlined.Search, contentDescription = null)
+                    Icon(AppIcons.search(), contentDescription = null)
                 },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
-                        IconButton(onClick = { query = "" }) {
+                        IconButton(onClick = { queryState.clearText() }) {
                             Icon(
-                                Icons.Outlined.Clear,
+                                AppIcons.clear(),
                                 contentDescription = stringResource(R.string.clear_search)
                             )
                         }
@@ -184,7 +180,7 @@ fun AppsScreen(
                             onClick = { confirmBulk = true },
                             enabled = selected.isNotEmpty()
                         ) {
-                            Icon(Icons.Outlined.DeleteSweep, contentDescription = null)
+                            Icon(AppIcons.deleteSweep(), contentDescription = null)
                             Text(stringResource(R.string.delete_selected), Modifier.padding(start = 6.dp))
                         }
                         OutlinedButton(onClick = {
@@ -213,7 +209,7 @@ fun AppsScreen(
                     if (configured.isNotEmpty() && !selectionMode) {
                         IconButton(onClick = { selectionMode = true }) {
                             Icon(
-                                Icons.Outlined.DeleteSweep,
+                                AppIcons.deleteSweep(),
                                 contentDescription = stringResource(R.string.select_apps)
                             )
                         }
@@ -226,7 +222,7 @@ fun AppsScreen(
         } else if (filtered.isEmpty()) {
             item {
                 EmptyState(
-                    icon = Icons.Outlined.SearchOff,
+                    icon = AppIcons.searchOff(),
                     title = stringResource(
                         when (filter) {
                             AppFilter.CONFIGURED -> R.string.empty_configured_title
@@ -370,7 +366,7 @@ private fun AppRow(
             configured && ignoreEco -> StatusBadge(
                 text = stringResource(R.string.eco_ignored),
                 tone = StatusTone.WARN,
-                icon = Icons.Outlined.BatterySaver
+                icon = AppIcons.batterySaver()
             )
         }
     }
@@ -381,7 +377,7 @@ fun AppIcon(context: Context, packageName: String) {
     val icon by produceState<ImageBitmap?>(initialValue = null, packageName) {
         value = withContext(Dispatchers.IO) { AppCatalog.icon(context, packageName) }
     }
-    IconSurface(icon = Icons.Outlined.Apps, bitmap = icon, size = 40)
+    IconSurface(icon = AppIcons.apps(), bitmap = icon, size = 40)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -397,7 +393,7 @@ private fun AddSheet(
 ) {
     var selectedId by remember { mutableStateOf(activeProfileId) }
     val selectedProfile = profiles.firstOrNull { it.id == selectedId }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
             Modifier
                 .padding(20.dp)
@@ -445,7 +441,7 @@ private fun AddSheet(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Outlined.Add, contentDescription = null)
+                Icon(AppIcons.add(), contentDescription = null)
                 Text(stringResource(R.string.profile_assign), Modifier.padding(start = 6.dp))
             }
             OutlinedButton(
@@ -513,7 +509,7 @@ private fun EditSheet(
         onChanged()
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
             Modifier
                 .padding(20.dp)

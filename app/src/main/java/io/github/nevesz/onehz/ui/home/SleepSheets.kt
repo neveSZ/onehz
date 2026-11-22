@@ -12,9 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -27,7 +26,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +37,8 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DozeWhitelist
 import io.github.nevesz.onehz.core.RestSession
@@ -49,6 +49,9 @@ import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
 import io.github.nevesz.onehz.ui.apps.AppIcon
+import io.github.nevesz.onehz.ui.components.rememberPartialSheetState
+import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.viewmodel.SleepViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -66,7 +69,7 @@ fun SleepDetailsSheet(
         .takeLast(5)
         .asReversed()
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
             Modifier
                 .fillMaxWidth()
@@ -139,13 +142,15 @@ private fun SleepSessionRow(session: RestSession, now: Long) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SleepWhitelistSheet(context: Context, onDismiss: () -> Unit) {
-    val shizuku by ShizukuGateway.state.collectAsState()
+    val vm: SleepViewModel = viewModel()
+    val shizuku by vm.shizuku.collectAsStateWithLifecycle()
     val ready = shizuku == ShizukuState.READY
     val scope = rememberCoroutineScope()
 
     var apps by remember { mutableStateOf<List<InstalledApp>>(emptyList()) }
     var allowed by remember { mutableStateOf<Set<String>>(emptySet()) }
-    var query by remember { mutableStateOf("") }
+    val queryState = rememberTextFieldState()
+    val query = queryState.text.toString()
     var loading by remember { mutableStateOf(true) }
     var pending by remember { mutableStateOf<Set<String>>(emptySet()) }
     var failed by remember { mutableStateOf(false) }
@@ -162,7 +167,7 @@ fun SleepWhitelistSheet(context: Context, onDismiss: () -> Unit) {
         loading = false
     }
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
             Modifier
                 .fillMaxWidth()
@@ -189,14 +194,13 @@ fun SleepWhitelistSheet(context: Context, onDismiss: () -> Unit) {
                 )
             } else {
                 OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
+                    state = queryState,
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.sleep_whitelist_search)) },
                     leadingIcon = {
-                        Icon(Icons.Outlined.Search, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Icon(AppIcons.search(), contentDescription = null, modifier = Modifier.size(18.dp))
                     },
-                    singleLine = true,
+                    lineLimits = TextFieldLineLimits.SingleLine,
                 )
                 if (failed) {
                     Spacer(Modifier.height(6.dp))

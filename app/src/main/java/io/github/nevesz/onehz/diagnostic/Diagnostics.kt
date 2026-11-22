@@ -7,10 +7,10 @@ import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.VideoSignals
-import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.flow.MutableStateFlow
 
 data class LogEntry(val time: String, val tag: String, val message: String)
 

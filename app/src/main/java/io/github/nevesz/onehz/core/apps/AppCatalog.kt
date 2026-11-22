@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.createBitmap
@@ -24,7 +25,7 @@ object AppCatalog {
     fun load(context: Context, includeSystem: Boolean): List<InstalledApp> {
         val pm = context.packageManager
         return runCatching {
-            pm.getInstalledApplications(0)
+            installedApplications(pm)
                 .asSequence()
                 .filter { includeSystem || (it.flags and ApplicationInfo.FLAG_SYSTEM) == 0 }
                 .map {
@@ -41,18 +42,34 @@ object AppCatalog {
 
     fun label(context: Context, packageName: String): String = runCatching {
         val pm = context.packageManager
-        pm.getApplicationInfo(packageName, 0).loadLabel(pm).toString()
+        applicationInfo(pm, packageName).loadLabel(pm).toString()
     }.getOrDefault(packageName)
 
     fun icon(context: Context, packageName: String): ImageBitmap? {
         iconCache[packageName]?.let { return it }
         val bitmap = runCatching {
             val pm = context.packageManager
-            drawableToBitmap(pm.getApplicationInfo(packageName, 0).loadIcon(pm))
+            drawableToBitmap(applicationInfo(pm, packageName).loadIcon(pm))
         }.getOrNull()
         iconCache[packageName] = bitmap
         return bitmap
     }
+
+    @Suppress("DEPRECATION")
+    private fun installedApplications(pm: PackageManager): List<ApplicationInfo> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.getInstalledApplications(PackageManager.ApplicationInfoFlags.of(0))
+        } else {
+            pm.getInstalledApplications(0)
+        }
+
+    @Suppress("DEPRECATION")
+    private fun applicationInfo(pm: PackageManager, packageName: String): ApplicationInfo =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            pm.getApplicationInfo(packageName, PackageManager.ApplicationInfoFlags.of(0))
+        } else {
+            pm.getApplicationInfo(packageName, 0)
+        }
 
     private fun drawableToBitmap(drawable: Drawable): ImageBitmap {
         val width = drawable.intrinsicWidth.takeIf { it > 0 } ?: 96

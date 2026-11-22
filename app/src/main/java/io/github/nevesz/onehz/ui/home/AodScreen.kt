@@ -12,12 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.BrightnessMedium
-import androidx.compose.material.icons.outlined.ExpandLess
-import androidx.compose.material.icons.outlined.ExpandMore
-import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,14 +21,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.RangeSliderState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,12 +40,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.AodBrightnessMath
 import io.github.nevesz.onehz.core.DisplayGate
@@ -59,6 +57,8 @@ import io.github.nevesz.onehz.engine.AodBrightnessController
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.viewmodel.AodViewModel
 import kotlin.math.roundToInt
 
 private data class AodUi(
@@ -89,8 +89,9 @@ fun AodScreen(
     dataVersion: Int,
     onBack: () -> Unit,
 ) {
+    val vm: AodViewModel = viewModel()
     val gate = remember { DisplayGate.evaluate(context) }
-    val aodInfo by Diagnostics.aodBrightness.collectAsState()
+    val aodInfo by vm.aodInfo.collectAsStateWithLifecycle()
     var state by remember(dataVersion) { mutableStateOf(loadAod(context)) }
     var refresh by remember { mutableIntStateOf(0) }
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -117,7 +118,7 @@ fun AodScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            AppIcons.arrowBack(),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -149,7 +150,7 @@ fun AodScreen(
                 OneHzCard {
                     if (gate.profile.supportsAodBrightness) {
                         ToggleRow(
-                            icon = Icons.Outlined.Nightlight,
+                            icon = AppIcons.nightlight(),
                             title = stringResource(R.string.aod_rate_title),
                             description = stringResource(R.string.aod_hint),
                             checked = state.rateEnabled,
@@ -194,7 +195,7 @@ fun AodScreen(
                 item {
                     OneHzCard {
                         ToggleRow(
-                            icon = Icons.Outlined.BrightnessMedium,
+                            icon = AppIcons.brightnessMedium(),
                             title = stringResource(R.string.aod_brightness_title),
                             description = stringResource(R.string.aod_brightness_desc),
                             checked = state.brightnessEnabled,
@@ -215,11 +216,22 @@ fun AodScreen(
                                 text = brightnessLabel,
                                 style = MaterialTheme.typography.bodyMedium
                             )
+                            val brightnessSliderState = remember {
+                                SliderState(
+                                    value = state.brightnessPct.toFloat(),
+                                    steps = AodBrightnessMath.MAX_PCT - AodBrightnessMath.MIN_PCT - 1,
+                                    trackRange = AodBrightnessMath.MIN_PCT.toFloat()..
+                                        AodBrightnessMath.MAX_PCT.toFloat(),
+                                )
+                            }
+                            LaunchedEffect(state.brightnessPct) {
+                                brightnessSliderState.value = state.brightnessPct.toFloat()
+                            }
                             Slider(
                                 modifier = Modifier.semantics {
                                     stateDescription = brightnessLabel
                                 },
-                                value = state.brightnessPct.toFloat(),
+                                state = brightnessSliderState,
                                 onValueChange = { value ->
                                     val pct = value.roundToInt()
                                         .coerceIn(AodBrightnessMath.MIN_PCT, AodBrightnessMath.MAX_PCT)
@@ -227,8 +239,6 @@ fun AodScreen(
                                     OneHzPreferences.setAodBrightnessPct(context, pct)
                                 },
                                 onValueChangeFinished = { AodBrightnessController.onPrefsChanged() },
-                                valueRange = AodBrightnessMath.MIN_PCT.toFloat()..AodBrightnessMath.MAX_PCT.toFloat(),
-                                steps = AodBrightnessMath.MAX_PCT - AodBrightnessMath.MIN_PCT - 1,
                                 enabled = oneHzEnabled
                             )
                             val effectivePct = state.brightnessPct
@@ -246,7 +256,7 @@ fun AodScreen(
                             }
                             TextButton(onClick = { showLimits = !showLimits }) {
                                 Icon(
-                                    if (showLimits) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                                    if (showLimits) AppIcons.expandLess() else AppIcons.expandMore(),
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
                                 )
@@ -269,11 +279,25 @@ fun AodScreen(
                                         text = limitsLabel,
                                         style = MaterialTheme.typography.bodyMedium
                                     )
+                                    val limitsRangeState = remember {
+                                        RangeSliderState(
+                                            startValue = state.minPct.toFloat(),
+                                            endValue = state.maxPct.toFloat(),
+                                            steps = AodBrightnessMath.MAX_PCT -
+                                                AodBrightnessMath.MIN_PCT - 1,
+                                            trackRange = AodBrightnessMath.MIN_PCT.toFloat()..
+                                                AodBrightnessMath.MAX_PCT.toFloat(),
+                                        )
+                                    }
+                                    LaunchedEffect(state.minPct, state.maxPct) {
+                                        limitsRangeState.startValue = state.minPct.toFloat()
+                                        limitsRangeState.endValue = state.maxPct.toFloat()
+                                    }
                                     RangeSlider(
                                         modifier = Modifier.semantics {
                                             stateDescription = limitsLabel
                                         },
-                                        value = state.minPct.toFloat()..state.maxPct.toFloat(),
+                                        state = limitsRangeState,
                                         onValueChange = { range ->
                                             val min = range.start.roundToInt()
                                                 .coerceIn(AodBrightnessMath.MIN_PCT, AodBrightnessMath.MAX_PCT - 1)
@@ -283,8 +307,6 @@ fun AodScreen(
                                             OneHzPreferences.setAodBrightnessBand(context, min, max)
                                         },
                                         onValueChangeFinished = { AodBrightnessController.onPrefsChanged() },
-                                        valueRange = AodBrightnessMath.MIN_PCT.toFloat()..AodBrightnessMath.MAX_PCT.toFloat(),
-                                        steps = AodBrightnessMath.MAX_PCT - AodBrightnessMath.MIN_PCT - 1,
                                         enabled = oneHzEnabled
                                     )
                                 }

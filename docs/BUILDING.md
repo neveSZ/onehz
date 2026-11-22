@@ -94,9 +94,15 @@ Release builds use R8 full mode by default, plus resource shrinking. The rules i
 `app/proguard-rules.pro` keep AIDL stubs, the UserService, Shizuku, and Binder plumbing.
 Do not remove these keeps without testing a full release build on a device.
 
-The current APK is about **3.2 MB**. `mapping.txt` is generated under
+The current APK is about **4 MB**. `mapping.txt` is generated under
 `app/build/outputs/mapping/release/`; keep it for crash deobfuscation and do not commit
 it.
+
+## Baseline Profile
+
+Release builds consume a Baseline Profile from
+`app/src/release/generated/baselineProfiles/baseline-prof.txt`. Regenerate it on a
+device after changing startup code; see [BASELINE_PROFILE](BASELINE_PROFILE.md).
 
 ## Troubleshooting
 

@@ -17,18 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.material.icons.outlined.BrightnessMedium
-import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.OndemandVideo
-import androidx.compose.material.icons.outlined.Pause
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Shield
-import androidx.compose.material.icons.outlined.Speed
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -40,7 +29,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +37,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.DisplayVendor
@@ -67,39 +58,43 @@ import io.github.nevesz.onehz.ui.components.MetricBox
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
+import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.viewmodel.DiagnosticsViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DiagnosticsScreen() {
+    val vm: DiagnosticsViewModel = viewModel()
     val context = LocalContext.current
     val profile = remember { DisplayProfileResolver.detect(context) }
     val supportsAodBrightness = profile.supportsAodBrightness
     val isXiaomi = profile.vendor == DisplayVendor.XIAOMI
     var tab by rememberSaveable { mutableIntStateOf(0) }
-    val entries by Diagnostics.entries.collectAsState()
-    val paused by Diagnostics.paused.collectAsState()
-    val shizuku by Diagnostics.shizukuState.collectAsState()
-    val display by Diagnostics.displayState.collectAsState()
-    val displayEligible by Diagnostics.displayEligible.collectAsState()
-    val controlMethod by Diagnostics.controlMethod.collectAsState()
-    val tierKey by Diagnostics.activeTierKey.collectAsState()
-    val observedHz by Diagnostics.observedHz.collectAsState()
-    val activeStep by Diagnostics.activeStep.collectAsState()
-    val activeStepCount by Diagnostics.activeStepCount.collectAsState()
-    val last by Diagnostics.lastWrite.collectAsState()
-    val inputState by Diagnostics.inputState.collectAsState()
-    val inputDevice by Diagnostics.inputDevice.collectAsState()
-    val inputCandidates by Diagnostics.inputCandidates.collectAsState()
-    val lastTouch by Diagnostics.lastTouchAt.collectAsState()
-    val aodInfo by Diagnostics.aodBrightness.collectAsState()
-    val videoSource by Diagnostics.videoSource.collectAsState()
-    val videoDetail by Diagnostics.videoDetail.collectAsState()
-    val brightness by Diagnostics.screenBrightness.collectAsState()
-    val batterySaver by Diagnostics.batterySaver.collectAsState()
-    val route by Diagnostics.displayRoute.collectAsState()
+    val entries by vm.entries.collectAsStateWithLifecycle()
+    val paused by vm.paused.collectAsStateWithLifecycle()
+    val shizuku by vm.shizukuState.collectAsStateWithLifecycle()
+    val display by vm.displayState.collectAsStateWithLifecycle()
+    val displayEligible by vm.displayEligible.collectAsStateWithLifecycle()
+    val controlMethod by vm.controlMethod.collectAsStateWithLifecycle()
+    val tierKey by vm.activeTierKey.collectAsStateWithLifecycle()
+    val observedHz by vm.observedHz.collectAsStateWithLifecycle()
+    val activeStep by vm.activeStep.collectAsStateWithLifecycle()
+    val activeStepCount by vm.activeStepCount.collectAsStateWithLifecycle()
+    val last by vm.lastWrite.collectAsStateWithLifecycle()
+    val inputState by vm.inputState.collectAsStateWithLifecycle()
+    val inputDevice by vm.inputDevice.collectAsStateWithLifecycle()
+    val inputCandidates by vm.inputCandidates.collectAsStateWithLifecycle()
+    val lastTouch by vm.lastTouchAt.collectAsStateWithLifecycle()
+    val aodInfo by vm.aodBrightness.collectAsStateWithLifecycle()
+    val videoSource by vm.videoSource.collectAsStateWithLifecycle()
+    val videoDetail by vm.videoDetail.collectAsStateWithLifecycle()
+    val brightness by vm.screenBrightness.collectAsStateWithLifecycle()
+    val batterySaver by vm.batterySaver.collectAsStateWithLifecycle()
+    val route by vm.displayRoute.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { Diagnostics.refreshSystem(context) }
 
-    var query by rememberSaveable { mutableStateOf("") }
+    val queryState = rememberTextFieldState()
+    val query = queryState.text.toString()
     var tag by rememberSaveable { mutableStateOf("all") }
     var videoTest by remember { mutableStateOf<String?>(null) }
     val tags = listOf("all", "touch", "screen", "display", "timer", "engine", "wake", "arbiter", "eco", "aod", "video")
@@ -127,9 +122,9 @@ fun DiagnosticsScreen() {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        MetricBox(Icons.Outlined.Bolt, stringResource(R.string.diag_shizuku), shizuku, Modifier.weight(1f))
+                        MetricBox(AppIcons.bolt(), stringResource(R.string.diag_shizuku), shizuku, Modifier.weight(1f))
                         MetricBox(
-                            Icons.Outlined.Shield,
+                            AppIcons.shield(),
                             stringResource(R.string.diag_ltpo),
                             if (displayEligible) stringResource(R.string.status_ok) else stringResource(R.string.status_error),
                             Modifier.weight(1f),
@@ -139,8 +134,8 @@ fun DiagnosticsScreen() {
                 }
                 item {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        MetricBox(Icons.Outlined.Speed, stringResource(R.string.diag_tier), tierText, Modifier.weight(1f))
-                        MetricBox(Icons.Outlined.BugReport, stringResource(R.string.diag_last_write), last, Modifier.weight(1f))
+                        MetricBox(AppIcons.speed(), stringResource(R.string.diag_tier), tierText, Modifier.weight(1f))
+                        MetricBox(AppIcons.bugReport(), stringResource(R.string.diag_last_write), last, Modifier.weight(1f))
                     }
                 }
                 if (observedHz > 0) {
@@ -224,7 +219,7 @@ fun DiagnosticsScreen() {
                     OneHzCard {
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                             Icon(
-                                Icons.Outlined.BrightnessMedium,
+                                AppIcons.brightnessMedium(),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
@@ -277,7 +272,7 @@ fun DiagnosticsScreen() {
                     OneHzCard {
                         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                             Icon(
-                                Icons.Outlined.OndemandVideo,
+                                AppIcons.ondemandVideo(),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
@@ -300,8 +295,9 @@ fun DiagnosticsScreen() {
                         Text(
                             text = stringResource(
                                 R.string.video_diag_config,
-                                stringResource(
-                                    R.string.video_rules_summary,
+                                pluralStringResource(
+                                    R.plurals.video_rules_summary,
+                                    videoConfig.activeRuleCount,
                                     videoConfig.activeRuleCount,
                                     VideoConfig.RULE_COUNT
                                 ),
@@ -337,11 +333,11 @@ fun DiagnosticsScreen() {
                 item {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = { copyReport(context) }) {
-                            Icon(Icons.Outlined.ContentCopy, contentDescription = null)
+                            Icon(AppIcons.contentCopy(), contentDescription = null)
                             Text(stringResource(R.string.copy_report), Modifier.padding(start = 8.dp))
                         }
                         OutlinedButton(onClick = { OneHzEngine.refreshSystemState() }) {
-                            Icon(Icons.Outlined.Refresh, contentDescription = null)
+                            Icon(AppIcons.refresh(), contentDescription = null)
                             Text(stringResource(R.string.update_info), Modifier.padding(start = 6.dp))
                         }
                         OutlinedButton(onClick = { OneHzEngine.testMax() }) {
@@ -367,8 +363,7 @@ fun DiagnosticsScreen() {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 item {
                     OutlinedTextField(
-                        value = query,
-                        onValueChange = { query = it },
+                        state = queryState,
                         label = { Text(stringResource(R.string.log_search)) },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -390,18 +385,18 @@ fun DiagnosticsScreen() {
                             Diagnostics.setPaused(!paused)
                             OneHzPreferences.setLogsPaused(context, !paused)
                         }) {
-                            Icon(if (paused) Icons.Outlined.PlayArrow else Icons.Outlined.Pause, contentDescription = null)
+                            Icon(if (paused) AppIcons.playArrow() else AppIcons.pause(), contentDescription = null)
                             Text(
                                 text = stringResource(if (paused) R.string.resume_logs else R.string.pause_logs),
                                 modifier = Modifier.padding(start = 6.dp)
                             )
                         }
                         OutlinedButton(onClick = { Diagnostics.clear() }) {
-                            Icon(Icons.Outlined.Delete, contentDescription = null)
+                            Icon(AppIcons.delete(), contentDescription = null)
                             Text(stringResource(R.string.clear_log), Modifier.padding(start = 6.dp))
                         }
                         Button(onClick = { copyReport(context) }) {
-                            Icon(Icons.Outlined.ContentCopy, contentDescription = null)
+                            Icon(AppIcons.contentCopy(), contentDescription = null)
                             Text(stringResource(R.string.copy_report), Modifier.padding(start = 6.dp))
                         }
                     }

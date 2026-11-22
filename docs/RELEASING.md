@@ -38,6 +38,18 @@ Examples:
 `1,000,200` is valid because Android only requires the new `versionCode` to be higher
 than the installed one.
 
+The formulas are implemented by the release tooling:
+
+```bash
+python scripts/validate-version.py          # validates name, code, changelogs
+python scripts/bump-version.py --part patch # rewrites version.properties
+python scripts/bump-version.py 1.3.0 --changelog "What changed"
+```
+
+`bump-version.py` refuses to write a `versionCode` that does not increase, and CI runs
+`validate-version.py` before every build. Prefer the scripts over editing
+`version.properties` by hand so the metadata stays consistent.
+
 A beta must use a `versionCode` higher than the current stable (so testers can install it
 over the stable APK) and lower than the upcoming stable (so beta users can move to the
 final release). Tag format: `v1.0.0`, `v1.0.1-beta.1`, `v1.1.0-beta.2`. Tags containing

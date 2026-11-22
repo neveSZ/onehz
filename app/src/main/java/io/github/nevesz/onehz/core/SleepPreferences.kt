@@ -2,14 +2,13 @@ package io.github.nevesz.onehz.core
 
 import android.content.Context
 import androidx.core.content.edit
+import io.github.nevesz.onehz.core.prefs.PreferencesStore
 
 /**
  * Preferences owned by the Sleep feature. Kept apart from [OneHzPreferences] so the sleep
  * work does not share a file with unrelated changes.
  */
 object SleepPreferences {
-
-    private const val NAME = "onehz_prefs"
 
     private const val KEY_ENABLED = "sleep_enabled"
     private const val KEY_DEEP = "sleep_deep"
@@ -25,8 +24,7 @@ object SleepPreferences {
     private const val KEY_OPEN = "sleep_open"
     private const val KEY_WARNING_SEEN = "sleep_warning_seen"
 
-    private fun prefs(context: Context) =
-        context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
+    private fun prefs(context: Context) = PreferencesStore.get(context)
 
     fun enabled(context: Context) = prefs(context).getBoolean(KEY_ENABLED, false)
 

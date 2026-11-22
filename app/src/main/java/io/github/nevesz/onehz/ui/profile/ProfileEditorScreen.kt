@@ -15,12 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Movie
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.maxLengthTrim
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +35,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
@@ -67,6 +66,7 @@ import io.github.nevesz.onehz.ui.components.HzPicker
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.home.VideoForcedAppsSheet
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 /**
  * Editor for one saved profile. Frequency, video and name are saved together so a profile
@@ -85,12 +85,15 @@ fun ProfileEditorScreen(
     onDelete: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
-    var name by rememberSaveable(initial.id) { mutableStateOf(initial.name.orEmpty()) }
+    val nameState = rememberSaveable(initial.id, saver = TextFieldState.Saver) {
+        TextFieldState(initial.name.orEmpty())
+    }
+    val name = nameState.text.toString()
     var steps by rememberSaveable(initial.id, saver = stepsSaver) {
         mutableStateOf(initial.frequency.steps)
     }
     var videoEnabled by rememberSaveable(initial.id) { mutableStateOf(initial.video.enabled) }
-    var videoMinHz by rememberSaveable(initial.id) { mutableStateOf(initial.video.minHz) }
+    var videoMinHz by rememberSaveable(initial.id) { mutableIntStateOf(initial.video.minHz) }
     var useSession by rememberSaveable(initial.id) {
         mutableStateOf(initial.video.rules.useMediaSession)
     }
@@ -154,7 +157,7 @@ fun ProfileEditorScreen(
                 navigationIcon = {
                     IconButton(onClick = { tryBack() }) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            AppIcons.arrowBack(),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -197,8 +200,8 @@ fun ProfileEditorScreen(
             if (isCustom) {
                 item {
                     OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it.take(ProfileCodec.MAX_NAME_LENGTH) },
+                        state = nameState,
+                        inputTransformation = InputTransformation.maxLengthTrim(ProfileCodec.MAX_NAME_LENGTH),
                         label = { Text(stringResource(R.string.profile_name)) },
                         placeholder = { Text(stringResource(R.string.profile_name_hint)) },
                         isError = nameIssue,
@@ -207,7 +210,7 @@ fun ProfileEditorScreen(
                         } else {
                             null
                         },
-                        singleLine = true,
+                        lineLimits = TextFieldLineLimits.SingleLine,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -275,7 +278,7 @@ fun ProfileEditorScreen(
                 OneHzCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Outlined.Info,
+                            AppIcons.info(),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
@@ -352,7 +355,7 @@ fun ProfileEditorScreen(
                     enabled = steps.size < FrequencyProfile.MAX_STEPS,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Outlined.Add, contentDescription = null)
+                    Icon(AppIcons.add(), contentDescription = null)
                     Text(stringResource(R.string.profile_add_step), Modifier.padding(start = 8.dp))
                 }
             }
@@ -361,7 +364,7 @@ fun ProfileEditorScreen(
                 OneHzCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            Icons.Outlined.Movie,
+                            AppIcons.movie(),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
@@ -411,8 +414,9 @@ fun ProfileEditorScreen(
                                 style = MaterialTheme.typography.titleSmall
                             )
                             Text(
-                                text = stringResource(
-                                    R.string.video_rules_summary,
+                                text = pluralStringResource(
+                                    R.plurals.video_rules_summary,
+                                    video.rules.activeRuleCount,
                                     video.rules.activeRuleCount,
                                     VideoConfig.RULE_COUNT
                                 ),
@@ -597,7 +601,7 @@ private fun StepCard(
             )
             IconButton(onClick = onRemove) {
                 Icon(
-                    Icons.Outlined.Delete,
+                    AppIcons.delete(),
                     contentDescription = stringResource(R.string.profile_remove_step)
                 )
             }

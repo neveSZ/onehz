@@ -2,6 +2,7 @@ package io.github.nevesz.onehz.core
 
 import android.content.Context
 import androidx.core.content.edit
+import io.github.nevesz.onehz.core.prefs.PreferencesStore
 import io.github.nevesz.onehz.core.update.ReleaseInfo
 import io.github.nevesz.onehz.core.update.ReleaseSelector
 import io.github.nevesz.onehz.core.update.UpdateChannel
@@ -10,8 +11,6 @@ import io.github.nevesz.onehz.core.update.UpdateStatus
 
 /** Local configuration for OneHZ. All values are stored on-device only. */
 object OneHzPreferences {
-    private const val NAME = "onehz_prefs"
-
     private const val KEY_ENABLED = "enabled"
     internal const val KEY_PROFILE_NORMAL = "profile_normal"
     internal const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
@@ -52,8 +51,7 @@ object OneHzPreferences {
     internal const val APP_PROFILE = "_profile"
     internal const val APP_IGNORE_ECO = "_ignore_eco"
 
-    fun prefs(context: Context) =
-        context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
+    fun prefs(context: Context) = PreferencesStore.get(context)
 
     fun isEnabled(context: Context) = prefs(context).getBoolean(KEY_ENABLED, false)
     fun setEnabled(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_ENABLED, value) }

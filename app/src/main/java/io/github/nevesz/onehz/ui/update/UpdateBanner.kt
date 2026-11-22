@@ -2,20 +2,18 @@ package io.github.nevesz.onehz.ui.update
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.NewReleases
-import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.update.UpdateState
 import io.github.nevesz.onehz.ui.components.BannerTone
 import io.github.nevesz.onehz.ui.components.InfoBanner
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 /**
  * Dismissible banner shown at the top of Home. It never opens an arbitrary URL: the
@@ -47,7 +45,7 @@ fun UpdateBanner(
             release.displayVersion
         ),
         tone = if (prerelease) BannerTone.WARN else BannerTone.INFO,
-        icon = if (prerelease) Icons.Outlined.Science else Icons.Outlined.NewReleases,
+        icon = if (prerelease) AppIcons.science() else AppIcons.newReleases(),
         action = {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = openRelease) {

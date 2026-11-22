@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Validate version
+        run: python3 scripts/validate-version.py
+
       - name: Validate fastlane metadata
         run: python3 scripts/validate-fastlane.py
 
@@ -37,8 +40,24 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
 
+      - name: Cache Android SDK
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ANDROID_HOME }}/platforms
+            ${{ env.ANDROID_HOME }}/build-tools
+            ${{ env.ANDROID_HOME }}/platform-tools
+          key: android-sdk-${{ runner.os }}-platform-37.1-build-tools-36.0.0-r1
+          restore-keys: |
+            android-sdk-${{ runner.os }}-platform-37.1-
+
       - name: Install SDK packages
-        run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0" "platform-tools"
+        run: |
+          yes | sdkmanager --install \
+            "platforms;android-37.1" \
+            "build-tools;36.0.0" \
+            "platform-tools"
+          sdkmanager --list_installed
 
       - name: Unit tests and lint
         run: ./gradlew --no-daemon testDebugUnitTest lintDebug assembleDebug
@@ -62,3 +81,40 @@ jobs:
           path: app/build/reports/lint-results-debug.*
           if-no-files-found: ignore
           retention-days: 7
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        run: |
+          docker run --rm \
+            -v "$PWD:/repo" \
+            ghcr.io/gitleaks/gitleaks:v8.30.1 detect \
+            --source=/repo \
+            --no-banner \
+            --redact \
+            --verbose \
+            --exit-code=1
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: on-failure

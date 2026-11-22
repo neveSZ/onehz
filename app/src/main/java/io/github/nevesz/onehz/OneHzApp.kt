@@ -3,6 +3,7 @@ package io.github.nevesz.onehz
 import android.app.Application
 import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.prefs.PreferencesStore
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.AodBrightnessController
@@ -16,6 +17,7 @@ class OneHzApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        PreferencesStore.initialize(this)
         val gate = DisplayGate.evaluate(this)
         Diagnostics.displayState.value = gate.summary
         Diagnostics.displayEligible.value = gate.eligible

@@ -10,3 +10,6 @@
 *.jar binary
 *.jks binary
 *.keystore binary
+
+# Generated ART profiles: collapse in diffs and language stats
+app/src/release/generated/baselineProfiles/*.txt linguist-generated=true -diff

@@ -15,11 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.PlayArrow
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,7 +28,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.DozeState
@@ -66,6 +62,8 @@ import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.viewmodel.SleepViewModel
 import kotlinx.coroutines.delay
 
 private data class SleepUi(
@@ -98,9 +96,10 @@ fun SleepScreen(
     dataVersion: Int,
     onBack: () -> Unit,
 ) {
-    val phase by Diagnostics.dozePhase.collectAsState()
-    val activeSince by Diagnostics.dozeActiveSince.collectAsState()
-    val shizuku by ShizukuGateway.state.collectAsState()
+    val vm: SleepViewModel = viewModel()
+    val phase by vm.phase.collectAsStateWithLifecycle()
+    val activeSince by vm.activeSince.collectAsStateWithLifecycle()
+    val shizuku by vm.shizuku.collectAsStateWithLifecycle()
 
     var ui by remember(dataVersion) { mutableStateOf(loadSleep(context)) }
     var refresh by remember { mutableIntStateOf(0) }
@@ -160,7 +159,7 @@ fun SleepScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            Icons.AutoMirrored.Outlined.ArrowBack,
+                            AppIcons.arrowBack(),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -261,7 +260,7 @@ fun SleepScreen(
                         },
                     )
                     ToggleRow(
-                        icon = Icons.Outlined.Schedule,
+                        icon = AppIcons.schedule(),
                         title = stringResource(R.string.sleep_window_title),
                         description = stringResource(R.string.sleep_window_desc),
                         checked = ui.windowEnabled,
@@ -274,13 +273,13 @@ fun SleepScreen(
                     if (ui.windowEnabled) {
                         Column(Modifier.padding(start = 4.dp)) {
                             SettingRow(
-                                icon = Icons.Outlined.Schedule,
+                                icon = AppIcons.schedule(),
                                 title = stringResource(R.string.sleep_window_start),
                                 onClick = { pickStart = true },
                                 trailing = { Text(formatSleepMinute(ui.window.startMinute)) },
                             )
                             SettingRow(
-                                icon = Icons.Outlined.Schedule,
+                                icon = AppIcons.schedule(),
                                 title = stringResource(R.string.sleep_window_end),
                                 onClick = { pickEnd = true },
                                 trailing = { Text(formatSleepMinute(ui.window.endMinute)) },
@@ -293,7 +292,7 @@ fun SleepScreen(
             item {
                 OneHzCard {
                     SettingRow(
-                        icon = Icons.Outlined.NotificationsActive,
+                        icon = AppIcons.notificationsActive(),
                         title = stringResource(R.string.sleep_whitelist_title),
                         subtitle = stringResource(R.string.sleep_whitelist_desc),
                         onClick = { showWhitelist = true },
@@ -341,7 +340,7 @@ fun SleepScreen(
                             enabled = !testing && shizuku == ShizukuState.READY,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                            Icon(AppIcons.playArrow(), contentDescription = null)
                             Spacer(Modifier.width(8.dp))
                             Text(
                                 stringResource(

@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Backup
-import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.ui.components.OneHzCard
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 @Composable
 fun BackupScreen(
@@ -75,7 +73,7 @@ fun BackupScreen(
                 )
                 Spacer(Modifier.height(10.dp))
                 Button(onClick = onExport, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Outlined.Backup, contentDescription = null)
+                    Icon(AppIcons.backup(), contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text(stringResource(R.string.backup_export))
                 }
@@ -95,7 +93,7 @@ fun BackupScreen(
                 )
                 Spacer(Modifier.height(10.dp))
                 OutlinedButton(onClick = onImport, modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Outlined.Restore, contentDescription = null)
+                    Icon(AppIcons.restore(), contentDescription = null)
                     Spacer(Modifier.width(6.dp))
                     Text(stringResource(R.string.backup_import))
                 }

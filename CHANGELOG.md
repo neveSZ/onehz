@@ -4,6 +4,37 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.1-beta.2] - 2026-11-22
+
+Second beta of the 1.2.1 patch. Keeps the AOD/Sleep hierarchy fixes from
+1.2.1-beta.1 and modernizes the app internals: storage, UI state, icons,
+edge-to-edge, Baseline Profile, and release tooling.
+
+### Added
+
+- Baseline Profile module, generator, and `profileinstaller` integration.
+- `scripts/validate-version.py` and `scripts/bump-version.py`, also used by CI.
+- Secret scanning (gitleaks) and dependency review in CI.
+- `scripts/generate-material-symbols.py` for the bundled icon set.
+
+### Changed
+
+- Preferences moved to DataStore behind a synchronous facade, with a one-time
+  migration from the legacy `onehz_prefs.xml`. Downgrading after the migration
+  restores defaults, so export a backup before installing this beta.
+- Screens collect state through small ViewModels with
+  `collectAsStateWithLifecycle`.
+- Edge-to-edge layout, predictive back, and theme-driven system bars.
+- Text fields use `TextFieldState`; sliders use `SliderState`/`RangeSliderState`.
+- Compiled against SDK 37.1 with AGP 9.5.2, Gradle 9.9.2, and Kotlin 2.4.21.
+- Package queries use the typed `ApplicationInfoFlags` APIs.
+- Bottom sheets use explicit `SheetState`s instead of the deprecated helper.
+
+### Removed
+
+- `compose-material-icons-extended`; the 57 used icons are bundled as vector
+  drawables.
+
 ## [1.2.1-beta.1] - 2026-11-22
 
 First beta of the 1.2.1 patch. Fixes the AOD switch hierarchy and keeps the Sleep
@@ -27,6 +58,34 @@ options available while the feature is off.
 ### Changed
 
 - Backup includes the AOD master switch (`aodMasterEnabled`).
+=======
+## [Unreleased]
+
+Modernization pass preparing 1.3.0. No user-facing feature changes yet.
+
+### Added
+
+- Baseline Profile module, generator, and `profileinstaller` integration.
+- `scripts/validate-version.py` and `scripts/bump-version.py`, also used by CI.
+- Secret scanning (gitleaks) and dependency review in CI.
+- `scripts/generate-material-symbols.py` for the bundled icon set.
+
+### Changed
+
+- Preferences moved to DataStore behind a synchronous facade, with a one-time migration
+  from the legacy `onehz_prefs.xml`.
+- Screens collect state through small ViewModels with
+  `collectAsStateWithLifecycle`.
+- Edge-to-edge layout, predictive back, and theme-driven system bars.
+- Text fields use `TextFieldState`; sliders use `SliderState`/`RangeSliderState`.
+- Compiled against SDK 37.1 with AGP 9.5.2, Gradle 9.9.2, and Kotlin 2.4.21.
+- Package queries use the typed `ApplicationInfoFlags` APIs.
+- Bottom sheets use explicit `SheetState`s instead of the deprecated helper.
+
+### Removed
+
+- `compose-material-icons-extended`; the 57 used icons are bundled as vector drawables.
+
 
 ## [1.2.0] - 2026-11-22
 

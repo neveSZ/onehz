@@ -68,7 +68,11 @@
     <string name="video_diag_config">Reglas: %1$s · forzadas: %2$d</string>
     <string name="video_rules_title">Reglas de detección</string>
     <string name="video_rules_desc">Elige qué señales usa OneHZ para decidir que un vídeo se está reproduciendo.</string>
-    <string name="video_rules_summary">%1$d de %2$d reglas activas</string>
+    <plurals name="video_rules_summary">
+        <item quantity="one">%1$d de %2$d regla activa</item>
+        <item quantity="other">%1$d de %2$d reglas activas</item>
+        <item quantity="many">%1$d de %2$d reglas activas</item>
+    </plurals>
     <string name="video_rule_session_title">Usar MediaSession</string>
     <string name="video_rule_session_desc">Lee el estado de reproducción informado por la sesión multimedia de la app.</string>
     <string name="video_rule_paused_title">Sesión pausada bloquea el vídeo</string>

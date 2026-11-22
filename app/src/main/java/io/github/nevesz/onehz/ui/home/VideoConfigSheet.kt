@@ -14,12 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Clear
-import androidx.compose.material.icons.outlined.DeleteSweep
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -53,6 +51,8 @@ import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.apps.AppIcon
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.components.rememberPartialSheetState
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -73,7 +73,7 @@ fun VideoConfigSheet(
     var pageName by rememberSaveable { mutableStateOf(VideoSheetPage.RULES.name) }
     val page = VideoSheetPage.valueOf(pageName)
 
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         when (page) {
             VideoSheetPage.RULES -> RulesPage(
                 config = config,
@@ -100,7 +100,7 @@ fun VideoForcedAppsSheet(context: Context, onDismiss: () -> Unit) {
             )
         )
     }
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         AppsPage(
             context = context,
             config = config,
@@ -207,7 +207,8 @@ private fun AppsPage(
     onConfigChange: (VideoConfig) -> Unit,
     onBack: () -> Unit
 ) {
-    var query by rememberSaveable { mutableStateOf("") }
+    val queryState = rememberTextFieldState()
+    val query = queryState.text.toString()
     var includeSystem by rememberSaveable { mutableStateOf(false) }
     var apps by remember { mutableStateOf<List<InstalledApp>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
@@ -249,7 +250,7 @@ private fun AppsPage(
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) {
                 Icon(
-                    Icons.AutoMirrored.Outlined.ArrowBack,
+                    AppIcons.arrowBack(),
                     contentDescription = stringResource(R.string.back)
                 )
             }
@@ -270,7 +271,7 @@ private fun AppsPage(
             }
             if (config.forcedPackages.isNotEmpty()) {
                 TextButton(onClick = { onConfigChange(config.copy(forcedPackages = emptySet())) }) {
-                    Icon(Icons.Outlined.DeleteSweep, contentDescription = null)
+                    Icon(AppIcons.deleteSweep(), contentDescription = null)
                     Text(
                         text = stringResource(R.string.video_forced_clear),
                         modifier = Modifier.padding(start = 4.dp)
@@ -279,14 +280,13 @@ private fun AppsPage(
             }
         }
         OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
+            state = queryState,
             label = { Text(stringResource(R.string.search_apps)) },
-            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+            leadingIcon = { Icon(AppIcons.search(), contentDescription = null) },
             trailingIcon = {
                 if (query.isNotEmpty()) {
-                    IconButton(onClick = { query = "" }) {
-                        Icon(Icons.Outlined.Clear, contentDescription = null)
+                    IconButton(onClick = { queryState.clearText() }) {
+                        Icon(AppIcons.clear(), contentDescription = stringResource(R.string.clear_search))
                     }
                 }
             },

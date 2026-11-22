@@ -10,7 +10,7 @@ want to understand, audit, or modify the app.
 │                                                                              │
 │  MainActivity / Compose UI                                                   │
 │        │                                                                     │
-│        ├── OneHzPreferences (SharedPreferences)                              │
+│        ├── PreferencesStore (DataStore + prefs)                              │
 │        ├── ProfileStore (profiles, active profile, app assignments)          │
 │        ├── Diagnostics (StateFlow, in-memory)                                │
 │        └── OneHzEngine (HandlerThread "OneHzEngine")                         │
@@ -51,6 +51,20 @@ want to understand, audit, or modify the app.
   setup, discovery, and monitor start/stop.
 - **Per-device `getevent` threads:** one monitor per accepted touchscreen, owned by the
   UserService.
+
+## UI state and preferences
+
+- **Preferences:** `OneHzPreferences` and `SleepPreferences` keep their synchronous
+  `SharedPreferences`-style API, backed by `PreferencesStore`. DataStore is the source of
+  truth; an in-memory snapshot serves the engine and the UI. On first start the old
+  `onehz_prefs.xml` is migrated once and the XML is cleared.
+- **UI state:** screens collect the `StateFlow`s owned by `Diagnostics`,
+  `ShizukuGateway`, and `UpdateCenter` through small ViewModels
+  (`HomeViewModel`, `DiagnosticsViewModel`, ...) and
+  `collectAsStateWithLifecycle`, so collection stops when the screen is not visible.
+- **Icons:** Material Symbols Outlined are bundled as vector drawables and exposed by
+  `AppIcons` (`scripts/generate-material-symbols.py`), so the app no longer depends on
+  `compose-material-icons-extended`.
 
 ## AIDL boundary
 

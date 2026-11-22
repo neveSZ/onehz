@@ -46,7 +46,19 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Install SDK packages
-        run: sdkmanager "platforms;android-37.0" "build-tools;36.0.0" "platform-tools"
+        run: |
+          yes | sdkmanager --install \
+            "platforms;android-37.1" \
+            "build-tools;36.0.0" \
+            "platform-tools"
+          sdkmanager --list_installed
+
+      - name: Validate version
+        run: |
+          python3 scripts/validate-version.py
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            python3 scripts/validate-version.py --tag "${GITHUB_REF_NAME}"
+          fi
 
       - name: Read version
         id: version
@@ -58,15 +70,6 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           echo "VERSION_CODE=$CODE" >> "$GITHUB_ENV"
           echo "OneHZ $VERSION ($CODE)"
-
-      - name: Validate tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          TAG="${GITHUB_REF_NAME#v}"
-          if [ "$TAG" != "$VERSION" ]; then
-            echo "::error::Tag v$TAG does not match version.properties ($VERSION)"
-            exit 1
-          fi
 
       - name: Unit tests and lint
         run: ./gradlew --no-daemon testDebugUnitTest lintDebug

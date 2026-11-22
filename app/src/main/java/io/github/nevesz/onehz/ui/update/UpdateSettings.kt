@@ -12,13 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.NewReleases
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material.icons.outlined.Science
-import androidx.compose.material.icons.outlined.SystemUpdate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,7 +23,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,6 +45,8 @@ import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.components.rememberFullHeightSheetState
+import io.github.nevesz.onehz.ui.icons.AppIcons
 
 /**
  * Settings card for the opt-in GitHub update checker. The toggle is the consent gate:
@@ -72,8 +66,8 @@ fun UpdateSettingsCard(
     var showConsent by rememberSaveable { mutableStateOf(false) }
     var showInterval by rememberSaveable { mutableStateOf(false) }
     var showChannel by rememberSaveable { mutableStateOf(false) }
-    val intervalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val channelSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val intervalSheetState = rememberFullHeightSheetState()
+    val channelSheetState = rememberFullHeightSheetState()
 
     val openReleases = {
         runCatching { uriHandler.openUri(ReleaseSelector.RELEASES_PAGE) }
@@ -92,7 +86,7 @@ fun UpdateSettingsCard(
 
     OneHzCard {
         ToggleRow(
-            icon = Icons.Outlined.SystemUpdate,
+            icon = AppIcons.systemUpdate(),
             title = stringResource(R.string.update_check_title),
             description = stringResource(R.string.update_check_desc),
             checked = state.enabled,
@@ -105,14 +99,14 @@ fun UpdateSettingsCard(
             Spacer(Modifier.height(10.dp))
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             SettingRow(
-                icon = Icons.Outlined.Schedule,
+                icon = AppIcons.schedule(),
                 title = stringResource(R.string.update_interval_title),
                 subtitle = stringResource(state.interval.labelRes()),
                 onClick = { showInterval = true }
             )
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             SettingRow(
-                icon = Icons.Outlined.Science,
+                icon = AppIcons.science(),
                 title = stringResource(R.string.update_channel_title),
                 subtitle = stringResource(state.channel.labelRes()),
                 onClick = { showChannel = true }
@@ -132,7 +126,7 @@ fun UpdateSettingsCard(
                         release.displayVersion
                     ),
                     tone = if (release.isPrerelease) BannerTone.WARN else BannerTone.INFO,
-                    icon = if (release.isPrerelease) Icons.Outlined.Science else Icons.Outlined.NewReleases,
+                    icon = if (release.isPrerelease) AppIcons.science() else AppIcons.newReleases(),
                     action = {
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             Button(onClick = { runCatching { uriHandler.openUri(release.url) } }) {
@@ -179,7 +173,7 @@ fun UpdateSettingsCard(
                     )
                 } else {
                     Icon(
-                        Icons.Outlined.Refresh,
+                        AppIcons.refresh(),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)
                     )
@@ -195,13 +189,13 @@ fun UpdateSettingsCard(
         }
 
         SettingRow(
-            icon = Icons.AutoMirrored.Outlined.OpenInNew,
+            icon = AppIcons.openInNew(),
             title = stringResource(R.string.update_open_releases),
             subtitle = stringResource(R.string.update_open_releases_desc),
             onClick = openReleases,
             trailing = {
                 Icon(
-                    Icons.AutoMirrored.Outlined.OpenInNew,
+                    AppIcons.openInNew(),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(18.dp)
