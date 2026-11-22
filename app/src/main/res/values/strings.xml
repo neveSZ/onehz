@@ -29,7 +29,8 @@
     <string name="allow_shizuku">Allow Shizuku</string>
 
     <string name="master_switch">Enable OneHZ</string>
-    <string name="master_switch_desc">Controls the screen refresh rate automatically while you use the device.</string>
+    <string name="master_switch_desc_on">Controls the screen refresh rate automatically while you use the device.</string>
+    <string name="master_switch_desc_off">Returns the screen refresh rate to the system default.</string>
     <string name="master_off_hint">Turn OneHZ on to apply frequencies.</string>
     <string name="home_status_off">Off</string>
     <string name="home_section_profiles">Profiles</string>

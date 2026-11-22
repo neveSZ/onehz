@@ -29,7 +29,8 @@
     <string name="allow_shizuku">Permitir Shizuku</string>
 
     <string name="master_switch">Activar OneHZ</string>
-    <string name="master_switch_desc">Controla la frecuencia de la pantalla automáticamente mientras usas el dispositivo.</string>
+    <string name="master_switch_desc_on">Controla la frecuencia de la pantalla automáticamente mientras usas el dispositivo.</string>
+    <string name="master_switch_desc_off">Devuelve la frecuencia de la pantalla al valor predeterminado del sistema.</string>
     <string name="master_off_hint">Activa OneHZ para aplicar las frecuencias.</string>
     <string name="home_status_off">Desactivado</string>
     <string name="home_section_profiles">Perfiles</string>
