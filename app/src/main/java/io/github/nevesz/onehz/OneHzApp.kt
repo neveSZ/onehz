@@ -6,6 +6,7 @@ import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.AodBrightnessController
+import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.engine.SessionArbiter
@@ -33,6 +34,8 @@ class OneHzApp : Application() {
                     SessionArbiter.restorePending(this)
                     OneHzEngine.start(this)
                     AodBrightnessController.start(this)
+                    DozeController.start(this)
+                    DozeController.onServiceAvailable()
                     if (OneHzPreferences.isEnabled(this)) {
                         OneHzKeepAliveService.start(this)
                     }
@@ -41,6 +44,7 @@ class OneHzApp : Application() {
             },
             onUnavailable = {
                 AodBrightnessController.onServiceUnavailable()
+                DozeController.onServiceUnavailable()
                 OneHzEngine.stop()
             }
         )

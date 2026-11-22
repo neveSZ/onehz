@@ -2,6 +2,7 @@ package io.github.nevesz.onehz.shizuku
 
 import android.os.IBinder
 import android.os.RemoteException
+import io.github.nevesz.onehz.core.DozeState
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import java.io.BufferedReader
@@ -233,15 +234,66 @@ class OneHzUserService : IOneHzService.Stub() {
     override fun setDozeWhitelist(packageName: String?, enabled: Boolean): Boolean {
         if (packageName == null || !PACKAGE_NAME.matches(packageName)) return false
         val sign = if (enabled) "+" else "-"
-        val direct = exec("/system/bin/dumpsys", "deviceidle", "sys-whitelist", "$sign$packageName")
-        if (direct.success) return true
-        return exec("/system/bin/cmd", "deviceidle", "whitelist", "$sign$packageName").success
+        // `dumpsys deviceidle sys-whitelist` reports success without changing anything on
+        // some builds, and dumpsys exits 0 even for unknown commands. Use the shell command
+        // first and confirm the result by reading the list back.
+        val commands = listOf(
+            arrayOf("/system/bin/cmd", "deviceidle", "whitelist", "$sign$packageName"),
+            arrayOf("/system/bin/dumpsys", "deviceidle", "whitelist", "$sign$packageName"),
+        )
+        for (command in commands) {
+            if (!exec(*command).success) continue
+            if (whitelistContains(packageName) == enabled) return true
+        }
+        return false
     }
 
     override fun isDozeWhitelisted(packageName: String?): Boolean {
         if (packageName == null || !PACKAGE_NAME.matches(packageName)) return false
-        val output = exec("/system/bin/dumpsys", "deviceidle", "whitelist").output
-        return output.contains(packageName)
+        return whitelistContains(packageName)
+    }
+
+    private fun whitelistContains(packageName: String): Boolean {
+        val output = exec("/system/bin/dumpsys", "deviceidle", "whitelist", maxBytes = 65_536).output
+        return output.lineSequence().any { line ->
+            line.trim().split(',').getOrNull(1) == packageName
+        }
+    }
+
+    override fun dozeWhitelist(): String =
+        exec("/system/bin/dumpsys", "deviceidle", "whitelist", maxBytes = 65_536).output
+
+    /**
+     * `force-idle` without an argument selects deep idle, which is the portable form across
+     * Android 12+. `light` is only sent when the user asks for it.
+     */
+    override fun forceIdle(deep: Boolean): Boolean {
+        val args = if (deep) {
+            arrayOf("deviceidle", "force-idle")
+        } else {
+            arrayOf("deviceidle", "force-idle", "light")
+        }
+        // `dumpsys` returns success even for unsupported commands on some builds, so try
+        // the `cmd` form as well instead of trusting the first exit code.
+        val dumpsys = exec("/system/bin/dumpsys", *args).success
+        val cmd = exec("/system/bin/cmd", *args).success
+        return dumpsys || cmd
+    }
+
+    override fun unforceIdle(): Boolean {
+        // Same as forceIdle: a zero exit code from `dumpsys` is not proof that the state
+        // changed. Try both forms and let the controller keep the flag if the service
+        // reports that the device is still idle.
+        val dumpsys = exec("/system/bin/dumpsys", "deviceidle", "unforce").success
+        val cmd = exec("/system/bin/cmd", "deviceidle", "unforce").success
+        return dumpsys || cmd
+    }
+
+    override fun idleState(): String {
+        // The state lines are at the end of a ~23 KB dump on One UI; a smaller cap
+        // truncates them and makes the verification read an empty state.
+        val dump = exec("/system/bin/dumpsys", "deviceidle", maxBytes = 65_536, timeoutMs = 3_000).output
+        return DozeState.encode(dump)
     }
 
     private fun parseForeground(text: String): String? {

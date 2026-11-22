@@ -94,6 +94,19 @@ brightness there is no headroom to compensate upward, and dimming 60/120 Hz to m
   firmware update may change them. HyperOS uses `miui_refresh_rate` (or
   `user_refresh_rate` on HyperOS 1).
 - AOD brightness is **Samsung-only** (`debug_aod_brightness`); it is hidden on Xiaomi.
+- **Sleep (forced Doze) is vendor-dependent.** Some ROMs ignore or quickly revert the
+  forced idle; the card reports “The ROM did not enter Doze” instead of pretending it
+  worked.
+- **HyperOS light idle:** on the tested POCO X7 Pro, deep idle is forced
+  (`mForceIdle=true`), while light idle is already the normal screen-off state
+  (`mState=IDLE`, `mLightState=OVERRIDE`) and does not set `mForceIdle`.
+- **HyperOS screen-off delivery:** on the same device, the `SCREEN_OFF` broadcast was
+  occasionally delivered about 10 seconds after the key event while the app was in the
+  background (`QUICK_DOZE_DELAY`); the foreground service still received it and the force
+  was applied afterwards.
+- **Sleep measurements include the AOD.** On devices with Always On Display, the
+  screen-off window also contains AOD draw, so the percent per hour is not a pure
+  deep-idle figure.
 - Video detection depends on MediaSession, Codec2, and AudioService behavior; the rules
   and a forced app list can be tuned in the app, but the underlying signals must exist.
 - PiP video is not detected yet.

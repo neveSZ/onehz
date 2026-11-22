@@ -50,6 +50,8 @@ These are documented as known limitations rather than promises.
   priority and a visible reason for the active profile.
 - Quick Settings tile to switch the active profile.
 - Side-by-side profile comparison.
+- Sleep: compare percent-per-hour in Doze with screen-off time without Doze.
+- Sleep: reapply the AOD rate after a Doze maintenance window.
 - More granular per-app rules (e.g. per-orientation).
 - Additional translations.
 

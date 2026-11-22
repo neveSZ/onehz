@@ -202,3 +202,23 @@ on other models. Report your model, build, panel rates, and diagnostics if you t
 
 Because they are. The author reviewed Portuguese. English and Spanish were generated and
 reviewed for consistency, but not by native speakers. Corrections are welcome.
+
+### Does Sleep force Doze? Will I miss notifications?
+
+Sleep is optional and off by default. When enabled, it asks Android to enter Doze as soon
+as the screen turns off, so network and background work wait for the maintenance windows.
+Traditional calls and alarms still wake the device, but an incoming VoIP call that depends
+on a background connection may not arrive until the next maintenance window. Use **Pause
+for 1 hour**, the time window, or add the app to **Apps that may wake the device** when you
+need it in real time.
+
+### How are the Sleep numbers measured?
+
+Everything is local. “Last 24 hours” is a rolling window: screen-off and Doze time are the
+sums of the recorded spans clipped to that window. “Last rest” is the most recent
+continuous screen-off period of at least 30 minutes; screen-on gaps shorter than two
+minutes are merged. The battery rate is the session's level drop per hour and is shown as
+`—` for sessions shorter than 15 minutes or when the level increased (charging). The
+figures include the Always On Display and are measured by OneHZ, not by the system; they
+are never uploaded. If the app was not running for the whole window, the totals are
+prefixed with “partial”.

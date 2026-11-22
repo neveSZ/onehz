@@ -221,3 +221,21 @@ Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 
 Português (Brasil), inglês e espanhol. Veja o
 [status das traduções](TRANSLATIONS.md).
+
+## 15. Sono (Doze forçado)
+
+Opcional e desligado por padrão. Ao apagar a tela, o OneHZ pede ao sistema para entrar em
+Doze na hora, em vez de esperar os temporizadores de inatividade:
+
+- Doze profundo (padrão) ou leve;
+- condições avaliadas só no momento em que a tela apaga: pausa de uma hora, janela de
+  horário que pode cruzar a meia-noite, carregamento e música em segundo plano;
+- `unforce` ao acender a tela, ao desligar o recurso e depois de crash ou reboot;
+- verificação pelo estado real de device-idle, com a mensagem explícita "a ROM não entrou
+  em Doze" em vez de um falso sucesso;
+- lista de apps que podem acordar o aparelho, gravada na whitelist de Doze pelo Shizuku;
+- medições locais: tempo com a tela apagada e em Doze nas últimas 24h, último descanso
+  (30 min ou mais), nível de bateria e %/h por sessão.
+
+Nenhum wake lock é mantido e nada é consultado por polling. As medições são locais e
+identificadas como medidas pelo OneHZ; incluem o tempo de AOD. Veja [SLEEP.md](SLEEP.md).

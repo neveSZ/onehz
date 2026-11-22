@@ -209,3 +209,23 @@ você testar.
 
 Porque são. O autor revisou o português. Inglês e espanhol foram gerados e revisados para
 consistência, mas não por falantes nativos. Correções são bem-vindas.
+
+### O Sono força o Doze? Vou perder notificações?
+
+O Sono é opcional e vem desligado. Quando ativado, ele pede ao Android para entrar em
+Doze assim que a tela apaga, então rede e trabalho em segundo plano esperam as janelas de
+manutenção. Chamadas tradicionais e alarmes ainda acordam o aparelho, mas uma chamada VoIP
+que depende de conexão em segundo plano pode não chegar até a próxima janela. Use
+**Pausar por 1 hora**, a janela de horário ou adicione o app em **Apps que podem acordar o
+aparelho** quando precisar dele em tempo real.
+
+### Como as medições do Sono funcionam?
+
+Tudo é local. “Últimas 24h” é uma janela móvel: o tempo com a tela apagada e o tempo em
+Doze são as somas dos trechos registrados recortados nessa janela. O “último descanso” é
+o período contínuo mais recente de tela apagada com pelo menos 30 minutos; intervalos com
+a tela ligada menores que dois minutos são mesclados. A taxa de bateria é a queda de nível
+da sessão por hora e aparece como `—` para sessões menores que 15 minutos ou quando o
+nível aumentou (carregando). Os números incluem o AOD e são medidos pelo OneHZ, não pelo
+sistema; nada é enviado. Se o app não estava rodando a janela inteira, os totais aparecem
+com o prefixo “parcial”.

@@ -84,6 +84,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
 | **AOD refresh rate** | Always the lowest rate exposed by the panel. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
+| **Sleep (forced Doze)** | Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
 | **Video mode** | A per-profile refresh-rate floor while a video plays, with configurable detection rules. |
 | **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video and AOD. |

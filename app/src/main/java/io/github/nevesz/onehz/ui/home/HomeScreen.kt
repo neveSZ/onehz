@@ -449,6 +449,10 @@ fun HomeScreen(
             )
         }
 
+        item {
+            SleepCard(context = context, masterEnabled = state.enabled, dataVersion = dataVersion)
+        }
+
         item { Spacer(Modifier.height(8.dp)) }
     }
 

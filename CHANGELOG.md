@@ -6,7 +6,8 @@ All notable changes to OneHZ are documented here. The format follows
 
 ## [Unreleased]
 
-Beta feature set for reusable profiles. No release tag or publication yet.
+Beta feature set for reusable profiles and optional forced Doze. No release tag or
+publication yet.
 
 ### Added
 
@@ -21,6 +22,9 @@ Beta feature set for reusable profiles. No release tag or publication yet.
 - Backup and restore through a versioned JSON file using the Storage Access Framework.
 - Import adapts unsupported refresh rates to the current panel and reports the result.
 - Migration from the legacy Normal/ECO profiles and copied per-app staircases.
+- Sleep: optional forced Doze on screen-off, with deep/light idle, pause, a cross-midnight
+  time window, charging and music guards, a wake-up app list, and local 24-hour
+  measurements (screen-off time, Doze time, rest periods and battery rate).
 
 ### Changed
 

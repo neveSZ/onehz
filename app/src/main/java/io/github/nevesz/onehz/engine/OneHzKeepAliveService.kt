@@ -42,12 +42,16 @@ class OneHzKeepAliveService : Service() {
             addAction(Intent.ACTION_SCREEN_OFF)
             addAction(Intent.ACTION_SCREEN_ON)
             addAction(Intent.ACTION_USER_PRESENT)
+            addAction(Intent.ACTION_POWER_CONNECTED)
+            addAction(Intent.ACTION_POWER_DISCONNECTED)
+            addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED)
             addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)
         }
         receiver = ScreenStateReceiver().also { registerReceiver(it, filter) }
 
         OneHzEngine.start(this)
         AodBrightnessController.start(this)
+        DozeController.start(this)
         OneHzEngine.refreshSystemState()
     }
 
@@ -65,6 +69,7 @@ class OneHzKeepAliveService : Service() {
         receiver?.let { runCatching { unregisterReceiver(it) } }
         receiver = null
         AodBrightnessController.stop()
+        DozeController.stop()
         OneHzEngine.stop()
         super.onDestroy()
     }

@@ -35,4 +35,10 @@ interface IOneHzService {
 
     /** Video detection with user-tunable rules, encoded by VideoConfig. */
     String videoPlaybackWithConfig(String config);
+
+    // Appended after the original methods so existing transaction ids stay stable.
+    String dozeWhitelist();
+    boolean forceIdle(boolean deep);
+    boolean unforceIdle();
+    String idleState();
 }

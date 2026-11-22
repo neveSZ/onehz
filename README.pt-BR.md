@@ -85,6 +85,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
 | **Taxa do AOD** | Sempre a menor taxa exposta pela tela. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
+| **Sono (Doze forçado)** | Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
 | **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca, com regras de detecção configuráveis. |
 | **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo e AOD. |

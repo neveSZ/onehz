@@ -116,6 +116,25 @@ O badge do Obtainium é usado apenas no README/documentação para linkar ao app
 Obtainium. Ele não é distribuído no APK e não é coberto pela licença MIT do código do
 OneHZ. Veja [docs/assets/README.md](docs/assets/README.md).
 
+## Prior art / Trabalhos anteriores
+
+### EnforceDoze and ForceDoze
+
+- EnforceDoze: <https://github.com/Akylas/EnforceDoze> · GPL-3.0
+- ForceDoze: <https://github.com/theblixguy/ForceDoze> · GPL-3.0
+
+These projects popularized forcing Android Doze through the platform's debug shell
+interface. The optional Sleep feature in OneHZ was designed independently from the public
+Android interfaces (`dumpsys deviceidle`, `PowerManager` and the device-idle broadcasts).
+It shares no code, assets, strings, file structure or options with them, and no
+GPL-licensed code is included in OneHZ. See [docs/SLEEP.md](docs/SLEEP.md).
+
+Esses projetos popularizaram forçar o Doze do Android pela interface de depuração do
+sistema. O recurso opcional Sono do OneHZ foi desenhado de forma independente a partir das
+interfaces públicas do Android (`dumpsys deviceidle`, `PowerManager` e os broadcasts de
+device-idle). Ele não compartilha código, assets, textos, estrutura de arquivos ou opções
+com eles, e nenhum código GPL está incluído no OneHZ. Veja [docs/SLEEP.md](docs/SLEEP.md).
+
 ## No closed-source code / Sem código closed-source
 
 No source code, assets, icons, or resources from closed-source applications are included
