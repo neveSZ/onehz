@@ -2,22 +2,24 @@ package io.github.nevesz.onehz.engine
 
 import android.content.Context
 import io.github.nevesz.onehz.core.FrequencyProfile
-import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.profile.DeviceProfile
+import io.github.nevesz.onehz.core.profile.ProfileStore
+import io.github.nevesz.onehz.core.profile.VideoSettings
 
 /** A resolved frequency request for the current step of [ResolvedPolicy.profile]. */
 data class TierRequest(val hz: Int, val index: Int, val count: Int, val source: String)
 
 enum class IdleReason {
     AOD_DISABLED,
-    ECO_PROFILE_DISABLED,
-    NORMAL_PROFILE_DISABLED,
-    EMPTY_PROFILE
+    PROFILE_DISABLED,
+    PROFILE_EMPTY
 }
 
 data class ResolvedPolicy(
     val profile: FrequencyProfile,
     val index: Int,
-    val layer: String
+    val layer: String,
+    val video: VideoSettings
 )
 
 /**
@@ -26,14 +28,15 @@ data class ResolvedPolicy(
  */
 data class PolicyInput(
     val screenOff: Boolean,
-    val ecoActive: Boolean,
+    val batterySaver: Boolean,
+    val autoEconomy: Boolean,
     val aodEnabled: Boolean,
     val aodHz: Int,
-    val normalEnabled: Boolean,
-    val normalProfile: FrequencyProfile,
-    val ecoEnabled: Boolean,
-    val ecoProfile: FrequencyProfile,
-    val appProfile: OneHzPreferences.AppProfile?
+    val selectedProfile: DeviceProfile?,
+    val economyProfile: DeviceProfile?,
+    val appProfile: DeviceProfile? = null,
+    val appPackageName: String? = null,
+    val appIgnoreEco: Boolean = false
 )
 
 sealed interface PolicyDecision {
@@ -42,9 +45,11 @@ sealed interface PolicyDecision {
 }
 
 /**
- * Each situation has its own independent switch:
- * screen off -> AOD, battery saver -> ECO profile, otherwise -> normal profile.
- * When the switch for the current situation is off, OneHZ leaves the system alone.
+ * Precedence:
+ * 1. screen off -> AOD;
+ * 2. battery saver + automatic economy -> Economy (unless the app ignores it);
+ * 3. foreground app with an assignment -> the assigned profile;
+ * 4. the manually selected profile.
  */
 object PolicyResolver {
 
@@ -54,62 +59,72 @@ object PolicyResolver {
         ecoActive: Boolean,
         foregroundPackage: String?,
         index: Int
-    ): PolicyDecision = decide(
-        PolicyInput(
-            screenOff = screenOff,
-            ecoActive = ecoActive,
-            aodEnabled = OneHzPreferences.aodEnabled(context),
-            aodHz = OneHzPreferences.aodHz(context),
-            normalEnabled = OneHzPreferences.normalEnabled(context),
-            normalProfile = OneHzPreferences.normalProfile(context),
-            ecoEnabled = OneHzPreferences.ecoEnabled(context),
-            ecoProfile = OneHzPreferences.ecoProfile(context),
-            appProfile = foregroundPackage?.let { OneHzPreferences.appProfile(context, it) }
-        ),
-        index
-    )
+    ): PolicyDecision {
+        val state = ProfileStore.state(context)
+        val assignment = state.assignment(foregroundPackage)
+        val appProfile = assignment?.let { state.profile(it.profileId) }
+        return decide(
+            PolicyInput(
+                screenOff = screenOff,
+                batterySaver = ecoActive,
+                autoEconomy = state.autoEconomyOnBatterySaver,
+                aodEnabled = io.github.nevesz.onehz.core.OneHzPreferences.aodEnabled(context),
+                aodHz = ProfileStore.rates(context).first(),
+                selectedProfile = state.activeProfile(),
+                economyProfile = state.economyProfile(),
+                appProfile = appProfile,
+                appPackageName = assignment?.packageName,
+                appIgnoreEco = assignment?.ignoreEco == true
+            ),
+            index
+        )
+    }
 
     fun decide(input: PolicyInput, index: Int): PolicyDecision {
         if (input.screenOff) {
             if (!input.aodEnabled) return PolicyDecision.Idle(IdleReason.AOD_DISABLED)
-            val profile = FrequencyProfile.fixed(input.aodHz)
-            return PolicyDecision.Apply(ResolvedPolicy(profile, 0, "AOD"))
-        }
-
-        if (input.ecoActive) {
-            val app = input.appProfile
-            // Explicit per-app exception: this app keeps the normal profile in battery saver.
-            if (app != null && app.ignoreEco && input.normalEnabled) {
-                return normalDecision(app.profile, app.packageName, input.normalProfile, index)
-            }
-            if (!input.ecoEnabled) {
-                return PolicyDecision.Idle(IdleReason.ECO_PROFILE_DISABLED)
-            }
-            return profileDecision(input.ecoProfile, "ECO", index)
-        }
-
-        if (!input.normalEnabled) {
-            return PolicyDecision.Idle(IdleReason.NORMAL_PROFILE_DISABLED)
-        }
-        return normalDecision(input.appProfile?.profile, input.appProfile?.packageName, input.normalProfile, index)
-    }
-
-    private fun normalDecision(
-        appProfile: FrequencyProfile?,
-        packageName: String?,
-        normalProfile: FrequencyProfile,
-        index: Int
-    ): PolicyDecision {
-        if (appProfile != null && appProfile.steps.isNotEmpty()) {
             return PolicyDecision.Apply(
-                ResolvedPolicy(appProfile, appProfile.clampedIndex(index), "app:$packageName")
+                ResolvedPolicy(
+                    profile = FrequencyProfile.fixed(input.aodHz),
+                    index = 0,
+                    layer = "AOD",
+                    video = VideoSettings(enabled = false, minHz = input.aodHz)
+                )
             )
         }
-        return profileDecision(normalProfile, "normal", index)
+
+        val app = input.appProfile?.takeIf { it.frequency.steps.isNotEmpty() }
+        if (input.batterySaver && input.autoEconomy) {
+            if (app != null && input.appIgnoreEco) {
+                return applyProfile(app, "app:${input.appPackageName ?: app.id}", index)
+            }
+            val economy = input.economyProfile?.takeIf { it.frequency.steps.isNotEmpty() }
+                ?: input.selectedProfile?.takeIf { it.frequency.steps.isNotEmpty() }
+            return applyProfile(economy, "economy", index)
+        }
+
+        if (app != null) {
+            return applyProfile(app, "app:${input.appPackageName ?: app.id}", index)
+        }
+        return applyProfile(input.selectedProfile, "profile", index)
     }
 
-    private fun profileDecision(profile: FrequencyProfile, layer: String, index: Int): PolicyDecision {
-        if (profile.steps.isEmpty()) return PolicyDecision.Idle(IdleReason.EMPTY_PROFILE)
-        return PolicyDecision.Apply(ResolvedPolicy(profile, profile.clampedIndex(index), layer))
+    private fun applyProfile(
+        profile: DeviceProfile?,
+        layer: String,
+        index: Int
+    ): PolicyDecision {
+        if (profile == null) return PolicyDecision.Idle(IdleReason.PROFILE_DISABLED)
+        if (profile.frequency.steps.isEmpty()) {
+            return PolicyDecision.Idle(IdleReason.PROFILE_EMPTY)
+        }
+        return PolicyDecision.Apply(
+            ResolvedPolicy(
+                profile = profile.frequency,
+                index = profile.frequency.clampedIndex(index),
+                layer = if (layer == "profile") "profile:${profile.id}" else layer,
+                video = profile.video
+            )
+        )
     }
 }

@@ -8,6 +8,8 @@ import android.os.SystemClock
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.TierStep
 import io.github.nevesz.onehz.core.VideoSignals
+import io.github.nevesz.onehz.core.profile.ProfileStore
+import io.github.nevesz.onehz.core.profile.VideoSettings
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 
@@ -65,6 +67,8 @@ object OneHzEngine {
     private var videoSource = VideoSignals.Source.NONE
     @Volatile
     private var videoFailures = 0
+    @Volatile
+    private var videoSettings = VideoSettings(enabled = false, minHz = 60)
     private var videoCheckInFlight = false
 
     private val stepRunnable: Runnable = Runnable {
@@ -104,7 +108,7 @@ object OneHzEngine {
     private val videoProbe: Runnable = Runnable {
         if (!started || screenOff) return@Runnable
         val ctx = appContext ?: return@Runnable
-        if (!videoEligible(ctx)) return@Runnable
+        if (!videoEligible()) return@Runnable
         val changed = updateVideoState(ctx, "probe")
         if (changed) {
             SessionArbiter.bumpEpoch()
@@ -201,7 +205,7 @@ object OneHzEngine {
         // The rate is already applied; the slower foreground lookup only matters with
         // app profiles configured.
         val ctx = appContext
-        if (ctx != null && OneHzPreferences.hasAppProfiles(ctx)) {
+        if (ctx != null && ProfileStore.configuredPackages(ctx).isNotEmpty()) {
             val pkg = ShizukuGateway.foregroundPackage()
             if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
                 foregroundPackage = pkg
@@ -226,7 +230,7 @@ object OneHzEngine {
         scheduleNext(null)
         steps.getOrNull(0)?.holdMs?.let { Diagnostics.log("timer", "next tier in $it ms") }
         val ctx = appContext
-        if (ctx != null && videoEligible(ctx)) {
+        if (ctx != null && videoEligible()) {
             handler.removeCallbacks(videoProbe)
             handler.postDelayed(videoProbe, VIDEO_PROBE_MS)
         }
@@ -235,14 +239,14 @@ object OneHzEngine {
     /** Refreshes the foreground package without polling; called on resume. */
     fun refreshForegroundPackage() = handler.post {
         val ctx = appContext ?: return@post
-        if (started && !screenOff && videoEligible(ctx)) {
+        if (started && !screenOff && videoEligible()) {
             val changed = updateVideoState(ctx, "resume")
             if (changed) {
                 SessionArbiter.bumpEpoch()
                 applyCurrent("video-resume")
             }
         }
-        if (!OneHzPreferences.hasAppProfiles(ctx)) return@post
+        if (ProfileStore.configuredPackages(ctx).isEmpty()) return@post
         val pkg = ShizukuGateway.foregroundPackage()
         if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
             foregroundPackage = pkg
@@ -370,7 +374,7 @@ object OneHzEngine {
     fun onVideoConfigChanged() = handler.post {
         val ctx = appContext ?: return@post
         if (!started) return@post
-        if (!screenOff && videoEligible(ctx)) updateVideoState(ctx, "video-config")
+        if (!screenOff && videoEligible()) updateVideoState(ctx, "video-config")
         applyCurrent("video-config")
     }
 
@@ -452,12 +456,15 @@ object OneHzEngine {
         Diagnostics.log("engine", "apply reason=$reason")
         // Always trust the live system state over a cached broadcast.
         ecoActive = (ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
-        if (videoActive && !videoEligible(ctx)) clearVideoState("feature-off")
 
         when (val decision = PolicyResolver.resolve(ctx, screenOff, ecoActive, foregroundPackage, index)) {
             is PolicyDecision.Idle -> goIdle(decision.reason)
             is PolicyDecision.Apply -> {
                 val policy = decision.policy
+                videoSettings = policy.video
+                if (videoActive && (!videoSettings.enabled || screenOff)) {
+                    clearVideoState("profile-video-off")
+                }
                 steps = policy.profile.steps
                 // A new situation while idle starts at the resting step. During a touch
                 // sequence the current position is kept; a touch always starts at the first step.
@@ -469,19 +476,24 @@ object OneHzEngine {
                 }
                 index = policy.profile.clampedIndex(target)
 
-                // Video is a floor on top of the app/normal/ECO profile. Check it right
+                // Video is a floor on top of the selected/app profile. Check it right
                 // before the resting step so a video is never left at the minimum.
-                if (!screenOff && !videoActive && index >= policy.profile.lastIndex && videoEligible(ctx)) {
+                if (!screenOff && !videoActive && index >= policy.profile.lastIndex &&
+                    videoSettings.enabled
+                ) {
                     updateVideoState(ctx, "rest")
                 }
 
                 val baseHz = policy.profile.hzAt(index) ?: run {
-                    goIdle(IdleReason.EMPTY_PROFILE)
+                    goIdle(IdleReason.PROFILE_EMPTY)
                     return
                 }
-                val videoMin = OneHzPreferences.videoMinHz(ctx)
-                val videoApplied = videoActive && !screenOff
-                val hz = if (videoApplied) VideoSignals.floorHz(baseHz, videoMin) else baseHz
+                val videoApplied = videoActive && !screenOff && videoSettings.enabled
+                val hz = if (videoApplied) {
+                    VideoSignals.floorHz(baseHz, videoSettings.minHz)
+                } else {
+                    baseHz
+                }
                 if (screenOff) timersPending = false
 
                 Diagnostics.idleReason.value = null
@@ -500,7 +512,7 @@ object OneHzEngine {
                     "tier ${index + 1}/${policy.profile.steps.size} · $layer · ${hz} Hz"
                 }
                 syncTouchMonitoring(
-                    !screenOff && (policy.profile.steps.size > 1 || videoEligible(ctx))
+                    !screenOff && (policy.profile.steps.size > 1 || videoSettings.enabled)
                 )
                 SessionArbiter.apply(
                     ctx,
@@ -518,6 +530,7 @@ object OneHzEngine {
         index = 0
         nextIndex = 0
         timersPending = false
+        videoSettings = VideoSettings(enabled = false, minHz = 60)
         handler.removeCallbacks(stepRunnable)
         clearVideoState("idle")
         SessionArbiter.release(appContext)
@@ -529,9 +542,8 @@ object OneHzEngine {
         Diagnostics.activeTierKey.value = "OFF"
         Diagnostics.activeTier.value = when (reason) {
             IdleReason.AOD_DISABLED -> "no control: AOD disabled"
-            IdleReason.ECO_PROFILE_DISABLED -> "no control: ECO profile disabled"
-            IdleReason.NORMAL_PROFILE_DISABLED -> "no control: normal profile disabled"
-            IdleReason.EMPTY_PROFILE -> "no control: no tiers configured"
+            IdleReason.PROFILE_DISABLED -> "no control: no active profile"
+            IdleReason.PROFILE_EMPTY -> "no control: no tiers configured"
             null -> "OneHZ disabled"
         }
         syncTouchMonitoring(false)
@@ -550,8 +562,7 @@ object OneHzEngine {
 
     // --------------------------------------------------------------------- video
 
-    private fun videoEligible(ctx: Context): Boolean =
-        OneHzPreferences.videoEnabled(ctx)
+    private fun videoEligible(): Boolean = videoSettings.enabled
 
     private fun scheduleVideoRecheck() {
         handler.removeCallbacks(videoRecheck)
@@ -581,14 +592,16 @@ object OneHzEngine {
      */
     private fun updateVideoState(ctx: Context, reason: String): Boolean {
         if (videoCheckInFlight) return false
-        if (!videoEligible(ctx)) {
+        if (!videoEligible()) {
             val was = videoActive
             if (was) clearVideoState("feature-off")
             return was
         }
         videoCheckInFlight = true
         val verdict = try {
-            ShizukuGateway.videoPlayback(OneHzPreferences.videoConfig(ctx))
+            ShizukuGateway.videoPlayback(
+                videoSettings.rules.toVideoConfig(OneHzPreferences.forcedVideoPackages(ctx))
+            )
         } finally {
             videoCheckInFlight = false
         }

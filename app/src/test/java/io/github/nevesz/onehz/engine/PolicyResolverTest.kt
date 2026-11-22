@@ -1,38 +1,61 @@
 package io.github.nevesz.onehz.engine
 
 import io.github.nevesz.onehz.core.FrequencyProfile
-import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.TierStep
+import io.github.nevesz.onehz.core.profile.DeviceProfile
+import io.github.nevesz.onehz.core.profile.ProfileKind
+import io.github.nevesz.onehz.core.profile.VideoSettings
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PolicyResolverTest {
 
-    private val normal = FrequencyProfile.of(TierStep(120, 1_000L), TierStep(60))
-    private val eco = FrequencyProfile.of(TierStep(90, 1_000L), TierStep(30))
-    private val app = FrequencyProfile.of(TierStep(96, 1_000L), TierStep(48))
+    private val balanced = DeviceProfile(
+        id = "balanced",
+        kind = ProfileKind.BALANCED,
+        frequency = FrequencyProfile.of(TierStep(120, 1_000L), TierStep(60))
+    )
+    private val economy = DeviceProfile(
+        id = "economy",
+        kind = ProfileKind.ECONOMY,
+        frequency = FrequencyProfile.of(TierStep(90, 1_000L), TierStep(30))
+    )
+    private val performance = DeviceProfile(
+        id = "performance",
+        kind = ProfileKind.PERFORMANCE,
+        frequency = FrequencyProfile.of(TierStep(120, 5_000L), TierStep(60)),
+        video = VideoSettings(enabled = true, minHz = 60)
+    )
+    private val appProfile = DeviceProfile(
+        id = "custom_app",
+        kind = ProfileKind.CUSTOM,
+        name = "App",
+        frequency = FrequencyProfile.of(TierStep(96, 1_000L), TierStep(48))
+    )
 
     private fun input(
         screenOff: Boolean = false,
-        ecoActive: Boolean = false,
+        batterySaver: Boolean = false,
+        autoEconomy: Boolean = true,
         aodEnabled: Boolean = false,
-        aodHz: Int = 30,
-        normalEnabled: Boolean = true,
-        normalProfile: FrequencyProfile = normal,
-        ecoEnabled: Boolean = true,
-        ecoProfile: FrequencyProfile = eco,
-        appProfile: OneHzPreferences.AppProfile? = null
+        aodHz: Int = 10,
+        selectedProfile: DeviceProfile? = balanced,
+        economyProfile: DeviceProfile? = economy,
+        app: DeviceProfile? = null,
+        appIgnoreEco: Boolean = false
     ) = PolicyInput(
         screenOff = screenOff,
-        ecoActive = ecoActive,
+        batterySaver = batterySaver,
+        autoEconomy = autoEconomy,
         aodEnabled = aodEnabled,
         aodHz = aodHz,
-        normalEnabled = normalEnabled,
-        normalProfile = normalProfile,
-        ecoEnabled = ecoEnabled,
-        ecoProfile = ecoProfile,
-        appProfile = appProfile
+        selectedProfile = selectedProfile,
+        economyProfile = economyProfile,
+        appProfile = app,
+        appPackageName = app?.let { "com.example.app" },
+        appIgnoreEco = appIgnoreEco
     )
 
     @Test
@@ -42,79 +65,83 @@ class PolicyResolverTest {
     }
 
     @Test
-    fun `screen off with AOD enabled uses a fixed AOD rate`() {
-        val decision = PolicyResolver.decide(input(screenOff = true, aodEnabled = true, aodHz = 10), 0)
+    fun `screen off with AOD enabled uses the panel minimum`() {
+        val decision = PolicyResolver.decide(
+            input(screenOff = true, aodEnabled = true, aodHz = 10),
+            0
+        )
         val policy = (decision as PolicyDecision.Apply).policy
         assertEquals("AOD", policy.layer)
         assertEquals(listOf(10), policy.profile.steps.map { it.hz })
+        assertFalse(policy.video.enabled)
     }
 
     @Test
-    fun `eco disabled leaves the system alone when battery saver is active`() {
-        val decision = PolicyResolver.decide(input(ecoActive = true, ecoEnabled = false), 0)
-        assertEquals(PolicyDecision.Idle(IdleReason.ECO_PROFILE_DISABLED), decision)
+    fun `battery saver applies economy when automatic economy is on`() {
+        val decision = PolicyResolver.decide(input(batterySaver = true), 0)
+        val policy = (decision as PolicyDecision.Apply).policy
+        assertEquals("economy", policy.layer)
+        assertEquals(economy.frequency, policy.profile)
     }
 
     @Test
-    fun `eco profile wins over an app profile without an exception`() {
+    fun `automatic economy can be disabled`() {
         val decision = PolicyResolver.decide(
-            input(
-                ecoActive = true,
-                appProfile = OneHzPreferences.AppProfile("com.example.app", app)
-            ),
+            input(batterySaver = true, autoEconomy = false),
             0
         )
         val policy = (decision as PolicyDecision.Apply).policy
-        assertEquals("ECO", policy.layer)
-        assertEquals(eco, policy.profile)
+        assertEquals("profile:balanced", policy.layer)
     }
 
     @Test
-    fun `an app exception keeps its own profile during battery saver`() {
+    fun `app profile wins outside battery saver`() {
+        val decision = PolicyResolver.decide(input(app = performance), 0)
+        val policy = (decision as PolicyDecision.Apply).policy
+        assertEquals("app:com.example.app", policy.layer)
+        assertEquals(performance.frequency, policy.profile)
+        assertEquals(60, policy.video.minHz)
+    }
+
+    @Test
+    fun `app profile is ignored during automatic economy unless it opts out`() {
         val decision = PolicyResolver.decide(
-            input(
-                ecoActive = true,
-                appProfile = OneHzPreferences.AppProfile("com.example.app", app, ignoreEco = true)
-            ),
+            input(batterySaver = true, app = performance, appIgnoreEco = false),
+            0
+        )
+        val policy = (decision as PolicyDecision.Apply).policy
+        assertEquals("economy", policy.layer)
+    }
+
+    @Test
+    fun `app exception keeps its profile during automatic economy`() {
+        val decision = PolicyResolver.decide(
+            input(batterySaver = true, app = performance, appIgnoreEco = true),
             0
         )
         val policy = (decision as PolicyDecision.Apply).policy
         assertEquals("app:com.example.app", policy.layer)
-        assertEquals(app, policy.profile)
+        assertEquals(performance.frequency, policy.profile)
     }
 
     @Test
-    fun `normal profile disabled leaves the system alone`() {
-        val decision = PolicyResolver.decide(input(normalEnabled = false), 0)
-        assertEquals(PolicyDecision.Idle(IdleReason.NORMAL_PROFILE_DISABLED), decision)
-    }
-
-    @Test
-    fun `app profile wins over the normal profile`() {
-        val decision = PolicyResolver.decide(
-            input(appProfile = OneHzPreferences.AppProfile("com.example.app", app)),
-            1
-        )
+    fun `selected profile is used when no app assignment exists`() {
+        val decision = PolicyResolver.decide(input(), 0)
         val policy = (decision as PolicyDecision.Apply).policy
-        assertEquals("app:com.example.app", policy.layer)
-        assertEquals(48, policy.profile.hzAt(policy.index))
+        assertEquals("profile:balanced", policy.layer)
     }
 
     @Test
-    fun `empty app profile falls back to the normal profile`() {
-        val decision = PolicyResolver.decide(
-            input(appProfile = OneHzPreferences.AppProfile("com.example.app", FrequencyProfile())),
-            0
-        )
-        val policy = (decision as PolicyDecision.Apply).policy
-        assertEquals("normal", policy.layer)
-        assertEquals(normal, policy.profile)
+    fun `missing selected profile goes idle`() {
+        val decision = PolicyResolver.decide(input(selectedProfile = null), 0)
+        assertEquals(PolicyDecision.Idle(IdleReason.PROFILE_DISABLED), decision)
     }
 
     @Test
-    fun `empty normal profile goes idle`() {
-        val decision = PolicyResolver.decide(input(normalProfile = FrequencyProfile()), 0)
-        assertEquals(PolicyDecision.Idle(IdleReason.EMPTY_PROFILE), decision)
+    fun `empty selected profile goes idle`() {
+        val empty = balanced.copy(frequency = FrequencyProfile())
+        val decision = PolicyResolver.decide(input(selectedProfile = empty), 0)
+        assertEquals(PolicyDecision.Idle(IdleReason.PROFILE_EMPTY), decision)
     }
 
     @Test
