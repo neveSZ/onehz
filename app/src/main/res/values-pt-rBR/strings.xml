@@ -59,7 +59,8 @@
     <string name="aod_brightness_restore">Restaurar brilho do sistema</string>
 
     <string name="video_mode_title">Modo vídeo</string>
-    <string name="video_mode_desc">Reconhece vídeos automaticamente pelas regras de detecção.</string>
+    <string name="video_mode_desc_on">Aplica a taxa de vídeo ao detectar reprodução.</string>
+    <string name="video_mode_desc_off">A reprodução de vídeo mantém o perfil normal.</string>
     <string name="video_min_hz">Taxa mínima no vídeo</string>
     <string name="video_min_hint">Substitui a taxa do perfil enquanto o vídeo está em reprodução.</string>
     <string name="video_state_playing">tocando</string>
@@ -74,13 +75,17 @@
     <string name="video_rules_desc">Escolha quais sinais o OneHZ usa para decidir que um vídeo está tocando.</string>
     <string name="video_rules_summary">%1$d de %2$d regras ativas</string>
     <string name="video_rule_session_title">Usar MediaSession</string>
-    <string name="video_rule_session_desc">Lê o estado de reprodução informado pela sessão de mídia do app.</string>
+    <string name="video_rule_session_desc_on">Lê o estado de reprodução informado pela sessão de mídia do app.</string>
+    <string name="video_rule_session_desc_off">Ignora a sessão de mídia do app.</string>
     <string name="video_rule_paused_title">Sessão pausada bloqueia vídeo</string>
-    <string name="video_rule_paused_desc">Uma sessão pausada é tratada como não reproduzindo, mesmo que um decodificador ainda esteja aberto.</string>
+    <string name="video_rule_paused_desc_on">Uma sessão pausada conta como não reproduzindo, mesmo com um decodificador aberto.</string>
+    <string name="video_rule_paused_desc_off">Uma sessão pausada ainda pode contar como reprodução.</string>
     <string name="video_rule_codec_title">Exigir decodificador de vídeo</string>
-    <string name="video_rule_codec_desc">O app em primeiro plano precisa manter um codec de vídeo. Desative para apps que reutilizam decodificadores ou os informam tarde.</string>
+    <string name="video_rule_codec_desc_on">O app em primeiro plano precisa manter um codec de vídeo.</string>
+    <string name="video_rule_codec_desc_off">O vídeo é aceito sem um codec ativo, útil para apps que informam decodificadores tarde.</string>
     <string name="video_rule_audio_title">Sem sessão, exigir áudio de mídia tocando</string>
-    <string name="video_rule_audio_desc">Sem sessão, um player USAGE_MEDIA iniciado confirma a reprodução. Desative para aceitar apenas o decodificador.</string>
+    <string name="video_rule_audio_desc_on">Sem sessão, um player de mídia iniciado confirma a reprodução.</string>
+    <string name="video_rule_audio_desc_off">Sem sessão, só o decodificador é exigido.</string>
     <string name="video_rules_none_warning">Nenhuma regra de detecção está ativa. O vídeo não será detectado, exceto para apps da lista forçada.</string>
     <string name="video_forced_title">Apps sempre tratados como vídeo</string>
     <string name="video_forced_desc">A taxa mínima de vídeo se aplica enquanto um destes apps estiver em primeiro plano, mesmo sem sessão, decodificador ou áudio.</string>

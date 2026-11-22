@@ -140,26 +140,30 @@ private fun RulesPage(
         Spacer(Modifier.height(8.dp))
         ToggleRow(
             title = stringResource(R.string.video_rule_session_title),
-            description = stringResource(R.string.video_rule_session_desc),
+            descriptionOn = stringResource(R.string.video_rule_session_desc_on),
+            descriptionOff = stringResource(R.string.video_rule_session_desc_off),
             checked = config.useMediaSession,
             onCheckedChange = { onConfigChange(config.copy(useMediaSession = it)) }
         )
         ToggleRow(
             title = stringResource(R.string.video_rule_paused_title),
-            description = stringResource(R.string.video_rule_paused_desc),
+            descriptionOn = stringResource(R.string.video_rule_paused_desc_on),
+            descriptionOff = stringResource(R.string.video_rule_paused_desc_off),
             checked = config.pausedSessionBlocks,
             enabled = config.useMediaSession,
             onCheckedChange = { onConfigChange(config.copy(pausedSessionBlocks = it)) }
         )
         ToggleRow(
             title = stringResource(R.string.video_rule_codec_title),
-            description = stringResource(R.string.video_rule_codec_desc),
+            descriptionOn = stringResource(R.string.video_rule_codec_desc_on),
+            descriptionOff = stringResource(R.string.video_rule_codec_desc_off),
             checked = config.requireVideoCodec,
             onCheckedChange = { onConfigChange(config.copy(requireVideoCodec = it)) }
         )
         ToggleRow(
             title = stringResource(R.string.video_rule_audio_title),
-            description = stringResource(R.string.video_rule_audio_desc),
+            descriptionOn = stringResource(R.string.video_rule_audio_desc_on),
+            descriptionOff = stringResource(R.string.video_rule_audio_desc_off),
             checked = config.requireStartedAudio,
             onCheckedChange = { onConfigChange(config.copy(requireStartedAudio = it)) }
         )

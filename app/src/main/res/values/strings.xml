@@ -59,7 +59,8 @@
     <string name="aod_brightness_restore">Restore system brightness</string>
 
     <string name="video_mode_title">Video mode</string>
-    <string name="video_mode_desc">Recognizes videos automatically using the detection rules.</string>
+    <string name="video_mode_desc_on">Applies the video rate when playback is detected.</string>
+    <string name="video_mode_desc_off">Video playback keeps the normal profile.</string>
     <string name="video_min_hz">Minimum rate during video</string>
     <string name="video_min_hint">Replaces the profile rate while the video is playing.</string>
     <string name="video_state_playing">playing</string>
@@ -74,13 +75,17 @@
     <string name="video_rules_desc">Choose which signals OneHZ uses to decide that a video is playing.</string>
     <string name="video_rules_summary">%1$d of %2$d rules active</string>
     <string name="video_rule_session_title">Use MediaSession</string>
-    <string name="video_rule_session_desc">Reads the playback state reported by the app\'s media session.</string>
+    <string name="video_rule_session_desc_on">Reads the playback state reported by the app\'s media session.</string>
+    <string name="video_rule_session_desc_off">Ignores the app\'s media session.</string>
     <string name="video_rule_paused_title">Paused session blocks video</string>
-    <string name="video_rule_paused_desc">A paused session is treated as not playing, even if a decoder is still held.</string>
+    <string name="video_rule_paused_desc_on">A paused session counts as not playing, even if a decoder is still held.</string>
+    <string name="video_rule_paused_desc_off">A paused session can still count as playing.</string>
     <string name="video_rule_codec_title">Require a video decoder</string>
-    <string name="video_rule_codec_desc">The foreground app must hold a video codec. Disable for apps that reuse decoders or report them late.</string>
+    <string name="video_rule_codec_desc_on">The foreground app must hold a video codec.</string>
+    <string name="video_rule_codec_desc_off">Video is accepted without an active codec, useful for apps that report decoders late.</string>
     <string name="video_rule_audio_title">Require playing media audio without a session</string>
-    <string name="video_rule_audio_desc">Without a session, a started USAGE_MEDIA player confirms playback. Disable to accept a decoder alone.</string>
+    <string name="video_rule_audio_desc_on">Without a session, a started media player confirms playback.</string>
+    <string name="video_rule_audio_desc_off">Without a session, only the decoder is required.</string>
     <string name="video_rules_none_warning">No detection rule is enabled. Video will not be detected unless the app is in the forced list.</string>
     <string name="video_forced_title">Apps always treated as video</string>
     <string name="video_forced_desc">The minimum video rate applies whenever one of these apps is in the foreground, even without a session, decoder, or audio.</string>
