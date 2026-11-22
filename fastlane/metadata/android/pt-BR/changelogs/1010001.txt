@@ -1,0 +1,8 @@
+Versão 1.1.0-beta.1
+* Suporte a Xiaomi/Redmi/POCO (HyperOS 2/3)
+* Telas multi-taxa; LTPO não é mais obrigatório
+* Novos perfis padrão (somente instalação nova)
+* Regras de detecção de vídeo configuráveis
+* Lista de apps sempre tratados como vídeo
+* Diagnóstico: brilho, economia de bateria e rota
+* Aviso de 30 Hz no editor de perfis do Xiaomi

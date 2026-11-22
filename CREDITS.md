@@ -4,9 +4,10 @@
 
 - **Author / Autor:** [neveSZ](https://github.com/neveSZ)
 - **Repository / Repositório:** <https://github.com/neveSZ/onehz>
-- **License / Licença:** MIT — see [LICENSE](LICENSE) and the
-  [unofficial Portuguese translation](LICENSE.pt-BR.md)
-- **Copyright:** © 2026 neveSZ
+- **License / Licença:** MIT for the OneHZ source code — see [LICENSE](LICENSE) and the
+  [unofficial Portuguese translation](LICENSE.pt-BR.md). Third-party components and the
+  Obtainium badge keep their own licenses; see below.
+- **Copyright:** © 2026 neveSZ; portions © 2025 Mahmut Alperen Ünal
 
 ## Support / Apoio
 
@@ -22,12 +23,12 @@ desbloqueiam funcionalidades. The same links are available in the app under
 
 OneHZ was developed with help from large language models through the
 [OpenCode](https://opencode.ai) coding agent harness. The author reviewed the code,
-ran the tests, and validated the app on the tested device. LLM assistance does not imply
+ran the tests, and validated the app on the tested devices. LLM assistance does not imply
 endorsement by any model provider.
 
 O OneHZ foi desenvolvido com ajuda de modelos de linguagem através do harness de agente
 de código [OpenCode](https://opencode.ai). O autor revisou o código, executou os testes e
-validou o app no aparelho testado. O auxílio de LLM não implica endosso de nenhum
+validou o app nos aparelhos testados. O auxílio de LLM não implica endosso de nenhum
 fornecedor de modelo.
 
 ## Open-source projects / Projetos de código aberto
@@ -47,14 +48,31 @@ O OneHZ inclui porções derivadas do Adaptive Hz. O aviso de copyright e a perm
 originais estão em [NOTICE](NOTICE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) e no
 app em **Sobre → Licenças de terceiros**.
 
-### Shizuku
+### Shizuku API (bundled / embutida)
+
+- Copyright © 2021 RikkaW
+- License: MIT
+- Project: <https://github.com/RikkaApps/Shizuku-API>
+- License text: <https://github.com/RikkaApps/Shizuku-API/blob/master/LICENSE>
+
+OneHZ bundles the Shizuku API client library. The Shizuku app itself is a separate
+application and is not bundled.
+
+O OneHZ embute a biblioteca cliente Shizuku API. O app Shizuku em si é um aplicativo
+separado e não é incluído.
+
+### Shizuku app (not bundled / não incluído)
 
 - Copyright © RikkaApps
 - License: Apache License 2.0
 - Project: <https://github.com/RikkaApps/Shizuku>
 - License text: <https://github.com/RikkaApps/Shizuku/blob/master/LICENSE>
 
-### Shizuku fork used for testing / Fork do Shizuku usado nos testes
+The Shizuku app is installed separately by the user; it is not part of the OneHZ APK.
+
+O app Shizuku é instalado separadamente pelo usuário; ele não faz parte do APK do OneHZ.
+
+### Shizuku fork used for testing (not bundled / não incluído)
 
 - Copyright © thedjchi and contributors
 - Version tested: `v13.7.0-thedjchi`
@@ -76,16 +94,46 @@ app em **Sobre → Licenças de terceiros**.
 - Project: <https://github.com/junit-team/junit4>
 - Not distributed in the app / não é distribuído no app.
 
+### Gradle Wrapper (build only / somente build)
+
+- Copyright © Gradle Inc.
+- License: Apache License 2.0
+- Project: <https://github.com/gradle/gradle>
+- `gradle/wrapper/gradle-wrapper.jar` is build tooling and is not distributed in the APK.
+  / É ferramenta de build e não é distribuído no APK.
+
 ### Obtainium badge
 
 - Copyright © ImranR98 and Obtainium contributors
 - License: GPL-3.0
 - Project: <https://github.com/ImranR98/Obtainium>
-- Used only in the README/download page to link to the Obtainium app. It is not
-  distributed in the APK.
+- License text: <https://github.com/ImranR98/Obtainium/blob/main/LICENSE.txt>
+- GPL-3.0 text in this repository: [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt)
+- Used only in the README/docs to link to the Obtainium app. It is not distributed in the
+  APK and is not covered by the MIT license of the OneHZ source code.
 
-O badge do Obtainium é usado apenas no README/página de download para linkar ao app
-Obtainium. Ele não é distribuído no APK.
+O badge do Obtainium é usado apenas no README/documentação para linkar ao app
+Obtainium. Ele não é distribuído no APK e não é coberto pela licença MIT do código do
+OneHZ. Veja [docs/assets/README.md](docs/assets/README.md).
+
+## Prior art / Trabalhos anteriores
+
+### EnforceDoze and ForceDoze
+
+- EnforceDoze: <https://github.com/Akylas/EnforceDoze> · GPL-3.0
+- ForceDoze: <https://github.com/theblixguy/ForceDoze> · GPL-3.0
+
+These projects popularized forcing Android Doze through the platform's debug shell
+interface. The optional Sleep feature in OneHZ was designed independently from the public
+Android interfaces (`dumpsys deviceidle`, `PowerManager` and the device-idle broadcasts).
+It shares no code, assets, strings, file structure or options with them, and no
+GPL-licensed code is included in OneHZ. See [docs/SLEEP.md](docs/SLEEP.md).
+
+Esses projetos popularizaram forçar o Doze do Android pela interface de depuração do
+sistema. O recurso opcional Sono do OneHZ foi desenhado de forma independente a partir das
+interfaces públicas do Android (`dumpsys deviceidle`, `PowerManager` e os broadcasts de
+device-idle). Ele não compartilha código, assets, textos, estrutura de arquivos ou opções
+com eles, e nenhum código GPL está incluído no OneHZ. Veja [docs/SLEEP.md](docs/SLEEP.md).
 
 ## No closed-source code / Sem código closed-source
 
@@ -107,10 +155,11 @@ See [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md).
 
 ## Trademarks / Marcas
 
-Samsung, Galaxy, and One UI are trademarks of Samsung Electronics. Android is a
-trademark of Google LLC. OneHZ is not affiliated with, endorsed by, or sponsored by
-Samsung Electronics or Google LLC.
-
-Samsung, Galaxy e One UI são marcas da Samsung Electronics. Android é uma marca da Google
-LLC. O OneHZ não é afiliado, endossado ou patrocinado pela Samsung Electronics nem pela
+Samsung, Galaxy, and One UI are trademarks of Samsung Electronics. Xiaomi, Redmi, POCO,
+HyperOS, and MIUI are trademarks of Xiaomi. Android is a trademark of Google LLC. OneHZ
+is not affiliated with, endorsed by, or sponsored by Samsung Electronics, Xiaomi, or
 Google LLC.
+
+Samsung, Galaxy e One UI são marcas da Samsung Electronics. Xiaomi, Redmi, POCO, HyperOS
+e MIUI são marcas da Xiaomi. Android é uma marca da Google LLC. O OneHZ não é afiliado,
+endossado ou patrocinado pela Samsung Electronics, pela Xiaomi nem pela Google LLC.

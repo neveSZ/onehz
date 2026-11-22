@@ -43,7 +43,7 @@
     <string name="home_shizuku_pending_unavailable">El servicio de Shizuku no está disponible. Abre la app Shizuku e inténtalo de nuevo.</string>
     <string name="layer_aod">Always On Display</string>
     <string name="step_of">Nivel %1$d de %2$d</string>
-    <string name="eco_active_now">ECO activo</string>
+    <string name="eco_active_now">Economía · ahorro de batería</string>
 
     <string name="aod_title">Pantalla apagada (AOD)</string>
     <string name="aod_hint">Se aplica solo con la pantalla apagada y Always On Display activo. No afecta el uso normal.</string>
@@ -73,6 +73,26 @@
     <string name="video_diag_state">Estado</string>
     <string name="video_diag_test">Probar detección</string>
     <string name="video_diag_hint">Úsalo con un vídeo reproduciéndose para ver el paquete, la sesión, el códec y el audio.</string>
+    <string name="video_diag_config">Reglas: %1$s · forzadas: %2$d</string>
+    <string name="video_config_manage">Configurar detección</string>
+    <string name="video_rules_title">Reglas de detección</string>
+    <string name="video_rules_desc">Elige qué señales usa OneHZ para decidir que un vídeo se está reproduciendo.</string>
+    <string name="video_rules_summary">%1$d de %2$d reglas activas</string>
+    <string name="video_rule_session_title">Usar MediaSession</string>
+    <string name="video_rule_session_desc">Lee el estado de reproducción informado por la sesión multimedia de la app.</string>
+    <string name="video_rule_paused_title">Sesión pausada bloquea el vídeo</string>
+    <string name="video_rule_paused_desc">Una sesión pausada se trata como no reproduciendo, aunque un decodificador siga abierto.</string>
+    <string name="video_rule_codec_title">Exigir un decodificador de vídeo</string>
+    <string name="video_rule_codec_desc">La app en primer plano debe mantener un códec de vídeo. Desactívalo para apps que reutilizan decodificadores o los informan tarde.</string>
+    <string name="video_rule_audio_title">Sin sesión, exigir audio multimedia reproduciéndose</string>
+    <string name="video_rule_audio_desc">Sin sesión, un reproductor USAGE_MEDIA iniciado confirma la reproducción. Desactívalo para aceptar solo el decodificador.</string>
+    <string name="video_rules_none_warning">No hay ninguna señal positiva activa. El vídeo no se detectará salvo que la app esté en la lista forzada.</string>
+    <string name="video_forced_title">Apps siempre tratadas como vídeo</string>
+    <string name="video_forced_desc">El mínimo de vídeo se aplica mientras una de estas apps esté en primer plano, incluso sin sesión, decodificador o audio.</string>
+    <string name="video_forced_manage">Gestionar apps</string>
+    <string name="video_forced_clear">Limpiar</string>
+    <string name="video_forced_missing">No instaladas</string>
+    <string name="video_forced_limit">Hasta 64 apps</string>
 
     <string name="profile_normal_title">Perfil normal</string>
     <string name="profile_eco_title">Perfil de ahorro (ECO)</string>
@@ -96,6 +116,8 @@
     <string name="profile_step_number">Nivel %1$d</string>
     <string name="profile_how_title">Cómo funciona</string>
     <string name="profile_how_body">Al tocar la pantalla, la frecuencia pasa al primer nivel. Tras el tiempo definido, baja al siguiente. El último nivel queda en reposo, sin límite de tiempo.</string>
+    <string name="profile_low_rate_warning_title">Brillo a 30 Hz</string>
+    <string name="profile_low_rate_warning_body">En este dispositivo, 30 Hz puede reducir el brillo del panel. Es una limitación de hardware; OneHZ no puede compensarlo.</string>
     <string name="profile_issue_too_many">Máximo de 5 niveles.</string>
     <string name="profile_issue_not_descending">Los niveles deben ser decrecientes (por ejemplo, 120 a 60).</string>
     <string name="profile_issue_unsupported">Una de las frecuencias no es compatible con este dispositivo.</string>
@@ -122,8 +144,8 @@
     <string name="app_added">Aplicación añadida</string>
     <string name="app_removed">Aplicación eliminada</string>
     <string name="profile_badge">Configurada</string>
-    <string name="eco_ignored">Ignora ECO</string>
-    <string name="ignore_eco_label">No usar el modo ECO para esta aplicación</string>
+    <string name="eco_ignored">Ignora Economía</string>
+    <string name="ignore_eco_label">No usar Economía durante el ahorro de batería</string>
     <string name="template_title">Empezar desde</string>
     <string name="template_default">Normal</string>
     <string name="template_eco">ECO</string>
@@ -143,6 +165,11 @@
         <item quantity="one">%1$d aplicación eliminada</item>
         <item quantity="other">%1$d aplicaciones eliminadas</item>
         <item quantity="many">%1$d aplicaciones eliminadas</item>
+    </plurals>
+    <plurals name="video_forced_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
+        <item quantity="many">%1$d apps</item>
     </plurals>
 
     <string name="settings_preferences">Preferencias</string>
@@ -177,10 +204,12 @@
     <string name="credits_inspired">Créditos</string>
     <string name="credits_adaptive">Adaptive Hz (MIT)</string>
     <string name="credits_adaptive_subtitle">Porciones derivadas · © 2025 Mahmut Alperen Ünal</string>
-    <string name="credits_shizuku">Shizuku</string>
-    <string name="credits_shizuku_subtitle">API privilegiada · @RikkaApps</string>
-    <string name="credits_shizuku_fork">Fork de Shizuku</string>
-    <string name="credits_shizuku_fork_subtitle">v13.7.0-thedjchi · @thedjchi</string>
+    <string name="credits_shizuku_api">Shizuku API (MIT)</string>
+    <string name="credits_shizuku_api_subtitle">Cliente incluido · © 2021 RikkaW</string>
+    <string name="credits_shizuku">App Shizuku (Apache 2.0)</string>
+    <string name="credits_shizuku_subtitle">No incluido · @RikkaApps</string>
+    <string name="credits_shizuku_fork">Fork de Shizuku (Apache 2.0)</string>
+    <string name="credits_shizuku_fork_subtitle">No incluido · v13.7.0-thedjchi</string>
     <string name="credits_androidx">AndroidX, Compose, Kotlin</string>
     <string name="credits_androidx_subtitle">Apache License 2.0</string>
     <string name="credits_license_value">MIT</string>
@@ -212,7 +241,7 @@
     <string name="setup_pending">Pendiente</string>
 
     <string name="unsupported_title">Dispositivo no compatible</string>
-    <string name="unsupported_body">OneHZ solo funciona en dispositivos con panel LTPO. No se aplicó ningún control de frecuencia.</string>
+    <string name="unsupported_body">OneHZ solo funciona en dispositivos Samsung o Xiaomi/Redmi/POCO con una pantalla que exponga al menos dos tasas de actualización. No se cambió nada.</string>
 
     <string name="notification_service_text">Manteniendo el control de frecuencia activo. Doze no se bloquea.</string>
     <string name="notification_channel_name">Servicio OneHZ</string>
@@ -228,13 +257,20 @@
     <string name="update_info">Actualizar</string>
     <string name="report_copied">Diagnóstico copiado</string>
     <string name="diag_shizuku">Servicio Shizuku</string>
-    <string name="diag_ltpo">Pantalla LTPO</string>
+    <string name="diag_ltpo">Pantalla multi-tasa</string>
     <string name="diag_tier">Nivel actual</string>
     <string name="diag_observed">Frecuencia observada: %1$d Hz</string>
     <string name="diag_last_write">Último cambio</string>
     <string name="diag_control_method">Método de control de pantalla</string>
     <string name="diag_aod_brightness">Brillo del AOD</string>
     <string name="diag_not_available">No disponible</string>
+    <string name="diag_system_state">Brillo y energía</string>
+    <string name="diag_brightness">Brillo</string>
+    <string name="diag_battery_saver">Ahorro de batería</string>
+    <string name="diag_route">Ruta de la frecuencia</string>
+    <string name="diag_state_on">Activo</string>
+    <string name="diag_state_off">Inactivo</string>
+    <string name="diag_low_rate_note">En este panel, 30 Hz puede reducir el brillo. Es una limitación de hardware; ninguna app puede compensarlo.</string>
     <string name="log_filter_all">Todo</string>
     <string name="log_search">Filtrar registro</string>
     <string name="log_tag_touch">Toque</string>
@@ -327,4 +363,65 @@
     <string name="about_project_status">Proyecto personal, se ofrece tal cual. No hay garantía de mantenimiento, pero los informes de errores y las sugerencias son bienvenidos.</string>
     <string name="about_translation_note">El portugués fue revisado por el autor. El inglés y el español fueron generados por IA y no fueron revisados por hablantes nativos.</string>
     <string name="about_llm_note">Desarrollado con asistencia de LLM mediante la herramienta OpenCode, y luego revisado y probado por el autor en un solo dispositivo.</string>
-    <string name="about_not_affiliated">Sin afiliación con Samsung. Samsung, Galaxy y One UI son marcas de Samsung Electronics.</string></resources>
+    <string name="about_not_affiliated">Sin afiliación con Samsung. Samsung, Galaxy y One UI son marcas de Samsung Electronics.</string>
+    <!-- Perfiles (beta 1.2) -->
+    <string name="profile_economy_title">Economía</string>
+    <string name="profile_balanced_title">Equilibrado</string>
+    <string name="profile_performance_title">Rendimiento</string>
+    <string name="profile_active">Activo</string>
+    <string name="profile_select">Usar este perfil</string>
+    <string name="profile_manage">Gestionar perfiles</string>
+    <string name="profile_new">Nuevo perfil</string>
+    <string name="profile_name">Nombre del perfil</string>
+    <string name="profile_name_hint">Ej.: Juegos</string>
+    <string name="profile_name_required">Introduce un nombre.</string>
+    <string name="profile_modified">Modificado</string>
+    <string name="profile_default">Predeterminado</string>
+    <plurals name="profile_used_by_apps">
+        <item quantity="one">Usado por %1$d app</item>
+        <item quantity="other">Usado por %1$d apps</item>
+    </plurals>
+    <string name="profile_no_apps">No usado por apps</string>
+    <string name="profile_delete_title">¿Eliminar perfil?</string>
+    <string name="profile_delete_body">Este perfil lo usan %1$d apps. Se reasignarán a %2$s.</string>
+    <string name="profile_delete_body_unused">Este perfil se eliminará.</string>
+    <string name="profile_delete_confirm">Eliminar</string>
+    <string name="profile_create_title">Nuevo perfil</string>
+    <string name="profile_create_body">El nuevo perfil empieza desde %1$s. Puedes editarlo después.</string>
+    <string name="profile_create_confirm">Crear</string>
+    <string name="profile_reset_title">¿Restaurar predeterminado?</string>
+    <string name="profile_reset_body">La frecuencia y el vídeo vuelven a los valores del dispositivo.</string>
+    <string name="profile_reset_confirm">Restaurar</string>
+    <string name="profile_active_manual">Manual</string>
+    <string name="profile_active_battery">Economía · ahorro de batería</string>
+    <string name="profile_battery_override_hint">La Economía automática está activa mientras el ahorro de batería del sistema esté encendido.</string>
+    <string name="profile_active_app">App: %1$s</string>
+    <string name="profile_active_aod">Always On Display</string>
+    <string name="profile_idle_off">Ningún perfil activo: la frecuencia no se controla.</string>
+    <string name="profile_video_title">Vídeo</string>
+    <string name="profile_video_desc">El límite de vídeo sigue este perfil.</string>
+    <string name="profile_video_edit">Editar vídeo en este perfil</string>
+    <string name="profile_video_follows">Sigue el perfil activo · %1$d Hz</string>
+    <string name="profile_video_summary">Vídeo: límite %1$d Hz</string>
+    <string name="profile_app_assigned">Perfil: %1$s</string>
+    <string name="profile_app_choose">Perfil de esta app</string>
+    <string name="profile_app_create">Crear un perfil desde esta app</string>
+    <string name="profile_app_remove_title">¿Quitar asignación?</string>
+    <string name="profile_app_remove_body">%1$s volverá a usar el perfil activo.</string>
+    <string name="profile_app_missing">El perfil asignado no existe. Usando Equilibrado.</string>
+    <string name="aod_minimum">Mínimo: %1$d Hz</string>
+    <string name="aod_minimum_hint">Always On Display usa la tasa más baja que expone el panel.</string>
+    <string name="settings_backup">Copia de seguridad y restauración</string>
+    <string name="settings_backup_desc">Exportar o importar todos los perfiles y ajustes</string>
+    <string name="backup_export">Exportar configuración</string>
+    <string name="backup_import">Importar configuración</string>
+    <string name="backup_export_success">Configuración exportada.</string>
+    <string name="backup_export_failed">No se pudo exportar la configuración.</string>
+    <string name="backup_import_confirm_title">¿Importar configuración?</string>
+    <string name="backup_import_confirm_body">Esto reemplaza todos los perfiles, asignaciones de apps y ajustes de comportamiento actuales. El tema y el idioma no cambian.</string>
+    <string name="backup_import_success">Importados %1$d perfiles y %2$d asignaciones de apps.</string>
+    <string name="backup_import_failed">No se pudo importar: %1$s</string>
+    <string name="backup_import_adapted">%1$d perfiles se adaptaron a esta pantalla.</string>
+    <string name="backup_import_missing">%1$d asignaciones se movieron a Equilibrado.</string>
+    <string name="backup_scope_note">Incluye perfiles, asignaciones de apps, vídeo y AOD. El tema y el idioma no se incluyen.</string>
+</resources>

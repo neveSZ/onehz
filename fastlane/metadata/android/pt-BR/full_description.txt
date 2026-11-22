@@ -1,4 +1,4 @@
-O OneHZ mantém a taxa de atualização das telas LTPO da Samsung sob controle: mais fluida quando você toca na tela, mais tranquila no repouso e mais econômica com a tela desligada.
+O OneHZ mantém a taxa de atualização das telas Samsung e Xiaomi/Redmi/POCO sob controle: mais fluida quando você toca na tela, mais tranquila no repouso e mais econômica com a tela desligada.
 
 Ele altera a taxa de atualização exclusivamente pelo Shizuku. Não exige root, não usa ADB direto pelo app, não usa WRITE_SECURE_SETTINGS e não usa AccessibilityService.
 
@@ -6,16 +6,23 @@ Recursos
 * Escada de taxa de atualização com 1 a 5 níveis por perfil.
 * Perfis Normal, ECO (economia de bateria) e AOD independentes.
 * Perfis por aplicativo e modo vídeo.
-* Controle opcional de brilho do AOD com faixa de segurança e ação de restauração.
-* Configuração guiada para compatibilidade LTPO, Shizuku, otimização de bateria, Doze e notificações.
+* Regras de detecção de vídeo configuráveis e uma lista de apps sempre tratados como vídeo.
+* Controle opcional de brilho do AOD (somente Samsung) com faixa de segurança e ação de restauração.
+* Perfis padrão de acordo com o aparelho em uma instalação nova.
+* Configuração guiada para compatibilidade da tela, Shizuku, otimização de bateria, Doze e notificações.
 * Diagnóstico, temas claro/escuro/AMOLED e interface em português (Brasil), inglês e espanhol.
 
 Requisitos
-* Um celular Samsung com painel LTPO.
+* Um celular Samsung ou Xiaomi/Redmi/POCO com tela que exponha pelo menos duas taxas de atualização. LTPO não é obrigatório.
 * Android 12 (API 31) ou mais recente.
 * Shizuku instalado e em execução.
 
-O Shizuku é um app separado e não vem incluído no OneHZ. Sem o Shizuku, o OneHZ não consegue controlar a tela. O OneHZ foi testado no Samsung Galaxy S25+ (SM-S936B) com Android 17 / One UI 9.0; outros modelos Samsung com LTPO e outras versões do Android podem funcionar, mas não foram testados.
+O app Shizuku é separado e não vem incluído no OneHZ. O OneHZ inclui apenas a biblioteca cliente Shizuku API, licenciada sob MIT. Sem o app Shizuku, o OneHZ não consegue controlar a tela. O OneHZ foi testado no Samsung Galaxy S25+ (SM-S936B) com Android 17 / One UI 9.0 e no POCO X7 Pro (2412DPC0AG) com Android 16 / HyperOS 3.0; outros modelos e versões do Android podem funcionar, mas não foram testados.
+
+Observações
+* O brilho do AOD é somente Samsung e fica oculto no Xiaomi.
+* No POCO X7 Pro testado, 30 Hz é mais escuro no painel. O OneHZ não consegue compensar e mostra um aviso no editor de perfis.
+* Vídeo em picture-in-picture ainda não é detectado.
 
 Privacidade
 * Sem anúncios, analytics, telemetria ou contas.

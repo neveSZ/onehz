@@ -4,6 +4,82 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Beta feature set for reusable profiles and optional forced Doze. No release tag or
+publication yet.
+
+### Added
+
+- Economy, Balanced and Performance profiles generated from the device panel.
+- Manual active-profile selection with automatic Economy while the system battery saver
+  is on.
+- Custom profiles with create, rename, edit and delete actions.
+- “Restore default” for the three built-in profiles.
+- Per-app assignments that reference a saved profile instead of copying its staircase.
+- Per-profile video settings: enabled flag, minimum refresh rate and detection rules.
+- AOD now always uses the lowest rate exposed by the panel.
+- Backup and restore through a versioned JSON file using the Storage Access Framework.
+- Import adapts unsupported refresh rates to the current panel and reports the result.
+- Migration from the legacy Normal/ECO profiles and copied per-app staircases.
+- Sleep: optional forced Doze on screen-off, with deep/light idle, pause, a cross-midnight
+  time window, charging and music guards, a wake-up app list, and local 24-hour
+  measurements (screen-off time, Doze time, rest periods and battery rate).
+
+### Changed
+
+- The Home profiles section now shows the active profile with a quick switcher and a
+  separate management screen.
+- Per-profile enable switches were replaced by one master switch and an active-profile
+  selection.
+- The AOD frequency picker was removed; the minimum is shown instead.
+- The default video rules enable MediaSession, paused-session blocking and the video codec
+  rule, leaving the media-audio rule off.
+- The per-app ECO exception and the active-profile badge now use the Economy name.
+
+## [1.1.0-beta.1] - 2026-11-21
+
+First beta after 1.0.1. Adds Xiaomi/Redmi/POCO support, removes the LTPO requirement,
+and makes video detection configurable.
+
+### Added
+
+- Xiaomi/Redmi/POCO support through `secure/miui_refresh_rate` (HyperOS 2/3) and
+  `secure/user_refresh_rate` (HyperOS 1 fallback).
+- Capability-based compatibility gate: Samsung or Xiaomi/Redmi/POCO with at least two
+  refresh rates.
+- Exact snapshot/restore of the HyperOS rate key on release and after a crash.
+- HyperOS diagnostics route and observed-rate reporting.
+- Default profiles: normal **device maximum → 60 Hz → minimum** (2 s / 5 s) and ECO
+  **60 Hz → minimum** (2 s).
+- Profile editor warning on Xiaomi when a step uses 30 Hz: the panel can reduce the
+  brightness and OneHZ cannot compensate.
+- Diagnostics now report screen brightness/mode, battery-saver state, and the active
+  rate route.
+- Configurable video detection rules: MediaSession, paused-session veto, video decoder,
+  and media audio can each be enabled or disabled from the new detection settings sheet.
+- Forced app list: packages that are always treated as video while in the foreground.
+- The video configuration travels to the Shizuku UserService over the binder, with
+  validated package names and a 64-app cap.
+- A configuration change re-probes video immediately instead of waiting for a touch.
+
+### Changed
+
+- LTPO is no longer required; a multi-rate panel is enough.
+- The AOSP/generic backend was removed. Unsupported manufacturers are blocked and
+  warned instead of receiving experimental writes.
+- AOD brightness is Samsung-only and is hidden on Xiaomi.
+- `BootReceiver` and the keep-alive service respect the strict gate.
+- The Home ECO badge follows the system battery-saver broadcast while the app is open,
+  instead of waiting for the next resume.
+- Version 1.1.0-beta.1 (`versionCode 1010001`).
+
+### Known limitations
+
+- On the tested POCO X7 Pro, 30 Hz is dimmer at the panel level. System brightness,
+  framebuffer, and backlight are identical to 60/120 Hz, and the vendor knobs reachable
+  through Shizuku do not change it. See [COMPATIBILITY](docs/COMPATIBILITY.md#30-hz-brightness-on-hyperos).
+
 ## [1.0.1] - 2026-11-21
 
 ### Added
@@ -77,5 +153,6 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.1.0-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.1.0-beta.1
 [1.0.1]: https://github.com/neveSZ/onehz/releases/tag/v1.0.1
 [1.0.0]: https://github.com/neveSZ/onehz/releases/tag/v1.0.0

@@ -13,21 +13,23 @@ object OneHzPreferences {
     private const val NAME = "onehz_prefs"
 
     private const val KEY_ENABLED = "enabled"
-    private const val KEY_PROFILE_NORMAL = "profile_normal"
-    private const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
-    private const val KEY_PROFILE_ECO = "profile_eco"
-    private const val KEY_PROFILE_ECO_ENABLED = "profile_eco_enabled"
-    private const val KEY_AOD_ENABLED = "aod_enabled"
-    private const val KEY_AOD_HZ = "aod_hz"
+    internal const val KEY_PROFILE_NORMAL = "profile_normal"
+    internal const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
+    internal const val KEY_PROFILE_ECO = "profile_eco"
+    internal const val KEY_PROFILE_ECO_ENABLED = "profile_eco_enabled"
+    internal const val KEY_AOD_ENABLED = "aod_enabled"
+    internal const val KEY_AOD_HZ = "aod_hz"
     private const val KEY_AOD_BRIGHTNESS_ENABLED = "aod_brightness_enabled"
     private const val KEY_AOD_BRIGHTNESS_PCT = "aod_brightness_pct"
     private const val KEY_AOD_BRIGHTNESS_MIN_PCT = "aod_brightness_min_pct"
     private const val KEY_AOD_BRIGHTNESS_MAX_PCT = "aod_brightness_max_pct"
     private const val KEY_AOD_BRIGHTNESS_WRITTEN = "aod_brightness_written"
-    private const val KEY_VIDEO_ENABLED = "video_enabled"
-    private const val KEY_VIDEO_MIN_HZ = "video_min_hz"
+    internal const val KEY_VIDEO_ENABLED = "video_enabled"
+    internal const val KEY_VIDEO_MIN_HZ = "video_min_hz"
+    internal const val KEY_VIDEO_CONFIG = "video_config"
     private const val KEY_SESSION_PENDING = "session_pending"
     private const val KEY_ECO_GLOBAL_BACKUP = "eco_global_backup"
+    private const val KEY_RATE_BACKUP = "rate_backup"
     private const val KEY_LOGS_PAUSED = "logs_paused"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_THEME_MODE = "theme_mode"
@@ -44,9 +46,9 @@ object OneHzPreferences {
     private const val KEY_UPDATE_CACHED_PRERELEASE = "update_cached_prerelease"
     private const val KEY_UPDATE_CACHED_CHANNEL = "update_cached_channel"
     private const val KEY_UPDATE_DISMISSED_VERSION = "update_dismissed_version"
-    private const val APP_PREFIX = "app_"
-    private const val APP_PROFILE = "_profile"
-    private const val APP_IGNORE_ECO = "_ignore_eco"
+    internal const val APP_PREFIX = "app_"
+    internal const val APP_PROFILE = "_profile"
+    internal const val APP_IGNORE_ECO = "_ignore_eco"
 
     fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -57,14 +59,14 @@ object OneHzPreferences {
     // ---------------------------------------------------------------- profiles
 
     /**
-     * Default profile for a fresh install: device ceiling -> ~60 Hz -> device minimum.
-     * The ECO default caps the first step at 90 Hz on panels that support it.
+     * Default profile for a fresh install: device ceiling -> ~60 Hz -> device minimum,
+     * with 2 s and 5 s holds. The ECO default starts at 60 Hz and holds it for 2 s.
      */
     fun defaultNormalProfile(context: Context): FrequencyProfile =
-        FrequencyProfile.deviceDefault(SamsungDisplayRates.main(context), cap = null)
+        FrequencyProfile.deviceDefault(DisplayRates.main(context), cap = null)
 
     fun defaultEcoProfile(context: Context): FrequencyProfile =
-        FrequencyProfile.deviceDefault(SamsungDisplayRates.main(context), cap = 90)
+        FrequencyProfile.deviceDefault(DisplayRates.main(context), cap = 60)
 
     fun normalProfile(context: Context): FrequencyProfile =
         readProfile(context, KEY_PROFILE_NORMAL, defaultNormalProfile(context))
@@ -96,8 +98,27 @@ object OneHzPreferences {
      * Original values of the Samsung battery-saver refresh-rate keys changed by OneHZ.
      * Kept so a crash or process death cannot leave the system settings modified forever.
      */
-    fun ecoGlobalBackup(context: Context): Map<String, String> {
-        val raw = prefs(context).getString(KEY_ECO_GLOBAL_BACKUP, null) ?: return emptyMap()
+    fun ecoGlobalBackup(context: Context): Map<String, String> =
+        readSnapshot(context, KEY_ECO_GLOBAL_BACKUP)
+
+    fun setEcoGlobalBackup(context: Context, values: Map<String, String>) =
+        writeSnapshot(context, KEY_ECO_GLOBAL_BACKUP, values)
+
+    /**
+     * Original values of the non-Samsung refresh-rate keys touched by a session
+     * (HyperOS uses `secure/miui_refresh_rate` or `secure/user_refresh_rate`).
+     * An empty value means the key did not exist and must be deleted on restore.
+     */
+    fun rateBackup(context: Context): Map<String, String> =
+        readSnapshot(context, KEY_RATE_BACKUP)
+
+    fun setRateBackup(context: Context, values: Map<String, String>) =
+        writeSnapshot(context, KEY_RATE_BACKUP, values)
+
+    fun hasRateBackup(context: Context): Boolean = rateBackup(context).isNotEmpty()
+
+    private fun readSnapshot(context: Context, key: String): Map<String, String> {
+        val raw = prefs(context).getString(key, null) ?: return emptyMap()
         return raw.lineSequence()
             .mapNotNull { line ->
                 val separator = line.indexOf('=')
@@ -107,11 +128,11 @@ object OneHzPreferences {
             .toMap()
     }
 
-    fun setEcoGlobalBackup(context: Context, values: Map<String, String>) {
+    private fun writeSnapshot(context: Context, key: String, values: Map<String, String>) {
         prefs(context).edit {
-            if (values.isEmpty()) remove(KEY_ECO_GLOBAL_BACKUP)
+            if (values.isEmpty()) remove(key)
             else putString(
-                KEY_ECO_GLOBAL_BACKUP,
+                key,
                 values.entries.joinToString("\n") { "${it.key}=${it.value}" }
             )
         }
@@ -120,7 +141,11 @@ object OneHzPreferences {
     // --------------------------------------------------------------------- AOD
 
     fun aodEnabled(context: Context) = prefs(context).getBoolean(KEY_AOD_ENABLED, false)
-    fun aodHz(context: Context) = prefs(context).getInt(KEY_AOD_HZ, 30)
+
+    /** AOD always uses the lowest rate exposed by the panel. */
+    fun aodHz(context: Context): Int =
+        DisplayRates.main(context).filter { it > 0 }.minOrNull() ?: 30
+
     fun setAodEnabled(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_AOD_ENABLED, value) }
     fun setAodHz(context: Context, value: Int) = prefs(context).edit { putInt(KEY_AOD_HZ, value) }
 
@@ -190,6 +215,21 @@ object OneHzPreferences {
 
     fun setVideoMinHz(context: Context, value: Int) =
         prefs(context).edit { putInt(KEY_VIDEO_MIN_HZ, value) }
+
+    /** Detection rules and the forced app list. Missing or invalid data falls back to defaults. */
+    fun videoConfig(context: Context): VideoConfig =
+        VideoConfig.decode(prefs(context).getString(KEY_VIDEO_CONFIG, null))
+
+    fun setVideoConfig(context: Context, config: VideoConfig) =
+        prefs(context).edit { putString(KEY_VIDEO_CONFIG, config.encode()) }
+
+    /** Forced apps are global; the four detection rules belong to each device profile. */
+    fun forcedVideoPackages(context: Context): Set<String> =
+        videoConfig(context).forcedPackages
+
+    fun setForcedVideoPackages(context: Context, packages: Set<String>) {
+        setVideoConfig(context, videoConfig(context).copy(forcedPackages = packages))
+    }
 
     /**
      * Set while a session is active. If the process dies without a clean release, the next

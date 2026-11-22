@@ -8,6 +8,7 @@ import android.os.HandlerThread
 import android.os.PowerManager
 import android.provider.Settings
 import io.github.nevesz.onehz.core.AodBrightnessMath
+import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.diagnostic.AodBrightnessInfo
 import io.github.nevesz.onehz.diagnostic.Diagnostics
@@ -62,6 +63,14 @@ object AodBrightnessController {
         val ctx = context.applicationContext
         handler.post {
             appContext = ctx
+            if (!DisplayProfileResolver.detect(ctx).supportsAodBrightness) {
+                running = false
+                unregisterObserver()
+                pendingSync = false
+                handler.removeCallbacks(debounceRunnable)
+                Diagnostics.log(TAG, "AOD brightness is Samsung-only; skipped")
+                return@post
+            }
             if (!OneHzPreferences.isEnabled(ctx)) {
                 running = false
                 unregisterObserver()

@@ -20,7 +20,7 @@ enum class ProfileIssue {
  * A user-configured schedule: touch applies the first step, then each hold elapses
  * and the next step is applied until the last one, which is the resting rate.
  *
- * Serialized form: "120:1000,96:10000,60" (hz:holdMs, last without hold).
+ * Serialized form: "120:2000,60:5000,30" (hz:holdMs, last without hold).
  * An empty profile is stored as an empty string and means "no control configured".
  */
 data class FrequencyProfile(val steps: List<TierStep> = emptyList()) {
@@ -70,13 +70,19 @@ data class FrequencyProfile(val steps: List<TierStep> = emptyList()) {
         const val MIN_HOLD_MS = 500L
         const val MAX_HOLD_MS = 60_000L
         const val HOLD_STEP_MS = 500L
-        const val DEFAULT_HOLD_MS = 5_000L
+
+        /** Hold used when a new step is added, or when a step stops being the resting one. */
+        const val DEFAULT_HOLD_MS = 2_000L
+
+        /** Hold of the middle (~60 Hz) step in the generated default staircase. */
+        const val DEFAULT_MIDDLE_HOLD_MS = 5_000L
 
         fun fixed(hz: Int): FrequencyProfile = FrequencyProfile(listOf(TierStep(hz)))
 
         /**
-         * Default staircase for a fresh install: device ceiling -> ~60 Hz -> device minimum.
-         * [cap] limits the ceiling (used by the battery saver profile).
+         * Default staircase for a fresh install: device ceiling -> ~60 Hz -> device minimum,
+         * holding each level for 2 s and 5 s. [cap] limits the ceiling (the battery saver
+         * profile uses 60 Hz).
          */
         fun deviceDefault(rates: List<Int>, cap: Int? = null): FrequencyProfile {
             val sorted = rates.filter { it > 0 }.distinct().sorted()
@@ -91,8 +97,8 @@ data class FrequencyProfile(val steps: List<TierStep> = emptyList()) {
                 null
             }
             val steps = buildList {
-                add(TierStep(ceiling, 1_000L))
-                if (middle != null) add(TierStep(middle, 10_000L))
+                add(TierStep(ceiling, DEFAULT_HOLD_MS))
+                if (middle != null) add(TierStep(middle, DEFAULT_MIDDLE_HOLD_MS))
                 add(TierStep(deviceMin))
             }
             return FrequencyProfile(steps)

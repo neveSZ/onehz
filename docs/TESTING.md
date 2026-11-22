@@ -11,11 +11,17 @@
 Unit tests cover the pure logic:
 
 - `FrequencyProfile` serialization, validation, defaults;
-- `VideoSignals` parsers (captured real-device fixtures);
+- `ProfileDefaults` for two-rate and multi-rate panels;
+- `ProfileCodec` serialization and frequency adaptation;
+- `BackupCodec` round trip, schema/app validation and forced packages;
+- `VideoSignals` parsers and rule decisions (captured real-device fixtures);
+- `VideoConfig` encoding, validation, and defaults;
 - `MtTouchParser` MT-B edges;
 - `TouchDeviceSelector` device filtering;
 - `AodBrightnessMath`;
-- `PolicyResolver` precedence;
+- `PolicyResolver` precedence, automatic Economy and profile video;
+- `DozeState`, `DozeSchedule`, `DozeDecision`, `DozeWhitelist` and `SleepLedger` (sleep
+  decisions, cross-midnight windows, whitelist parsing, 24-hour clipping, rest sessions);
 - `SemanticVersion` and pre-release precedence;
 - `ReleaseSelector` channel filtering and URL validation;
 - update interval gating.
@@ -35,7 +41,7 @@ Test on the target device with a clean install of the signed release APK.
 
 - [ ] Uninstall any debug build first (`adb uninstall io.github.nevesz.onehz`).
 - [ ] Install the release APK.
-- [ ] LTPO compatibility shows OK.
+- [ ] Vendor/display compatibility shows OK.
 - [ ] Shizuku permission is requested and granted.
 - [ ] Battery exemption is optional and works.
 - [ ] Doze whitelist toggle works.
@@ -49,31 +55,68 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Confirm the final tier stays at rest.
 - [ ] Put a finger on the screen while a hold expires; the step is deferred.
 - [ ] Turn the master switch off; the system adaptive default returns.
-- [ ] Disable the normal profile; control stops with the expected message.
+- [ ] Select Economy, Balanced, Performance and a custom profile; each applies.
 
-### ECO
+### Profiles and battery saver
 
-- [ ] Turn on system battery saver; the ECO profile is applied.
-- [ ] Turn battery saver off; the normal profile returns.
-- [ ] Mark an app “Ignore ECO”; its profile stays while battery saver is on.
-- [ ] Disable the ECO profile; control stops during battery saver.
+- [ ] Edit a built-in profile; it is marked as modified.
+- [ ] Restore a built-in profile; it returns to the device defaults.
+- [ ] Create, rename, edit and delete a custom profile.
+- [ ] Delete a custom profile used by an app; the app moves to Balanced.
+- [ ] Turn on system battery saver; Economy is applied and the card shows it.
+- [ ] Turn battery saver off; the selected profile returns.
+- [ ] Mark an app "Do not use Economy during battery saver"; its profile stays while battery saver is on.
 - [ ] Confirm Samsung ECO settings are restored after turning OneHZ off.
+- [ ] On Xiaomi, confirm `secure/miui_refresh_rate` is restored after turning OneHZ off.
 
 ### AOD
 
-- [ ] Enable AOD frequency; lock the screen and confirm the AOD rate.
-- [ ] Enable AOD brightness; lock and check `adb shell settings get system debug_aod_brightness`.
+- [ ] Enable AOD; lock the screen and confirm the panel minimum is applied.
+- [ ] Enable AOD brightness (Samsung only); lock and check
+      `adb shell settings get system debug_aod_brightness`.
 - [ ] Change screen brightness while awake; the target updates.
 - [ ] Use “Restore system brightness”; the key is removed.
 - [ ] Confirm no timers/touch monitor run with the screen off.
-- [ ] Confirm the device still enters Doze.
+- [ ] Confirm the device still enters Doze with Sleep off.
+
+### Sleep (forced Doze)
+
+- [ ] Enable Sleep; the card shows the current state and the 24-hour block.
+- [ ] Screen off → `adb shell dumpsys deviceidle | Select-String mState` shows `IDLE`.
+- [ ] Screen on → `unforce`; the state returns to `ACTIVE` and the wake pulse is not delayed.
+- [ ] Turn the feature off while forced; the device leaves idle.
+- [ ] Pause for 1 hour; the next screen-off does not force and the card shows the deadline.
+- [ ] Enable the time window with a range that crosses midnight; forcing only happens inside it.
+- [ ] Enable the charger guard and plug the device in while asleep; it leaves idle.
+- [ ] Play background music, turn the screen off, and confirm the music guard skips forcing.
+- [ ] Set light mode; confirm the state still becomes `IDLE` (or report the ROM result).
+- [ ] Add an app to **Apps that may wake the device**; confirm it appears in
+      `adb shell dumpsys deviceidle whitelist`, then remove it and confirm it is gone.
+- [ ] Kill and restart the app while asleep; no forced state is left behind.
+- [ ] Reboot while forced; the boot path clears the flag.
+- [ ] Check the 24-hour totals and the last rest after a full night (or a long screen-off).
+- [ ] A quick screen-on shorter than two minutes does not split the rest session.
+- [ ] A charging session shows `—` instead of a battery rate.
+- [ ] With no history, the card says there are no measurements instead of zeroes.
+- [ ] `Test now` forces for ten seconds and leaves idle again.
 
 ### Per-app profiles
 
-- [ ] Add a custom profile for a test app.
-- [ ] Open the app; the profile is applied on touch/resume.
-- [ ] Remove the profile; the normal profile returns.
-- [ ] Confirm no foreground polling when no app profiles exist.
+- [ ] Assign an existing profile to a test app.
+- [ ] Open the app; the assigned profile is applied on touch/resume.
+- [ ] Edit the assigned profile; the app uses the updated staircase.
+- [ ] Create a custom profile from the app sheet and confirm it is assigned.
+- [ ] Remove the assignment; the active profile returns.
+- [ ] Confirm no foreground polling when no assignments exist.
+
+### Backup and restore
+
+- [ ] Export a configuration with built-in, custom and per-app assignments.
+- [ ] Change several settings, then import the file; the summary is shown.
+- [ ] Confirm profiles, active profile, video, AOD and assignments are restored.
+- [ ] Import a file with unsupported rates; confirm the adapted count is reported.
+- [ ] Import a file with a missing profile reference; the app moves to Balanced.
+- [ ] Confirm theme and language are unchanged.
 
 ### Video mode
 
@@ -82,6 +125,10 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Switch apps; the old app's video state is cleared.
 - [ ] Play audio only; it does not trigger the floor.
 - [ ] Open the camera; it does not trigger the floor.
+- [ ] Disable each rule in **Configure detection**; the verdict changes as expected.
+- [ ] Add an app to the forced list; the floor applies in that app even when paused.
+- [ ] Change the rules or the forced list while a video plays; the floor updates without
+      a new touch.
 - [ ] Document that PiP is not detected.
 
 ### Wake, screen, and reboot
@@ -118,9 +165,17 @@ Test on the target device with a clean install of the signed release APK.
       network error.
 - [ ] Confirm no background check runs with the app closed.
 
+### Beta and upgrade
+
+- [ ] Install the new beta over the previous installed version; settings and profiles are
+      migrated (Normal → Balanced, ECO → Economy, new Performance profile).
+- [ ] The stable update channel never offers the beta.
+- [ ] The stable + pre-releases channel offers the beta and labels it as a pre-release.
+- [ ] On Xiaomi, the profile editor warns when a step uses 30 Hz.
+
 ### Release artifacts
 
-- [ ] `versionName=1.0.1`, `versionCode=1000200`.
+- [ ] `versionName` and `versionCode` match `version.properties`.
 - [ ] APK signed (v3; minSdk 31).
 - [ ] Certificate SHA-256 matches the documented fingerprint.
 - [ ] SHA-256 file matches the APK.
@@ -128,8 +183,9 @@ Test on the target device with a clean install of the signed release APK.
 
 ## Device matrix
 
-| Device | Android | One UI | Build | Status |
+| Device | Android | Software | Build | Status |
 |---|---|---|---|---|
-| SM-S936B (S25+) | 17 / API 37 | 9.0 | `S936BXXUDDZJB` | Tested |
+| SM-S936B (S25+) | 17 / API 37 | One UI 9.0 | `S936BXXUDDZJB` | Tested |
+| POCO X7 Pro (`2412DPC0AG`, `rodin`) | 16 / API 36 | HyperOS 3.0 (`OS3.0.304.0.WOJMIXM`) | `BP2A.250605.031.A3` | Tested |
 
 Other devices are **untested**. Report results with the bug report template.

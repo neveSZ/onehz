@@ -17,6 +17,9 @@ interface IOneHzService {
     String readRefreshRateSetting(String key);
     boolean writeRefreshRateSetting(String key, String value);
     boolean deleteRefreshRateSetting(String key);
+    String readSecureSetting(String key);
+    boolean writeSecureSetting(String key, String value);
+    boolean deleteSecureSetting(String key);
     boolean writeGlobalString(String key, String value);
     String readGlobalString(String key);
     String verifySettings();
@@ -29,4 +32,13 @@ interface IOneHzService {
 
     void registerClient(IBinder client);
     void destroy();
+
+    /** Video detection with user-tunable rules, encoded by VideoConfig. */
+    String videoPlaybackWithConfig(String config);
+
+    // Appended after the original methods so existing transaction ids stay stable.
+    String dozeWhitelist();
+    boolean forceIdle(boolean deep);
+    boolean unforceIdle();
+    String idleState();
 }

@@ -15,8 +15,8 @@ that issues or pull requests will be reviewed or merged.
 
 Use the bug report template and include:
 
-- OneHZ version, device model, Android/One UI build, and Shizuku version;
-- whether the device has an LTPO panel;
+- OneHZ version, device model, Android/One UI or HyperOS build, and Shizuku version;
+- panel refresh rates reported by the system;
 - steps to reproduce and expected/actual behavior;
 - the diagnostic report, sanitized;
 - whether the issue happens after a reboot or after Shizuku restarts.
@@ -24,7 +24,8 @@ Use the bug report template and include:
 ## Feature requests
 
 Explain the problem first, then the proposed behavior. Keep in mind the tested scope:
-Samsung LTPO devices, one tested device, and no AccessibilityService.
+Samsung and Xiaomi/Redmi/POCO devices with at least two refresh rates, two tested
+devices, and no AccessibilityService.
 
 ## Pull requests
 
@@ -46,7 +47,7 @@ Samsung LTPO devices, one tested device, and no AccessibilityService.
 - Do not copy code or assets from closed-source apps.
 - If you used an LLM, disclose it in the PR description. You are responsible for
   reviewing and testing the result.
-- Mention the device and Android/One UI version used for testing.
+- Mention the device and Android/One UI or HyperOS version used for testing.
 
 ## Translations
 

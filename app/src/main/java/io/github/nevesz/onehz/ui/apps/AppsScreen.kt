@@ -3,6 +3,8 @@ package io.github.nevesz.onehz.ui.apps
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -55,8 +59,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
-import io.github.nevesz.onehz.core.FrequencyProfile
-import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.profile.AppAssignment
+import io.github.nevesz.onehz.core.profile.DeviceProfile
+import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.engine.OneHzEngine
@@ -66,11 +71,13 @@ import io.github.nevesz.onehz.ui.components.IconSurface
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
+import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.profile.profileLabel
+import io.github.nevesz.onehz.ui.profile.profileSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 private enum class AppFilter { ALL, CONFIGURED, SYSTEM }
-private enum class Template { NORMAL, ECO, CUSTOM }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +85,7 @@ fun AppsScreen(
     context: Context,
     rates: List<Int>,
     dataVersion: Int,
-    onEditApp: (String) -> Unit
+    onEditProfile: (String) -> Unit
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var filterName by rememberSaveable { mutableStateOf(AppFilter.ALL.name) }
@@ -90,9 +97,12 @@ fun AppsScreen(
     var refreshTick by remember { mutableIntStateOf(0) }
     val filter = AppFilter.valueOf(filterName)
 
-    val configured = remember(refreshTick, dataVersion) {
-        OneHzPreferences.configuredPackages(context).toSet()
+    val profileState = remember(refreshTick, dataVersion, rates) {
+        ProfileStore.state(context, rates)
     }
+    val assignments = profileState.assignments.associateBy { it.packageName }
+    val configured = assignments.keys
+
     var installed by remember { mutableStateOf<List<InstalledApp>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     LaunchedEffect(filter, refreshTick, dataVersion) {
@@ -101,7 +111,7 @@ fun AppsScreen(
             when (filter) {
                 AppFilter.SYSTEM -> AppCatalog.load(context, includeSystem = true).filter { it.system }
                 AppFilter.ALL -> AppCatalog.load(context, includeSystem = false)
-                AppFilter.CONFIGURED -> OneHzPreferences.configuredPackages(context)
+                AppFilter.CONFIGURED -> configured
                     .map { InstalledApp(it, AppCatalog.label(context, it), false) }
                     .sortedBy { it.label.lowercase() }
             }
@@ -138,9 +148,21 @@ fun AppsScreen(
         }
         item {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(filter == AppFilter.ALL, { filterName = AppFilter.ALL.name }, label = { Text(stringResource(R.string.filter_all)) })
-                FilterChip(filter == AppFilter.CONFIGURED, { filterName = AppFilter.CONFIGURED.name }, label = { Text(stringResource(R.string.filter_configured)) })
-                FilterChip(filter == AppFilter.SYSTEM, { filterName = AppFilter.SYSTEM.name }, label = { Text(stringResource(R.string.filter_system)) })
+                FilterChip(
+                    filter == AppFilter.ALL,
+                    { filterName = AppFilter.ALL.name },
+                    label = { Text(stringResource(R.string.filter_all)) }
+                )
+                FilterChip(
+                    filter == AppFilter.CONFIGURED,
+                    { filterName = AppFilter.CONFIGURED.name },
+                    label = { Text(stringResource(R.string.filter_configured)) }
+                )
+                FilterChip(
+                    filter == AppFilter.SYSTEM,
+                    { filterName = AppFilter.SYSTEM.name },
+                    label = { Text(stringResource(R.string.filter_system)) }
+                )
             }
         }
         if (selectionMode) {
@@ -172,7 +194,8 @@ fun AppsScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = stringResource(
-                            if (filter == AppFilter.CONFIGURED) R.string.configured_count else R.string.installed_count,
+                            if (filter == AppFilter.CONFIGURED) R.string.configured_count
+                            else R.string.installed_count,
                             filtered.size
                         ),
                         style = MaterialTheme.typography.titleMedium,
@@ -201,22 +224,26 @@ fun AppsScreen(
             }
         } else {
             items(filtered, key = { it.packageName }) { app ->
-                val profile = remember(app.packageName, refreshTick, dataVersion) {
-                    OneHzPreferences.appProfile(context, app.packageName)
-                }
+                val assignment = assignments[app.packageName]
+                val profile = assignment?.let { profileState.profile(it.profileId) }
                 AppRow(
                     context = context,
                     app = app,
-                    configured = app.packageName in configured,
-                    ignoreEco = profile.ignoreEco,
+                    configured = assignment != null,
+                    profile = profile,
+                    ignoreEco = assignment?.ignoreEco == true,
                     selectionMode = selectionMode,
                     checked = app.packageName in selected,
                     onClick = {
                         if (selectionMode) {
-                            if (app.packageName in configured) {
-                                selected = if (app.packageName in selected) selected - app.packageName else selected + app.packageName
+                            if (assignment != null) {
+                                selected = if (app.packageName in selected) {
+                                    selected - app.packageName
+                                } else {
+                                    selected + app.packageName
+                                }
                             }
-                        } else if (app.packageName in configured) {
+                        } else if (assignment != null) {
                             editPkg = app.packageName
                         } else {
                             addPkg = app.packageName
@@ -231,11 +258,13 @@ fun AppsScreen(
         AddSheet(
             context = context,
             packageName = pkg,
+            profiles = profileState.profiles,
+            activeProfileId = profileState.activeProfileId,
             onDismiss = { addPkg = null },
-            onCustomize = {
+            onCustomize = { profileId ->
                 addPkg = null
                 refreshTick++
-                onEditApp(pkg)
+                onEditProfile(profileId)
             },
             onAdded = {
                 addPkg = null
@@ -248,11 +277,14 @@ fun AppsScreen(
         EditSheet(
             context = context,
             packageName = pkg,
+            profiles = profileState.profiles,
+            assignment = assignments[pkg],
             onDismiss = { editPkg = null },
-            onEdit = {
+            onEditProfile = { profileId ->
                 editPkg = null
-                onEditApp(pkg)
+                onEditProfile(profileId)
             },
+            onChanged = { refreshTick++ },
             onRemoved = {
                 editPkg = null
                 refreshTick++
@@ -267,7 +299,7 @@ fun AppsScreen(
             body = stringResource(R.string.delete_selected_confirm_body),
             confirmLabel = stringResource(R.string.delete_selected),
             onConfirm = {
-                selected.forEach { OneHzPreferences.clearAppProfile(context, it) }
+                selected.forEach { ProfileStore.removeAssignment(context, it) }
                 OneHzEngine.reapply()
                 toast(context.resources.getQuantityString(R.plurals.removed_count, selected.size, selected.size))
                 selected = emptySet()
@@ -284,6 +316,7 @@ private fun AppRow(
     context: Context,
     app: InstalledApp,
     configured: Boolean,
+    profile: DeviceProfile?,
     ignoreEco: Boolean,
     selectionMode: Boolean,
     checked: Boolean,
@@ -295,19 +328,28 @@ private fun AppRow(
     ) {
         AppIcon(context, app.packageName)
         Column(modifier = Modifier.weight(1f).padding(start = 12.dp, end = 8.dp)) {
-            Text(app.label, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium, maxLines = 1)
+            Text(
+                app.label,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1
+            )
+            if (configured && profile != null) {
+                Text(
+                    text = stringResource(R.string.profile_app_assigned, profileLabel(profile)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
         when {
             selectionMode && configured -> Checkbox(checked = checked, onCheckedChange = { onClick() })
-            configured -> StatusBadge(
-                text = stringResource(R.string.profile_badge),
-                tone = StatusTone.OK,
-                icon = Icons.Outlined.CheckCircle
-            )
-            ignoreEco -> StatusBadge(
-                text = stringResource(R.string.eco_ignored),
-                tone = StatusTone.WARN,
-                icon = Icons.Outlined.BatterySaver
+            configured && profile != null -> StatusBadge(
+                text = profileLabel(profile),
+                tone = if (ignoreEco) StatusTone.WARN else StatusTone.OK,
+                icon = if (ignoreEco) Icons.Outlined.BatterySaver else Icons.Outlined.CheckCircle
             )
         }
     }
@@ -326,13 +368,20 @@ fun AppIcon(context: Context, packageName: String) {
 private fun AddSheet(
     context: Context,
     packageName: String,
+    profiles: List<DeviceProfile>,
+    activeProfileId: String,
     onDismiss: () -> Unit,
-    onCustomize: () -> Unit,
+    onCustomize: (String) -> Unit,
     onAdded: () -> Unit
 ) {
-    var template by remember { mutableStateOf(Template.NORMAL) }
+    var selectedId by remember { mutableStateOf(activeProfileId) }
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(
+            Modifier
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AppIcon(context, packageName)
                 Column(Modifier.padding(start = 12.dp)) {
@@ -346,50 +395,49 @@ private fun AddSheet(
                     )
                 }
             }
-            Text(stringResource(R.string.template_title), style = MaterialTheme.typography.titleSmall)
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(template == Template.NORMAL, { template = Template.NORMAL }, label = { Text(stringResource(R.string.template_default)) })
-                FilterChip(template == Template.ECO, { template = Template.ECO }, label = { Text(stringResource(R.string.template_eco)) })
-                FilterChip(template == Template.CUSTOM, { template = Template.CUSTOM }, label = { Text(stringResource(R.string.template_custom)) })
+            Text(stringResource(R.string.profile_app_choose), style = MaterialTheme.typography.titleSmall)
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 280.dp)) {
+                items(profiles, key = { it.id }) { profile ->
+                    ProfileChoiceRow(
+                        profile = profile,
+                        selected = profile.id == selectedId,
+                        onClick = { selectedId = profile.id }
+                    )
+                }
             }
-            Text(
-                text = when (template) {
-                    Template.NORMAL -> stringResource(R.string.template_default_hint)
-                    Template.ECO -> stringResource(R.string.template_eco_hint)
-                    Template.CUSTOM -> stringResource(R.string.template_custom_hint)
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Button(onClick = {
-                when (template) {
-                    Template.NORMAL -> OneHzPreferences.saveAppProfile(
+            Button(
+                onClick = {
+                    ProfileStore.saveAssignment(
                         context,
-                        OneHzPreferences.AppProfile(packageName, OneHzPreferences.normalProfile(context))
+                        AppAssignment(packageName, selectedId)
                     )
-                    Template.ECO -> OneHzPreferences.saveAppProfile(
-                        context,
-                        OneHzPreferences.AppProfile(packageName, OneHzPreferences.ecoProfile(context))
-                    )
-                    Template.CUSTOM -> OneHzPreferences.saveAppProfile(
-                        context,
-                        OneHzPreferences.AppProfile(packageName, OneHzPreferences.normalProfile(context))
-                    )
-                }
-                OneHzEngine.reapply()
-                if (template == Template.CUSTOM) {
-                    onCustomize()
-                } else {
+                    OneHzEngine.reapply()
                     onAdded()
-                }
-            }, modifier = Modifier.fillMaxWidth()) {
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Icon(Icons.Outlined.Add, contentDescription = null)
-                Text(
-                    stringResource(
-                        if (template == Template.CUSTOM) R.string.app_add_and_customize else R.string.add
-                    ),
-                    modifier = Modifier.padding(start = 6.dp)
-                )
+                Text(stringResource(R.string.add), Modifier.padding(start = 6.dp))
+            }
+            OutlinedButton(
+                onClick = {
+                    val created = ProfileStore.createCustom(
+                        context,
+                        AppCatalog.label(context, packageName),
+                        selectedId
+                    )
+                    if (created != null) {
+                        ProfileStore.saveAssignment(
+                            context,
+                            AppAssignment(packageName, created.id)
+                        )
+                        OneHzEngine.reapply()
+                        onCustomize(created.id)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.profile_app_create))
             }
         }
     }
@@ -400,16 +448,34 @@ private fun AddSheet(
 private fun EditSheet(
     context: Context,
     packageName: String,
+    profiles: List<DeviceProfile>,
+    assignment: AppAssignment?,
     onDismiss: () -> Unit,
-    onEdit: () -> Unit,
+    onEditProfile: (String) -> Unit,
+    onChanged: () -> Unit,
     onRemoved: () -> Unit
 ) {
-    val profile = remember(packageName) { OneHzPreferences.appProfile(context, packageName) }
-    var ignoreEco by remember { mutableStateOf(profile.ignoreEco) }
+    if (assignment == null) return
+    var selectedId by remember(assignment.profileId) { mutableStateOf(assignment.profileId) }
+    var ignoreEco by remember(assignment.ignoreEco) { mutableStateOf(assignment.ignoreEco) }
     var confirmRemove by remember { mutableStateOf(false) }
 
+    fun save(profileId: String = selectedId, ignore: Boolean = ignoreEco) {
+        ProfileStore.saveAssignment(
+            context,
+            AppAssignment(packageName, profileId, ignore)
+        )
+        OneHzEngine.reapply()
+        onChanged()
+    }
+
     ModalBottomSheet(onDismissRequest = onDismiss) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(
+            Modifier
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 AppIcon(context, packageName)
                 Column(Modifier.padding(start = 12.dp)) {
@@ -423,20 +489,31 @@ private fun EditSheet(
                     )
                 }
             }
-            Text(
-                text = profile.profile?.let { summary(it) } ?: stringResource(R.string.profile_empty),
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(checked = ignoreEco, onCheckedChange = { checked ->
-                    ignoreEco = checked
-                    OneHzPreferences.saveAppProfile(context, profile.copy(ignoreEco = checked))
-                    OneHzEngine.reapply()
-                })
-                Text(stringResource(R.string.ignore_eco_label))
+            Text(stringResource(R.string.profile_app_choose), style = MaterialTheme.typography.titleSmall)
+            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 240.dp)) {
+                items(profiles, key = { it.id }) { profile ->
+                    ProfileChoiceRow(
+                        profile = profile,
+                        selected = profile.id == selectedId,
+                        onClick = {
+                            selectedId = profile.id
+                            save(profileId = profile.id)
+                        }
+                    )
+                }
             }
+            ToggleRow(
+                title = stringResource(R.string.ignore_eco_label),
+                checked = ignoreEco,
+                onCheckedChange = {
+                    ignoreEco = it
+                    save(ignore = it)
+                }
+            )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = onEdit) { Text(stringResource(R.string.profile_edit)) }
+                Button(onClick = { onEditProfile(selectedId) }) {
+                    Text(stringResource(R.string.profile_edit))
+                }
                 TextButton(onClick = { confirmRemove = true }) {
                     Text(stringResource(R.string.remove), color = MaterialTheme.colorScheme.error)
                 }
@@ -447,11 +524,14 @@ private fun EditSheet(
 
     if (confirmRemove) {
         ConfirmDialog(
-            title = stringResource(R.string.remove_app_title),
-            body = stringResource(R.string.remove_app_body, AppCatalog.label(context, packageName)),
+            title = stringResource(R.string.profile_app_remove_title),
+            body = stringResource(
+                R.string.profile_app_remove_body,
+                AppCatalog.label(context, packageName)
+            ),
             confirmLabel = stringResource(R.string.remove),
             onConfirm = {
-                OneHzPreferences.clearAppProfile(context, packageName)
+                ProfileStore.removeAssignment(context, packageName)
                 OneHzEngine.reapply()
                 onRemoved()
             },
@@ -461,8 +541,23 @@ private fun EditSheet(
 }
 
 @Composable
-private fun summary(profile: FrequencyProfile): String {
-    if (profile.steps.isEmpty()) return stringResource(R.string.profile_empty)
-    if (profile.isFixed) return stringResource(R.string.profile_fixed, profile.steps[0].hz)
-    return profile.steps.joinToString(" → ") { "${it.hz}" } + " Hz"
+private fun ProfileChoiceRow(
+    profile: DeviceProfile,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Column(Modifier.weight(1f).padding(start = 8.dp)) {
+            Text(profileLabel(profile), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = profileSummary(profile),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
 }

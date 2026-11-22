@@ -15,7 +15,7 @@ body:
     attributes:
       label: OneHZ version
       description: From About or the APK filename.
-      placeholder: "1.0.0"
+      placeholder: "1.1.0-beta.1"
     validations:
       required: true
 
@@ -23,14 +23,14 @@ body:
     id: device
     attributes:
       label: Device model
-      placeholder: "Samsung Galaxy S25+ (SM-S936B)"
+      placeholder: "Samsung Galaxy S25+ (SM-S936B) or POCO X7 Pro (2412DPC0AG)"
     validations:
       required: true
 
   - type: input
     id: android
     attributes:
-      label: Android / One UI / build
+      label: Android / One UI or HyperOS / build
       placeholder: "Android 17, One UI 9.0, S936BXXUDDZJB"
     validations:
       required: true
@@ -44,9 +44,9 @@ body:
       required: true
 
   - type: dropdown
-    id: ltpo
+    id: display_compatibility
     attributes:
-      label: Does the app show LTPO compatibility as OK?
+      label: Does the app show the display compatibility gate as OK?
       options:
         - "Yes"
         - "No"

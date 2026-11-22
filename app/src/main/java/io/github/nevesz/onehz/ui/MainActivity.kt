@@ -1,10 +1,13 @@
 package io.github.nevesz.onehz.ui
 
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -36,11 +39,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -50,40 +55,39 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.view.WindowCompat
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.DisplayRates
 import io.github.nevesz.onehz.core.LanguageManager
 import io.github.nevesz.onehz.core.OneHzPreferences
-import io.github.nevesz.onehz.core.SamsungDisplayRates
 import io.github.nevesz.onehz.core.ThemeMode
-import io.github.nevesz.onehz.core.apps.AppCatalog
+import io.github.nevesz.onehz.core.backup.BackupManager
+import io.github.nevesz.onehz.core.backup.ImportResult
+import io.github.nevesz.onehz.core.profile.ProfileDefaults
+import io.github.nevesz.onehz.core.profile.ProfileKind
+import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.about.AboutScreen
 import io.github.nevesz.onehz.ui.apps.AppsScreen
+import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.diagnostics.DiagnosticsScreen
 import io.github.nevesz.onehz.ui.home.HomeScreen
 import io.github.nevesz.onehz.ui.profile.ProfileEditorScreen
+import io.github.nevesz.onehz.ui.profile.ProfilesScreen
 import io.github.nevesz.onehz.ui.settings.SettingsScreen
 import io.github.nevesz.onehz.ui.setup.SetupScreen
 import io.github.nevesz.onehz.ui.theme.OneHZTheme
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
 import io.github.nevesz.onehz.ui.theme.OneHzBg
 import io.github.nevesz.onehz.ui.theme.OneHzDarkBg
-
-private sealed interface EditorTarget {
-    data object Normal : EditorTarget
-    data object Eco : EditorTarget
-    data class App(val packageName: String) : EditorTarget
-}
-
-private fun editorTarget(key: String?): EditorTarget? = when {
-    key == "normal" -> EditorTarget.Normal
-    key == "eco" -> EditorTarget.Eco
-    key != null && key.startsWith("app:") -> EditorTarget.App(key.removePrefix("app:"))
-    else -> null
-}
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     override fun onStart() {
@@ -170,6 +174,9 @@ private fun ApplySystemBars(mode: ThemeMode) {
     }
 }
 
+private fun editorProfileId(key: String?): String? =
+    key?.takeIf { it.startsWith("profile:") }?.removePrefix("profile:")
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OneHzShell(
@@ -177,17 +184,44 @@ private fun OneHzShell(
     onThemeModeChange: (ThemeMode) -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var showLanguage by rememberSaveable { mutableStateOf(false) }
     var setupDone by remember { mutableStateOf(OneHzPreferences.setupCompleted(context)) }
     var showSetup by rememberSaveable { mutableStateOf(!setupDone) }
     var editorKey by rememberSaveable { mutableStateOf<String?>(null) }
     var settingsPage by rememberSaveable { mutableStateOf<String?>(null) }
+    var showProfiles by rememberSaveable { mutableStateOf(false) }
+    var returnToProfiles by rememberSaveable { mutableStateOf(false) }
     var diagnosticsEnabled by remember { mutableStateOf(OneHzPreferences.diagnosticsEnabled(context)) }
-    val editor = editorTarget(editorKey)
     var dataVersion by remember { mutableIntStateOf(0) }
-    val rates = remember { SamsungDisplayRates.main(context).ifEmpty { listOf(60, 96, 120) } }
+    var pendingImport by remember { mutableStateOf<Uri?>(null) }
+    val rates = remember { DisplayRates.main(context).ifEmpty { ProfileDefaults.FALLBACK_RATES } }
     val diagnosticsUnlockedMessage = stringResource(R.string.diagnostics_unlocked)
+    val exportSuccessMessage = stringResource(R.string.backup_export_success)
+    val exportFailedMessage = stringResource(R.string.backup_export_failed)
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val ok = withContext(Dispatchers.IO) {
+                    BackupManager.export(context, uri, rates)
+                }
+                Toast.makeText(
+                    context,
+                    if (ok) exportSuccessMessage else exportFailedMessage,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) pendingImport = uri
+    }
 
     BackHandler(enabled = showSetup && setupDone) { showSetup = false }
 
@@ -218,81 +252,72 @@ private fun OneHzShell(
         return
     }
 
-    when (val target = editor) {
-        EditorTarget.Normal -> {
-            ProfileEditorScreen(
-                title = stringResource(R.string.profile_normal_title),
-                initial = OneHzPreferences.normalProfile(context),
-                defaultProfile = OneHzPreferences.defaultNormalProfile(context),
-                rates = rates,
-                enabled = OneHzPreferences.normalEnabled(context),
-                onEnabledChange = { on ->
-                    OneHzPreferences.setNormalEnabled(context, on)
-                    OneHzEngine.reapply()
-                },
-                onSave = { profile ->
-                    OneHzPreferences.saveNormalProfile(context, profile)
-                    OneHzEngine.reapply()
-                    dataVersion++
-                    editorKey = null
-                },
-                onBack = { editorKey = null }
-            )
+    val editingId = editorProfileId(editorKey)
+    if (editingId != null) {
+        val profile = ProfileStore.profile(context, editingId)
+        if (profile == null) {
+            LaunchedEffect(editingId) { editorKey = null }
             return
         }
-
-        EditorTarget.Eco -> {
-            ProfileEditorScreen(
-                title = stringResource(R.string.profile_eco_title),
-                initial = OneHzPreferences.ecoProfile(context),
-                defaultProfile = OneHzPreferences.defaultEcoProfile(context),
-                rates = rates,
-                enabled = OneHzPreferences.ecoEnabled(context),
-                onEnabledChange = { on ->
-                    OneHzPreferences.setEcoEnabled(context, on)
-                    OneHzEngine.reapply()
-                },
-                copyFrom = OneHzPreferences.normalProfile(context),
-                copyLabel = stringResource(R.string.profile_copy_normal),
-                onSave = { profile ->
-                    OneHzPreferences.saveEcoProfile(context, profile)
-                    OneHzEngine.reapply()
-                    dataVersion++
-                    editorKey = null
-                },
-                onBack = { editorKey = null }
-            )
-            return
+        val defaultProfile = if (profile.isBuiltIn) {
+            ProfileDefaults.forKind(profile.kind, rates)
+        } else {
+            null
         }
-
-        is EditorTarget.App -> {
-            val current = OneHzPreferences.appProfile(context, target.packageName)
-            ProfileEditorScreen(
-                title = AppCatalog.label(context, target.packageName),
-                initial = current.profile ?: OneHzPreferences.normalProfile(context),
-                defaultProfile = OneHzPreferences.normalProfile(context),
-                rates = rates,
-                onSave = { profile ->
-                    OneHzPreferences.saveAppProfile(
-                        context,
-                        OneHzPreferences.AppProfile(target.packageName, profile, current.ignoreEco)
-                    )
-                    OneHzEngine.reapply()
-                    dataVersion++
-                    editorKey = null
-                },
-                onBack = { editorKey = null },
-                onRemove = {
-                    OneHzPreferences.clearAppProfile(context, target.packageName)
-                    OneHzEngine.reapply()
-                    dataVersion++
-                    editorKey = null
+        ProfileEditorScreen(
+            initial = profile,
+            defaultProfile = defaultProfile,
+            rates = rates,
+            usageCount = ProfileStore.appsUsing(context, profile.id).size,
+            onSave = { updated ->
+                ProfileStore.updateProfile(context, updated)
+                OneHzEngine.reapply()
+                dataVersion++
+                editorKey = null
+                if (returnToProfiles) {
+                    showProfiles = true
+                    returnToProfiles = false
                 }
-            )
-            return
-        }
+            },
+            onBack = {
+                editorKey = null
+                if (returnToProfiles) {
+                    showProfiles = true
+                    returnToProfiles = false
+                }
+            },
+            onDelete = if (profile.kind == ProfileKind.CUSTOM) {
+                {
+                    ProfileStore.deleteProfile(context, profile.id)
+                    OneHzEngine.reapply()
+                    dataVersion++
+                    editorKey = null
+                    if (returnToProfiles) {
+                        showProfiles = true
+                        returnToProfiles = false
+                    }
+                }
+            } else {
+                null
+            }
+        )
+        return
+    }
 
-        null -> Unit
+    if (showProfiles) {
+        ProfilesScreen(
+            context = context,
+            rates = rates,
+            dataVersion = dataVersion,
+            onBack = { showProfiles = false },
+            onEdit = { profileId ->
+                showProfiles = false
+                returnToProfiles = true
+                editorKey = "profile:$profileId"
+            },
+            onChanged = { dataVersion++ }
+        )
+        return
     }
 
     val page = settingsPage
@@ -380,14 +405,20 @@ private fun OneHzShell(
                     context = context,
                     rates = rates,
                     dataVersion = dataVersion,
-                    onEditNormal = { editorKey = "normal" },
-                    onEditEco = { editorKey = "eco" }
+                    onEditProfile = { profileId ->
+                        returnToProfiles = false
+                        editorKey = "profile:$profileId"
+                    },
+                    onManageProfiles = { showProfiles = true }
                 )
                 1 -> AppsScreen(
                     context = context,
                     rates = rates,
                     dataVersion = dataVersion,
-                    onEditApp = { editorKey = "app:$it" }
+                    onEditProfile = { profileId ->
+                        returnToProfiles = false
+                        editorKey = "profile:$profileId"
+                    }
                 )
                 else -> SettingsScreen(
                     themeMode = themeMode,
@@ -400,7 +431,13 @@ private fun OneHzShell(
                     onOpenLanguage = { showLanguage = true },
                     onOpenSetup = { showSetup = true },
                     onOpenAbout = { settingsPage = "about" },
-                    onOpenDiagnostics = { settingsPage = "diagnostics" }
+                    onOpenDiagnostics = { settingsPage = "diagnostics" },
+                    onExportBackup = { exportLauncher.launch(backupFileName()) },
+                    onImportBackup = {
+                        importLauncher.launch(
+                            arrayOf("application/json", "text/plain", "application/octet-stream")
+                        )
+                    }
                 )
             }
         }
@@ -409,6 +446,59 @@ private fun OneHzShell(
     if (showLanguage) {
         LanguageDialog(onDismiss = { showLanguage = false })
     }
+
+    pendingImport?.let { uri ->
+        ConfirmDialog(
+            title = stringResource(R.string.backup_import_confirm_title),
+            body = stringResource(R.string.backup_import_confirm_body),
+            confirmLabel = stringResource(R.string.backup_import),
+            onConfirm = {
+                pendingImport = null
+                scope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        BackupManager.import(context, uri, rates)
+                    }
+                    showImportResult(context, result)
+                    dataVersion++
+                    if (OneHzPreferences.isEnabled(context)) {
+                        OneHzEngine.start(context)
+                        OneHzEngine.reapply()
+                    } else {
+                        OneHzEngine.reapply()
+                    }
+                }
+            },
+            onDismiss = { pendingImport = null }
+        )
+    }
+}
+
+private fun showImportResult(context: android.content.Context, result: ImportResult) {
+    val message = if (!result.success) {
+        context.getString(R.string.backup_import_failed, result.error ?: "?")
+    } else {
+        buildList {
+            add(
+                context.getString(
+                    R.string.backup_import_success,
+                    result.profiles,
+                    result.assignments
+                )
+            )
+            if (result.adapted > 0) {
+                add(context.getString(R.string.backup_import_adapted, result.adapted))
+            }
+            if (result.missingAssignments > 0) {
+                add(context.getString(R.string.backup_import_missing, result.missingAssignments))
+            }
+        }.joinToString(" ")
+    }
+    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+}
+
+private fun backupFileName(): String {
+    val stamp = SimpleDateFormat("yyyyMMdd-HHmm", Locale.US).format(Date())
+    return "onehz-backup-$stamp.json"
 }
 
 @Composable

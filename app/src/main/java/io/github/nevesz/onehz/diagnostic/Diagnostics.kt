@@ -1,5 +1,11 @@
 package io.github.nevesz.onehz.diagnostic
 
+import android.content.Context
+import android.os.PowerManager
+import android.provider.Settings
+import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.DisplayVendor
+import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.VideoSignals
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
@@ -37,8 +43,8 @@ object Diagnostics {
     val entries = MutableStateFlow<List<LogEntry>>(emptyList())
     val paused = MutableStateFlow(false)
     val shizukuState = MutableStateFlow("—")
-    val ltpoState = MutableStateFlow("—")
-    val ltpoEligible = MutableStateFlow(false)
+    val displayState = MutableStateFlow("—")
+    val displayEligible = MutableStateFlow(false)
     val controlMethod = MutableStateFlow("Settings: mode 2 + peak/min")
     val activeTier = MutableStateFlow("—")
     val activeTierKey = MutableStateFlow("—")
@@ -50,11 +56,17 @@ object Diagnostics {
     val lastWrite = MutableStateFlow("—")
     val videoSource = MutableStateFlow(VideoSignals.Source.NONE)
     val videoDetail = MutableStateFlow("—")
+    val dozePhase = MutableStateFlow(DozePhase.OFF)
+    val dozeDetail = MutableStateFlow("—")
+    val dozeActiveSince = MutableStateFlow(0L)
     val aodBrightness = MutableStateFlow<AodBrightnessInfo?>(null)
     val inputState = MutableStateFlow(InputMonitorState.UNKNOWN)
-    val inputDevice = MutableStateFlow("—")
+    val inputDevice = MutableStateFlow("-")
     val inputCandidates = MutableStateFlow<List<String>>(emptyList())
-    val lastTouchAt = MutableStateFlow("—")
+    val lastTouchAt = MutableStateFlow("-")
+    val screenBrightness = MutableStateFlow("-")
+    val batterySaver = MutableStateFlow(false)
+    val displayRoute = MutableStateFlow("-")
 
     private fun timeNow(): String = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date())
 
@@ -67,7 +79,35 @@ object Diagnostics {
 
     fun clear() {
         entries.value = emptyList()
-        lastWrite.value = "—"
+        lastWrite.value = "-"
+    }
+
+    /**
+     * Re-reads values owned by the system (brightness, battery saver, route) so the
+     * diagnostic report does not depend on the engine having logged them.
+     */
+    fun refreshSystem(context: Context) {
+        val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        batterySaver.value = powerManager?.isPowerSaveMode == true
+        val resolver = context.contentResolver
+        val mode = runCatching {
+            Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS_MODE)
+        }.getOrDefault(-1)
+        val raw = runCatching {
+            Settings.System.getInt(resolver, Settings.System.SCREEN_BRIGHTNESS)
+        }.getOrDefault(-1)
+        val modeLabel = when (mode) {
+            Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC -> "auto"
+            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL -> "manual"
+            else -> "unknown"
+        }
+        screenBrightness.value = "raw=$raw mode=$modeLabel"
+        val profile = DisplayProfileResolver.detect(context)
+        displayRoute.value = when (profile.vendor) {
+            DisplayVendor.XIAOMI -> "secure/${profile.hyperOsKey ?: "?"}"
+            DisplayVendor.SAMSUNG -> "secure/refresh_rate_mode + peak/min"
+            DisplayVendor.UNSUPPORTED -> "unsupported"
+        }
     }
 
     fun setPaused(value: Boolean) {
@@ -77,13 +117,17 @@ object Diagnostics {
     fun report(): String = buildString {
         appendLine("OneHZ diagnostics")
         appendLine("Shizuku: ${shizukuState.value}")
-        appendLine("LTPO: ${ltpoState.value}")
+        appendLine("Display: ${displayState.value}")
         appendLine("Active tier: ${activeTier.value}")
         appendLine("Step: ${activeStep.value}/${activeStepCount.value}")
         appendLine("Idle: ${idleReason.value ?: "controlling"}")
         appendLine("Last write: ${lastWrite.value}")
         appendLine("Control method: ${controlMethod.value}")
+        appendLine("Display route: ${displayRoute.value}")
+        appendLine("Brightness: ${screenBrightness.value}")
+        appendLine("Battery saver: ${if (batterySaver.value) "on" else "off"}")
         appendLine("Video: ${videoSource.value} (${videoDetail.value})")
+        appendLine("Sleep: ${dozePhase.value} (${dozeDetail.value})")
         aodBrightness.value?.let {
             appendLine(
                 "AOD brightness: screen=${it.screenRaw} target=${it.target} " +

@@ -4,35 +4,51 @@
 
 | Language | File | Status |
 |---|---|---|
-| English | `app/src/main/res/values/strings.xml` | Base strings, **AI-generated**, not reviewed by a native speaker |
-| Portuguese (Brazil) | `app/src/main/res/values-pt-rBR/strings.xml` | Reviewed by the author |
-| Spanish | `app/src/main/res/values-es/strings.xml` | AI-generated, reviewed for consistency, **not reviewed by a native speaker** |
+| English | `app/src/main/res/values/strings.xml`, `app/src/main/res/values/strings_sleep.xml` | Base strings, **AI-generated**, not reviewed by a native speaker |
+| Portuguese (Brazil) | `app/src/main/res/values-pt-rBR/strings.xml`, `app/src/main/res/values-pt-rBR/strings_sleep.xml` | Reviewed by the author |
+| Spanish | `app/src/main/res/values-es/strings.xml`, `app/src/main/res/values-es/strings_sleep.xml` | AI-generated, reviewed for consistency, **not reviewed by a native speaker** |
+
+Strings may be split into feature files (for example `strings_sleep.xml`); Android merges
+all `values/*.xml` files at build time, so keys must be unique across the whole locale.
 
 The README, license, and documentation follow the same policy where applicable.
 Corrections from native speakers are very welcome.
+
+User-facing documentation is bilingual: `docs/FEATURES`, `docs/INSTALL`, `docs/FAQ`, and
+`docs/COMPATIBILITY` have an English file and a `.pt-BR.md` counterpart. Developer
+documentation (architecture, building, testing, releasing, translations, backlog) is
+English-only.
 
 ## Files
 
 - English base: `app/src/main/res/values/strings.xml`
 - Portuguese: `app/src/main/res/values-pt-rBR/strings.xml`
 - Spanish: `app/src/main/res/values-es/strings.xml`
+- Sleep strings: `app/src/main/res/values/strings_sleep.xml` and the same file in the
+  `values-pt-rBR` and `values-es` folders
 - Locale list: `app/src/main/res/xml/locales_config.xml`
 - In-app language selector: `core/LanguageManager.kt`
 
 ## Rules
 
-- Keep the same keys in all three files.
+- Keep the same keys in all three locales, across `strings.xml` and feature files such as
+  `strings_sleep.xml`.
 - Keep placeholders exactly as in the base string (`%1$s`, `%1$d`, `%%`).
 - Keep `plurals` quantities (`one`, `other`).
 - Do not translate:
-  - `OneHZ`, `Shizuku`, `ECO`, `AOD`, `AMOLED`, `Doze`;
+  - `OneHZ`, `Shizuku`, `AOD`, `AMOLED`, `Doze`;
   - package names, commands, or settings keys;
   - the `debug_aod_brightness` key.
 - Use the platform's own term for battery saver:
   - en: battery saver;
   - pt-BR: economia de bateria;
   - es: ahorro de batería.
-- “ECO” is the app's short name for its battery-saver profile; keep the acronym.
+- Translate the profile names:
+  - Economy / Economia / Economía;
+  - Balanced / Balanceado / Equilibrado;
+  - Performance / Performance / Rendimiento.
+- “ECO” may appear only in historical changelog entries and legacy key names; it is no
+  longer the user-facing profile name.
 - User-facing text belongs in resources, never hardcoded in Kotlin.
 
 ## Glossary
@@ -44,11 +60,18 @@ Corrections from native speakers are very welcome.
 | hold | tempo de espera | tiempo de espera |
 | resting rate | taxa de repouso | tasa de reposo |
 | profile | perfil | perfil |
+| economy profile | perfil Economia | perfil Economía |
+| balanced profile | perfil Balanceado | perfil Equilibrado |
+| performance profile | perfil Performance | perfil Rendimiento |
 | battery saver | economia de bateria | ahorro de batería |
+| backup and restore | backup e restauração | copia de seguridad y restauración |
 | AOD brightness | brilho do AOD | brillo del AOD |
 | foreground app | app em primeiro plano | aplicación en primer plano |
 | diagnostics | diagnóstico | diagnóstico |
 | wake pulse | pulso de despertar | pulso de despertar |
+| Sleep | Sono | Sueño |
+| rest period | descanso | descanso |
+| maintenance window | janela de manutenção | ventana de mantenimiento |
 
 ## How to contribute
 

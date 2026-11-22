@@ -1,1 +1,1 @@
-Refresh-rate control for Samsung LTPO screens via Shizuku
+Refresh-rate control for Samsung and Xiaomi/Redmi/POCO screens via Shizuku

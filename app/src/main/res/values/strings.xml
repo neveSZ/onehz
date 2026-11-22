@@ -43,7 +43,7 @@
     <string name="home_shizuku_pending_unavailable">The Shizuku service is unavailable. Open the Shizuku app and try again.</string>
     <string name="layer_aod">Always On Display</string>
     <string name="step_of">Level %1$d of %2$d</string>
-    <string name="eco_active_now">ECO is active</string>
+    <string name="eco_active_now">Economy · battery saver</string>
 
     <string name="aod_title">Screen off (AOD)</string>
     <string name="aod_hint">Applied only while the screen is off and Always On Display is active. It does not affect normal use.</string>
@@ -73,6 +73,26 @@
     <string name="video_diag_state">State</string>
     <string name="video_diag_test">Test detection</string>
     <string name="video_diag_hint">Run it with a video playing to see the package, session, codec, and audio state.</string>
+    <string name="video_diag_config">Rules: %1$s · forced: %2$d</string>
+    <string name="video_config_manage">Configure detection</string>
+    <string name="video_rules_title">Detection rules</string>
+    <string name="video_rules_desc">Choose which signals OneHZ uses to decide that a video is playing.</string>
+    <string name="video_rules_summary">%1$d of %2$d rules active</string>
+    <string name="video_rule_session_title">Use MediaSession</string>
+    <string name="video_rule_session_desc">Reads the playback state reported by the app\'s media session.</string>
+    <string name="video_rule_paused_title">Paused session blocks video</string>
+    <string name="video_rule_paused_desc">A paused session is treated as not playing, even if a decoder is still held.</string>
+    <string name="video_rule_codec_title">Require a video decoder</string>
+    <string name="video_rule_codec_desc">The foreground app must hold a video codec. Disable for apps that reuse decoders or report them late.</string>
+    <string name="video_rule_audio_title">Require playing media audio without a session</string>
+    <string name="video_rule_audio_desc">Without a session, a started USAGE_MEDIA player confirms playback. Disable to accept a decoder alone.</string>
+    <string name="video_rules_none_warning">No positive signal is enabled. Video will not be detected unless the app is in the forced list.</string>
+    <string name="video_forced_title">Apps always treated as video</string>
+    <string name="video_forced_desc">The video floor applies whenever one of these apps is in the foreground, even without a session, decoder, or audio.</string>
+    <string name="video_forced_manage">Manage apps</string>
+    <string name="video_forced_clear">Clear</string>
+    <string name="video_forced_missing">Not installed</string>
+    <string name="video_forced_limit">Up to 64 apps</string>
 
     <string name="profile_normal_title">Normal profile</string>
     <string name="profile_eco_title">Battery saver profile (ECO)</string>
@@ -96,6 +116,8 @@
     <string name="profile_step_number">Level %1$d</string>
     <string name="profile_how_title">How it works</string>
     <string name="profile_how_body">When you touch the screen, the rate goes to the first level. After the set time it drops to the next level. The last level rests with no time limit.</string>
+    <string name="profile_low_rate_warning_title">30 Hz brightness</string>
+    <string name="profile_low_rate_warning_body">On this device, 30 Hz can reduce the panel brightness. It is a hardware limitation; OneHZ cannot compensate for it.</string>
     <string name="profile_issue_too_many">Maximum of 5 levels.</string>
     <string name="profile_issue_not_descending">Levels must decrease (for example, 120 to 60).</string>
     <string name="profile_issue_unsupported">One of the frequencies is not supported by this device.</string>
@@ -122,8 +144,8 @@
     <string name="app_added">App added</string>
     <string name="app_removed">App removed</string>
     <string name="profile_badge">Configured</string>
-    <string name="eco_ignored">Ignores ECO</string>
-    <string name="ignore_eco_label">Do not use ECO for this app</string>
+    <string name="eco_ignored">Ignores Economy</string>
+    <string name="ignore_eco_label">Do not use Economy during battery saver</string>
     <string name="template_title">Start from</string>
     <string name="template_default">Normal</string>
     <string name="template_eco">ECO</string>
@@ -141,6 +163,10 @@
     <plurals name="removed_count">
         <item quantity="one">%1$d app removed</item>
         <item quantity="other">%1$d apps removed</item>
+    </plurals>
+    <plurals name="video_forced_count">
+        <item quantity="one">%1$d app</item>
+        <item quantity="other">%1$d apps</item>
     </plurals>
 
     <string name="settings_preferences">Preferences</string>
@@ -175,10 +201,12 @@
     <string name="credits_inspired">Credits</string>
     <string name="credits_adaptive">Adaptive Hz (MIT)</string>
     <string name="credits_adaptive_subtitle">Derived portions · © 2025 Mahmut Alperen Ünal</string>
-    <string name="credits_shizuku">Shizuku</string>
-    <string name="credits_shizuku_subtitle">Privileged API · @RikkaApps</string>
-    <string name="credits_shizuku_fork">Shizuku fork</string>
-    <string name="credits_shizuku_fork_subtitle">v13.7.0-thedjchi · @thedjchi</string>
+    <string name="credits_shizuku_api">Shizuku API (MIT)</string>
+    <string name="credits_shizuku_api_subtitle">Bundled client · © 2021 RikkaW</string>
+    <string name="credits_shizuku">Shizuku app (Apache 2.0)</string>
+    <string name="credits_shizuku_subtitle">Not bundled · @RikkaApps</string>
+    <string name="credits_shizuku_fork">Shizuku fork (Apache 2.0)</string>
+    <string name="credits_shizuku_fork_subtitle">Not bundled · v13.7.0-thedjchi</string>
     <string name="credits_androidx">AndroidX, Compose, Kotlin</string>
     <string name="credits_androidx_subtitle">Apache License 2.0</string>
     <string name="credits_license_value">MIT</string>
@@ -210,7 +238,7 @@
     <string name="setup_pending">Pending</string>
 
     <string name="unsupported_title">Device not supported</string>
-    <string name="unsupported_body">OneHZ only works on devices with an LTPO panel. No refresh-rate control was applied.</string>
+    <string name="unsupported_body">OneHZ only works on Samsung or Xiaomi/Redmi/POCO devices with a display that exposes at least two refresh rates. Nothing was changed.</string>
 
     <string name="notification_service_text">Keeping refresh-rate control active. Doze is not blocked.</string>
     <string name="notification_channel_name">OneHZ service</string>
@@ -226,13 +254,20 @@
     <string name="update_info">Refresh</string>
     <string name="report_copied">Diagnostics copied</string>
     <string name="diag_shizuku">Shizuku service</string>
-    <string name="diag_ltpo">LTPO display</string>
+    <string name="diag_ltpo">Multi-rate display</string>
     <string name="diag_tier">Current level</string>
     <string name="diag_observed">Observed frequency: %1$d Hz</string>
     <string name="diag_last_write">Last change</string>
     <string name="diag_control_method">Display control method</string>
     <string name="diag_aod_brightness">AOD brightness</string>
     <string name="diag_not_available">Not available</string>
+    <string name="diag_system_state">Brightness and power</string>
+    <string name="diag_brightness">Brightness</string>
+    <string name="diag_battery_saver">Battery saver</string>
+    <string name="diag_route">Rate route</string>
+    <string name="diag_state_on">On</string>
+    <string name="diag_state_off">Off</string>
+    <string name="diag_low_rate_note">On this panel, 30 Hz can reduce the brightness. It is a hardware limitation; no app can compensate for it.</string>
     <string name="log_filter_all">All</string>
     <string name="log_search">Filter log</string>
     <string name="log_tag_touch">Touch</string>
@@ -325,4 +360,66 @@
     <string name="about_project_status">Personal project, provided as-is. There is no maintenance guarantee, but bug reports and suggestions are welcome.</string>
     <string name="about_translation_note">Português was reviewed by the author. English and Español are AI-generated and were not reviewed by native speakers.</string>
     <string name="about_llm_note">Developed with LLM assistance through the OpenCode harness, then reviewed and tested by the author on a single device.</string>
-    <string name="about_not_affiliated">Not affiliated with Samsung. Samsung, Galaxy and One UI are trademarks of Samsung Electronics.</string></resources>
+    <string name="about_not_affiliated">Not affiliated with Samsung. Samsung, Galaxy and One UI are trademarks of Samsung Electronics.</string>
+
+    <!-- Profiles (1.2 beta) -->
+    <string name="profile_economy_title">Economy</string>
+    <string name="profile_balanced_title">Balanced</string>
+    <string name="profile_performance_title">Performance</string>
+    <string name="profile_active">Active</string>
+    <string name="profile_select">Use this profile</string>
+    <string name="profile_manage">Manage profiles</string>
+    <string name="profile_new">New profile</string>
+    <string name="profile_name">Profile name</string>
+    <string name="profile_name_hint">For example: Games</string>
+    <string name="profile_name_required">Enter a name.</string>
+    <string name="profile_modified">Modified</string>
+    <string name="profile_default">Default</string>
+    <plurals name="profile_used_by_apps">
+        <item quantity="one">Used by %1$d app</item>
+        <item quantity="other">Used by %1$d apps</item>
+    </plurals>
+    <string name="profile_no_apps">Not used by apps</string>
+    <string name="profile_delete_title">Delete profile?</string>
+    <string name="profile_delete_body">This profile is used by %1$d apps. They will be reassigned to %2$s.</string>
+    <string name="profile_delete_body_unused">This profile will be removed.</string>
+    <string name="profile_delete_confirm">Delete</string>
+    <string name="profile_create_title">New profile</string>
+    <string name="profile_create_body">The new profile starts from %1$s. You can edit it after creating.</string>
+    <string name="profile_create_confirm">Create</string>
+    <string name="profile_reset_title">Restore default?</string>
+    <string name="profile_reset_body">Frequency and video settings will return to the device defaults.</string>
+    <string name="profile_reset_confirm">Restore</string>
+    <string name="profile_active_manual">Manual</string>
+    <string name="profile_active_battery">Economy · battery saver</string>
+    <string name="profile_battery_override_hint">Automatic Economy is active while the system battery saver is on.</string>
+    <string name="profile_active_app">App: %1$s</string>
+    <string name="profile_active_aod">Always On Display</string>
+    <string name="profile_idle_off">No profile is active: frequency is not controlled.</string>
+    <string name="profile_video_title">Video</string>
+    <string name="profile_video_desc">The video floor follows this profile.</string>
+    <string name="profile_video_edit">Edit video in this profile</string>
+    <string name="profile_video_follows">Follows the active profile · %1$d Hz</string>
+    <string name="profile_video_summary">Video: %1$d Hz floor</string>
+    <string name="profile_app_assigned">Profile: %1$s</string>
+    <string name="profile_app_choose">Profile for this app</string>
+    <string name="profile_app_create">Create a profile from this app</string>
+    <string name="profile_app_remove_title">Remove assignment?</string>
+    <string name="profile_app_remove_body">%1$s will use the active profile again.</string>
+    <string name="profile_app_missing">The assigned profile is missing. Using Balanced.</string>
+    <string name="aod_minimum">Minimum: %1$d Hz</string>
+    <string name="aod_minimum_hint">Always On Display uses the lowest rate exposed by the panel.</string>
+    <string name="settings_backup">Backup and restore</string>
+    <string name="settings_backup_desc">Export or import all profiles and settings</string>
+    <string name="backup_export">Export configuration</string>
+    <string name="backup_import">Import configuration</string>
+    <string name="backup_export_success">Configuration exported.</string>
+    <string name="backup_export_failed">Could not export the configuration.</string>
+    <string name="backup_import_confirm_title">Import configuration?</string>
+    <string name="backup_import_confirm_body">This replaces all current profiles, app assignments and behavior settings. The theme and language are not changed.</string>
+    <string name="backup_import_success">Imported %1$d profiles and %2$d app assignments.</string>
+    <string name="backup_import_failed">Could not import: %1$s</string>
+    <string name="backup_import_adapted">%1$d profiles were adapted to this screen.</string>
+    <string name="backup_import_missing">%1$d app assignments were moved to Balanced.</string>
+    <string name="backup_scope_note">Includes profiles, app assignments, video and AOD. Theme and language are not included.</string>
+</resources>

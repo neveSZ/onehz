@@ -117,10 +117,12 @@ Paste the clipboard into the GitHub secret. Do not paste it into issues, chat, o
 - [ ] `CHANGELOG.md` updated.
 - [ ] `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` updated.
 - [ ] `fastlane/metadata/android/pt-BR/changelogs/<versionCode>.txt` updated.
+- [ ] The changelog files and the `version.properties` bump are in the same commit;
+      CI validates the changelog for the current `versionCode` on every push.
 - [ ] Screenshots updated if the UI changed.
 - [ ] `python3 scripts/validate-fastlane.py` passes.
 - [ ] `docs/releases/<version>.md` created (optional release notes).
-- [ ] README known limitations/device table updated if needed.
+- [ ] README status, device table, and user docs updated if needed.
 - [ ] Tests and lint pass locally.
 - [ ] `assembleRelease` produces a signed APK.
 - [ ] APK installed and tested on the device.
