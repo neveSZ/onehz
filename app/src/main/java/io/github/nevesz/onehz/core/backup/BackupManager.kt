@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import io.github.nevesz.onehz.BuildConfig
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.profile.DeviceProfile
 import io.github.nevesz.onehz.core.profile.ProfileCodec
 import io.github.nevesz.onehz.core.profile.ProfileDefaults
@@ -18,6 +19,7 @@ data class ImportResult(
     val assignments: Int = 0,
     val adapted: Int = 0,
     val missingAssignments: Int = 0,
+    val sleep: Boolean = false,
     val error: String? = null
 )
 
@@ -31,6 +33,8 @@ object BackupManager {
 
     fun export(context: Context, uri: Uri, panelRates: List<Int>): Boolean {
         val state = ProfileStore.state(context, panelRates)
+        val sleepWindow = SleepPreferences.window(context)
+        // The Doze whitelist is system state managed through Shizuku; it is not exported.
         val data = BackupData(
             state = state,
             enabled = OneHzPreferences.isEnabled(context),
@@ -40,6 +44,15 @@ object BackupManager {
             aodBrightnessMinPct = OneHzPreferences.aodBrightnessMinPct(context),
             aodBrightnessMaxPct = OneHzPreferences.aodBrightnessMaxPct(context),
             forcedVideoPackages = OneHzPreferences.forcedVideoPackages(context),
+            sleep = SleepBackup(
+                enabled = SleepPreferences.enabled(context),
+                deep = SleepPreferences.deep(context),
+                skipCharging = SleepPreferences.skipCharging(context),
+                skipMusic = SleepPreferences.skipMusic(context),
+                windowEnabled = SleepPreferences.windowEnabled(context),
+                windowStartMinute = sleepWindow.startMinute,
+                windowEndMinute = sleepWindow.endMinute
+            ),
             appVersion = BuildConfig.VERSION_NAME,
             deviceRates = ProfileStore.rates(context)
         )
@@ -122,13 +135,24 @@ object BackupManager {
             data.aodBrightnessMaxPct
         )
         OneHzPreferences.setForcedVideoPackages(context, data.forcedVideoPackages)
+        SleepPreferences.setEnabled(context, data.sleep.enabled)
+        SleepPreferences.setDeep(context, data.sleep.deep)
+        SleepPreferences.setSkipCharging(context, data.sleep.skipCharging)
+        SleepPreferences.setSkipMusic(context, data.sleep.skipMusic)
+        SleepPreferences.setWindowEnabled(context, data.sleep.windowEnabled)
+        SleepPreferences.setWindow(
+            context,
+            data.sleep.windowStartMinute,
+            data.sleep.windowEndMinute
+        )
 
         return ImportResult(
             success = true,
             profiles = profiles.size,
             assignments = assignments.size,
             adapted = adapted,
-            missingAssignments = missingAssignments
+            missingAssignments = missingAssignments,
+            sleep = true
         )
     }
 

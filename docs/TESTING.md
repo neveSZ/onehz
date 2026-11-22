@@ -13,7 +13,8 @@ Unit tests cover the pure logic:
 - `FrequencyProfile` serialization, validation, defaults;
 - `ProfileDefaults` for two-rate and multi-rate panels;
 - `ProfileCodec` serialization and frequency adaptation;
-- `BackupCodec` round trip, schema/app validation and forced packages;
+- `BackupCodec` round trip, schema/app validation, forced packages and Sleep settings
+  (including a missing Sleep block);
 - `VideoSignals` parsers and rule decisions (captured real-device fixtures);
 - `VideoConfig` encoding, validation, and defaults;
 - `MtTouchParser` MT-B edges;
@@ -113,7 +114,8 @@ Test on the target device with a clean install of the signed release APK.
 
 - [ ] Export a configuration with built-in, custom and per-app assignments.
 - [ ] Change several settings, then import the file; the summary is shown.
-- [ ] Confirm profiles, active profile, video, AOD and assignments are restored.
+- [ ] Confirm profiles, active profile, video, AOD, Sleep and assignments are restored.
+- [ ] Confirm the system Doze whitelist is unchanged by the import.
 - [ ] Import a file with unsupported rates; confirm the adapted count is reported.
 - [ ] Import a file with a missing profile reference; the app moves to Balanced.
 - [ ] Confirm theme and language are unchanged.

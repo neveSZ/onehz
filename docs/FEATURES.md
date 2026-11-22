@@ -206,7 +206,9 @@ System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
 - Settings → **Backup and restore** writes a versioned JSON file through the system file
   picker, without storage permissions;
 - the file includes all profiles, the active profile, app assignments, video settings,
-  AOD settings, the master switch, and the forced-video app list;
+  AOD settings, Sleep settings, the master switch, and the forced-video app list;
+- the system Doze whitelist, Sleep measurements, and the pause/forced state are
+  system/transient state and are not included;
 - theme, language, diagnostics, update cache, and internal system-restore snapshots are
   not included;
 - import replaces the current behavior configuration after a confirmation;
@@ -218,7 +220,7 @@ System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
 
 Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS.md).
 
-## 15. Sleep (forced Doze)
+## 16. Sleep (forced Doze)
 
 Optional and off by default. When the screen turns off, OneHZ asks the platform to enter
 Doze immediately instead of waiting for the inactivity timers:

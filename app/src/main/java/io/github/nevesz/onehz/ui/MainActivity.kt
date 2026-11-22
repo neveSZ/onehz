@@ -68,6 +68,7 @@ import io.github.nevesz.onehz.core.profile.ProfileDefaults
 import io.github.nevesz.onehz.core.profile.ProfileKind
 import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.update.UpdateCenter
+import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.about.AboutScreen
 import io.github.nevesz.onehz.ui.apps.AppsScreen
@@ -466,6 +467,7 @@ private fun OneHzShell(
                     } else {
                         OneHzEngine.reapply()
                     }
+                    DozeController.onPrefsChanged()
                 }
             },
             onDismiss = { pendingImport = null }
@@ -490,6 +492,9 @@ private fun showImportResult(context: android.content.Context, result: ImportRes
             }
             if (result.missingAssignments > 0) {
                 add(context.getString(R.string.backup_import_missing, result.missingAssignments))
+            }
+            if (result.sleep) {
+                add(context.getString(R.string.backup_import_sleep))
             }
         }.joinToString(" ")
     }

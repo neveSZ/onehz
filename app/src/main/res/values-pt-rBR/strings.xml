@@ -423,5 +423,6 @@
     <string name="backup_import_failed">Não foi possível importar: %1$s</string>
     <string name="backup_import_adapted">%1$d perfis foram adaptados para esta tela.</string>
     <string name="backup_import_missing">%1$d atribuições foram movidas para Balanceado.</string>
-    <string name="backup_scope_note">Inclui perfis, atribuições de apps, vídeo e AOD. Tema e idioma não entram.</string>
+    <string name="backup_import_sleep">Configurações do Sono restauradas.</string>
+    <string name="backup_scope_note">Inclui perfis, atribuições de apps, vídeo, AOD e Sono. A lista de exceções do Doze do sistema não é incluída. Tema e idioma não entram.</string>
 </resources>
