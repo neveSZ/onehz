@@ -1,14 +1,15 @@
 [versions]
-agp = "9.4.0"
-kotlin = "2.4.20"
-coreKtx = "1.19.0"
-lifecycle = "2.11.0"
+agp = "9.5.2"
+kotlin = "2.4.21"
+coreKtx = "1.19.1"
+lifecycle = "2.11.1"
 activityCompose = "1.13.0"
 composeBom = "2026.09.00"
 appcompat = "1.8.0"
 shizuku = "13.1.5"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 junit = "4.13.2"
+json = "20260814"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -26,6 +27,7 @@ shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuk
 shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
+json = { group = "org.json", name = "json", version.ref = "json" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
