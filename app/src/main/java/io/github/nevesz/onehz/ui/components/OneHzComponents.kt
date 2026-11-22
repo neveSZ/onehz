@@ -418,17 +418,30 @@ fun HzPicker(
     }
 }
 
-/** Whole-row switch: the label, the description and the switch are a single tap target. */
+/**
+ * Whole-row switch: the label, the description and the switch are a single tap target.
+ *
+ * The description should explain the effect of the current state, not repeat "on/off".
+ * [descriptionOn] and [descriptionOff] let each state keep the title stable while the
+ * supporting line changes. [description] remains as a fallback for static copy.
+ */
 @Composable
 fun ToggleRow(
     title: String,
     checked: Boolean,
     modifier: Modifier = Modifier,
     description: String? = null,
+    descriptionOn: String? = null,
+    descriptionOff: String? = null,
     enabled: Boolean = true,
     icon: ImageVector? = null,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val supporting = if (checked) {
+        descriptionOn ?: description
+    } else {
+        descriptionOff ?: description
+    }
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -458,9 +471,9 @@ fun ToggleRow(
                 style = MaterialTheme.typography.bodyLarge,
                 color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
             )
-            if (description != null) {
+            if (supporting != null) {
                 Text(
-                    text = description,
+                    text = supporting,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
