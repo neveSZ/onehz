@@ -423,5 +423,6 @@
     <string name="backup_import_failed">No se pudo importar: %1$s</string>
     <string name="backup_import_adapted">%1$d perfiles se adaptaron a esta pantalla.</string>
     <string name="backup_import_missing">%1$d asignaciones se movieron a Equilibrado.</string>
-    <string name="backup_scope_note">Incluye perfiles, asignaciones de apps, vídeo y AOD. El tema y el idioma no se incluyen.</string>
+    <string name="backup_import_sleep">Ajustes de Sueño restaurados.</string>
+    <string name="backup_scope_note">Incluye perfiles, asignaciones de apps, vídeo, AOD y Sueño. La lista blanca de Doze del sistema no se incluye. El tema y el idioma no se incluyen.</string>
 </resources>

@@ -3,7 +3,9 @@ package io.github.nevesz.onehz.core.backup
 import io.github.nevesz.onehz.core.profile.AppAssignment
 import io.github.nevesz.onehz.core.profile.ProfileDefaults
 import io.github.nevesz.onehz.core.profile.ProfileState
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -24,6 +26,15 @@ class BackupCodecTest {
         aodBrightnessMinPct = 6,
         aodBrightnessMaxPct = 25,
         forcedVideoPackages = setOf("com.example.video"),
+        sleep = SleepBackup(
+            enabled = true,
+            deep = false,
+            skipCharging = false,
+            skipMusic = false,
+            windowEnabled = true,
+            windowStartMinute = 22 * 60,
+            windowEndMinute = 6 * 60
+        ),
         appVersion = "1.2.0-beta.1",
         deviceRates = listOf(30, 60, 90, 120)
     )
@@ -50,6 +61,15 @@ class BackupCodecTest {
             "\"schemaVersion\": 2"
         )
         assertNull(BackupCodec.decode(raw))
+    }
+
+    @Test
+    fun `backup without a sleep block gets the defaults`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        root.remove("sleep")
+        val decoded = BackupCodec.decode(root.toString())
+        assertNotNull(decoded)
+        assertEquals(SleepBackup(), decoded?.sleep)
     }
 
     @Test
