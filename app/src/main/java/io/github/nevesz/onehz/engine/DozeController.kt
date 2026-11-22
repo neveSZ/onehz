@@ -9,6 +9,7 @@ import android.os.BatteryManager
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
+import android.os.SystemClock
 import io.github.nevesz.onehz.core.DozeDecision
 import io.github.nevesz.onehz.core.DozeDecisionResolver
 import io.github.nevesz.onehz.core.DozeInput
@@ -36,7 +37,8 @@ object DozeController {
 
     private const val TAG = "sleep"
     private const val FORCE_DELAY_MS = 800L
-    private const val VERIFY_DELAY_MS = 1_200L
+    private const val VERIFY_RETRY_MS = 400L
+    private const val VERIFY_FINAL_MS = 1_200L
     private const val TEST_DURATION_MS = 10_000L
     private const val MUSIC_CHECK_MS = 200L
 
@@ -52,6 +54,8 @@ object DozeController {
     private var open: SleepRecord? = null
     private var pendingDeep: Boolean? = null
     private var testing = false
+    private var verifyGeneration = 0
+    private var screenOffAt = 0L
 
     /** Guard values cached from their events; read on the controller thread only. */
     private var charging = false
@@ -89,9 +93,14 @@ object DozeController {
                 Diagnostics.log(TAG, "skip after delay: ${again.reason}")
             }
             is DozeDecision.Force -> {
+                val commandStart = SystemClock.elapsedRealtime()
                 val ok = ShizukuGateway.forceIdle(again.deep)
-                Diagnostics.log(TAG, "force deep=${again.deep} command=${if (ok) "ok" else "failed"}")
-                handler.postDelayed({ verify(ctx) }, VERIFY_DELAY_MS)
+                val elapsed = SystemClock.elapsedRealtime() - commandStart
+                Diagnostics.log(
+                    TAG,
+                    "force deep=${again.deep} command=${if (ok) "ok" else "failed"} in ${elapsed}ms",
+                )
+                scheduleVerify(ctx, again.deep)
             }
         }
     }
@@ -157,6 +166,8 @@ object DozeController {
             return@post
         }
         val now = System.currentTimeMillis()
+        screenOffAt = SystemClock.elapsedRealtime()
+        verifyGeneration++
         // A missed screen-on must not leave two sessions open.
         if (open != null) closeSession(ctx, now, "stale session")
         open = SleepLedger.start(now, batteryLevel(ctx), SleepPreferences.deep(ctx))
@@ -184,6 +195,7 @@ object DozeController {
     fun onScreenOn() = handler.post {
         val ctx = appContext ?: return@post
         pendingDeep = null
+        verifyGeneration++
         handler.removeCallbacks(forceRunnable)
         charging = isCharging(ctx)
         musicActive = isMusicActive(ctx)
@@ -276,6 +288,7 @@ object DozeController {
         when (val decision = decide(ctx)) {
             is DozeDecision.Skip -> {
                 pendingDeep = null
+                verifyGeneration++
                 handler.removeCallbacks(forceRunnable)
                 if (SleepPreferences.forced(ctx)) {
                     unforce(ctx, source)
@@ -337,7 +350,7 @@ object DozeController {
             val raw = ShizukuGateway.idleState()
             Diagnostics.dozeDetail.value = raw.ifBlank { "no state" }
             Diagnostics.log(TAG, "test force deep=$deep -> ${raw.ifBlank { "no state" }}")
-        }, VERIFY_DELAY_MS)
+        }, VERIFY_FINAL_MS)
         handler.postDelayed({
             unforce(ctx, "test finished")
             testing = false
@@ -345,21 +358,37 @@ object DozeController {
         }, TEST_DURATION_MS)
     }
 
-    private fun verify(ctx: Context) {
-        if (!started) return
-        val quick = isIdle(ctx)
-        val raw = ShizukuGateway.idleState()
+    private fun scheduleVerify(ctx: Context, deep: Boolean) {
+        val generation = ++verifyGeneration
+        handler.post { verify(ctx, deep, 0, generation) }
+    }
+
+    /**
+     * Confirms idle without paying for a full `dumpsys` when the public deep-idle check is
+     * already true. Retries at 0/400/1200 ms instead of waiting a fixed 1.2 s.
+     */
+    private fun verify(ctx: Context, deep: Boolean, attempt: Int, generation: Int) {
+        if (generation != verifyGeneration || !started || isInteractive(ctx)) return
+        val quick = deep && isIdle(ctx)
+        val raw = if (quick) "" else ShizukuGateway.idleState()
         if (quick || DozeState.isIdleEncoded(raw)) {
-            SleepPreferences.setForced(ctx, true, System.currentTimeMillis())
+            val now = System.currentTimeMillis()
+            SleepPreferences.setForced(ctx, true, now)
             Diagnostics.dozePhase.value = DozePhase.ACTIVE
-            Diagnostics.dozeActiveSince.value = System.currentTimeMillis()
+            Diagnostics.dozeActiveSince.value = now
             Diagnostics.dozeDetail.value = raw.ifBlank { "power manager" }
-            Diagnostics.log(TAG, "idle confirmed (${raw.ifBlank { "power manager" }})")
-        } else {
-            Diagnostics.dozePhase.value = DozePhase.FAILED
-            Diagnostics.dozeDetail.value = raw.ifBlank { "no state" }
-            Diagnostics.log(TAG, "not idle after force: ${raw.ifBlank { "no state" }}")
+            val elapsed = SystemClock.elapsedRealtime() - screenOffAt
+            Diagnostics.log(TAG, "idle confirmed after ${elapsed}ms (${raw.ifBlank { "power manager" }})")
+            return
         }
+        if (attempt < 2) {
+            val delay = if (attempt == 0) VERIFY_RETRY_MS else VERIFY_FINAL_MS - VERIFY_RETRY_MS
+            handler.postDelayed({ verify(ctx, deep, attempt + 1, generation) }, delay)
+            return
+        }
+        Diagnostics.dozePhase.value = DozePhase.FAILED
+        Diagnostics.dozeDetail.value = raw.ifBlank { "no state" }
+        Diagnostics.log(TAG, "not idle after force: ${raw.ifBlank { "no state" }}")
     }
 
     private fun decide(ctx: Context): DozeDecision {
@@ -408,6 +437,7 @@ object DozeController {
      * screen-on retries instead of leaving the device forced with a false "off" state.
      */
     private fun unforce(ctx: Context, reason: String): Boolean {
+        verifyGeneration++
         if (ShizukuGateway.service == null) {
             Diagnostics.log(TAG, "unforce pending ($reason): service unavailable")
             return false

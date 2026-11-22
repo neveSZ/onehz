@@ -16,7 +16,7 @@ sealed interface DozeDecision {
     data class Skip(val reason: DozeSkip) : DozeDecision
 }
 
-/** Everything the screen-off decision needs, resolved once and never polled. */
+/** Everything a decision needs. It is re-evaluated on screen, power, audio and preference events. */
 data class DozeInput(
     val masterEnabled: Boolean = true,
     val featureEnabled: Boolean = true,
