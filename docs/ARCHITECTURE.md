@@ -17,6 +17,7 @@ want to understand, audit, or modify the app.
 │                 ├── PolicyResolver (pure decision)                           │
 │                 ├── SessionArbiter (settings dedupe/restore)                 │
 │                 ├── AodBrightnessController (HandlerThread)                  │
+│                 ├── DozeController (HandlerThread)                           │
 │                 └── ShizukuGateway (binder, state, discovery)                │
 │                          │                                                   │
 │                          │ AIDL: IOneHzService                              │
@@ -27,7 +28,8 @@ want to understand, audit, or modify the app.
 │                 ├── settings get/put/delete                                  │
 │                 ├── getevent -lt (one process per touchscreen)               │
 │                 ├── dumpsys activity / media_session / audio                 │
-│                 └── dumpsys media.resource_manager                           │
+│                 ├── dumpsys media.resource_manager                           │
+│                 └── dumpsys deviceidle (whitelist, force-idle, unforce)      │
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -43,6 +45,7 @@ want to understand, audit, or modify the app.
 - **`OneHzEngine` thread:** all engine state, timers, policy evaluation, and video
   probes. Touch callbacks are posted to this thread.
 - **`OneHzAodBrightness` thread:** content observer, debounce, AOD brightness writes.
+- **`OneHzDoze` thread:** sleep decisions, forced-idle commands, verification, ledger.
 - **Shizuku executor:** a single-thread executor in `ShizukuGateway` serializes binder
   setup, discovery, and monitor start/stop.
 - **Per-device `getevent` threads:** one monitor per accepted touchscreen, owned by the
@@ -54,7 +57,7 @@ want to understand, audit, or modify the app.
 
 - device listing and touch monitoring;
 - foreground package;
-- Doze whitelist;
+- Doze whitelist and device-idle commands (force, unforce, state);
 - refresh-rate settings (allowlisted keys);
 - display mode;
 - global settings (allowlisted Samsung and HyperOS keys, read/write);
@@ -199,6 +202,44 @@ starts. OneHZ:
 The write is deduplicated by target and a “written” preference allows cleanup after a
 crash.
 
+## Sleep (forced Doze)
+
+`DozeController` runs on its own handler thread. Every guard is evaluated once, at
+`SCREEN_OFF`, after the AOD brightness key and the AOD rate have been applied:
+
+```text
+dumpsys deviceidle force-idle [light]     # deep when no argument is given
+dumpsys deviceidle unforce
+dumpsys deviceidle                        # reads mState= and mLightState=
+```
+
+The decision is pure (`DozeDecisionResolver`): master switch, feature switch, pause, time
+window, charging, music playback, and service availability. When the service is not
+available, the controller waits and retries once the binder reconnects while the screen is
+still off.
+
+`dumpsys` exits with 0 even for an unknown subcommand, so success is confirmed through the
+printed `mState` and `mLightState` values (with `PowerManager.isDeviceIdleMode()` as a
+quick deep check). A failed confirmation shows “The ROM did not enter Doze” and is written
+to diagnostics.
+
+Whitelist changes use `cmd deviceidle whitelist` and are confirmed by reading the list
+back; `dumpsys deviceidle sys-whitelist` exits without changing anything on some builds.
+
+Charging comes from the sticky battery broadcast (`EXTRA_PLUGGED`/`EXTRA_STATUS`),
+because `BatteryManager.isCharging()` is not updated on some vendor builds.
+
+Screen-on dispatches `unforce` on the controller thread, so the wake pulse and the
+refresh-rate write are not delayed by the shell call. The forced flag is persisted:
+`onDestroy`, disabling the feature, a service restart, and a reboot all clear it, so a
+crash cannot leave the device forced.
+
+`SleepLedger` stores screen-off and idle spans, capped and encoded in preferences. “Last
+24 hours” clips every span to the rolling window; rest periods merge screen-on gaps
+shorter than two minutes before applying the 30-minute minimum. The battery rate is the
+session delta per hour and is omitted when the session is shorter than 15 minutes or the
+level increased.
+
 ## Fail-closed behavior
 
 - No vendor/display eligibility → no control.
@@ -207,6 +248,8 @@ crash.
 - Foreground/video dumps fail twice → clear the video floor rather than getting stuck.
 - No positive video signal enabled → no video, except for packages in the forced list.
 - Settings write failures → keep the pending restore marker.
+- Sleep disabled, engine stopped, or service destroyed → send `unforce`.
+- Forced idle not confirmed by the device-idle state → report failure instead of success.
 
 ## Security notes
 

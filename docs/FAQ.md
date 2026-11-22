@@ -160,3 +160,12 @@ on other models. Report your model, build, panel rates, and diagnostics if you t
 
 Because they are. The author reviewed Portuguese. English and Spanish were generated and
 reviewed for consistency, but not by native speakers. Corrections are welcome.
+
+### Does Sleep force Doze? Will I miss notifications?
+
+Sleep is optional and off by default. When enabled, it asks Android to enter Doze as soon
+as the screen turns off, so network and background work wait for the maintenance windows.
+Traditional calls and alarms still wake the device, but an incoming VoIP call that depends
+on a background connection may not arrive until the next maintenance window. Use **Pause
+for 1 hour**, the time window, or add the app to **Apps that may wake the device** when you
+need it in real time.

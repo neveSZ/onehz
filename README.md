@@ -83,6 +83,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **ECO profile** | Applied while battery saver is on, with a per-app “Ignore ECO” exception. |
 | **AOD refresh rate** | A fixed rate while the screen is off. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
+| **Sleep (forced Doze)** | Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | A profile per installed app, without periodic polling. |
 | **Video mode** | A refresh-rate floor while a video plays, with configurable detection rules. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |

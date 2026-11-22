@@ -89,6 +89,14 @@ deixaria a tela inteira mais escura.
   atualização de firmware pode mudar isso. O HyperOS usa `miui_refresh_rate` (ou
   `user_refresh_rate` no HyperOS 1).
 - O brilho do AOD é **somente Samsung** (`debug_aod_brightness`); fica oculto no Xiaomi.
+- **O Sono (Doze forçado) depende do fabricante.** Algumas ROMs ignoram ou revertem o
+  idle forçado; o card mostra “A ROM não entrou em Doze” em vez de fingir que funcionou.
+- **Light idle no HyperOS:** no POCO X7 Pro testado, o deep idle é forçado
+  (`mForceIdle=true`), enquanto o light idle já é o estado normal com a tela apagada
+  (`mState=IDLE`, `mLightState=OVERRIDE`) e não altera `mForceIdle`.
+- **As medições do Sono incluem o AOD.** Em aparelhos com Always On Display, a janela de
+  tela apagada também contém o consumo do AOD, então o %/h não é um número de deep idle
+  puro.
 - A detecção de vídeo depende do comportamento de MediaSession, Codec2 e AudioService; as
   regras e a lista de apps forçados podem ser ajustadas no app, mas os sinais de base
   precisam existir.

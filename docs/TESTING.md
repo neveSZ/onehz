@@ -17,6 +17,8 @@ Unit tests cover the pure logic:
 - `TouchDeviceSelector` device filtering;
 - `AodBrightnessMath`;
 - `PolicyResolver` precedence;
+- `DozeState`, `DozeSchedule`, `DozeDecision`, `DozeWhitelist` and `SleepLedger` (sleep
+  decisions, cross-midnight windows, whitelist parsing, 24-hour clipping, rest sessions);
 - `SemanticVersion` and pre-release precedence;
 - `ReleaseSelector` channel filtering and URL validation;
 - update interval gating.
@@ -69,7 +71,28 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Change screen brightness while awake; the target updates.
 - [ ] Use “Restore system brightness”; the key is removed.
 - [ ] Confirm no timers/touch monitor run with the screen off.
-- [ ] Confirm the device still enters Doze.
+- [ ] Confirm the device still enters Doze with Sleep off.
+
+### Sleep (forced Doze)
+
+- [ ] Enable Sleep; the card shows the current state and the 24-hour block.
+- [ ] Screen off → `adb shell dumpsys deviceidle | Select-String mState` shows `IDLE`.
+- [ ] Screen on → `unforce`; the state returns to `ACTIVE` and the wake pulse is not delayed.
+- [ ] Turn the feature off while forced; the device leaves idle.
+- [ ] Pause for 1 hour; the next screen-off does not force and the card shows the deadline.
+- [ ] Enable the time window with a range that crosses midnight; forcing only happens inside it.
+- [ ] Enable the charger guard and plug the device in while asleep; it leaves idle.
+- [ ] Play background music, turn the screen off, and confirm the music guard skips forcing.
+- [ ] Set light mode; confirm the state still becomes `IDLE` (or report the ROM result).
+- [ ] Add an app to **Apps that may wake the device**; confirm it appears in
+      `adb shell dumpsys deviceidle whitelist`, then remove it and confirm it is gone.
+- [ ] Kill and restart the app while asleep; no forced state is left behind.
+- [ ] Reboot while forced; the boot path clears the flag.
+- [ ] Check the 24-hour totals and the last rest after a full night (or a long screen-off).
+- [ ] A quick screen-on shorter than two minutes does not split the rest session.
+- [ ] A charging session shows `—` instead of a battery rate.
+- [ ] With no history, the card says there are no measurements instead of zeroes.
+- [ ] `Test now` forces for ten seconds and leaves idle again.
 
 ### Per-app profiles
 

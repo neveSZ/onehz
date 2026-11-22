@@ -166,3 +166,12 @@ você testar.
 
 Porque são. O autor revisou o português. Inglês e espanhol foram gerados e revisados para
 consistência, mas não por falantes nativos. Correções são bem-vindas.
+
+### O Sono força o Doze? Vou perder notificações?
+
+O Sono é opcional e vem desligado. Quando ativado, ele pede ao Android para entrar em
+Doze assim que a tela apaga, então rede e trabalho em segundo plano esperam as janelas de
+manutenção. Chamadas tradicionais e alarmes ainda acordam o aparelho, mas uma chamada VoIP
+que depende de conexão em segundo plano pode não chegar até a próxima janela. Use
+**Pausar por 1 hora**, a janela de horário ou adicione o app em **Apps que podem acordar o
+aparelho** quando precisar dele em tempo real.

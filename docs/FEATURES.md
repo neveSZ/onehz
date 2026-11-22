@@ -181,3 +181,21 @@ System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
 ## 14. Languages
 
 Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS.md).
+
+## 15. Sleep (forced Doze)
+
+Optional and off by default. When the screen turns off, OneHZ asks the platform to enter
+Doze immediately instead of waiting for the inactivity timers:
+
+- deep idle (default) or light idle;
+- guards evaluated only at screen-off: pause for one hour, a time window that may cross
+  midnight, charging, and background music;
+- `unforce` on screen-on, when the feature is disabled, and after a crash or reboot;
+- verification through the real device-idle state, with an explicit "the ROM did not
+  enter Doze" message instead of a false success;
+- a wake-up list that adds apps to the system Doze whitelist through Shizuku;
+- local measurements: screen-off and Doze time in the last 24 hours, the last rest
+  period (30 minutes or more), battery level and percent per hour per session.
+
+No wake lock is held and nothing is polled. The measurements are local and labelled as
+measured by OneHZ; they include the Always On Display time. See [SLEEP.md](SLEEP.md).

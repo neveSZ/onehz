@@ -46,6 +46,8 @@ These are documented as known limitations rather than promises.
 
 ## Ideas
 
+- Sleep: compare percent-per-hour in Doze with screen-off time without Doze.
+- Sleep: reapply the AOD rate after a Doze maintenance window.
 - Export/import profiles.
 - More granular per-app rules (e.g. per-orientation).
 - Widget/quick-settings tile for the master switch.

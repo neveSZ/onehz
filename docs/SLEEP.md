@@ -50,8 +50,20 @@ first form is unavailable on a given build.
 
 State is read from two independent sources:
 
-- `PowerManager.isDeviceIdleMode()` (public API, no privilege) for a quick check;
-- the `mState=` field of `dumpsys deviceidle` for verification and diagnostics.
+- `PowerManager.isDeviceIdleMode()` (public API, no privilege) for a quick deep-idle check;
+- the `mState=` (deep) and `mLightState=` (light) fields of `dumpsys deviceidle` for
+  verification and diagnostics. The light field matters because a force in light mode
+  leaves the deep state at `INACTIVE`; checking only the deep field would report a false
+  failure. The dump is about 23 KB on One UI and the state fields are at the end, so the
+  read is not truncated.
+
+Whitelist changes use `cmd deviceidle whitelist` and are confirmed by reading the list
+back: `dumpsys deviceidle sys-whitelist` exits successfully without changing anything on
+some builds, and `dumpsys` exits 0 even for unknown commands.
+
+Charging is read from the sticky `ACTION_BATTERY_CHANGED` broadcast in addition to
+`BatteryManager.isCharging()`: on the tested Samsung firmware the property returned
+`false` while the device was charging, which would bypass the charging guard.
 
 The verification matters: `dumpsys` returns exit code 0 even for an unknown command, so
 the command's exit status alone is not evidence that the device entered idle.
@@ -94,8 +106,8 @@ shell call.
 - The "forced" flag is persisted. On service start and after a reboot, OneHZ sends
   `unforce` and clears the flag, so a crash cannot leave the device forced.
 - `onDestroy` of the foreground service and disabling the feature both send `unforce`.
-- If verification does not report `IDLE` or `IDLE_MAINTENANCE`, the card shows
-  "the ROM did not enter Doze" and the raw state is written to the diagnostics log.
+- If neither the deep nor the light state reports `IDLE` or `IDLE_MAINTENANCE`, the card
+  shows “the ROM did not enter Doze” and the raw state is written to the diagnostics log.
 
 ## Measurement
 
@@ -116,9 +128,9 @@ From those segments:
   at least 30 minutes. Screen-on gaps shorter than 2 minutes are merged into the same
   session, so a quick glance at the clock does not split a night in two.
 - **Battery rate**: `(levelStart - levelEnd) / hours` for a session, in percent per hour.
-  It is shown as `—` when the session is shorter than 15 minutes, when the level did not
-  change, or when the level ended higher than it started (which means the device was
-  charging or the estimate would be meaningless).
+  It is shown as `—` when the session is shorter than 15 minutes, when the level is
+  unknown, or when the level ended higher than it started (which means the device was
+  charging). A session with no measurable drop reports `0.0%/h`.
 - **Maintenance**: the number of idle sessions inside a rest period minus one.
 - **Partial**: when the ledger does not cover the whole window (reboot, app installed
   mid-day, service stopped), the card prefixes the numbers with "partial" instead of

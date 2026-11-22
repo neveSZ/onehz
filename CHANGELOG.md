@@ -4,6 +4,14 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- Sleep: optional forced Doze on screen-off, with deep/light idle, pause, a cross-midnight
+  time window, charging and music guards, a wake-up app list, and local 24-hour
+  measurements (screen-off time, Doze time, rest periods and battery rate).
+
 ## [1.1.0-beta.1] - 2026-11-21
 
 First beta after 1.0.1. Adds Xiaomi/Redmi/POCO support, removes the LTPO requirement,

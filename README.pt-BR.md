@@ -84,6 +84,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Perfil ECO** | Aplicado com a economia de bateria ligada, com exceção “Ignorar ECO” por app. |
 | **Taxa do AOD** | Uma taxa fixa enquanto a tela está desligada. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
+| **Sono (Doze forçado)** | Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Um perfil por app instalado, sem polling periódico. |
 | **Modo vídeo** | Piso de taxa enquanto um vídeo toca, com regras de detecção configuráveis. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
