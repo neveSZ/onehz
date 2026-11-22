@@ -201,10 +201,12 @@
     <string name="credits_inspired">Credits</string>
     <string name="credits_adaptive">Adaptive Hz (MIT)</string>
     <string name="credits_adaptive_subtitle">Derived portions · © 2025 Mahmut Alperen Ünal</string>
-    <string name="credits_shizuku">Shizuku</string>
-    <string name="credits_shizuku_subtitle">Privileged API · @RikkaApps</string>
-    <string name="credits_shizuku_fork">Shizuku fork</string>
-    <string name="credits_shizuku_fork_subtitle">v13.7.0-thedjchi · @thedjchi</string>
+    <string name="credits_shizuku_api">Shizuku API (MIT)</string>
+    <string name="credits_shizuku_api_subtitle">Bundled client · © 2021 RikkaW</string>
+    <string name="credits_shizuku">Shizuku app (Apache 2.0)</string>
+    <string name="credits_shizuku_subtitle">Not bundled · @RikkaApps</string>
+    <string name="credits_shizuku_fork">Shizuku fork (Apache 2.0)</string>
+    <string name="credits_shizuku_fork_subtitle">Not bundled · v13.7.0-thedjchi</string>
     <string name="credits_androidx">AndroidX, Compose, Kotlin</string>
     <string name="credits_androidx_subtitle">Apache License 2.0</string>
     <string name="credits_license_value">MIT</string>
