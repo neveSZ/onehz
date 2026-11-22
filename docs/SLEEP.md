@@ -14,6 +14,7 @@ In scope:
 
 - enter Doze when the screen turns off, and leave it when the screen turns on;
 - a small set of user guards: pause, time window, charging, audio playback;
+- an explicit **Doze with music** switch for people who want idle even during audio;
 - a local measurement of screen-off time, Doze time, and battery drain per rest period.
 
 Out of scope (deliberately):
@@ -46,9 +47,9 @@ may be delayed; regular calls and alarms still work.
 |---|---|---|
 | Sleep | off | Requires the OneHZ master switch. |
 | Deep Doze | on | Turn it off to request light idle. |
-| Pause while charging | on | Read from the sticky battery broadcast. |
-| Pause while music is playing | on | `AudioManager.isMusicActive`. |
-| Time window | off, 23:00–07:00 | Evaluated only at screen-off; may cross midnight. |
+| Pause while charging | on | Plug state comes from the power broadcasts; unplugging re-evaluates the guard. |
+| Doze with music | off | When on, Doze ignores audio playback. When off, Doze pauses with music. |
+| Time window | off, 23:00–07:00 | Evaluated at screen-off and on preference changes; may cross midnight. |
 | Pause | off | One hour from the moment it is pressed. |
 | Doze exceptions | empty | System Doze exception list through Shizuku. |
 
@@ -58,10 +59,16 @@ Android exposes the device-idle controller through its debug shell interface. A 
 process (UID 2000) may drive it with:
 
 ```
-dumpsys deviceidle force-idle [deep|light]
+cmd deviceidle force-idle [light]
+cmd deviceidle unforce
+dumpsys deviceidle force-idle [light]
 dumpsys deviceidle unforce
 dumpsys deviceidle whitelist
 ```
+
+`cmd` is tried first because it starts the platform command directly and is the faster path
+on Android 12+. `dumpsys` remains the fallback for builds where `cmd deviceidle` is not
+available. Both forms are confirmed through the real idle state, not the exit code.
 
 The controller is `DeviceIdleController` in the platform; the commands are the same ones
 `adb shell` exposes for testing. `force-idle` places the device in the deep (or light)
@@ -71,8 +78,8 @@ still sent so a later screen-off starts from a clean state.
 
 OneHZ already runs a Shizuku UserService as the shell user, so no new permission, no
 `pm grant`, and no manifest change are required. The service executes the commands
-directly with its bounded `exec` helper and falls back from `dumpsys` to `cmd` when the
-first form is unavailable on a given build.
+directly with its bounded `exec` helper, preferring `cmd` and falling back to `dumpsys`
+when the first form is unavailable on a given build.
 
 State is read from two independent sources:
 
@@ -96,30 +103,51 @@ the command's exit status alone is not evidence that the device entered idle.
 
 ## Decision model
 
-Every decision is made once, at screen-off, and never polled. If a guard fails, OneHZ
-does nothing and the platform keeps its normal behaviour.
+Screen-off is the anchor, but the decision is not frozen there. Charging, audio playback,
+pause/resume and preference changes re-evaluate the guards while the screen is off. If a
+guard stops blocking, Doze is forced immediately; if it starts blocking, OneHZ leaves idle.
+Nothing is polled.
 
 | Order | Condition | Result |
 |---|---|---|
 | 1 | OneHZ master disabled or Sleep disabled | skip |
 | 2 | Pause active | skip |
 | 3 | Time window enabled and the current minute is outside it | skip |
-| 4 | Charging and "skip while charging" enabled | skip |
-| 5 | Music playing and "skip with music" enabled | skip |
+| 4 | Charging and "Pause while charging" enabled | skip |
+| 5 | Music playing and "Doze with music" disabled | skip |
 | 6 | Shizuku service not ready | wait, then retry when it connects (if the screen is still off) |
 | 7 | otherwise | force deep or light idle |
 
 The time window supports ranges that cross midnight (for example 23:00 to 07:00, or
-08:00 to 16:00 for people who sleep during the day). It is evaluated only at screen-off:
-if the window ends while the device is already asleep, OneHZ does not wake up to leave
-Doze. Turning the screen on always exits Doze.
+08:00 to 16:00 for people who sleep during the day). If the window ends while the device
+is already asleep, OneHZ does not wake up just to leave Doze. Turning the screen on always
+exits Doze.
+
+## Event sources and latency
+
+The guards are event-driven:
+
+| Signal | Source | Response |
+|---|---|---|
+| Screen off/on | `ACTION_SCREEN_OFF` / `ACTION_SCREEN_ON` | anchor the session and force or leave idle |
+| Charger | `ACTION_POWER_CONNECTED` / `ACTION_POWER_DISCONNECTED` | reconcile immediately |
+| Audio | `AudioManager.registerAudioPlaybackCallback` | coalesce bursts for 200 ms, then reconcile |
+| Preference change | Sleep detail switches | re-evaluate immediately |
+| Idle transitions | `ACTION_DEVICE_IDLE_MODE_CHANGED` | update the ledger and status |
+
+The cached plug and audio values avoid repeating sticky-broadcast and binder reads on every
+re-evaluation. The screen-off path keeps its 0.8 s settling delay for the AOD writes; guard
+changes after that use no extra delay. Verification runs at 0/400/1200 ms and stops at the
+first confirmation, so the common deep-idle case no longer waits a fixed 1.2 s or reads the
+~23 KB state dump. The diagnostics log records the command duration and the time from
+screen-off to confirmed idle.
 
 ## Ordering and timing
 
 Screen-off is a chain: the AOD brightness key is written, the AOD rate is applied,
-and only then Sleep forces idle. A fixed delay of 0.8 s is used, with no wake lock. The
-delay lets the AOD-related Binder calls complete before the CPU is allowed to suspend. It
-is internal and not exposed in the UI.
+and then Sleep schedules idle after 0.8 s, with no wake lock. The delay lets the display
+and AOD path settle before the CPU is allowed to suspend. It is internal and not exposed
+in the UI. Guard changes after screen-off do not wait for it.
 
 Screen-on runs in the opposite order: `unforce` is dispatched asynchronously on the
 controller's own thread and the wake pulse (first refresh-rate tier) is not blocked by the
@@ -137,7 +165,8 @@ shell call.
 
 ## Measurement
 
-All values are local, in memory and in `SharedPreferences`. Nothing is uploaded.
+All values are local, in memory and in the DataStore-backed preferences. Nothing is
+uploaded.
 
 Segments are recorded only while the feature is enabled:
 
@@ -181,6 +210,12 @@ On Display, the screen-off window includes the AOD, which draws power of its own
   verification step surfaces that instead of reporting a false success.
 - **Measurement gaps**: counters only exist while the feature and the OneHZ service were
   running. The card says "partial" rather than inventing history.
+- **Audio during idle**: forcing Doze with music playing can interrupt streaming or
+  background audio on some builds. The switch is off by default and the detail screen
+  warns about it.
+- **Event delivery**: audio callbacks need the OneHZ process alive. The foreground service
+  keeps it running; if the service is stopped, the next screen-off reads the current state
+  again.
 
 ## Prior art
 

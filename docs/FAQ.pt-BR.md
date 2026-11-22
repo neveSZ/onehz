@@ -256,6 +256,14 @@ que depende de conexão em segundo plano pode não chegar até a próxima janela
 **Pausar por 1 hora**, a janela de horário ou adicione o app em **Apps que podem acordar o
 aparelho** quando precisar dele em tempo real.
 
+### O Sono pausa quando tem música tocando?
+
+Por padrão, sim: a proteção de música pausa o Doze enquanto há áudio tocando. Ligue
+**Doze com música** no detalhe do Sono para manter o Doze mesmo durante a reprodução.
+Alguns aparelhos podem interromper streaming ou áudio em segundo plano no Doze profundo,
+por isso a opção vem desligada. A condição é reavaliada quando a música começa ou termina e
+quando o carregador é conectado ou removido; não é preciso apagar a tela de novo.
+
 ### Como as medições do Sono funcionam?
 
 Tudo é local. “Últimas 24h” é uma janela móvel: o tempo com a tela apagada e o tempo em
