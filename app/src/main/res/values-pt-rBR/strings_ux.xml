@@ -6,7 +6,7 @@
     <string name="home_control_none">Sem controle</string>
     <string name="home_source_profile">Perfil: %1$s</string>
     <string name="home_source_app">App: %1$s · %2$s</string>
-    <string name="home_last_app">Último app: %1$s · %2$s</string>
+    <string name="home_last_app">Última atribuição: %1$s · %2$s</string>
     <string name="home_source_video_suffix"> · vídeo</string>
     <string name="home_source_economy">Economia automática</string>
     <string name="home_source_aod">AOD · %1$d Hz</string>

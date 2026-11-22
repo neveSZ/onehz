@@ -22,6 +22,7 @@ class ScreenStateReceiver : BroadcastReceiver() {
                 DozeController.onScreenOn()
                 AodBrightnessController.onScreenOn()
                 OneHzEngine.setScreenOff(false)
+                OneHzEngine.refreshForegroundPackage()
             }
             PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED -> {
                 DozeController.onIdleChanged()

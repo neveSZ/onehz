@@ -159,7 +159,6 @@ fun HomeScreen(
     val activeLayer by Diagnostics.activeLayer.collectAsState()
     val activeProfileId by Diagnostics.activeProfileId.collectAsState()
     val activeAppPackage by Diagnostics.activeAppPackage.collectAsState()
-    val lastAssignedAppPackage by Diagnostics.lastAssignedAppPackage.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var refresh by remember { mutableIntStateOf(0) }
@@ -205,12 +204,13 @@ fun HomeScreen(
     val activeAppLabel = remember(activeAppPackage) {
         activeAppPackage?.let { runCatching { AppCatalog.label(context, it) }.getOrDefault(it) }
     }
-    val lastAssignedAppLabel = remember(lastAssignedAppPackage) {
-        lastAssignedAppPackage?.let { runCatching { AppCatalog.label(context, it) }.getOrDefault(it) }
+    val lastAssignment = state.profileState.assignments.lastOrNull()
+    val lastAssignedAppLabel = remember(lastAssignment?.packageName) {
+        lastAssignment?.packageName?.let {
+            runCatching { AppCatalog.label(context, it) }.getOrDefault(it)
+        }
     }
-    val lastAssignedProfile = lastAssignedAppPackage?.let { pkg ->
-        state.profileState.assignment(pkg)?.let { state.profileState.profile(it.profileId) }
-    }
+    val lastAssignedProfile = lastAssignment?.let { state.profileState.profile(it.profileId) }
     val appliedProfile = activeProfileId?.let { state.profileState.profile(it) }
     val videoPlaying = videoSource == VideoSignals.Source.PLAYING
     val sourceText = when {
@@ -758,7 +758,12 @@ private fun HeroCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                if (state.enabled && activeStepCount > 0) {
+                if (
+                    state.enabled &&
+                    shizuku == ShizukuState.READY &&
+                    idleReason == null &&
+                    activeStepCount > 0
+                ) {
                     Spacer(Modifier.height(6.dp))
                     Text(
                         text = stringResource(R.string.step_of, activeStep, activeStepCount),
