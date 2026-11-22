@@ -6,13 +6,15 @@
     <string name="home_control_none">No control</string>
     <string name="home_source_profile">Profile: %1$s</string>
     <string name="home_source_app">App: %1$s · %2$s</string>
+    <string name="home_last_app">Last app: %1$s · %2$s</string>
     <string name="home_source_video_suffix"> · video</string>
     <string name="home_source_economy">Automatic Economy</string>
     <string name="home_source_aod">AOD · %1$d Hz</string>
     <string name="home_source_video">Video · %1$d Hz minimum</string>
     <string name="home_section_screen_off">Screen off</string>
     <string name="home_aod_summary_off">Off</string>
-    <string name="home_aod_summary_on">%1$d Hz · brightness %2$d%%</string>
+    <string name="home_aod_summary_on">Rate %1$d Hz · brightness %2$d%%</string>
+    <string name="home_aod_summary_rate">Rate %1$d Hz</string>
     <string name="home_sleep_summary_off">Enters Doze when the screen turns off.</string>
 
     <!-- Profiles: selection, reference and migration. -->

@@ -6,13 +6,15 @@
     <string name="home_control_none">Sin control</string>
     <string name="home_source_profile">Perfil: %1$s</string>
     <string name="home_source_app">App: %1$s · %2$s</string>
+    <string name="home_last_app">Última app: %1$s · %2$s</string>
     <string name="home_source_video_suffix"> · vídeo</string>
     <string name="home_source_economy">Economía automática</string>
     <string name="home_source_aod">AOD · %1$d Hz</string>
     <string name="home_source_video">Vídeo · mínimo %1$d Hz</string>
     <string name="home_section_screen_off">Pantalla apagada</string>
     <string name="home_aod_summary_off">Desactivado</string>
-    <string name="home_aod_summary_on">%1$d Hz · brillo %2$d%%</string>
+    <string name="home_aod_summary_on">Tasa %1$d Hz · brillo %2$d%%</string>
+    <string name="home_aod_summary_rate">Tasa %1$d Hz</string>
     <string name="home_sleep_summary_off">Entra en Doze cuando se apaga la pantalla.</string>
 
     <!-- Perfiles: selección, referencia y migración. -->

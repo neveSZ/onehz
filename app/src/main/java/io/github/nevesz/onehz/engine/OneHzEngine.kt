@@ -503,6 +503,10 @@ object OneHzEngine {
                 Diagnostics.activeLayer.value = policy.layer
                 Diagnostics.activeProfileId.value = policy.profileId
                 Diagnostics.activeAppPackage.value = policy.appPackage
+                if (policy.appPackage != null && policy.profileId != null) {
+                    Diagnostics.lastAssignedAppPackage.value = policy.appPackage
+                    Diagnostics.lastAssignedProfileId.value = policy.profileId
+                }
                 Diagnostics.activeStep.value = index + 1
                 Diagnostics.activeStepCount.value = policy.profile.steps.size
                 Diagnostics.activeTierKey.value = when {

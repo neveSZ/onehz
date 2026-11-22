@@ -51,6 +51,8 @@ object Diagnostics {
     val activeLayer = MutableStateFlow<String?>(null)
     val activeProfileId = MutableStateFlow<String?>(null)
     val activeAppPackage = MutableStateFlow<String?>(null)
+    val lastAssignedAppPackage = MutableStateFlow<String?>(null)
+    val lastAssignedProfileId = MutableStateFlow<String?>(null)
     val activeStep = MutableStateFlow(0)
     val activeStepCount = MutableStateFlow(0)
     val idleReason = MutableStateFlow<io.github.nevesz.onehz.engine.IdleReason?>(null)

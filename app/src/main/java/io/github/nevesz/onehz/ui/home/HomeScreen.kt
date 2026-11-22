@@ -159,6 +159,7 @@ fun HomeScreen(
     val activeLayer by Diagnostics.activeLayer.collectAsState()
     val activeProfileId by Diagnostics.activeProfileId.collectAsState()
     val activeAppPackage by Diagnostics.activeAppPackage.collectAsState()
+    val lastAssignedAppPackage by Diagnostics.lastAssignedAppPackage.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var refresh by remember { mutableIntStateOf(0) }
@@ -204,6 +205,12 @@ fun HomeScreen(
     val activeAppLabel = remember(activeAppPackage) {
         activeAppPackage?.let { runCatching { AppCatalog.label(context, it) }.getOrDefault(it) }
     }
+    val lastAssignedAppLabel = remember(lastAssignedAppPackage) {
+        lastAssignedAppPackage?.let { runCatching { AppCatalog.label(context, it) }.getOrDefault(it) }
+    }
+    val lastAssignedProfile = lastAssignedAppPackage?.let { pkg ->
+        state.profileState.assignment(pkg)?.let { state.profileState.profile(it.profileId) }
+    }
     val appliedProfile = activeProfileId?.let { state.profileState.profile(it) }
     val videoPlaying = videoSource == VideoSignals.Source.PLAYING
     val sourceText = when {
@@ -230,6 +237,21 @@ fun HomeScreen(
         activeProfile != null ->
             stringResource(R.string.home_source_profile, profileLabel(activeProfile))
         else -> stringResource(R.string.profile_idle_off)
+    }
+    val lastAppText = if (
+        state.enabled &&
+        shizuku == ShizukuState.READY &&
+        activeAppPackage == null &&
+        lastAssignedAppLabel != null &&
+        lastAssignedProfile != null
+    ) {
+        stringResource(
+            R.string.home_last_app,
+            lastAssignedAppLabel,
+            profileLabel(lastAssignedProfile)
+        )
+    } else {
+        null
     }
 
     if (!gate.eligible) {
@@ -273,6 +295,7 @@ fun HomeScreen(
                 activeStepCount = activeStepCount,
                 idleReason = idleReason,
                 sourceText = sourceText,
+                lastAppText = lastAppText,
                 onToggle = { on ->
                     state = state.copy(enabled = on)
                     OneHzPreferences.setEnabled(context, on)
@@ -361,7 +384,7 @@ fun HomeScreen(
             OneHzCard {
                 SettingRow(
                     icon = Icons.Outlined.Nightlight,
-                    title = stringResource(R.string.aod_rate_title),
+                    title = stringResource(R.string.aod_title),
                     subtitle = aodSummary(state, gate.profile.supportsAodBrightness),
                     onClick = onOpenAod,
                     trailing = {
@@ -473,7 +496,7 @@ private fun aodSummary(state: HomeState, supportsBrightness: Boolean): String {
     return if (supportsBrightness && state.aodBrightnessEnabled) {
         stringResource(R.string.home_aod_summary_on, state.aodHz, state.aodBrightnessPct)
     } else {
-        stringResource(R.string.aod_minimum, state.aodHz)
+        stringResource(R.string.home_aod_summary_rate, state.aodHz)
     }
 }
 
@@ -690,6 +713,7 @@ private fun HeroCard(
     activeStepCount: Int,
     idleReason: IdleReason?,
     sourceText: String?,
+    lastAppText: String?,
     onToggle: (Boolean) -> Unit
 ) {
     val control = when {
@@ -722,6 +746,14 @@ private fun HeroCard(
                     Spacer(Modifier.height(6.dp))
                     Text(
                         text = sourceText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (lastAppText != null) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = lastAppText,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
