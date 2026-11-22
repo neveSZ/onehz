@@ -12,6 +12,7 @@
     <string name="sleep_state_waiting_service">Waiting for Shizuku</string>
     <string name="sleep_state_failed">The ROM did not enter Doze</string>
     <string name="sleep_requires_master">Enable OneHZ first.</string>
+    <string name="sleep_delay_warning">Notifications and VoIP calls can be delayed until the next maintenance window. Traditional calls and alarms still wake the device.</string>
 
     <string name="sleep_deep_title">Deep Doze</string>
     <string name="sleep_deep_desc">Use the deepest idle state. Turn it off if the Always On Display freezes.</string>

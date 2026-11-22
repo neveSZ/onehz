@@ -46,6 +46,8 @@ import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
+import io.github.nevesz.onehz.ui.components.BannerTone
+import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
@@ -146,6 +148,11 @@ fun SleepCard(context: Context, masterEnabled: Boolean, dataVersion: Int) {
         AnimatedVisibility(visible = ui.enabled) {
             Column {
                 Spacer(Modifier.height(4.dp))
+                InfoBanner(
+                    body = stringResource(R.string.sleep_delay_warning),
+                    tone = BannerTone.WARN,
+                )
+                Spacer(Modifier.height(8.dp))
                 ToggleRow(
                     title = stringResource(R.string.sleep_deep_title),
                     description = stringResource(R.string.sleep_deep_desc),

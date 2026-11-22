@@ -12,6 +12,7 @@
     <string name="sleep_state_waiting_service">Esperando a Shizuku</string>
     <string name="sleep_state_failed">La ROM no entró en Doze</string>
     <string name="sleep_requires_master">Activa OneHZ primero.</string>
+    <string name="sleep_delay_warning">Las notificaciones y las llamadas VoIP pueden retrasarse hasta la próxima ventana de mantenimiento. Las llamadas tradicionales y las alarmas siguen despertando el dispositivo.</string>
 
     <string name="sleep_deep_title">Doze profundo</string>
     <string name="sleep_deep_desc">Usa el estado de reposo más profundo. Desactívalo si el AOD se congela.</string>
