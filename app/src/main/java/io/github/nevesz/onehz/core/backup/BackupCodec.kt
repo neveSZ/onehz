@@ -29,7 +29,8 @@ data class BackupData(
     val aodBrightnessMinPct: Int,
     val aodBrightnessMaxPct: Int,
     val forcedVideoPackages: Set<String>,
-    val sleep: SleepBackup = SleepBackup(),
+    /** Null means the file was created before Sleep settings were part of the backup. */
+    val sleep: SleepBackup? = null,
     val appVersion: String? = null,
     val deviceRates: List<Int> = emptyList()
 )
@@ -54,15 +55,17 @@ object BackupCodec {
             put("aodBrightnessMaxPct", data.aodBrightnessMaxPct)
             put("forcedVideoPackages", JSONArray(data.forcedVideoPackages.sorted()))
         })
-        put("sleep", JSONObject().apply {
-            put("enabled", data.sleep.enabled)
-            put("deep", data.sleep.deep)
-            put("skipCharging", data.sleep.skipCharging)
-            put("skipMusic", data.sleep.skipMusic)
-            put("windowEnabled", data.sleep.windowEnabled)
-            put("windowStartMinute", data.sleep.windowStartMinute)
-            put("windowEndMinute", data.sleep.windowEndMinute)
-        })
+        data.sleep?.let { sleep ->
+            put("sleep", JSONObject().apply {
+                put("enabled", sleep.enabled)
+                put("deep", sleep.deep)
+                put("skipCharging", sleep.skipCharging)
+                put("skipMusic", sleep.skipMusic)
+                put("windowEnabled", sleep.windowEnabled)
+                put("windowStartMinute", sleep.windowStartMinute)
+                put("windowEndMinute", sleep.windowEndMinute)
+            })
+        }
         put("profileState", JSONObject(ProfileCodec.encode(data.state)))
     }.toString(2)
 
@@ -94,18 +97,20 @@ object BackupCodec {
                 }
             }
 
-            val sleepValue = root.optJSONObject("sleep") ?: JSONObject()
-            val sleep = SleepBackup(
-                enabled = sleepValue.optBoolean("enabled", false),
-                deep = sleepValue.optBoolean("deep", true),
-                skipCharging = sleepValue.optBoolean("skipCharging", true),
-                skipMusic = sleepValue.optBoolean("skipMusic", true),
-                windowEnabled = sleepValue.optBoolean("windowEnabled", false),
-                windowStartMinute = sleepValue.optInt("windowStartMinute", 23 * 60)
-                    .coerceIn(0, SleepWindow.MINUTES_PER_DAY - 1),
-                windowEndMinute = sleepValue.optInt("windowEndMinute", 7 * 60)
-                    .coerceIn(0, SleepWindow.MINUTES_PER_DAY - 1)
-            )
+            val sleepValue = root.optJSONObject("sleep")
+            val sleep = sleepValue?.let {
+                SleepBackup(
+                    enabled = it.optBoolean("enabled", false),
+                    deep = it.optBoolean("deep", true),
+                    skipCharging = it.optBoolean("skipCharging", true),
+                    skipMusic = it.optBoolean("skipMusic", true),
+                    windowEnabled = it.optBoolean("windowEnabled", false),
+                    windowStartMinute = it.optInt("windowStartMinute", 23 * 60)
+                        .coerceIn(0, SleepWindow.MINUTES_PER_DAY - 1),
+                    windowEndMinute = it.optInt("windowEndMinute", 7 * 60)
+                        .coerceIn(0, SleepWindow.MINUTES_PER_DAY - 1)
+                )
+            }
 
             BackupData(
                 state = state,

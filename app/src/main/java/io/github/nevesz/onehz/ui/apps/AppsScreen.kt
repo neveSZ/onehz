@@ -3,6 +3,7 @@ package io.github.nevesz.onehz.ui.apps
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -55,12 +56,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.profile.AppAssignment
 import io.github.nevesz.onehz.core.profile.DeviceProfile
+import io.github.nevesz.onehz.core.profile.ProfileKind
 import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.apps.InstalledApp
@@ -139,7 +142,10 @@ fun AppsScreen(
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Outlined.Clear, contentDescription = null)
+                            Icon(
+                                Icons.Outlined.Clear,
+                                contentDescription = stringResource(R.string.clear_search)
+                            )
                         }
                     }
                 },
@@ -194,8 +200,11 @@ fun AppsScreen(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = stringResource(
-                            if (filter == AppFilter.CONFIGURED) R.string.configured_count
-                            else R.string.installed_count,
+                            when (filter) {
+                                AppFilter.CONFIGURED -> R.string.configured_count
+                                AppFilter.SYSTEM -> R.string.system_count
+                                AppFilter.ALL -> R.string.installed_count
+                            },
                             filtered.size
                         ),
                         style = MaterialTheme.typography.titleMedium,
@@ -218,8 +227,20 @@ fun AppsScreen(
             item {
                 EmptyState(
                     icon = Icons.Outlined.SearchOff,
-                    title = stringResource(R.string.empty_apps),
-                    body = stringResource(R.string.empty_apps_body)
+                    title = stringResource(
+                        when (filter) {
+                            AppFilter.CONFIGURED -> R.string.empty_configured_title
+                            AppFilter.SYSTEM -> R.string.empty_system_title
+                            AppFilter.ALL -> R.string.empty_apps
+                        }
+                    ),
+                    body = stringResource(
+                        when (filter) {
+                            AppFilter.CONFIGURED -> R.string.empty_configured_body
+                            AppFilter.SYSTEM -> R.string.empty_system_body
+                            AppFilter.ALL -> R.string.empty_apps_body
+                        }
+                    )
                 )
             }
         } else {
@@ -346,10 +367,10 @@ private fun AppRow(
         }
         when {
             selectionMode && configured -> Checkbox(checked = checked, onCheckedChange = { onClick() })
-            configured && profile != null -> StatusBadge(
-                text = profileLabel(profile),
-                tone = if (ignoreEco) StatusTone.WARN else StatusTone.OK,
-                icon = if (ignoreEco) Icons.Outlined.BatterySaver else Icons.Outlined.CheckCircle
+            configured && ignoreEco -> StatusBadge(
+                text = stringResource(R.string.eco_ignored),
+                tone = StatusTone.WARN,
+                icon = Icons.Outlined.BatterySaver
             )
         }
     }
@@ -375,6 +396,7 @@ private fun AddSheet(
     onAdded: () -> Unit
 ) {
     var selectedId by remember { mutableStateOf(activeProfileId) }
+    val selectedProfile = profiles.firstOrNull { it.id == selectedId }
     ModalBottomSheet(onDismissRequest = onDismiss) {
         Column(
             Modifier
@@ -405,6 +427,13 @@ private fun AddSheet(
                     )
                 }
             }
+            selectedProfile?.let { profile ->
+                Text(
+                    text = stringResource(R.string.profile_reference_hint, profileLabel(profile)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Button(
                 onClick = {
                     ProfileStore.saveAssignment(
@@ -417,7 +446,7 @@ private fun AddSheet(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Icon(Icons.Outlined.Add, contentDescription = null)
-                Text(stringResource(R.string.add), Modifier.padding(start = 6.dp))
+                Text(stringResource(R.string.profile_assign), Modifier.padding(start = 6.dp))
             }
             OutlinedButton(
                 onClick = {
@@ -459,11 +488,20 @@ private fun EditSheet(
     var selectedId by remember(assignment.profileId) { mutableStateOf(assignment.profileId) }
     var ignoreEco by remember(assignment.ignoreEco) { mutableStateOf(assignment.ignoreEco) }
     var confirmRemove by remember { mutableStateOf(false) }
+    val selectedProfile = profiles.firstOrNull { it.id == selectedId }
+    val canIgnoreEco = selectedProfile?.kind != ProfileKind.ECONOMY
 
     fun save(profileId: String = selectedId, ignore: Boolean = ignoreEco) {
+        val effectiveIgnore = if (
+            profiles.firstOrNull { it.id == profileId }?.kind == ProfileKind.ECONOMY
+        ) {
+            false
+        } else {
+            ignore
+        }
         ProfileStore.saveAssignment(
             context,
-            AppAssignment(packageName, profileId, ignore)
+            AppAssignment(packageName, profileId, effectiveIgnore)
         )
         OneHzEngine.reapply()
         onChanged()
@@ -502,9 +540,17 @@ private fun EditSheet(
                     )
                 }
             }
+            selectedProfile?.let { profile ->
+                Text(
+                    text = stringResource(R.string.profile_reference_hint, profileLabel(profile)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             ToggleRow(
                 title = stringResource(R.string.ignore_eco_label),
-                checked = ignoreEco,
+                checked = ignoreEco && canIgnoreEco,
+                enabled = canIgnoreEco,
                 onCheckedChange = {
                     ignoreEco = it
                     save(ignore = it)
@@ -547,10 +593,13 @@ private fun ProfileChoiceRow(
     onClick: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RadioButton(selected = selected, onClick = onClick)
+        RadioButton(selected = selected, onClick = null)
         Column(Modifier.weight(1f).padding(start = 8.dp)) {
             Text(profileLabel(profile), style = MaterialTheme.typography.bodyLarge)
             Text(

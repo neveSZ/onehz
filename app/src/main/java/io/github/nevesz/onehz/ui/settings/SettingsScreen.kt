@@ -24,7 +24,6 @@ import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.BugReport
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Restore
 import androidx.compose.material.icons.outlined.RocketLaunch
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -74,8 +73,7 @@ fun SettingsScreen(
     onOpenSetup: () -> Unit,
     onOpenAbout: () -> Unit,
     onOpenDiagnostics: () -> Unit,
-    onExportBackup: () -> Unit,
-    onImportBackup: () -> Unit
+    onOpenBackup: () -> Unit
 ) {
     var showAppearance by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -129,16 +127,9 @@ fun SettingsScreen(
             OneHzCard {
                 SettingRow(
                     icon = Icons.Outlined.Backup,
-                    title = stringResource(R.string.backup_export),
+                    title = stringResource(R.string.settings_backup),
                     subtitle = stringResource(R.string.settings_backup_desc),
-                    onClick = onExportBackup
-                )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                SettingRow(
-                    icon = Icons.Outlined.Restore,
-                    title = stringResource(R.string.backup_import),
-                    subtitle = stringResource(R.string.backup_scope_note),
-                    onClick = onImportBackup
+                    onClick = onOpenBackup
                 )
             }
         }

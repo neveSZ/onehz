@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="sleep_title">Sleep</string>
-    <string name="sleep_hint">Enter Doze as soon as the screen turns off.</string>
-    <string name="sleep_state_off">Turned off</string>
-    <string name="sleep_state_ready">Ready</string>
-    <string name="sleep_state_active">Active for %1$s</string>
+    <string name="sleep_state_active">In Doze for %1$s</string>
     <string name="sleep_state_paused_until">Paused until %1$s</string>
     <string name="sleep_state_charging">Paused: charging</string>
     <string name="sleep_state_music">Paused: music playing</string>
     <string name="sleep_state_outside_window">Outside the allowed hours</string>
     <string name="sleep_state_waiting_service">Waiting for Shizuku</string>
-    <string name="sleep_state_failed">The ROM did not enter Doze</string>
+    <string name="sleep_state_failed">The phone did not enter Doze</string>
     <string name="sleep_requires_master">Enable OneHZ first.</string>
-    <string name="sleep_delay_warning">Notifications and VoIP calls can be delayed until the next maintenance window. Traditional calls and alarms still wake the device.</string>
+    <string name="sleep_delay_warning">Notifications and internet calls from apps such as WhatsApp and Telegram may be delayed. Regular calls and alarms still work.</string>
 
     <string name="sleep_deep_title">Deep Doze</string>
     <string name="sleep_deep_desc">Use the deepest idle state. Turn it off if the Always On Display freezes.</string>
-    <string name="sleep_skip_charging_title">Skip while charging</string>
+    <string name="sleep_skip_charging_title">Pause while charging</string>
     <string name="sleep_skip_charging_desc">Do not force Doze when the device is plugged in.</string>
-    <string name="sleep_skip_music_title">Skip while music is playing</string>
+    <string name="sleep_skip_music_title">Pause while music is playing</string>
     <string name="sleep_skip_music_desc">Do not force Doze when audio is playing in the background.</string>
     <string name="sleep_window_title">Only within a time window</string>
     <string name="sleep_window_desc">Useful for a fixed routine. The range may cross midnight.</string>
@@ -28,30 +25,26 @@
     <string name="sleep_pause">Pause for 1 hour</string>
     <string name="sleep_resume">Resume</string>
     <string name="sleep_whitelist_title">Apps that may wake the device</string>
-    <string name="sleep_whitelist_desc">Keep notifications from these apps outside Doze.</string>
+    <string name="sleep_whitelist_desc">Keeps these apps outside Doze. This changes the system Doze exceptions and may increase battery use.</string>
 
     <string name="sleep_usage_title">Last 24 hours</string>
     <string name="sleep_usage_values">%1$s with the screen off · %2$s in Doze</string>
-    <string name="sleep_usage_empty">No measurements yet.</string>
-    <string name="sleep_rest_title">Last rest</string>
-    <string name="sleep_rest_min_suffix">(≥ 30 min)</string>
-    <string name="sleep_rest_rate">%1$s%%/h</string>
-    <string name="sleep_rest_battery">%1$d%% → %2$d%%</string>
-    <string name="sleep_rest_none">No rest of 30 min or more in the last 24 hours.</string>
-    <string name="sleep_rest_hint">Rest = 30 min or more with the screen off. Short pauses only count in the 24-hour total.</string>
-    <string name="sleep_measured_hint">Measured by OneHZ · includes the Always On Display</string>
+    <string name="sleep_rest_title">Last sleep session (30 min+)</string>
+    <string name="sleep_rest_rate">Battery use: %1$s%%/h</string>
+    <string name="sleep_rest_battery">Battery: %1$d%% → %2$d%%</string>
+    <string name="sleep_rest_none">No sleep session of 30 min or more in the last 24 hours.</string>
+    <string name="sleep_rest_hint">A sleep session counts after 30 min with the screen off. Shorter pauses only count in the 24-hour total.</string>
     <string name="sleep_details">Details</string>
 
-    <string name="sleep_details_title">Rest — last sessions</string>
+    <string name="sleep_details_title">Sleep sessions</string>
     <string name="sleep_details_empty">No sessions recorded yet.</string>
     <string name="sleep_test">Test now</string>
-    <string name="sleep_test_hint">Forces Doze for 10 seconds and leaves it again.</string>
+    <string name="sleep_test_hint">Forces Doze for 10 seconds and leaves it again. The screen stays on; the result appears here.</string>
     <string name="sleep_whitelist_search">Search apps</string>
     <string name="sleep_whitelist_empty">No app found.</string>
     <string name="sleep_whitelist_waiting">Waiting for Shizuku…</string>
-    <string name="sleep_whitelist_failed">Could not update the Doze whitelist.</string>
-    <string name="sleep_whitelist_note">These apps are added to the system Doze whitelist through Shizuku.</string>
-    <string name="sleep_partial">partial · </string>
+    <string name="sleep_whitelist_failed">Could not update the Doze exceptions.</string>
+    <string name="sleep_whitelist_note">These apps are added to the system Doze exceptions through Shizuku.</string>
     <plurals name="sleep_maintenance_count">
         <item quantity="one">%1$d maintenance window</item>
         <item quantity="other">%1$d maintenance windows</item>

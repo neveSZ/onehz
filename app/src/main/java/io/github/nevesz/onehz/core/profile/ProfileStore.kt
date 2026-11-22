@@ -246,6 +246,8 @@ object ProfileStore {
             ?.takeIf { it.steps.isNotEmpty() }
         val legacyEco = FrequencyProfile.parse(prefs.getString(OneHzPreferences.KEY_PROFILE_ECO, null))
             ?.takeIf { it.steps.isNotEmpty() }
+        val hadLegacy = legacyNormal != null || legacyEco != null ||
+            prefs.all.keys.any { it.startsWith(OneHzPreferences.APP_PREFIX) }
 
         if (legacyNormal != null) {
             replaceFrequency(defaults, ProfileKind.BALANCED, legacyNormal)
@@ -370,6 +372,7 @@ object ProfileStore {
             autoEconomyOnBatterySaver = autoEconomy
         )
         save(context, state)
+        OneHzPreferences.setProfilesMigrationNoticePending(context, hadLegacy)
         return normalize(state, panelRates)
     }
 

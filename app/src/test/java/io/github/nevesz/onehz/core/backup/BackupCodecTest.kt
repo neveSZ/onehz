@@ -64,12 +64,29 @@ class BackupCodecTest {
     }
 
     @Test
-    fun `backup without a sleep block gets the defaults`() {
+    fun `backup without a sleep block keeps sleep absent`() {
         val root = JSONObject(BackupCodec.encode(data))
         root.remove("sleep")
         val decoded = BackupCodec.decode(root.toString())
         assertNotNull(decoded)
-        assertEquals(SleepBackup(), decoded?.sleep)
+        assertNull(decoded?.sleep)
+    }
+
+    @Test
+    fun `backup with a sleep block preserves it`() {
+        val decoded = BackupCodec.decode(BackupCodec.encode(data))
+        assertEquals(
+            SleepBackup(
+                enabled = true,
+                deep = false,
+                skipCharging = false,
+                skipMusic = false,
+                windowEnabled = true,
+                windowStartMinute = 22 * 60,
+                windowEndMinute = 6 * 60
+            ),
+            decoded?.sleep
+        )
     }
 
     @Test

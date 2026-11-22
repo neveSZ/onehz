@@ -74,9 +74,12 @@ import io.github.nevesz.onehz.ui.about.AboutScreen
 import io.github.nevesz.onehz.ui.apps.AppsScreen
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.diagnostics.DiagnosticsScreen
+import io.github.nevesz.onehz.ui.home.AodScreen
 import io.github.nevesz.onehz.ui.home.HomeScreen
+import io.github.nevesz.onehz.ui.home.SleepScreen
 import io.github.nevesz.onehz.ui.profile.ProfileEditorScreen
 import io.github.nevesz.onehz.ui.profile.ProfilesScreen
+import io.github.nevesz.onehz.ui.settings.BackupScreen
 import io.github.nevesz.onehz.ui.settings.SettingsScreen
 import io.github.nevesz.onehz.ui.setup.SetupScreen
 import io.github.nevesz.onehz.ui.theme.OneHZTheme
@@ -194,9 +197,11 @@ private fun OneHzShell(
     var settingsPage by rememberSaveable { mutableStateOf<String?>(null) }
     var showProfiles by rememberSaveable { mutableStateOf(false) }
     var returnToProfiles by rememberSaveable { mutableStateOf(false) }
+    var homePage by rememberSaveable { mutableStateOf<String?>(null) }
     var diagnosticsEnabled by remember { mutableStateOf(OneHzPreferences.diagnosticsEnabled(context)) }
     var dataVersion by remember { mutableIntStateOf(0) }
     var pendingImport by remember { mutableStateOf<Uri?>(null) }
+    var importResult by remember { mutableStateOf<ImportResult?>(null) }
     val rates = remember { DisplayRates.main(context).ifEmpty { ProfileDefaults.FALLBACK_RATES } }
     val diagnosticsUnlockedMessage = stringResource(R.string.diagnostics_unlocked)
     val exportSuccessMessage = stringResource(R.string.backup_export_success)
@@ -321,6 +326,27 @@ private fun OneHzShell(
         return
     }
 
+    when (homePage) {
+        "aod" -> {
+            AodScreen(
+                context = context,
+                masterEnabled = OneHzPreferences.isEnabled(context),
+                dataVersion = dataVersion,
+                onBack = { homePage = null }
+            )
+            return
+        }
+        "sleep" -> {
+            SleepScreen(
+                context = context,
+                masterEnabled = OneHzPreferences.isEnabled(context),
+                dataVersion = dataVersion,
+                onBack = { homePage = null }
+            )
+            return
+        }
+    }
+
     val page = settingsPage
     if (page != null) {
         BackHandler { settingsPage = null }
@@ -329,8 +355,11 @@ private fun OneHzShell(
                 TopAppBar(
                     title = {
                         Text(
-                            if (page == "about") stringResource(R.string.about_title)
-                            else stringResource(R.string.settings_diagnostics)
+                            when (page) {
+                                "about" -> stringResource(R.string.about_title)
+                                "backup" -> stringResource(R.string.settings_backup)
+                                else -> stringResource(R.string.settings_diagnostics)
+                            }
                         )
                     },
                     navigationIcon = {
@@ -359,6 +388,15 @@ private fun OneHzShell(
                         }
                     )
                     "diagnostics" -> DiagnosticsScreen()
+                    "backup" -> BackupScreen(
+                        onBack = { settingsPage = null },
+                        onExport = { exportLauncher.launch(backupFileName()) },
+                        onImport = {
+                            importLauncher.launch(
+                                arrayOf("application/json", "text/plain", "application/octet-stream")
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -410,7 +448,9 @@ private fun OneHzShell(
                         returnToProfiles = false
                         editorKey = "profile:$profileId"
                     },
-                    onManageProfiles = { showProfiles = true }
+                    onManageProfiles = { showProfiles = true },
+                    onOpenAod = { homePage = "aod" },
+                    onOpenSleep = { homePage = "sleep" }
                 )
                 1 -> AppsScreen(
                     context = context,
@@ -433,12 +473,7 @@ private fun OneHzShell(
                     onOpenSetup = { showSetup = true },
                     onOpenAbout = { settingsPage = "about" },
                     onOpenDiagnostics = { settingsPage = "diagnostics" },
-                    onExportBackup = { exportLauncher.launch(backupFileName()) },
-                    onImportBackup = {
-                        importLauncher.launch(
-                            arrayOf("application/json", "text/plain", "application/octet-stream")
-                        )
-                    }
+                    onOpenBackup = { settingsPage = "backup" }
                 )
             }
         }
@@ -451,7 +486,8 @@ private fun OneHzShell(
     pendingImport?.let { uri ->
         ConfirmDialog(
             title = stringResource(R.string.backup_import_confirm_title),
-            body = stringResource(R.string.backup_import_confirm_body),
+            body = stringResource(R.string.backup_import_confirm_body) + " " +
+                stringResource(R.string.backup_import_master_note),
             confirmLabel = stringResource(R.string.backup_import),
             onConfirm = {
                 pendingImport = null
@@ -459,7 +495,7 @@ private fun OneHzShell(
                     val result = withContext(Dispatchers.IO) {
                         BackupManager.import(context, uri, rates)
                     }
-                    showImportResult(context, result)
+                    importResult = result
                     dataVersion++
                     if (OneHzPreferences.isEnabled(context)) {
                         OneHzEngine.start(context)
@@ -473,32 +509,56 @@ private fun OneHzShell(
             onDismiss = { pendingImport = null }
         )
     }
+
+    importResult?.let { result ->
+        AlertDialog(
+            onDismissRequest = { importResult = null },
+            title = {
+                Text(
+                    stringResource(
+                        if (result.success) R.string.backup_import_success_title
+                        else R.string.backup_import_error_title
+                    )
+                )
+            },
+            text = { Text(importResultMessage(context, result)) },
+            confirmButton = {
+                TextButton(onClick = { importResult = null }) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        )
+    }
 }
 
-private fun showImportResult(context: android.content.Context, result: ImportResult) {
-    val message = if (!result.success) {
-        context.getString(R.string.backup_import_failed, result.error ?: "?")
-    } else {
-        buildList {
-            add(
-                context.getString(
-                    R.string.backup_import_success,
-                    result.profiles,
-                    result.assignments
-                )
-            )
-            if (result.adapted > 0) {
-                add(context.getString(R.string.backup_import_adapted, result.adapted))
-            }
-            if (result.missingAssignments > 0) {
-                add(context.getString(R.string.backup_import_missing, result.missingAssignments))
-            }
-            if (result.sleep) {
-                add(context.getString(R.string.backup_import_sleep))
-            }
-        }.joinToString(" ")
+private fun importResultMessage(context: android.content.Context, result: ImportResult): String {
+    if (!result.success) {
+        return when (result.error) {
+            "file-too-large-or-unreadable" -> context.getString(R.string.backup_error_too_large)
+            "invalid-backup" -> context.getString(R.string.backup_error_invalid)
+            else -> context.getString(R.string.backup_error_unreadable)
+        }
     }
-    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    return buildList {
+        add(
+            context.getString(
+                R.string.backup_import_success,
+                result.profiles,
+                result.assignments
+            )
+        )
+        if (result.adapted > 0) {
+            add(context.getString(R.string.backup_import_adapted, result.adapted))
+        }
+        if (result.missingAssignments > 0) {
+            add(context.getString(R.string.backup_import_missing, result.missingAssignments))
+        }
+        if (result.sleepIncluded) {
+            add(context.getString(R.string.backup_import_sleep))
+        } else {
+            add(context.getString(R.string.backup_import_sleep_not_included))
+        }
+    }.joinToString(" ")
 }
 
 private fun backupFileName(): String {

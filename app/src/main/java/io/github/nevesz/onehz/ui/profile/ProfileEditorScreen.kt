@@ -66,6 +66,7 @@ import io.github.nevesz.onehz.ui.components.DurationStepper
 import io.github.nevesz.onehz.ui.components.HzPicker
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.home.VideoForcedAppsSheet
 
 /**
  * Editor for one saved profile. Frequency, video and name are saved together so a profile
@@ -105,6 +106,8 @@ fun ProfileEditorScreen(
     var showDiscard by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
     var confirmReset by remember { mutableStateOf(false) }
+    var showVideoRules by rememberSaveable { mutableStateOf(false) }
+    var showForcedApps by rememberSaveable { mutableStateOf(false) }
 
     val frequency = FrequencyProfile(steps)
     val video = VideoSettings(
@@ -217,6 +220,14 @@ fun ProfileEditorScreen(
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.Medium
                     )
+                    profileTimes(initial.copy(frequency = frequency))?.let { times ->
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = times,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                     if (frequency.totalHoldMs > 0) {
                         Spacer(Modifier.height(4.dp))
                         Text(
@@ -248,6 +259,11 @@ fun ProfileEditorScreen(
                                 usageCount,
                                 usageCount
                             ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = stringResource(R.string.profile_used_by_apps_edit_note),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -383,54 +399,68 @@ fun ProfileEditorScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(Modifier.height(8.dp))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        Spacer(Modifier.height(8.dp))
+                        Spacer(Modifier.height(4.dp))
+                        TextButton(onClick = { showVideoRules = !showVideoRules }) {
+                            Text(stringResource(R.string.profile_video_advanced))
+                        }
+                        if (showVideoRules) {
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = stringResource(R.string.video_rules_title),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.video_rules_summary,
+                                    video.rules.activeRuleCount,
+                                    VideoConfig.RULE_COUNT
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            ToggleRow(
+                                title = stringResource(R.string.video_rule_session_title),
+                                description = stringResource(R.string.video_rule_session_desc),
+                                checked = useSession,
+                                onCheckedChange = { useSession = it }
+                            )
+                            ToggleRow(
+                                title = stringResource(R.string.video_rule_paused_title),
+                                description = stringResource(R.string.video_rule_paused_desc),
+                                checked = pausedBlocks,
+                                enabled = useSession,
+                                onCheckedChange = { pausedBlocks = it }
+                            )
+                            ToggleRow(
+                                title = stringResource(R.string.video_rule_codec_title),
+                                description = stringResource(R.string.video_rule_codec_desc),
+                                checked = requireCodec,
+                                onCheckedChange = { requireCodec = it }
+                            )
+                            ToggleRow(
+                                title = stringResource(R.string.video_rule_audio_title),
+                                description = stringResource(R.string.video_rule_audio_desc),
+                                checked = requireAudio,
+                                onCheckedChange = { requireAudio = it }
+                            )
+                            if (!video.rules.hasPositiveSignal) {
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(R.string.video_rules_none_warning),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(4.dp))
                         Text(
-                            text = stringResource(R.string.video_rules_title),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Text(
-                            text = stringResource(
-                                R.string.video_rules_summary,
-                                video.rules.activeRuleCount,
-                                VideoConfig.RULE_COUNT
-                            ),
+                            text = stringResource(R.string.profile_reference_global),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        ToggleRow(
-                            title = stringResource(R.string.video_rule_session_title),
-                            description = stringResource(R.string.video_rule_session_desc),
-                            checked = useSession,
-                            onCheckedChange = { useSession = it }
-                        )
-                        ToggleRow(
-                            title = stringResource(R.string.video_rule_paused_title),
-                            description = stringResource(R.string.video_rule_paused_desc),
-                            checked = pausedBlocks,
-                            enabled = useSession,
-                            onCheckedChange = { pausedBlocks = it }
-                        )
-                        ToggleRow(
-                            title = stringResource(R.string.video_rule_codec_title),
-                            description = stringResource(R.string.video_rule_codec_desc),
-                            checked = requireCodec,
-                            onCheckedChange = { requireCodec = it }
-                        )
-                        ToggleRow(
-                            title = stringResource(R.string.video_rule_audio_title),
-                            description = stringResource(R.string.video_rule_audio_desc),
-                            checked = requireAudio,
-                            onCheckedChange = { requireAudio = it }
-                        )
-                        if (!video.rules.hasPositiveSignal) {
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                text = stringResource(R.string.video_rules_none_warning),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.error
-                            )
+                        TextButton(onClick = { showForcedApps = true }) {
+                            Text(stringResource(R.string.video_forced_manage))
                         }
                     }
                 }
@@ -490,8 +520,8 @@ fun ProfileEditorScreen(
         if (confirmReset && defaultProfile != null) {
             ConfirmDialog(
                 title = stringResource(R.string.profile_reset_title),
-                body = stringResource(R.string.profile_reset_body),
-                confirmLabel = stringResource(R.string.profile_reset_confirm),
+                body = stringResource(R.string.profile_reset_editor_body),
+                confirmLabel = stringResource(R.string.profile_reset_editor_confirm),
                 onConfirm = {
                     steps = defaultProfile.frequency.steps
                     videoEnabled = defaultProfile.video.enabled
@@ -506,13 +536,27 @@ fun ProfileEditorScreen(
         }
 
         if (confirmDelete && onDelete != null) {
+            val deleteBody = if (usageCount > 0) {
+                pluralStringResource(
+                    R.plurals.profile_delete_body,
+                    usageCount,
+                    usageCount,
+                    stringResource(R.string.profile_balanced_title)
+                )
+            } else {
+                stringResource(R.string.profile_delete_body_unused)
+            }
             ConfirmDialog(
                 title = stringResource(R.string.profile_delete_title),
-                body = stringResource(R.string.profile_delete_body_unused),
+                body = deleteBody,
                 confirmLabel = stringResource(R.string.profile_delete_confirm),
                 onConfirm = onDelete,
                 onDismiss = { confirmDelete = false }
             )
+        }
+
+        if (showForcedApps) {
+            VideoForcedAppsSheet(context = context, onDismiss = { showForcedApps = false })
         }
     }
 }

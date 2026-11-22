@@ -19,7 +19,7 @@ data class ImportResult(
     val assignments: Int = 0,
     val adapted: Int = 0,
     val missingAssignments: Int = 0,
-    val sleep: Boolean = false,
+    val sleepIncluded: Boolean = false,
     val error: String? = null
 )
 
@@ -135,16 +135,18 @@ object BackupManager {
             data.aodBrightnessMaxPct
         )
         OneHzPreferences.setForcedVideoPackages(context, data.forcedVideoPackages)
-        SleepPreferences.setEnabled(context, data.sleep.enabled)
-        SleepPreferences.setDeep(context, data.sleep.deep)
-        SleepPreferences.setSkipCharging(context, data.sleep.skipCharging)
-        SleepPreferences.setSkipMusic(context, data.sleep.skipMusic)
-        SleepPreferences.setWindowEnabled(context, data.sleep.windowEnabled)
-        SleepPreferences.setWindow(
-            context,
-            data.sleep.windowStartMinute,
-            data.sleep.windowEndMinute
-        )
+        data.sleep?.let { sleep ->
+            SleepPreferences.setEnabled(context, sleep.enabled)
+            SleepPreferences.setDeep(context, sleep.deep)
+            SleepPreferences.setSkipCharging(context, sleep.skipCharging)
+            SleepPreferences.setSkipMusic(context, sleep.skipMusic)
+            SleepPreferences.setWindowEnabled(context, sleep.windowEnabled)
+            SleepPreferences.setWindow(
+                context,
+                sleep.windowStartMinute,
+                sleep.windowEndMinute
+            )
+        }
 
         return ImportResult(
             success = true,
@@ -152,7 +154,7 @@ object BackupManager {
             assignments = assignments.size,
             adapted = adapted,
             missingAssignments = missingAssignments,
-            sleep = true
+            sleepIncluded = data.sleep != null
         )
     }
 

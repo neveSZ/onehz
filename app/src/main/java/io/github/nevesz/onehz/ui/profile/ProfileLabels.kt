@@ -22,9 +22,20 @@ fun profileSummary(profile: DeviceProfile): String {
     if (profile.frequency.steps.isEmpty()) return stringResource(R.string.profile_empty)
     if (profile.isFixed) return stringResource(R.string.profile_fixed, profile.frequency.steps[0].hz)
     val chain = profile.frequency.steps.joinToString(" → ") { "${it.hz}" }
+    return "$chain Hz"
+}
+
+/** Hold times are only shown in the editor, where they have a visible label. */
+@Composable
+fun profileTimes(profile: DeviceProfile): String? {
+    if (profile.isFixed) return null
     val holds = profile.frequency.steps.dropLast(1)
-        .joinToString(" / ") { formatSeconds(it.holdMs ?: 0L) }
-    return "$chain Hz · $holds"
+        .mapNotNull { it.holdMs }
+    if (holds.isEmpty()) return null
+    return stringResource(
+        R.string.profile_times_label,
+        holds.joinToString(" / ") { formatSeconds(it) }
+    )
 }
 
 fun formatSeconds(ms: Long): String =

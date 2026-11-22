@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Inicio: estado y resumen de pantalla apagada. -->
+    <string name="home_status_on">Activado</string>
+    <string name="home_control_on">Controlando</string>
+    <string name="home_control_waiting">Esperando a Shizuku</string>
+    <string name="home_control_none">Sin control</string>
+    <string name="home_source_profile">Perfil: %1$s</string>
+    <string name="home_source_economy">Economía automática</string>
+    <string name="home_source_aod">AOD · %1$d Hz</string>
+    <string name="home_source_video">Vídeo · mínimo %1$d Hz</string>
+    <string name="home_section_screen_off">Pantalla apagada</string>
+    <string name="home_aod_summary_off">Desactivado</string>
+    <string name="home_aod_summary_on">%1$d Hz · brillo %2$d%%</string>
+    <string name="home_sleep_summary_off">Entra en Doze cuando se apaga la pantalla.</string>
+
+    <!-- Perfiles: selección, referencia y migración. -->
+    <string name="profile_in_use">En uso: %1$s</string>
+    <string name="profile_auto_economy_badge">Automática</string>
+    <string name="profile_auto_economy_title">Economía automática</string>
+    <string name="profile_auto_economy_desc">Usar Economía mientras el ahorro de batería del sistema esté activo.</string>
+    <string name="profile_auto_economy_footer">Las apps pueden mantener su propio perfil con la opción de abajo.</string>
+    <string name="profile_reference_hint">Esta app usa el perfil %1$s. Editarlo cambia todas las apps que lo usan.</string>
+    <string name="profile_reference_global">La lista de apps siempre tratadas como vídeo es global y se aplica a todos los perfiles.</string>
+    <string name="profile_video_link">Vídeo del perfil: mínimo %1$d Hz</string>
+    <string name="profile_video_advanced">Reglas de detección (avanzado)</string>
+    <string name="profile_times_label">Tiempos: %1$s</string>
+    <string name="profile_delete_active_note">Este es el perfil seleccionado. %1$s será seleccionado.</string>
+    <string name="profile_reset_editor_body">Los campos vuelven a los valores del dispositivo. Revisa y toca Guardar.</string>
+    <string name="profile_reset_editor_confirm">Restablecer campos</string>
+    <string name="profile_used_by_apps_edit_note">Los cambios afectan a todas las apps que lo usan.</string>
+    <string name="profile_migration_title">Perfiles actualizados</string>
+    <string name="profile_migration_body">Normal pasó a ser Equilibrado, ECO pasó a ser Economía y se creó un nuevo perfil Rendimiento. Los perfiles por app ahora referencian perfiles guardados.</string>
+    <string name="profile_migration_more">Saber más</string>
+    <string name="profile_migration_dismiss">Entendido</string>
+    <string name="profile_assign">Asignar perfil</string>
+    <string name="profile_switch_hint">Toca un perfil para usarlo.</string>
+    <string name="empty_configured_title">Ninguna app configurada</string>
+    <string name="empty_configured_body">Abre la pestaña Todas y toca una app para asignar un perfil.</string>
+    <string name="empty_system_title">No se encontraron apps del sistema</string>
+    <string name="empty_system_body">Prueba otra búsqueda.</string>
+    <string name="system_count">Apps del sistema (%1$d)</string>
+    <string name="clear_search">Limpiar búsqueda</string>
+
+    <!-- Sueño: confirmación, estados y mediciones. -->
+    <string name="sleep_confirm_title">¿Activar Sueño?</string>
+    <string name="sleep_confirm_body">Sueño fuerza Doze en cuanto se apaga la pantalla. Las notificaciones y las llamadas por internet de apps como WhatsApp y Telegram pueden retrasarse. Las llamadas normales y las alarmas siguen funcionando. Puedes pausar durante una hora en cualquier momento.</string>
+    <string name="sleep_confirm_enable">Activar</string>
+    <string name="sleep_confirm_cancel">Ahora no</string>
+    <string name="sleep_state_ready_desc">Entra en Doze cuando se apaga la pantalla.</string>
+    <string name="sleep_how_title">Cómo funciona Sueño</string>
+    <string name="sleep_how_body">Doze es el estado de reposo profundo de Android. Sueño entra en él en cuanto se apaga la pantalla y sale cuando se enciende. Las llamadas normales y las alarmas siguen despertando el dispositivo. Las llamadas por internet y las notificaciones pueden retrasarse hasta que Android abra una ventana de mantenimiento.</string>
+    <string name="sleep_options_title">Comportamiento</string>
+    <string name="sleep_measurements_title">Mediciones</string>
+    <string name="sleep_advanced_title">Avanzado</string>
+    <string name="sleep_test_running">Probando…</string>
+    <string name="sleep_test_result_ok">Doze confirmado.</string>
+    <string name="sleep_test_result_failed">No se pudo confirmar Doze en este sistema.</string>
+    <string name="sleep_usage_empty_enabled">Aún sin mediciones. Deja la pantalla apagada un rato.</string>
+    <string name="sleep_partial_badge">Datos parciales</string>
+    <string name="sleep_partial_hint">OneHZ no estuvo activo durante todo el período.</string>
+    <string name="sleep_measure_note">Medido por OneHZ. Incluye AOD. El consumo varía según el dispositivo y el uso.</string>
+    <string name="sleep_whitelist_effect">Esto cambia las excepciones de Doze del sistema y puede aumentar el consumo.</string>
+    <string name="sleep_failure_hint">Esto puede pasar en algunas versiones del sistema. Revisa el diagnóstico o prueba Doze ligero.</string>
+    <string name="sleep_details_hint">Últimas 5 sesiones de sueño. Las sesiones cortas también aparecen.</string>
+
+    <!-- AOD: detalle. -->
+    <string name="aod_section_rate">Tasa</string>
+    <string name="aod_brightness_restore_confirm_title">¿Restaurar brillo del sistema?</string>
+    <string name="aod_brightness_restore_body">Elimina el valor guardado y devuelve el brillo del AOD al sistema.</string>
+    <string name="aod_brightness_failed">No se pudo aplicar el brillo del AOD. Revisa Shizuku.</string>
+
+    <!-- Configuración inicial: aclaraciones. -->
+    <string name="setup_shizuku_help">Cómo configurar Shizuku</string>
+    <string name="setup_shizuku_reboot">Shizuku puede necesitar iniciarse de nuevo después de reiniciar el dispositivo.</string>
+    <string name="setup_finish_note">OneHZ empezará a controlar la pantalla ahora.</string>
+    <string name="setup_sleep_note">Sueño es opcional y puede activarse después en Inicio.</string>
+
+    <!-- Copia de seguridad: detalle. -->
+    <string name="backup_intro">Exporta o importa la configuración de comportamiento de OneHZ. El archivo es un JSON versionado.</string>
+    <string name="backup_includes_title">Incluye</string>
+    <string name="backup_includes_body">Perfiles, asignaciones de apps, vídeo, AOD, ajustes de Sueño y el interruptor maestro.</string>
+    <string name="backup_excludes_title">No incluye</string>
+    <string name="backup_excludes_body">Tema, idioma, diagnóstico, caché, mediciones de Sueño, pausa/estado forzado y las excepciones de Doze del sistema.</string>
+    <string name="backup_export_hint">Exporta antes de cambiar la configuración si quieres una forma de volver.</string>
+    <string name="backup_import_hint">La importación reemplaza la configuración de comportamiento actual.</string>
+    <string name="backup_import_success_title">Importación completada</string>
+    <string name="backup_import_error_title">Error de importación</string>
+    <string name="backup_error_too_large">El archivo es demasiado grande.</string>
+    <string name="backup_error_invalid">Este no es un backup válido de OneHZ.</string>
+    <string name="backup_error_unreadable">No se pudo leer el archivo.</string>
+    <string name="backup_import_sleep_not_included">Este backup no incluye Sueño; se mantuvieron los ajustes actuales.</string>
+    <string name="backup_import_master_note">El interruptor maestro seguirá el archivo.</string>
+</resources>

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -40,11 +41,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.profile.DeviceProfile
 import io.github.nevesz.onehz.core.profile.ProfileCodec
 import io.github.nevesz.onehz.core.profile.ProfileKind
@@ -55,6 +59,7 @@ import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
+import io.github.nevesz.onehz.ui.components.ToggleRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +78,9 @@ fun ProfilesScreen(
     var showCreate by remember { mutableStateOf(false) }
     var deleteTarget by remember { mutableStateOf<DeviceProfile?>(null) }
     var resetTarget by remember { mutableStateOf<DeviceProfile?>(null) }
+    var showMigration by remember {
+        mutableStateOf(OneHzPreferences.profilesMigrationNoticePending(context))
+    }
 
     fun changed() {
         refresh++
@@ -101,6 +109,35 @@ fun ProfilesScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            if (showMigration) {
+                item {
+                    MigrationCard(
+                        onDismiss = {
+                            showMigration = false
+                            OneHzPreferences.setProfilesMigrationNoticePending(context, false)
+                        }
+                    )
+                }
+            }
+            item {
+                OneHzCard {
+                    ToggleRow(
+                        title = stringResource(R.string.profile_auto_economy_title),
+                        description = stringResource(R.string.profile_auto_economy_desc),
+                        checked = state.autoEconomyOnBatterySaver,
+                        onCheckedChange = { enabled ->
+                            ProfileStore.setAutoEconomy(context, enabled)
+                            changed()
+                        }
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.profile_auto_economy_footer),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
             items(state.profiles, key = { it.id }) { profile ->
                 ProfileRow(
                     profile = profile,
@@ -162,13 +199,19 @@ fun ProfilesScreen(
         val usage = state.appsUsing(profile.id).size
         val fallback = state.balancedProfile()
         val fallbackName = fallback?.let { profileLabel(it) } ?: stringResource(R.string.profile_balanced_title)
+        val body = if (usage > 0) {
+            pluralStringResource(R.plurals.profile_delete_body, usage, usage, fallbackName)
+        } else {
+            stringResource(R.string.profile_delete_body_unused)
+        }
+        val activeNote = if (profile.id == state.activeProfileId) {
+            stringResource(R.string.profile_delete_active_note, fallbackName)
+        } else {
+            null
+        }
         ConfirmDialog(
             title = stringResource(R.string.profile_delete_title),
-            body = if (usage > 0) {
-                stringResource(R.string.profile_delete_body, usage, fallbackName)
-            } else {
-                stringResource(R.string.profile_delete_body_unused)
-            },
+            body = listOfNotNull(body, activeNote).joinToString(" "),
             confirmLabel = stringResource(R.string.profile_delete_confirm),
             onConfirm = {
                 ProfileStore.deleteProfile(context, profile.id, fallback?.id)
@@ -197,6 +240,34 @@ fun ProfilesScreen(
 }
 
 @Composable
+private fun MigrationCard(onDismiss: () -> Unit) {
+    val uriHandler = LocalUriHandler.current
+    OneHzCard {
+        Text(
+            text = stringResource(R.string.profile_migration_title),
+            style = MaterialTheme.typography.titleSmall
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.profile_migration_body),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(4.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TextButton(onClick = {
+                uriHandler.openUri("https://github.com/neveSZ/onehz/blob/main/docs/FAQ.md#will-updating-change-my-profiles")
+            }) {
+                Text(stringResource(R.string.profile_migration_more))
+            }
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.profile_migration_dismiss))
+            }
+        }
+    }
+}
+
+@Composable
 private fun ProfileRow(
     profile: DeviceProfile,
     active: Boolean,
@@ -207,8 +278,13 @@ private fun ProfileRow(
     onDelete: (() -> Unit)?
 ) {
     OneHzCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            RadioButton(selected = active, onClick = onSelect)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .selectable(selected = active, role = Role.RadioButton, onClick = onSelect),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RadioButton(selected = active, onClick = null)
             Column(Modifier.weight(1f).padding(start = 4.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
