@@ -24,7 +24,7 @@
 
 <p align="center">
   <a href="docs/assets/screenshots/home-pt.png"><img src="docs/assets/screenshots/home-pt.png" width="230" alt="Tela inicial"></a>
-  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Editor de perfil"></a>
+  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Tela de perfis"></a>
   <a href="docs/assets/screenshots/video-pt.png"><img src="docs/assets/screenshots/video-pt.png" width="230" alt="Regras de detecção de vídeo"></a>
 </p>
 
@@ -81,7 +81,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 |---|---|
 | **Escada de taxa de atualização** | 1 a 5 faixas decrescentes por perfil, com tempo de espera em cada faixa. |
 | **Economia / Balanceado / Performance** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
-| **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada, com exceção "Ignorar ECO" por app. |
+| **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada, com a opção por app de não usar Economia durante a economia de bateria. |
 | **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
 | **Taxa do AOD** | Sempre a menor taxa exposta pela tela. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |

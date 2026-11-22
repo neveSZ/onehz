@@ -31,6 +31,7 @@ Beta feature set for reusable profiles. No release tag or publication yet.
 - The AOD frequency picker was removed; the minimum is shown instead.
 - The default video rules enable MediaSession, paused-session blocking and the video codec
   rule, leaving the media-audio rule off.
+- The per-app ECO exception and the active-profile badge now use the Economy name.
 
 ## [1.1.0-beta.1] - 2026-11-21
 

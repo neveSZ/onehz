@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 2026-11-21
+**Last updated:** 2026-11-22
 
 OneHZ is a local-first Android app. This document explains what the app does with your
 data.
@@ -16,16 +16,30 @@ data.
 
 OneHZ stores its settings in Android `SharedPreferences`:
 
-- profiles (normal, ECO, AOD, and per-app);
+- device profiles (Economy, Balanced, Performance and custom), the active profile and
+  per-app assignments;
+- video and AOD settings;
 - feature toggles and theme/language preferences;
 - session markers used to restore system settings after a crash;
-- a small backup of the Samsung battery-saver settings and the HyperOS rate key that
+- a small snapshot of the Samsung battery-saver settings and the HyperOS rate key that
   OneHZ changed;
 - update-check settings (enabled, interval, channel, last attempt) and the last release
   metadata returned by GitHub.
 
 This data is private to the app. The app has `allowBackup="false"` and excludes its
 preferences from cloud backup and device transfer.
+
+## Manual backup and restore
+
+Settings → **Backup and restore** is user-initiated. OneHZ opens the Android system file
+picker and writes or reads a JSON file at the location you choose. The file contains the
+profiles, active profile, per-app assignments, video and AOD settings, the master switch
+and the forced-video app list. It may therefore contain the package names of apps you
+configured.
+
+The file is not uploaded, synchronized or sent anywhere by OneHZ. You control where it is
+stored and when it is deleted. The app does not request broad storage permission; access
+is limited to the file selected in the system picker.
 
 ## Diagnostics
 
@@ -71,8 +85,9 @@ less stable and are clearly marked in the app.
 | `INTERNET` | Optional GitHub update check, off by default. |
 | Shizuku permission | Perform privileged display and settings operations. |
 
-OneHZ does not use AccessibilityService, overlay, storage, contacts, location, camera, or
-microphone. It does not use the network for anything other than the opt-in update check.
+OneHZ does not use AccessibilityService, overlay, broad storage access, contacts,
+location, camera, or microphone. Manual backup/restore uses the system file picker, not a
+storage permission. The network is used only by the opt-in update check.
 
 ## External links
 

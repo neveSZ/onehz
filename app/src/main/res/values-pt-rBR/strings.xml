@@ -43,7 +43,7 @@
     <string name="home_shizuku_pending_unavailable">O serviço do Shizuku não está disponível. Abra o app Shizuku e tente de novo.</string>
     <string name="layer_aod">Always On Display</string>
     <string name="step_of">Nível %1$d de %2$d</string>
-    <string name="eco_active_now">ECO ativo</string>
+    <string name="eco_active_now">Economia · economia de bateria</string>
 
     <string name="aod_title">Tela desligada (AOD)</string>
     <string name="aod_hint">Aplicado somente com a tela desligada e o Always On Display ativo. Não afeta o uso normal.</string>
@@ -144,8 +144,8 @@
     <string name="app_added">Aplicativo adicionado</string>
     <string name="app_removed">Aplicativo removido</string>
     <string name="profile_badge">Configurado</string>
-    <string name="eco_ignored">Ignora ECO</string>
-    <string name="ignore_eco_label">Não usar o modo ECO para este aplicativo</string>
+    <string name="eco_ignored">Ignora Economia</string>
+    <string name="ignore_eco_label">Não usar Economia durante a economia de bateria</string>
     <string name="template_title">Começar a partir de</string>
     <string name="template_default">Normal</string>
     <string name="template_eco">ECO</string>

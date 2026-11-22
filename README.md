@@ -26,7 +26,7 @@
 
 <p align="center">
   <a href="docs/assets/screenshots/home-en.png"><img src="docs/assets/screenshots/home-en.png" width="230" alt="Home screen"></a>
-  <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profile editor"></a>
+  <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profiles screen"></a>
   <a href="docs/assets/screenshots/video-en.png"><img src="docs/assets/screenshots/video-en.png" width="230" alt="Video detection rules"></a>
 </p>
 
@@ -80,7 +80,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
 | **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
-| **Automatic Economy** | Switches to Economy while the system battery saver is on, with a per-app "Ignore ECO" exception. |
+| **Automatic Economy** | Switches to Economy while the system battery saver is on, with a per-app option to not use Economy during battery saver. |
 | **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
 | **AOD refresh rate** | Always the lowest rate exposed by the panel. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |

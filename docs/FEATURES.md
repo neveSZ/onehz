@@ -55,7 +55,7 @@ battery saver is active.
 
 - the app listens to the system battery-saver broadcast and reapplies the policy;
 - while battery saver is on, Economy is applied automatically unless the foreground app
-  opts out with **“Ignore ECO”**;
+  opts out with **“Do not use Economy during battery saver”**;
 - when battery saver turns off, the selected profile returns;
 - the behavior can be disabled so the selected profile is always used;
 - while Economy is active, OneHZ disables Samsung's own battery-saver refresh-rate caps
@@ -112,7 +112,8 @@ adb shell settings delete system debug_aod_brightness
 - editing the referenced profile updates every app that uses it;
 - deleting a profile reassigns its apps to Balanced;
 - if the app has no assignment, the active profile applies;
-- during automatic Economy, an app only keeps its profile when **“Ignore ECO”** is on.
+- during automatic Economy, an app only keeps its profile when
+  **“Do not use Economy during battery saver”** is on.
 
 ## 7. Video mode
 

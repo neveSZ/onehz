@@ -55,7 +55,7 @@ de bateria do sistema está ativa.
 
 - o app escuta o broadcast de economia do sistema e reaplica a política;
 - enquanto a economia está ligada, Economia é aplicada automaticamente, a menos que o app
-  em primeiro plano use **“Ignorar ECO”**;
+  em primeiro plano use **“Não usar Economia durante a economia de bateria”**;
 - quando a economia desliga, o perfil selecionado volta;
 - o comportamento pode ser desativado para usar sempre o perfil selecionado;
 - enquanto Economia está ativa, o OneHZ desativa os limites de taxa da economia da
@@ -113,8 +113,8 @@ adb shell settings delete system debug_aod_brightness
 - editar o perfil referenciado atualiza todos os apps que o usam;
 - excluir um perfil reatribui os apps dele para Balanceado;
 - se o app não tem atribuição, o perfil ativo se aplica;
-- durante a Economia automática, o app só mantém o perfil se **“Ignorar ECO”** estiver
-  ligado.
+- durante a Economia automática, o app só mantém o perfil se
+  **“Não usar Economia durante a economia de bateria”** estiver ligado.
 
 ## 7. Modo vídeo
 

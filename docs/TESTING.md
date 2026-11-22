@@ -63,7 +63,7 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Delete a custom profile used by an app; the app moves to Balanced.
 - [ ] Turn on system battery saver; Economy is applied and the card shows it.
 - [ ] Turn battery saver off; the selected profile returns.
-- [ ] Mark an app "Ignore ECO"; its profile stays while battery saver is on.
+- [ ] Mark an app "Do not use Economy during battery saver"; its profile stays while battery saver is on.
 - [ ] Confirm Samsung ECO settings are restored after turning OneHZ off.
 - [ ] On Xiaomi, confirm `secure/miui_refresh_rate` is restored after turning OneHZ off.
 
@@ -144,14 +144,15 @@ Test on the target device with a clean install of the signed release APK.
 
 ### Beta and upgrade
 
-- [ ] Install 1.1.0-beta.1 over 1.0.1; settings and profiles are kept.
+- [ ] Install the new beta over the previous installed version; settings and profiles are
+      migrated (Normal → Balanced, ECO → Economy, new Performance profile).
 - [ ] The stable update channel never offers the beta.
 - [ ] The stable + pre-releases channel offers the beta and labels it as a pre-release.
 - [ ] On Xiaomi, the profile editor warns when a step uses 30 Hz.
 
 ### Release artifacts
 
-- [ ] `versionName=1.1.0-beta.1`, `versionCode=1010001`.
+- [ ] `versionName` and `versionCode` match `version.properties`.
 - [ ] APK signed (v3; minSdk 31).
 - [ ] Certificate SHA-256 matches the documented fingerprint.
 - [ ] SHA-256 file matches the APK.
