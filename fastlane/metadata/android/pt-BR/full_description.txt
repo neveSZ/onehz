@@ -7,8 +7,8 @@ Recursos
 * Seleção manual do perfil ativo, com Economia automática opcional durante a economia de bateria do sistema.
 * Atribuições por app que referenciam um perfil salvo em vez de copiar a escada.
 * Mínimo de vídeo e regras de detecção por perfil, além de uma lista global de apps sempre tratados como vídeo.
-* O AOD sempre usa a menor taxa da tela; brilho do AOD somente Samsung com faixa de segurança e restauração do sistema.
-* Sono (Doze forçado) opcional, com aviso antes do primeiro enable, proteções e medições locais.
+* O controle do AOD tem uma chave principal única na Home; taxa e brilho são independentes. O AOD sempre usa a menor taxa da tela; brilho do AOD somente Samsung com faixa de segurança e restauração do sistema.
+* Sono (Doze forçado) opcional, com aviso antes do primeiro enable, proteções e medições locais. Com o Sono desligado, as opções de comportamento e o histórico continuam visíveis.
 * Backup e restauração de perfis, atribuições, vídeo, AOD, configurações do Sono e switch mestre.
 * Perfis padrão de acordo com o aparelho em uma instalação nova.
 * Configuração guiada para compatibilidade da tela, Shizuku, otimização de bateria, Doze e notificações.

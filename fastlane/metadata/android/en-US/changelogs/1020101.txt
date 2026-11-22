@@ -1,0 +1,6 @@
+Version 1.2.1-beta.1
+* Single AOD master switch on Home; rate and brightness stay independent
+* Turning the AOD rate off no longer hides AOD brightness
+* Sleep options stay visible and editable while Sleep is off
+* Home Sleep subtitle now says Off when disabled
+* Backup includes the AOD master; old backups remain compatible

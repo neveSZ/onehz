@@ -4,6 +4,30 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.1-beta.1] - 2026-11-22
+
+First beta of the 1.2.1 patch. Fixes the AOD switch hierarchy and keeps the Sleep
+options available while the feature is off.
+
+### Fixed
+
+- The Home AOD switch is now the only AOD master. Turning it off pauses rate and
+  brightness without resetting their choices; the detail screen no longer duplicates the
+  master.
+- AOD rate and brightness are independent again: turning the rate off no longer hides
+  brightness or its restore action.
+- AOD master migration derives the new switch from the existing rate/brightness choices.
+  Backups without the new field remain compatible.
+- Sleep detail no longer duplicates the Home master switch. With Sleep off, behavior
+  options, wake-up apps and historical measurements remain visible and editable; test and
+  pause actions require Sleep on.
+- The Home Sleep subtitle now says "Off" when Sleep is disabled instead of describing
+  Doze.
+
+### Changed
+
+- Backup includes the AOD master switch (`aodMasterEnabled`).
+
 ## [1.2.0] - 2026-11-22
 
 First stable release after 1.1.0-beta.1. Adds reusable profiles, backup and Sleep, and
@@ -193,6 +217,7 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.2.1-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.2.1-beta.1
 [1.2.0]: https://github.com/neveSZ/onehz/releases/tag/v1.2.0
 [1.1.0-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.1.0-beta.1
 [1.0.1]: https://github.com/neveSZ/onehz/releases/tag/v1.0.1

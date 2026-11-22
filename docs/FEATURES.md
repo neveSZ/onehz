@@ -68,9 +68,13 @@ battery saver is active.
 **What it does:** applies a fixed rate while the screen is off / Always On Display is
 active.
 
+**Master switch.** The AOD switch on the Home screen is the only master for this section.
+Turning it off pauses both the rate and the brightness without resetting their choices.
+The AOD detail screen has no duplicate master.
+
 **How it works:**
 
-- the AOD switch is independent from the profiles;
+- the AOD master is independent from the profiles;
 - the AOD always uses the **lowest rate exposed by the panel**;
 - when the screen turns off, timers and the touch monitor stop, so the device can enter
   Doze normally;
@@ -80,6 +84,9 @@ active.
 
 **What it does:** on Samsung, sets the AOD brightness from a percentage of the screen
 brightness at lock time, with a safety band.
+
+**Independent from the rate.** Brightness has its own switch and stays available when the
+rate is off. It still obeys the AOD master switch on Home.
 
 **How it works:**
 
@@ -228,7 +235,11 @@ Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS
 ## 16. Sleep (forced Doze)
 
 Optional and off by default. The first enable asks for confirmation because notifications
-and internet calls can be delayed. When the screen turns off, OneHZ asks the platform to
+and internet calls can be delayed. The Sleep switch on Home is the only master. With Sleep
+off, the detail keeps the behavior options, wake-up list and historical measurements
+visible and editable; only "Test now" and pause/resume require Sleep to be on.
+
+When the screen turns off, OneHZ asks the platform to
 enter Doze immediately instead of waiting for the inactivity timers:
 
 - deep idle (default) or light idle;

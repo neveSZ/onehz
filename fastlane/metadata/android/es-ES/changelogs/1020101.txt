@@ -1,0 +1,6 @@
+Versión 1.2.1-beta.1
+* Interruptor maestro único del AOD en Inicio; tasa y brillo independientes
+* Desactivar la tasa del AOD ya no oculta el brillo del AOD
+* Las opciones de Sueño siguen visibles y editables con Sueño desactivado
+* El subtítulo de Sueño en Inicio ahora muestra Desactivado
+* La copia de seguridad incluye el maestro del AOD; los backups antiguos siguen siendo compatibles

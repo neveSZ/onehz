@@ -1,0 +1,6 @@
+Versão 1.2.1-beta.1
+* Chave principal única do AOD na Home; taxa e brilho independentes
+* Desligar a taxa do AOD não esconde mais o brilho do AOD
+* Opções do Sono continuam visíveis e editáveis com o Sono desligado
+* Subtítulo do Sono na Home agora mostra Desligado
+* Backup inclui o master do AOD; backups antigos continuam compatíveis

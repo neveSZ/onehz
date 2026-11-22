@@ -112,6 +112,17 @@ então ela instala por cima da versão estável mantendo os ajustes. A próxima 
 `versionCode` maior, então instalar a estável por cima da beta devolve você ao canal
 estável.
 
+### O que mudou na 1.2.1-beta.1?
+
+- O switch do AOD na Home agora é o único master; a tela de detalhe não repete a chave.
+- Taxa e brilho do AOD voltaram a ser independentes. Desligar a taxa não esconde mais o
+  brilho nem a ação de restauração.
+- O master do AOD é migrado das escolhas antigas de taxa/brilho, e os backups existentes
+  continuam compatíveis.
+- Com o Sono desligado, o detalhe mantém comportamento, apps que acordam e medições
+  visíveis e editáveis; testar e pausar exigem o Sono ligado.
+- O subtítulo do Sono na Home agora mostra "Desligado" quando o recurso está desligado.
+
 ### O que mudou na 1.2.0?
 
 - Perfis reutilizáveis **Economia, Equilibrado e Desempenho**, além de perfis

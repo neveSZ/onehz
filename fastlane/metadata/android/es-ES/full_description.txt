@@ -7,8 +7,8 @@ Funciones
 * Selección manual del perfil activo, con Economía automática opcional mientras el ahorro de batería del sistema está activo.
 * Asignaciones por app que referencian un perfil guardado en vez de copiar su escalera.
 * Mínimo de vídeo y reglas de detección por perfil, además de una lista global de apps siempre tratadas como vídeo.
-* El AOD usa siempre la tasa más baja de la pantalla; brillo del AOD solo en Samsung con banda de seguridad y restauración del sistema.
-* Sueño (Doze forzado) opcional, con aviso antes del primer encendido, protecciones y mediciones locales.
+* El control del AOD tiene un único interruptor maestro en Inicio; tasa y brillo son independientes. El AOD usa siempre la tasa más baja de la pantalla; brillo del AOD solo en Samsung con banda de seguridad y restauración del sistema.
+* Sueño (Doze forzado) opcional, con aviso antes del primer encendido, protecciones y mediciones locales. Con Sueño desactivado, las opciones de comportamiento y el historial siguen visibles.
 * Copia de seguridad de perfiles, asignaciones, vídeo, AOD, ajustes de Sueño y el interruptor maestro.
 * Perfiles predeterminados según el dispositivo en una instalación nueva.
 * Configuración guiada para compatibilidad de pantalla, Shizuku, optimización de batería, Doze y notificaciones.
