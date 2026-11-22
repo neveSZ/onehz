@@ -29,7 +29,7 @@ object ShizukuGateway {
     private const val TAG = "Shizuku"
     private const val SERVICE_TAG = "onehz_privileged_service"
     private const val PROCESS_SUFFIX = "onehz_core"
-    private const val API_REVISION = 12
+    private const val API_REVISION = 14
     private const val TOUCH_ACTION_DOWN = 0
     private const val TOUCH_ACTION_UP = 1
     private const val TOUCH_ACTION_STOPPED = 2
@@ -214,6 +214,18 @@ object ShizukuGateway {
 
     fun isDozeWhitelisted(packageName: String): Boolean =
         runCatching { service?.isDozeWhitelisted(packageName) == true }.getOrDefault(false)
+
+    fun dozeWhitelist(): String =
+        runCatching { service?.dozeWhitelist() }.getOrNull().orEmpty()
+
+    fun forceIdle(deep: Boolean): Boolean =
+        runCatching { service?.forceIdle(deep) == true }.getOrDefault(false)
+
+    fun unforceIdle(): Boolean =
+        runCatching { service?.unforceIdle() == true }.getOrDefault(false)
+
+    fun idleState(): String =
+        runCatching { service?.idleState() }.getOrNull().orEmpty()
 
     fun readSystemRate(key: String): String? =
         runCatching { service?.readRefreshRateSetting(key) }.getOrNull()?.takeIf { it.isNotBlank() }
