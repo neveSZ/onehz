@@ -4,9 +4,12 @@
 
 | Language | File | Status |
 |---|---|---|
-| English | `app/src/main/res/values/strings.xml` | Base strings, **AI-generated**, not reviewed by a native speaker |
-| Portuguese (Brazil) | `app/src/main/res/values-pt-rBR/strings.xml` | Reviewed by the author |
-| Spanish | `app/src/main/res/values-es/strings.xml` | AI-generated, reviewed for consistency, **not reviewed by a native speaker** |
+| English | `app/src/main/res/values/strings.xml`, `app/src/main/res/values/strings_sleep.xml` | Base strings, **AI-generated**, not reviewed by a native speaker |
+| Portuguese (Brazil) | `app/src/main/res/values-pt-rBR/strings.xml`, `app/src/main/res/values-pt-rBR/strings_sleep.xml` | Reviewed by the author |
+| Spanish | `app/src/main/res/values-es/strings.xml`, `app/src/main/res/values-es/strings_sleep.xml` | AI-generated, reviewed for consistency, **not reviewed by a native speaker** |
+
+Strings may be split into feature files (for example `strings_sleep.xml`); Android merges
+all `values/*.xml` files at build time, so keys must be unique across the whole locale.
 
 The README, license, and documentation follow the same policy where applicable.
 Corrections from native speakers are very welcome.
@@ -21,12 +24,15 @@ English-only.
 - English base: `app/src/main/res/values/strings.xml`
 - Portuguese: `app/src/main/res/values-pt-rBR/strings.xml`
 - Spanish: `app/src/main/res/values-es/strings.xml`
+- Sleep strings: `app/src/main/res/values/strings_sleep.xml` and the same file in the
+  `values-pt-rBR` and `values-es` folders
 - Locale list: `app/src/main/res/xml/locales_config.xml`
 - In-app language selector: `core/LanguageManager.kt`
 
 ## Rules
 
-- Keep the same keys in all three files.
+- Keep the same keys in all three locales, across `strings.xml` and feature files such as
+  `strings_sleep.xml`.
 - Keep placeholders exactly as in the base string (`%1$s`, `%1$d`, `%%`).
 - Keep `plurals` quantities (`one`, `other`).
 - Do not translate:
@@ -54,6 +60,9 @@ English-only.
 | foreground app | app em primeiro plano | aplicación en primer plano |
 | diagnostics | diagnóstico | diagnóstico |
 | wake pulse | pulso de despertar | pulso de despertar |
+| Sleep | Sono | Sueño |
+| rest period | descanso | descanso |
+| maintenance window | janela de manutenção | ventana de mantenimiento |
 
 ## How to contribute
 
