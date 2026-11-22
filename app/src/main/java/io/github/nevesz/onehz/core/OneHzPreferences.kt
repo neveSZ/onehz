@@ -13,20 +13,20 @@ object OneHzPreferences {
     private const val NAME = "onehz_prefs"
 
     private const val KEY_ENABLED = "enabled"
-    private const val KEY_PROFILE_NORMAL = "profile_normal"
-    private const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
-    private const val KEY_PROFILE_ECO = "profile_eco"
-    private const val KEY_PROFILE_ECO_ENABLED = "profile_eco_enabled"
-    private const val KEY_AOD_ENABLED = "aod_enabled"
-    private const val KEY_AOD_HZ = "aod_hz"
+    internal const val KEY_PROFILE_NORMAL = "profile_normal"
+    internal const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
+    internal const val KEY_PROFILE_ECO = "profile_eco"
+    internal const val KEY_PROFILE_ECO_ENABLED = "profile_eco_enabled"
+    internal const val KEY_AOD_ENABLED = "aod_enabled"
+    internal const val KEY_AOD_HZ = "aod_hz"
     private const val KEY_AOD_BRIGHTNESS_ENABLED = "aod_brightness_enabled"
     private const val KEY_AOD_BRIGHTNESS_PCT = "aod_brightness_pct"
     private const val KEY_AOD_BRIGHTNESS_MIN_PCT = "aod_brightness_min_pct"
     private const val KEY_AOD_BRIGHTNESS_MAX_PCT = "aod_brightness_max_pct"
     private const val KEY_AOD_BRIGHTNESS_WRITTEN = "aod_brightness_written"
-    private const val KEY_VIDEO_ENABLED = "video_enabled"
-    private const val KEY_VIDEO_MIN_HZ = "video_min_hz"
-    private const val KEY_VIDEO_CONFIG = "video_config"
+    internal const val KEY_VIDEO_ENABLED = "video_enabled"
+    internal const val KEY_VIDEO_MIN_HZ = "video_min_hz"
+    internal const val KEY_VIDEO_CONFIG = "video_config"
     private const val KEY_SESSION_PENDING = "session_pending"
     private const val KEY_ECO_GLOBAL_BACKUP = "eco_global_backup"
     private const val KEY_RATE_BACKUP = "rate_backup"
@@ -46,9 +46,9 @@ object OneHzPreferences {
     private const val KEY_UPDATE_CACHED_PRERELEASE = "update_cached_prerelease"
     private const val KEY_UPDATE_CACHED_CHANNEL = "update_cached_channel"
     private const val KEY_UPDATE_DISMISSED_VERSION = "update_dismissed_version"
-    private const val APP_PREFIX = "app_"
-    private const val APP_PROFILE = "_profile"
-    private const val APP_IGNORE_ECO = "_ignore_eco"
+    internal const val APP_PREFIX = "app_"
+    internal const val APP_PROFILE = "_profile"
+    internal const val APP_IGNORE_ECO = "_ignore_eco"
 
     fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -141,7 +141,11 @@ object OneHzPreferences {
     // --------------------------------------------------------------------- AOD
 
     fun aodEnabled(context: Context) = prefs(context).getBoolean(KEY_AOD_ENABLED, false)
-    fun aodHz(context: Context) = prefs(context).getInt(KEY_AOD_HZ, 30)
+
+    /** AOD always uses the lowest rate exposed by the panel. */
+    fun aodHz(context: Context): Int =
+        DisplayRates.main(context).filter { it > 0 }.minOrNull() ?: 30
+
     fun setAodEnabled(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_AOD_ENABLED, value) }
     fun setAodHz(context: Context, value: Int) = prefs(context).edit { putInt(KEY_AOD_HZ, value) }
 
@@ -218,6 +222,14 @@ object OneHzPreferences {
 
     fun setVideoConfig(context: Context, config: VideoConfig) =
         prefs(context).edit { putString(KEY_VIDEO_CONFIG, config.encode()) }
+
+    /** Forced apps are global; the four detection rules belong to each device profile. */
+    fun forcedVideoPackages(context: Context): Set<String> =
+        videoConfig(context).forcedPackages
+
+    fun setForcedVideoPackages(context: Context, packages: Set<String>) {
+        setVideoConfig(context, videoConfig(context).copy(forcedPackages = packages))
+    }
 
     /**
      * Set while a session is active. If the process dies without a clean release, the next
