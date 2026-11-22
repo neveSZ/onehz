@@ -5,6 +5,7 @@ import android.os.PowerManager
 import android.provider.Settings
 import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.DisplayVendor
+import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.VideoSignals
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
@@ -55,6 +56,9 @@ object Diagnostics {
     val lastWrite = MutableStateFlow("—")
     val videoSource = MutableStateFlow(VideoSignals.Source.NONE)
     val videoDetail = MutableStateFlow("—")
+    val dozePhase = MutableStateFlow(DozePhase.OFF)
+    val dozeDetail = MutableStateFlow("—")
+    val dozeActiveSince = MutableStateFlow(0L)
     val aodBrightness = MutableStateFlow<AodBrightnessInfo?>(null)
     val inputState = MutableStateFlow(InputMonitorState.UNKNOWN)
     val inputDevice = MutableStateFlow("-")
@@ -123,6 +127,7 @@ object Diagnostics {
         appendLine("Brightness: ${screenBrightness.value}")
         appendLine("Battery saver: ${if (batterySaver.value) "on" else "off"}")
         appendLine("Video: ${videoSource.value} (${videoDetail.value})")
+        appendLine("Sleep: ${dozePhase.value} (${dozeDetail.value})")
         aodBrightness.value?.let {
             appendLine(
                 "AOD brightness: screen=${it.screenRaw} target=${it.target} " +
