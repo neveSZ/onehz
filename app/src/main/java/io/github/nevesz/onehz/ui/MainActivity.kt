@@ -377,7 +377,7 @@ private fun OneHzShell(
         "aod" -> {
             AodScreen(
                 context = context,
-                masterEnabled = OneHzPreferences.isEnabled(context),
+                oneHzEnabled = OneHzPreferences.isEnabled(context),
                 dataVersion = dataVersion,
                 onBack = { homePage = null }
             )

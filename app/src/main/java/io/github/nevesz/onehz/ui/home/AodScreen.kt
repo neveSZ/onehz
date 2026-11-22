@@ -62,7 +62,8 @@ import io.github.nevesz.onehz.ui.components.ToggleRow
 import kotlin.math.roundToInt
 
 private data class AodUi(
-    val enabled: Boolean,
+    val controlEnabled: Boolean,
+    val rateEnabled: Boolean,
     val hz: Int,
     val brightnessEnabled: Boolean,
     val brightnessPct: Int,
@@ -71,7 +72,8 @@ private data class AodUi(
 )
 
 private fun loadAod(context: Context): AodUi = AodUi(
-    enabled = OneHzPreferences.aodEnabled(context),
+    controlEnabled = OneHzPreferences.aodMasterEnabled(context),
+    rateEnabled = OneHzPreferences.aodRateEnabled(context),
     hz = OneHzPreferences.aodHz(context),
     brightnessEnabled = OneHzPreferences.aodBrightnessEnabled(context),
     brightnessPct = OneHzPreferences.aodBrightnessPct(context),
@@ -83,7 +85,7 @@ private fun loadAod(context: Context): AodUi = AodUi(
 @Composable
 fun AodScreen(
     context: Context,
-    masterEnabled: Boolean,
+    oneHzEnabled: Boolean,
     dataVersion: Int,
     onBack: () -> Unit,
 ) {
@@ -128,21 +130,49 @@ fun AodScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            if (!oneHzEnabled || !state.controlEnabled) {
+                item {
+                    OneHzCard {
+                        Text(
+                            text = stringResource(
+                                if (!oneHzEnabled) R.string.aod_requires_master
+                                else R.string.aod_control_off
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
             item {
                 OneHzCard {
-                    ToggleRow(
-                        icon = Icons.Outlined.Nightlight,
-                        title = stringResource(R.string.aod_rate_title),
-                        description = stringResource(R.string.aod_hint),
-                        checked = state.enabled,
-                        enabled = masterEnabled,
-                        onCheckedChange = { on ->
-                            state = state.copy(enabled = on)
-                            OneHzPreferences.setAodEnabled(context, on)
-                            OneHzEngine.reapply()
-                        }
-                    )
-                    AnimatedVisibility(visible = state.enabled) {
+                    if (gate.profile.supportsAodBrightness) {
+                        ToggleRow(
+                            icon = Icons.Outlined.Nightlight,
+                            title = stringResource(R.string.aod_rate_title),
+                            description = stringResource(R.string.aod_hint),
+                            checked = state.rateEnabled,
+                            enabled = oneHzEnabled,
+                            onCheckedChange = { on ->
+                                OneHzPreferences.setAodRateEnabled(context, on)
+                                state = loadAod(context)
+                                OneHzEngine.reapply()
+                            }
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.aod_rate_title),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(R.string.aod_rate_master_desc),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    if (state.rateEnabled || !gate.profile.supportsAodBrightness) {
                         Column {
                             Spacer(Modifier.height(12.dp))
                             Text(
@@ -160,7 +190,7 @@ fun AodScreen(
                 }
             }
 
-            if (state.enabled && gate.profile.supportsAodBrightness) {
+            if (gate.profile.supportsAodBrightness) {
                 item {
                     OneHzCard {
                         ToggleRow(
@@ -168,10 +198,10 @@ fun AodScreen(
                             title = stringResource(R.string.aod_brightness_title),
                             description = stringResource(R.string.aod_brightness_desc),
                             checked = state.brightnessEnabled,
-                            enabled = masterEnabled,
+                            enabled = oneHzEnabled,
                             onCheckedChange = { on ->
-                                state = state.copy(brightnessEnabled = on)
                                 OneHzPreferences.setAodBrightnessEnabled(context, on)
+                                state = loadAod(context)
                                 AodBrightnessController.onPrefsChanged()
                             }
                         )
@@ -199,7 +229,7 @@ fun AodScreen(
                                 onValueChangeFinished = { AodBrightnessController.onPrefsChanged() },
                                 valueRange = AodBrightnessMath.MIN_PCT.toFloat()..AodBrightnessMath.MAX_PCT.toFloat(),
                                 steps = AodBrightnessMath.MAX_PCT - AodBrightnessMath.MIN_PCT - 1,
-                                enabled = masterEnabled
+                                enabled = oneHzEnabled
                             )
                             val effectivePct = state.brightnessPct
                                 .coerceIn(state.minPct, state.maxPct)
@@ -255,7 +285,7 @@ fun AodScreen(
                                         onValueChangeFinished = { AodBrightnessController.onPrefsChanged() },
                                         valueRange = AodBrightnessMath.MIN_PCT.toFloat()..AodBrightnessMath.MAX_PCT.toFloat(),
                                         steps = AodBrightnessMath.MAX_PCT - AodBrightnessMath.MIN_PCT - 1,
-                                        enabled = masterEnabled
+                                        enabled = oneHzEnabled
                                     )
                                 }
                             }
@@ -272,7 +302,7 @@ fun AodScreen(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            if (aodInfo?.applied == false) {
+                            if (state.controlEnabled && aodInfo?.applied == false) {
                                 Spacer(Modifier.height(6.dp))
                                 Text(
                                     text = stringResource(R.string.aod_brightness_failed),
@@ -304,7 +334,7 @@ fun AodScreen(
             confirmButton = {
                 Button(onClick = {
                     AodBrightnessController.restoreSystem(context)
-                    state = state.copy(brightnessEnabled = false)
+                    state = loadAod(context)
                     showRestore = false
                 }) {
                     Text(stringResource(R.string.aod_brightness_restore_confirm))

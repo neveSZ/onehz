@@ -15,7 +15,8 @@
     <string name="home_aod_summary_off">Desligado</string>
     <string name="home_aod_summary_on">Taxa %1$d Hz · brilho %2$d%%</string>
     <string name="home_aod_summary_rate">Taxa %1$d Hz</string>
-    <string name="home_sleep_summary_off">Entra em Doze quando a tela apaga.</string>
+    <string name="home_aod_summary_brightness">Brilho %1$d%%</string>
+    <string name="home_sleep_summary_off">Desligado</string>
 
     <!-- Perfis: seleção, referência e migração. -->
     <string name="profile_in_use">Em uso: %1$s</string>
@@ -54,9 +55,11 @@
     <string name="sleep_confirm_enable">Ativar</string>
     <string name="sleep_confirm_cancel">Agora não</string>
     <string name="sleep_state_ready_desc">Entra em Doze quando a tela apaga.</string>
+    <string name="sleep_state_off">Sono desligado. Ative na tela inicial.</string>
     <string name="sleep_how_title">Como o Sono funciona</string>
     <string name="sleep_how_body">Doze é o estado de repouso profundo do Android. O Sono entra nele assim que a tela apaga e sai quando a tela acende. Ligações normais e alarmes continuam acordando o aparelho. Chamadas por internet e notificações podem atrasar até o Android abrir uma janela de manutenção.</string>
     <string name="sleep_options_title">Comportamento</string>
+    <string name="sleep_paused_note">As opções abaixo ficam pausadas; suas escolhas são mantidas.</string>
     <string name="sleep_measurements_title">Medições</string>
     <string name="sleep_advanced_title">Avançado</string>
     <string name="sleep_test_running">Testando…</string>
@@ -72,6 +75,10 @@
     <string name="sleep_warning_toggle">Aviso importante</string>
 
     <!-- AOD: detalhe. -->
+    <string name="aod_master_title">Controle do AOD</string>
+    <string name="aod_control_off">Controle do AOD desligado. Ative na tela inicial.</string>
+    <string name="aod_requires_master">Ative o OneHZ para controlar o AOD.</string>
+    <string name="aod_rate_master_desc">Controlado pelo switch do AOD na tela inicial.</string>
     <string name="aod_rate_title">Taxa no AOD</string>
     <string name="aod_brightness_restore_confirm">Restaurar brilho</string>
     <string name="aod_brightness_restore_confirm_title">Restaurar brilho do sistema?</string>

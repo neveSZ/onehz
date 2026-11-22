@@ -23,7 +23,8 @@ data class SleepBackup(
 data class BackupData(
     val state: ProfileState,
     val enabled: Boolean,
-    val aodEnabled: Boolean,
+    val aodMasterEnabled: Boolean,
+    val aodRateEnabled: Boolean,
     val aodBrightnessEnabled: Boolean,
     val aodBrightnessPct: Int,
     val aodBrightnessMinPct: Int,
@@ -48,7 +49,8 @@ object BackupCodec {
         put("deviceRates", JSONArray(data.deviceRates))
         put("settings", JSONObject().apply {
             put("enabled", data.enabled)
-            put("aodEnabled", data.aodEnabled)
+            put("aodMasterEnabled", data.aodMasterEnabled)
+            put("aodEnabled", data.aodRateEnabled)
             put("aodBrightnessEnabled", data.aodBrightnessEnabled)
             put("aodBrightnessPct", data.aodBrightnessPct)
             put("aodBrightnessMinPct", data.aodBrightnessMinPct)
@@ -115,7 +117,13 @@ object BackupCodec {
             BackupData(
                 state = state,
                 enabled = settings.optBoolean("enabled", true),
-                aodEnabled = settings.optBoolean("aodEnabled", false),
+                aodMasterEnabled = if (settings.has("aodMasterEnabled")) {
+                    settings.optBoolean("aodMasterEnabled", false)
+                } else {
+                    settings.optBoolean("aodEnabled", false) ||
+                        settings.optBoolean("aodBrightnessEnabled", false)
+                },
+                aodRateEnabled = settings.optBoolean("aodEnabled", false),
                 aodBrightnessEnabled = settings.optBoolean("aodBrightnessEnabled", false),
                 aodBrightnessPct = settings.optInt("aodBrightnessPct", 10).coerceIn(1, 100),
                 aodBrightnessMinPct = settings.optInt("aodBrightnessMinPct", 5).coerceIn(1, 99),

@@ -17,12 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Bedtime
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Schedule
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -119,7 +116,6 @@ fun SleepScreen(
 
     var showDetails by rememberSaveable { mutableStateOf(false) }
     var showWhitelist by rememberSaveable { mutableStateOf(false) }
-    var showConfirm by rememberSaveable { mutableStateOf(false) }
     var showWarning by rememberSaveable {
         mutableStateOf(!SleepPreferences.warningSeen(context))
     }
@@ -179,168 +175,157 @@ fun SleepScreen(
         ) {
             item {
                 OneHzCard {
+                    Text(
+                        text = statusText(masterEnabled, ui, phase, activeSince, shizuku),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    TextButton(onClick = { showWarning = !showWarning }) {
+                        Text(stringResource(R.string.sleep_warning_toggle))
+                    }
+                    AnimatedVisibility(visible = showWarning) {
+                        InfoBanner(
+                            body = stringResource(R.string.sleep_delay_warning),
+                            tone = BannerTone.WARN,
+                        )
+                    }
+                    if (ui.enabled && phase == DozePhase.FAILED) {
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            text = stringResource(R.string.sleep_failure_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+
+            item {
+                OneHzCard {
+                    Text(
+                        text = stringResource(R.string.sleep_how_title),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = stringResource(R.string.sleep_how_body),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            item {
+                OneHzCard {
+                    Text(
+                        text = stringResource(R.string.sleep_options_title),
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(Modifier.height(6.dp))
+                    if (!ui.enabled) {
+                        Text(
+                            text = stringResource(R.string.sleep_paused_note),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(6.dp))
+                    }
                     ToggleRow(
-                        icon = Icons.Outlined.Bedtime,
-                        title = stringResource(R.string.sleep_title),
-                        description = statusText(masterEnabled, ui, phase, activeSince, shizuku),
-                        checked = ui.enabled,
-                        enabled = masterEnabled,
+                        title = stringResource(R.string.sleep_deep_title),
+                        description = stringResource(R.string.sleep_deep_desc),
+                        checked = ui.deep,
                         onCheckedChange = { on ->
-                            if (!on) {
-                                ui = ui.copy(enabled = false)
-                                SleepPreferences.setEnabled(context, false)
-                                DozeController.onPrefsChanged()
-                            } else if (SleepPreferences.warningSeen(context)) {
-                                ui = ui.copy(enabled = true)
-                                SleepPreferences.setEnabled(context, true)
-                                DozeController.onPrefsChanged()
-                            } else {
-                                showConfirm = true
-                            }
+                            ui = ui.copy(deep = on)
+                            SleepPreferences.setDeep(context, on)
+                            DozeController.onPrefsChanged()
                         },
                     )
-                    AnimatedVisibility(visible = ui.enabled) {
-                        Column {
-                            Spacer(Modifier.height(4.dp))
-                            TextButton(onClick = { showWarning = !showWarning }) {
-                                Text(stringResource(R.string.sleep_warning_toggle))
-                            }
-                            AnimatedVisibility(visible = showWarning) {
-                                InfoBanner(
-                                    body = stringResource(R.string.sleep_delay_warning),
-                                    tone = BannerTone.WARN,
-                                )
-                            }
-                            if (phase == DozePhase.FAILED) {
-                                Spacer(Modifier.height(6.dp))
-                                Text(
-                                    text = stringResource(R.string.sleep_failure_hint),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
+                    ToggleRow(
+                        title = stringResource(R.string.sleep_skip_charging_title),
+                        description = stringResource(R.string.sleep_skip_charging_desc),
+                        checked = ui.skipCharging,
+                        onCheckedChange = { on ->
+                            ui = ui.copy(skipCharging = on)
+                            SleepPreferences.setSkipCharging(context, on)
+                            DozeController.onPrefsChanged()
+                        },
+                    )
+                    ToggleRow(
+                        title = stringResource(R.string.sleep_skip_music_title),
+                        description = stringResource(R.string.sleep_skip_music_desc),
+                        checked = ui.skipMusic,
+                        onCheckedChange = { on ->
+                            ui = ui.copy(skipMusic = on)
+                            SleepPreferences.setSkipMusic(context, on)
+                            DozeController.onPrefsChanged()
+                        },
+                    )
+                    ToggleRow(
+                        icon = Icons.Outlined.Schedule,
+                        title = stringResource(R.string.sleep_window_title),
+                        description = stringResource(R.string.sleep_window_desc),
+                        checked = ui.windowEnabled,
+                        onCheckedChange = { on ->
+                            ui = ui.copy(windowEnabled = on)
+                            SleepPreferences.setWindowEnabled(context, on)
+                            DozeController.onPrefsChanged()
+                        },
+                    )
+                    if (ui.windowEnabled) {
+                        Column(Modifier.padding(start = 4.dp)) {
+                            SettingRow(
+                                icon = Icons.Outlined.Schedule,
+                                title = stringResource(R.string.sleep_window_start),
+                                onClick = { pickStart = true },
+                                trailing = { Text(formatSleepMinute(ui.window.startMinute)) },
+                            )
+                            SettingRow(
+                                icon = Icons.Outlined.Schedule,
+                                title = stringResource(R.string.sleep_window_end),
+                                onClick = { pickEnd = true },
+                                trailing = { Text(formatSleepMinute(ui.window.endMinute)) },
+                            )
                         }
                     }
                 }
             }
 
-            if (ui.enabled) {
-                item {
-                    OneHzCard {
-                        Text(
-                            text = stringResource(R.string.sleep_how_title),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(R.string.sleep_how_body),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                item {
-                    OneHzCard {
-                        Text(
-                            text = stringResource(R.string.sleep_options_title),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Spacer(Modifier.height(6.dp))
-                        ToggleRow(
-                            title = stringResource(R.string.sleep_deep_title),
-                            description = stringResource(R.string.sleep_deep_desc),
-                            checked = ui.deep,
-                            onCheckedChange = { on ->
-                                ui = ui.copy(deep = on)
-                                SleepPreferences.setDeep(context, on)
-                                DozeController.onPrefsChanged()
-                            },
-                        )
-                        ToggleRow(
-                            title = stringResource(R.string.sleep_skip_charging_title),
-                            description = stringResource(R.string.sleep_skip_charging_desc),
-                            checked = ui.skipCharging,
-                            onCheckedChange = { on ->
-                                ui = ui.copy(skipCharging = on)
-                                SleepPreferences.setSkipCharging(context, on)
-                                DozeController.onPrefsChanged()
-                            },
-                        )
-                        ToggleRow(
-                            title = stringResource(R.string.sleep_skip_music_title),
-                            description = stringResource(R.string.sleep_skip_music_desc),
-                            checked = ui.skipMusic,
-                            onCheckedChange = { on ->
-                                ui = ui.copy(skipMusic = on)
-                                SleepPreferences.setSkipMusic(context, on)
-                                DozeController.onPrefsChanged()
-                            },
-                        )
-                        ToggleRow(
-                            icon = Icons.Outlined.Schedule,
-                            title = stringResource(R.string.sleep_window_title),
-                            description = stringResource(R.string.sleep_window_desc),
-                            checked = ui.windowEnabled,
-                            onCheckedChange = { on ->
-                                ui = ui.copy(windowEnabled = on)
-                                SleepPreferences.setWindowEnabled(context, on)
-                                DozeController.onPrefsChanged()
-                            },
-                        )
-                        if (ui.windowEnabled) {
-                            Column(Modifier.padding(start = 4.dp)) {
-                                SettingRow(
-                                    icon = Icons.Outlined.Schedule,
-                                    title = stringResource(R.string.sleep_window_start),
-                                    onClick = { pickStart = true },
-                                    trailing = { Text(formatSleepMinute(ui.window.startMinute)) },
-                                )
-                                SettingRow(
-                                    icon = Icons.Outlined.Schedule,
-                                    title = stringResource(R.string.sleep_window_end),
-                                    onClick = { pickEnd = true },
-                                    trailing = { Text(formatSleepMinute(ui.window.endMinute)) },
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item {
-                    OneHzCard {
-                        SettingRow(
-                            icon = Icons.Outlined.NotificationsActive,
-                            title = stringResource(R.string.sleep_whitelist_title),
-                            subtitle = stringResource(R.string.sleep_whitelist_desc),
-                            onClick = { showWhitelist = true },
-                        )
-                        Text(
-                            text = stringResource(R.string.sleep_whitelist_effect),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
-                        )
-                    }
-                }
-
-                item {
-                    MeasurementsCard(
-                        ui = ui,
-                        onOpenDetails = { showDetails = true },
-                        onPauseResume = {
-                            if (ui.pausedUntil > System.currentTimeMillis()) {
-                                DozeController.resume()
-                                ui = ui.copy(pausedUntil = 0L)
-                            } else {
-                                val until = System.currentTimeMillis() + 60 * 60 * 1000L
-                                DozeController.pauseFor(60 * 60 * 1000L)
-                                ui = ui.copy(pausedUntil = until)
-                            }
-                        }
+            item {
+                OneHzCard {
+                    SettingRow(
+                        icon = Icons.Outlined.NotificationsActive,
+                        title = stringResource(R.string.sleep_whitelist_title),
+                        subtitle = stringResource(R.string.sleep_whitelist_desc),
+                        onClick = { showWhitelist = true },
+                    )
+                    Text(
+                        text = stringResource(R.string.sleep_whitelist_effect),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 4.dp, bottom = 4.dp)
                     )
                 }
+            }
 
+            item {
+                MeasurementsCard(
+                    ui = ui,
+                    showPause = ui.enabled,
+                    onOpenDetails = { showDetails = true },
+                    onPauseResume = {
+                        if (ui.pausedUntil > System.currentTimeMillis()) {
+                            DozeController.resume()
+                            ui = ui.copy(pausedUntil = 0L)
+                        } else {
+                            val until = System.currentTimeMillis() + 60 * 60 * 1000L
+                            DozeController.pauseFor(60 * 60 * 1000L)
+                            ui = ui.copy(pausedUntil = until)
+                        }
+                    }
+                )
+            }
+
+            if (ui.enabled) {
                 item {
                     OneHzCard {
                         Text(
@@ -388,30 +373,6 @@ fun SleepScreen(
         }
     }
 
-    if (showConfirm) {
-        AlertDialog(
-            onDismissRequest = { showConfirm = false },
-            title = { Text(stringResource(R.string.sleep_confirm_title)) },
-            text = { Text(stringResource(R.string.sleep_confirm_body)) },
-            confirmButton = {
-                Button(onClick = {
-                    SleepPreferences.setWarningSeen(context)
-                    ui = ui.copy(enabled = true)
-                    SleepPreferences.setEnabled(context, true)
-                    DozeController.onPrefsChanged()
-                    showWarning = false
-                    showConfirm = false
-                }) {
-                    Text(stringResource(R.string.sleep_confirm_enable))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showConfirm = false }) {
-                    Text(stringResource(R.string.sleep_confirm_cancel))
-                }
-            }
-        )
-    }
     if (showDetails) {
         SleepDetailsSheet(
             records = ui.records,
@@ -427,6 +388,7 @@ fun SleepScreen(
 @Composable
 private fun MeasurementsCard(
     ui: SleepUi,
+    showPause: Boolean,
     onOpenDetails: () -> Unit,
     onPauseResume: () -> Unit,
 ) {
@@ -479,9 +441,11 @@ private fun MeasurementsCard(
                 Text(stringResource(R.string.sleep_details))
             }
             Spacer(Modifier.weight(1f))
-            val paused = ui.pausedUntil > now
-            TextButton(onClick = onPauseResume) {
-                Text(stringResource(if (paused) R.string.sleep_resume else R.string.sleep_pause))
+            if (showPause) {
+                val paused = ui.pausedUntil > now
+                TextButton(onClick = onPauseResume) {
+                    Text(stringResource(if (paused) R.string.sleep_resume else R.string.sleep_pause))
+                }
             }
         }
         Text(
@@ -503,7 +467,7 @@ private fun statusText(
     val now = System.currentTimeMillis()
     return when {
         !masterEnabled -> stringResource(R.string.sleep_requires_master)
-        !ui.enabled -> stringResource(R.string.sleep_state_ready_desc)
+        !ui.enabled -> stringResource(R.string.sleep_state_off)
         ui.pausedUntil > now -> stringResource(
             R.string.sleep_state_paused_until,
             formatSleepClock(ui.pausedUntil),

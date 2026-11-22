@@ -32,7 +32,8 @@ data class PolicyInput(
     val screenOff: Boolean,
     val batterySaver: Boolean,
     val autoEconomy: Boolean,
-    val aodEnabled: Boolean,
+    val aodMasterEnabled: Boolean,
+    val aodRateEnabled: Boolean,
     val aodHz: Int,
     val selectedProfile: DeviceProfile?,
     val economyProfile: DeviceProfile?,
@@ -70,7 +71,8 @@ object PolicyResolver {
                 screenOff = screenOff,
                 batterySaver = ecoActive,
                 autoEconomy = state.autoEconomyOnBatterySaver,
-                aodEnabled = io.github.nevesz.onehz.core.OneHzPreferences.aodEnabled(context),
+                aodMasterEnabled = io.github.nevesz.onehz.core.OneHzPreferences.aodMasterEnabled(context),
+                aodRateEnabled = io.github.nevesz.onehz.core.OneHzPreferences.aodRateEnabled(context),
                 aodHz = ProfileStore.rates(context).first(),
                 selectedProfile = state.activeProfile(),
                 economyProfile = state.economyProfile(),
@@ -84,7 +86,9 @@ object PolicyResolver {
 
     fun decide(input: PolicyInput, index: Int): PolicyDecision {
         if (input.screenOff) {
-            if (!input.aodEnabled) return PolicyDecision.Idle(IdleReason.AOD_DISABLED)
+            if (!input.aodMasterEnabled || !input.aodRateEnabled) {
+                return PolicyDecision.Idle(IdleReason.AOD_DISABLED)
+            }
             return PolicyDecision.Apply(
                 ResolvedPolicy(
                     profile = FrequencyProfile.fixed(input.aodHz),

@@ -38,7 +38,8 @@ object BackupManager {
         val data = BackupData(
             state = state,
             enabled = OneHzPreferences.isEnabled(context),
-            aodEnabled = OneHzPreferences.aodEnabled(context),
+            aodMasterEnabled = OneHzPreferences.aodMasterEnabled(context),
+            aodRateEnabled = OneHzPreferences.aodRateEnabled(context),
             aodBrightnessEnabled = OneHzPreferences.aodBrightnessEnabled(context),
             aodBrightnessPct = OneHzPreferences.aodBrightnessPct(context),
             aodBrightnessMinPct = OneHzPreferences.aodBrightnessMinPct(context),
@@ -126,8 +127,12 @@ object BackupManager {
         ProfileStore.save(context, state)
 
         OneHzPreferences.setEnabled(context, data.enabled)
-        OneHzPreferences.setAodEnabled(context, data.aodEnabled)
-        OneHzPreferences.setAodBrightnessEnabled(context, data.aodBrightnessEnabled)
+        OneHzPreferences.setAodSettings(
+            context,
+            master = data.aodMasterEnabled,
+            rate = data.aodRateEnabled,
+            brightness = data.aodBrightnessEnabled
+        )
         OneHzPreferences.setAodBrightnessPct(context, data.aodBrightnessPct)
         OneHzPreferences.setAodBrightnessBand(
             context,
