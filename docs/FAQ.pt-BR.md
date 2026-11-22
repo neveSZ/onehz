@@ -30,6 +30,36 @@ funciona.
 A escada alterna entre taxas. Uma tela de taxa única não tem para onde mudar, então o app
 falha fechado. **LTPO não é obrigatório**; uma tela 120/90/60/30 já basta.
 
+### O que são Economia, Balanceado e Performance?
+
+São três perfis base gerados conforme a tela:
+
+- **Economia** usa as faixas mais baixas úteis e é aplicado automaticamente enquanto a
+  economia de bateria do sistema está ligada;
+- **Balanceado** é o perfil padrão e usa a maior taxa acima de 60 Hz quando existe;
+- **Performance** mantém um repouso de 60 Hz ou mais.
+
+Você pode escolher o perfil ativo na Home, editar qualquer perfil base e restaurá-lo para
+o padrão do aparelho. Perfis customizados também são suportados.
+
+### O que acontece em uma tela com apenas duas taxas?
+
+Os três perfis usam as mesmas duas faixas e diferem apenas no tempo na máxima (1 s / 2 s /
+5 s). A mínima é o repouso até o próximo toque, então há apenas uma espera ajustável
+nesses painéis.
+
+### Qual taxa o AOD usa?
+
+A menor taxa exposta pela tela. Não existe mais seletor separado de frequência do AOD. Se
+o painel rejeitar uma taxa muito baixa no AOD, o motor cai para 30 Hz e registra a falha.
+
+### Posso fazer backup das configurações?
+
+Sim. Ajustes → **Backup e restauração** exporta um JSON versionado pelo seletor de
+arquivos do sistema. Ele inclui todos os perfis, atribuições de apps, vídeo, AOD e o
+switch mestre. Tema e idioma não entram. A importação substitui a configuração de
+comportamento atual e adapta taxas não suportadas para a tela atual.
+
 ### O brilho do AOD funciona no Xiaomi?
 
 Não. O brilho do AOD do Xiaomi é automático e controlado pelo processo/sensor de luz do
@@ -76,10 +106,23 @@ estável.
 - O diagnóstico agora inclui brilho/modo da tela, estado da economia de bateria e a rota
   de taxa ativa.
 
+### O que mudou na beta de perfis reutilizáveis?
+
+- Perfis Economia, Balanceado e Performance gerados conforme a tela.
+- Seleção manual do perfil ativo, com Economia automática durante a economia de bateria.
+- Perfis customizados, renomear/editar/excluir e “Restaurar padrão” nos base.
+- Perfis por app agora referenciam um perfil salvo em vez de copiar a escada.
+- Configurações de vídeo pertencem a cada perfil.
+- O AOD sempre usa a mínima da tela.
+- Backup e restauração JSON versionados.
+
 ### Atualizar vai mudar meus perfis?
 
-Não. Os perfis existentes são mantidos ao atualizar, inclusive da 1.0.1 para esta beta.
-Os novos padrões só são criados em uma instalação nova.
+As escadas são mantidas, mas o modelo muda. Normal vira Balanceado, ECO vira Economia e
+um novo perfil Performance é criado. Perfis por app copiados viram referências a um perfil
+correspondente (ou a um perfil customizado deduplicado). As chaves antigas do
+SharedPreferences continuam por segurança. Se quiser o layout antigo de volta, edite os
+perfis ou restaure os base para o padrão do aparelho.
 
 ### Por que o controle para depois de reiniciar?
 
@@ -108,11 +151,11 @@ adb shell settings delete system debug_aod_brightness
 
 ou reinstale o OneHZ e use **Sobre/Diagnóstico → Restaurar brilho do sistema**.
 
-### Por que o perfil de economia se chama ECO?
+### Por que o perfil de economia se chama Economia?
 
-“ECO” é uma sigla curta e neutra que evita confusão com nomes de plataforma/API. O texto
-descritivo continua dizendo “economia de bateria” / “battery saver” / “ahorro de
-batería”.
+“Economia” é o nome visível para o perfil de faixas mais baixas. “ECO” permanece apenas em
+entradas antigas do changelog e em chaves internas de compatibilidade; não é mais o nome
+do perfil.
 
 ### Por que a taxa não muda em alguns apps?
 

@@ -24,7 +24,7 @@
 
 <p align="center">
   <a href="docs/assets/screenshots/home-pt.png"><img src="docs/assets/screenshots/home-pt.png" width="230" alt="Tela inicial"></a>
-  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Editor de perfil"></a>
+  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Tela de perfis"></a>
   <a href="docs/assets/screenshots/video-pt.png"><img src="docs/assets/screenshots/video-pt.png" width="230" alt="Regras de detecção de vídeo"></a>
 </p>
 
@@ -80,12 +80,14 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | Recurso | O que faz |
 |---|---|
 | **Escada de taxa de atualização** | 1 a 5 faixas decrescentes por perfil, com tempo de espera em cada faixa. |
-| **Perfil normal** | Usado quando a economia de bateria está desligada; pode ser desativado. |
-| **Perfil ECO** | Aplicado com a economia de bateria ligada, com exceção “Ignorar ECO” por app. |
-| **Taxa do AOD** | Uma taxa fixa enquanto a tela está desligada. |
+| **Economia / Balanceado / Performance** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
+| **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada, com a opção por app de não usar Economia durante a economia de bateria. |
+| **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
+| **Taxa do AOD** | Sempre a menor taxa exposta pela tela. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
-| **Perfis por aplicativo** | Um perfil por app instalado, sem polling periódico. |
-| **Modo vídeo** | Piso de taxa enquanto um vídeo toca, com regras de detecção configuráveis. |
+| **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
+| **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca, com regras de detecção configuráveis. |
+| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo e AOD. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
 | **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze e notificações. |

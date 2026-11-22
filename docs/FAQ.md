@@ -29,6 +29,36 @@ work.
 The staircase switches between rates. A single-rate panel has nothing to switch to, so
 the app fails closed. **LTPO is not required**; a 120/90/60/30 panel is enough.
 
+### What are Economy, Balanced and Performance?
+
+They are three built-in profiles generated from the panel:
+
+- **Economy** uses the lowest useful bands and is applied automatically while the system
+  battery saver is on;
+- **Balanced** is the default profile and uses the highest rate above 60 Hz when available;
+- **Performance** keeps a resting floor of 60 Hz or higher.
+
+You can select the active profile on Home, edit any built-in profile and restore it to the
+device defaults. Custom profiles are also supported.
+
+### What happens on a panel with only two refresh rates?
+
+All three profiles use the same two bands and differ only by how long the maximum is held
+(1 s / 2 s / 5 s). The minimum is the resting rate until the next touch, so there is only
+one adjustable hold on those panels.
+
+### What refresh rate does AOD use?
+
+The lowest rate exposed by the panel. There is no separate AOD frequency picker. If the
+panel rejects a very low rate in AOD, the engine falls back to 30 Hz and logs the failure.
+
+### Can I back up my settings?
+
+Yes. Settings → **Backup and restore** exports a versioned JSON file through the system
+file picker. It includes all profiles, app assignments, video, AOD settings and the master
+switch. Theme and language are not included. Importing replaces the current behavior
+configuration and adapts unsupported rates to the current panel.
+
 ### Does AOD brightness work on Xiaomi?
 
 No. Xiaomi's AOD brightness is automatic and controlled by the AOD process/light
@@ -73,10 +103,23 @@ it installs over 1.0.1 and keeps your settings. The next stable has a higher
 - Diagnostics now include screen brightness/mode, battery-saver state, and the active
   rate route.
 
+### What changed in the reusable profiles beta?
+
+- Economy, Balanced and Performance profiles generated from the panel.
+- Manual profile selection, with automatic Economy while battery saver is on.
+- Custom profiles, rename/edit/delete and “Restore default” for the built-ins.
+- Per-app profiles now reference a saved profile instead of copying its staircase.
+- Video settings belong to each profile.
+- AOD always uses the panel minimum.
+- Versioned JSON backup and restore.
+
 ### Will updating change my profiles?
 
-No. Existing profiles are kept when you update, including from 1.0.1 to this beta. The
-new defaults are created only on a fresh install.
+The staircases are kept, but the model changes. Normal becomes Balanced, ECO becomes
+Economy, and a new Performance profile is created. Copied per-app profiles become
+references to a matching profile (or to a deduplicated custom profile). The old
+SharedPreferences keys remain for safety. If you want the old layout back, edit the
+profiles or restore the built-ins to their device defaults.
 
 ### Why does control stop after a reboot?
 
@@ -104,11 +147,10 @@ adb shell settings delete system debug_aod_brightness
 
 or reinstall OneHZ and use **About/Diagnostics → Restore system brightness**.
 
-### Why is the battery-saver profile called ECO?
+### Why is the battery-saver profile called Economy?
 
-“ECO” is a neutral, short acronym that avoids confusion with platform/API names. The
-descriptive text still says “battery saver” / “economia de bateria” / “ahorro de
-batería”.
+“Economy” is the user-facing name for the lowest-band profile. “ECO” remains only in old
+changelog entries and internal legacy keys; it is no longer the profile name.
 
 ### Why does the rate not change in some apps?
 

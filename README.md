@@ -26,7 +26,7 @@
 
 <p align="center">
   <a href="docs/assets/screenshots/home-en.png"><img src="docs/assets/screenshots/home-en.png" width="230" alt="Home screen"></a>
-  <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profile editor"></a>
+  <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profiles screen"></a>
   <a href="docs/assets/screenshots/video-en.png"><img src="docs/assets/screenshots/video-en.png" width="230" alt="Video detection rules"></a>
 </p>
 
@@ -79,12 +79,14 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | Feature | What it does |
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
-| **Normal profile** | Used when the system battery saver is off; can be disabled. |
-| **ECO profile** | Applied while battery saver is on, with a per-app “Ignore ECO” exception. |
-| **AOD refresh rate** | A fixed rate while the screen is off. |
+| **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
+| **Automatic Economy** | Switches to Economy while the system battery saver is on, with a per-app option to not use Economy during battery saver. |
+| **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
+| **AOD refresh rate** | Always the lowest rate exposed by the panel. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
-| **Per-app profiles** | A profile per installed app, without periodic polling. |
-| **Video mode** | A refresh-rate floor while a video plays, with configurable detection rules. |
+| **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
+| **Video mode** | A per-profile refresh-rate floor while a video plays, with configurable detection rules. |
+| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video and AOD. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
 | **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |

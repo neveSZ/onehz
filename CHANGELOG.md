@@ -4,6 +4,35 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+Beta feature set for reusable profiles. No release tag or publication yet.
+
+### Added
+
+- Economy, Balanced and Performance profiles generated from the device panel.
+- Manual active-profile selection with automatic Economy while the system battery saver
+  is on.
+- Custom profiles with create, rename, edit and delete actions.
+- “Restore default” for the three built-in profiles.
+- Per-app assignments that reference a saved profile instead of copying its staircase.
+- Per-profile video settings: enabled flag, minimum refresh rate and detection rules.
+- AOD now always uses the lowest rate exposed by the panel.
+- Backup and restore through a versioned JSON file using the Storage Access Framework.
+- Import adapts unsupported refresh rates to the current panel and reports the result.
+- Migration from the legacy Normal/ECO profiles and copied per-app staircases.
+
+### Changed
+
+- The Home profiles section now shows the active profile with a quick switcher and a
+  separate management screen.
+- Per-profile enable switches were replaced by one master switch and an active-profile
+  selection.
+- The AOD frequency picker was removed; the minimum is shown instead.
+- The default video rules enable MediaSession, paused-session blocking and the video codec
+  rule, leaving the media-audio rule off.
+- The per-app ECO exception and the active-profile badge now use the Economy name.
+
 ## [1.1.0-beta.1] - 2026-11-21
 
 First beta after 1.0.1. Adds Xiaomi/Redmi/POCO support, removes the LTPO requirement,
