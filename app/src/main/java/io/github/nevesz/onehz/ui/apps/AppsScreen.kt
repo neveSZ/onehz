@@ -462,6 +462,12 @@ private fun AddSheet(
                         )
                         OneHzEngine.reapply()
                         onCustomize(created.id)
+                    } else {
+                        Toast.makeText(
+                            context,
+                            R.string.profile_limit_reached,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

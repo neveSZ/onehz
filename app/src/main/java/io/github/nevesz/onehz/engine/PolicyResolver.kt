@@ -19,7 +19,9 @@ data class ResolvedPolicy(
     val profile: FrequencyProfile,
     val index: Int,
     val layer: String,
-    val video: VideoSettings
+    val video: VideoSettings,
+    val profileId: String? = null,
+    val appPackage: String? = null
 )
 
 /**
@@ -96,7 +98,12 @@ object PolicyResolver {
         val app = input.appProfile?.takeIf { it.frequency.steps.isNotEmpty() }
         if (input.batterySaver && input.autoEconomy) {
             if (app != null && input.appIgnoreEco) {
-                return applyProfile(app, "app:${input.appPackageName ?: app.id}", index)
+                return applyProfile(
+                    app,
+                    "app:${input.appPackageName ?: app.id}",
+                    index,
+                    appPackage = input.appPackageName
+                )
             }
             val economy = input.economyProfile?.takeIf { it.frequency.steps.isNotEmpty() }
                 ?: input.selectedProfile?.takeIf { it.frequency.steps.isNotEmpty() }
@@ -104,7 +111,12 @@ object PolicyResolver {
         }
 
         if (app != null) {
-            return applyProfile(app, "app:${input.appPackageName ?: app.id}", index)
+            return applyProfile(
+                app,
+                "app:${input.appPackageName ?: app.id}",
+                index,
+                appPackage = input.appPackageName
+            )
         }
         return applyProfile(input.selectedProfile, "profile", index)
     }
@@ -112,7 +124,8 @@ object PolicyResolver {
     private fun applyProfile(
         profile: DeviceProfile?,
         layer: String,
-        index: Int
+        index: Int,
+        appPackage: String? = null
     ): PolicyDecision {
         if (profile == null) return PolicyDecision.Idle(IdleReason.PROFILE_DISABLED)
         if (profile.frequency.steps.isEmpty()) {
@@ -123,7 +136,9 @@ object PolicyResolver {
                 profile = profile.frequency,
                 index = profile.frequency.clampedIndex(index),
                 layer = if (layer == "profile") "profile:${profile.id}" else layer,
-                video = profile.video
+                video = profile.video,
+                profileId = profile.id,
+                appPackage = appPackage
             )
         )
     }

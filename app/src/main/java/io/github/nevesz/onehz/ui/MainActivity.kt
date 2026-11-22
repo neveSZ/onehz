@@ -389,7 +389,6 @@ private fun OneHzShell(
                     )
                     "diagnostics" -> DiagnosticsScreen()
                     "backup" -> BackupScreen(
-                        onBack = { settingsPage = null },
                         onExport = { exportLauncher.launch(backupFileName()) },
                         onImport = {
                             importLauncher.launch(
@@ -534,7 +533,6 @@ private fun OneHzShell(
 private fun importResultMessage(context: android.content.Context, result: ImportResult): String {
     if (!result.success) {
         return when (result.error) {
-            "file-too-large-or-unreadable" -> context.getString(R.string.backup_error_too_large)
             "invalid-backup" -> context.getString(R.string.backup_error_invalid)
             else -> context.getString(R.string.backup_error_unreadable)
         }

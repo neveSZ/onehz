@@ -23,14 +23,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.BatterySaver
 import androidx.compose.material.icons.outlined.Bedtime
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Movie
 import androidx.compose.material.icons.outlined.Nightlight
-import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AlertDialog
@@ -62,6 +60,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -70,9 +70,12 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayGate
+import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.VideoSignals
+import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.profile.DeviceProfile
 import io.github.nevesz.onehz.core.profile.ProfileState
 import io.github.nevesz.onehz.core.profile.ProfileStore
@@ -153,6 +156,9 @@ fun HomeScreen(
     val appliedHz by Diagnostics.appliedHz.collectAsState()
     val idleReason by Diagnostics.idleReason.collectAsState()
     val videoSource by Diagnostics.videoSource.collectAsState()
+    val activeLayer by Diagnostics.activeLayer.collectAsState()
+    val activeProfileId by Diagnostics.activeProfileId.collectAsState()
+    val activeAppPackage by Diagnostics.activeAppPackage.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var refresh by remember { mutableIntStateOf(0) }
@@ -195,6 +201,36 @@ fun HomeScreen(
         appliedHz > 0 -> appliedHz
         else -> fallbackHz
     }
+    val activeAppLabel = remember(activeAppPackage) {
+        activeAppPackage?.let { runCatching { AppCatalog.label(context, it) }.getOrDefault(it) }
+    }
+    val appliedProfile = activeProfileId?.let { state.profileState.profile(it) }
+    val videoPlaying = videoSource == VideoSignals.Source.PLAYING
+    val sourceText = when {
+        !state.enabled -> stringResource(R.string.master_off_hint)
+        shizuku != ShizukuState.READY -> null
+        idleReason == IdleReason.PROFILE_DISABLED -> stringResource(R.string.profile_idle_off)
+        idleReason == IdleReason.PROFILE_EMPTY -> stringResource(R.string.profile_need_tiers)
+        idleReason == IdleReason.AOD_DISABLED -> stringResource(R.string.idle_aod_off)
+        activeKey == "AOD" -> stringResource(R.string.home_source_aod, state.aodHz)
+        activeAppPackage != null && activeAppLabel != null -> {
+            val profileName = appliedProfile?.let { profileLabel(it) }
+            if (profileName != null) {
+                stringResource(R.string.home_source_app, activeAppLabel, profileName) +
+                    if (videoPlaying) stringResource(R.string.home_source_video_suffix) else ""
+            } else {
+                stringResource(R.string.home_source_profile, activeAppLabel)
+            }
+        }
+        activeLayer == "economy" -> stringResource(R.string.home_source_economy)
+        videoPlaying && appliedProfile != null ->
+            stringResource(R.string.home_source_video, appliedProfile.video.minHz)
+        appliedProfile != null ->
+            stringResource(R.string.home_source_profile, profileLabel(appliedProfile))
+        activeProfile != null ->
+            stringResource(R.string.home_source_profile, profileLabel(activeProfile))
+        else -> stringResource(R.string.profile_idle_off)
+    }
 
     if (!gate.eligible) {
         LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
@@ -233,11 +269,10 @@ fun HomeScreen(
                 appliedHz = displayHz,
                 maxHz = rates.maxOrNull() ?: 120,
                 shizuku = shizuku,
-                activeKey = activeKey,
                 activeStep = activeStep,
                 activeStepCount = activeStepCount,
                 idleReason = idleReason,
-                videoPlaying = videoSource == VideoSignals.Source.PLAYING,
+                sourceText = sourceText,
                 onToggle = { on ->
                     state = state.copy(enabled = on)
                     OneHzPreferences.setEnabled(context, on)
@@ -303,6 +338,7 @@ fun HomeScreen(
 
         item {
             ProfileCard(
+                context = context,
                 state = state,
                 selected = selectedProfile,
                 active = activeProfile,
@@ -325,7 +361,7 @@ fun HomeScreen(
             OneHzCard {
                 SettingRow(
                     icon = Icons.Outlined.Nightlight,
-                    title = stringResource(R.string.aod_title),
+                    title = stringResource(R.string.aod_rate_title),
                     subtitle = aodSummary(state, gate.profile.supportsAodBrightness),
                     onClick = onOpenAod,
                     trailing = {
@@ -447,6 +483,7 @@ private fun sleepRowSummary(context: Context, masterEnabled: Boolean, sleepEnabl
 
 @Composable
 private fun ProfileCard(
+    context: Context,
     state: HomeState,
     selected: DeviceProfile?,
     active: DeviceProfile?,
@@ -454,6 +491,8 @@ private fun ProfileCard(
     onManageProfiles: () -> Unit,
     onEditProfile: (String) -> Unit
 ) {
+    val isXiaomi = remember { DisplayProfileResolver.detect(context).vendor == DisplayVendor.XIAOMI }
+    val lowRate = selected?.frequency?.steps?.any { it.hz <= 30 } == true
     OneHzCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -463,14 +502,17 @@ private fun ProfileCard(
                 modifier = Modifier.size(22.dp)
             )
             Column(Modifier.weight(1f).padding(start = 10.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = selected?.let { profileLabel(it) }
                             ?: stringResource(R.string.profile_empty),
                         style = MaterialTheme.typography.titleMedium
                     )
                     if (selected != null) {
-                        Spacer(Modifier.size(8.dp))
                         StatusBadge(
                             text = stringResource(R.string.profile_active),
                             tone = StatusTone.NEUTRAL
@@ -484,20 +526,24 @@ private fun ProfileCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 if (state.enabled && selected != null && active != null && active.id != selected.id) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(R.string.profile_in_use, profileLabel(active)),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        if (state.ecoActive && state.profileState.autoEconomyOnBatterySaver) {
-                            Spacer(Modifier.size(6.dp))
-                            StatusBadge(
-                                text = stringResource(R.string.profile_auto_economy_badge),
-                                tone = StatusTone.OK
-                            )
-                        }
-                    }
+                    val automatic = state.ecoActive && state.profileState.autoEconomyOnBatterySaver
+                    Text(
+                        text = if (automatic) {
+                            stringResource(R.string.profile_in_use_auto, profileLabel(active))
+                        } else {
+                            stringResource(R.string.profile_in_use, profileLabel(active))
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                if (isXiaomi && lowRate) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(R.string.profile_low_rate_home),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
             }
         }
@@ -640,17 +686,16 @@ private fun HeroCard(
     appliedHz: Int,
     maxHz: Int,
     shizuku: ShizukuState,
-    activeKey: String,
     activeStep: Int,
     activeStepCount: Int,
     idleReason: IdleReason?,
-    videoPlaying: Boolean,
+    sourceText: String?,
     onToggle: (Boolean) -> Unit
 ) {
     val control = when {
         !state.enabled -> null
-        shizuku != ShizukuState.READY -> stringResource(R.string.home_control_waiting)
-        idleReason != null -> stringResource(R.string.home_control_none)
+        shizuku != ShizukuState.READY || idleReason != null ->
+            stringResource(R.string.home_control_none)
         else -> stringResource(R.string.home_control_on)
     }
     val tone = when {
@@ -658,23 +703,6 @@ private fun HeroCard(
         shizuku != ShizukuState.READY || idleReason != null -> StatusTone.WARN
         else -> StatusTone.OK
     }
-    val active = state.activeProfile
-    val source = when {
-        !state.enabled -> stringResource(R.string.master_off_hint)
-        shizuku != ShizukuState.READY -> null
-        idleReason == IdleReason.PROFILE_DISABLED -> stringResource(R.string.profile_idle_off)
-        idleReason == IdleReason.PROFILE_EMPTY -> stringResource(R.string.profile_need_tiers)
-        idleReason == IdleReason.AOD_DISABLED -> stringResource(R.string.idle_aod_off)
-        activeKey == "AOD" -> stringResource(R.string.home_source_aod, state.aodHz)
-        state.ecoActive && state.profileState.autoEconomyOnBatterySaver ->
-            stringResource(R.string.home_source_economy)
-        videoPlaying && active != null ->
-            stringResource(R.string.home_source_video, active.video.minHz)
-        active != null ->
-            stringResource(R.string.home_source_profile, profileLabel(active))
-        else -> stringResource(R.string.profile_idle_off)
-    }
-
     OneHzCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             RateRing(hz = if (state.enabled) appliedHz else 0, max = maxHz)
@@ -690,10 +718,10 @@ private fun HeroCard(
                 if (control != null) {
                     StatusBadge(text = control, tone = tone)
                 }
-                if (source != null) {
+                if (sourceText != null) {
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = source,
+                        text = sourceText,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -727,7 +755,13 @@ private fun RateRing(hz: Int, max: Int) {
     val animated by animateFloatAsState(targetValue = fraction, label = "rate")
     val track = MaterialTheme.colorScheme.outlineVariant
     val accent = MaterialTheme.colorScheme.primary
-    Box(modifier = Modifier.size(120.dp), contentAlignment = Alignment.Center) {
+    val ringLabel = if (hz > 0) "$hz Hz" else "—"
+    Box(
+        modifier = Modifier
+            .size(120.dp)
+            .semantics { contentDescription = ringLabel },
+        contentAlignment = Alignment.Center
+    ) {
         Canvas(modifier = Modifier.size(120.dp)) {
             val stroke = 12.dp.toPx()
             val inset = stroke / 2

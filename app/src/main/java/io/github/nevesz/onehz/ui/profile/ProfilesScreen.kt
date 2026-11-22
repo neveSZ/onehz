@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -76,6 +78,7 @@ fun ProfilesScreen(
         ProfileStore.state(context, rates)
     }
     var showCreate by remember { mutableStateOf(false) }
+    var createError by remember { mutableStateOf(false) }
     var deleteTarget by remember { mutableStateOf<DeviceProfile?>(null) }
     var resetTarget by remember { mutableStateOf<DeviceProfile?>(null) }
     var showMigration by remember {
@@ -166,7 +169,10 @@ fun ProfilesScreen(
 
             item {
                 OutlinedButton(
-                    onClick = { showCreate = true },
+                    onClick = {
+                        createError = false
+                        showCreate = true
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(Icons.Outlined.Add, contentDescription = null)
@@ -179,6 +185,7 @@ fun ProfilesScreen(
     if (showCreate) {
         CreateProfileDialog(
             template = state.activeProfile(),
+            error = createError,
             onDismiss = { showCreate = false },
             onCreate = { name ->
                 val created = ProfileStore.createCustom(
@@ -186,10 +193,13 @@ fun ProfilesScreen(
                     name,
                     state.activeProfileId
                 )
-                showCreate = false
                 if (created != null) {
+                    showCreate = false
+                    createError = false
                     changed()
                     onEdit(created.id)
+                } else {
+                    createError = true
                 }
             }
         )
@@ -267,6 +277,7 @@ private fun MigrationCard(onDismiss: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ProfileRow(
     profile: DeviceProfile,
@@ -286,14 +297,17 @@ private fun ProfileRow(
         ) {
             RadioButton(selected = active, onClick = null)
             Column(Modifier.weight(1f).padding(start = 4.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    itemVerticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = profileLabel(profile),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
                     if (active) {
-                        Spacer(Modifier.size(8.dp))
                         StatusBadge(
                             text = stringResource(R.string.profile_active),
                             tone = StatusTone.OK
@@ -337,7 +351,10 @@ private fun ProfileRow(
             }
         }
         Spacer(Modifier.height(6.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
             TextButton(onClick = onEdit) {
                 Icon(Icons.Outlined.Tune, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(stringResource(R.string.profile_edit), Modifier.padding(start = 6.dp))
@@ -369,6 +386,7 @@ private fun ProfileRow(
 @Composable
 private fun CreateProfileDialog(
     template: DeviceProfile?,
+    error: Boolean,
     onDismiss: () -> Unit,
     onCreate: (String) -> Unit
 ) {
@@ -397,6 +415,14 @@ private fun CreateProfileDialog(
                     isError = trimmed.isEmpty(),
                     singleLine = true
                 )
+                if (error) {
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(R.string.profile_limit_reached),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
             }
         },
         confirmButton = {

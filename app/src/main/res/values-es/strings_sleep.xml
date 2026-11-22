@@ -24,8 +24,8 @@
 
     <string name="sleep_pause">Pausar 1 hora</string>
     <string name="sleep_resume">Reanudar</string>
-    <string name="sleep_whitelist_title">Apps que pueden despertar el dispositivo</string>
-    <string name="sleep_whitelist_desc">Mantiene estas apps fuera de Doze. Esto cambia las excepciones de Doze del sistema y puede aumentar el consumo.</string>
+    <string name="sleep_whitelist_title">Apps que pueden despertar</string>
+    <string name="sleep_whitelist_desc">Mantiene estas apps fuera de Doze.</string>
 
     <string name="sleep_usage_title">Últimas 24 h</string>
     <string name="sleep_usage_values">%1$s con la pantalla apagada · %2$s en Doze</string>

@@ -44,6 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -130,7 +132,7 @@ fun AodScreen(
                 OneHzCard {
                     ToggleRow(
                         icon = Icons.Outlined.Nightlight,
-                        title = stringResource(R.string.aod_title),
+                        title = stringResource(R.string.aod_rate_title),
                         description = stringResource(R.string.aod_hint),
                         checked = state.enabled,
                         enabled = masterEnabled,
@@ -143,11 +145,6 @@ fun AodScreen(
                     AnimatedVisibility(visible = state.enabled) {
                         Column {
                             Spacer(Modifier.height(12.dp))
-                            Text(
-                                text = stringResource(R.string.aod_section_rate),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
                             Text(
                                 text = stringResource(R.string.aod_minimum, state.hz),
                                 style = MaterialTheme.typography.titleMedium
@@ -180,11 +177,18 @@ fun AodScreen(
                         )
                         if (state.brightnessEnabled) {
                             Spacer(Modifier.height(10.dp))
+                            val brightnessLabel = stringResource(
+                                R.string.aod_brightness_pct_label,
+                                state.brightnessPct
+                            )
                             Text(
-                                text = stringResource(R.string.aod_brightness_pct_label, state.brightnessPct),
+                                text = brightnessLabel,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Slider(
+                                modifier = Modifier.semantics {
+                                    stateDescription = brightnessLabel
+                                },
                                 value = state.brightnessPct.toFloat(),
                                 onValueChange = { value ->
                                     val pct = value.roundToInt()
@@ -226,15 +230,19 @@ fun AodScreen(
                             }
                             AnimatedVisibility(visible = showLimits) {
                                 Column {
+                                    val limitsLabel = stringResource(
+                                        R.string.aod_brightness_range_label,
+                                        state.minPct,
+                                        state.maxPct
+                                    )
                                     Text(
-                                        text = stringResource(
-                                            R.string.aod_brightness_range_label,
-                                            state.minPct,
-                                            state.maxPct
-                                        ),
+                                        text = limitsLabel,
                                         style = MaterialTheme.typography.bodyMedium
                                     )
                                     RangeSlider(
+                                        modifier = Modifier.semantics {
+                                            stateDescription = limitsLabel
+                                        },
                                         value = state.minPct.toFloat()..state.maxPct.toFloat(),
                                         onValueChange = { range ->
                                             val min = range.start.roundToInt()
@@ -299,7 +307,7 @@ fun AodScreen(
                     state = state.copy(brightnessEnabled = false)
                     showRestore = false
                 }) {
-                    Text(stringResource(R.string.profile_reset_confirm))
+                    Text(stringResource(R.string.aod_brightness_restore_confirm))
                 }
             },
             dismissButton = {

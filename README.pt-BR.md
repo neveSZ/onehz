@@ -25,7 +25,7 @@
 <p align="center">
   <a href="docs/assets/screenshots/home-pt.png"><img src="docs/assets/screenshots/home-pt.png" width="230" alt="Tela inicial"></a>
   <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Tela de perfis"></a>
-  <a href="docs/assets/screenshots/video-pt.png"><img src="docs/assets/screenshots/video-pt.png" width="230" alt="Regras de detecção de vídeo"></a>
+  <a href="docs/assets/screenshots/sleep-pt.png"><img src="docs/assets/screenshots/sleep-pt.png" width="230" alt="Detalhes do Sono"></a>
 </p>
 
 [English](README.md) · **Português (Brasil)**
@@ -83,7 +83,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Economia / Equilibrado / Desempenho** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
 | **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada. Pode ser desligada em **Gerenciar perfis**; cada app pode manter o próprio perfil. |
 | **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
-| **Taxa do AOD** | Sempre a menor taxa exposta pela tela; não há mais seletor separado de AOD. |
+| **Taxa no AOD** | Sempre a menor taxa exposta pela tela; não há seletor separado de AOD. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
 | **Sono (Doze forçado)** | Opcional e desligado por padrão. Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |

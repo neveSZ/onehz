@@ -63,7 +63,7 @@ battery saver is active.
   key is snapshotted and restored the same way. This prevents the system settings from
   staying modified after a crash or uninstall.
 
-## 4. AOD: screen-off refresh rate
+## 4. AOD rate
 
 **What it does:** applies a fixed rate while the screen is off / Always On Display is
 active.
@@ -162,7 +162,7 @@ together.
   - **Economy**: maximum 1 s → 60 Hz (or the highest rate below 60) 6 s → minimum;
   - **Balanced**: maximum 2 s → highest rate above 60 Hz (or 60) 5 s → minimum;
   - **Performance**: maximum 5 s → highest rate above 60 Hz 8 s → 60 Hz or higher;
-- Economy video floor is 30 Hz; Balanced and Performance use 60 Hz;
+- Economy video minimum is 30 Hz; Balanced and Performance use 60 Hz;
 - unsupported rates are rejected in the editor;
 - on the tested S25+ (10/20/24/27/30/40/48/60/80/120 Hz), the generated profiles are
   Economy 120 → 60 → 10, Balanced 120 → 80 → 10 and Performance 120 → 80 → 60.
@@ -176,7 +176,7 @@ the new 30/60/60 defaults.
 - vendor/display compatibility check;
 - Shizuku status and permission request;
 - optional battery-optimization exemption;
-- optional Doze whitelist (through Shizuku);
+- optional Doze exception list (through Shizuku);
 - notification permission;
 - persistent foreground-service notification.
 
@@ -237,7 +237,7 @@ enter Doze immediately instead of waiting for the inactivity timers:
 - `unforce` on screen-on, when the feature is disabled, and after a crash or reboot;
 - verification through the real device-idle state, with an explicit "the ROM did not
   enter Doze" message instead of a false success;
-- a wake-up list that adds apps to the system Doze whitelist through Shizuku;
+- a wake-up list that adds apps to the system Doze exception list through Shizuku;
 - local measurements: screen-off and Doze time in the last 24 hours, the last rest
   period (30 minutes or more), battery level and percent per hour per session.
 

@@ -3,9 +3,10 @@
     <!-- Inicio: estado y resumen de pantalla apagada. -->
     <string name="home_status_on">Activado</string>
     <string name="home_control_on">Controlando</string>
-    <string name="home_control_waiting">Esperando a Shizuku</string>
     <string name="home_control_none">Sin control</string>
     <string name="home_source_profile">Perfil: %1$s</string>
+    <string name="home_source_app">App: %1$s · %2$s</string>
+    <string name="home_source_video_suffix"> · vídeo</string>
     <string name="home_source_economy">Economía automática</string>
     <string name="home_source_aod">AOD · %1$d Hz</string>
     <string name="home_source_video">Vídeo · mínimo %1$d Hz</string>
@@ -16,7 +17,8 @@
 
     <!-- Perfiles: selección, referencia y migración. -->
     <string name="profile_in_use">En uso: %1$s</string>
-    <string name="profile_auto_economy_badge">Automática</string>
+    <string name="profile_in_use_auto">En uso: %1$s (automática)</string>
+    <string name="profile_low_rate_home">30 Hz puede hacer que la pantalla se vea más oscura en este dispositivo.</string>
     <string name="profile_auto_economy_title">Economía automática</string>
     <string name="profile_auto_economy_desc">Usar Economía mientras el ahorro de batería del sistema esté activo.</string>
     <string name="profile_auto_economy_footer">Las apps pueden mantener su propio perfil con la opción de abajo.</string>
@@ -28,6 +30,8 @@
     <string name="profile_delete_active_note">Este es el perfil seleccionado. %1$s será seleccionado.</string>
     <string name="profile_reset_editor_body">Los campos vuelven a los valores del dispositivo. Revisa y toca Guardar.</string>
     <string name="profile_reset_editor_confirm">Restablecer campos</string>
+    <string name="profile_reset_editor_title">¿Restablecer campos?</string>
+    <string name="profile_limit_reached">Límite de perfiles alcanzado. Elimina un perfil sin uso primero.</string>
     <string name="profile_used_by_apps_edit_note">Los cambios afectan a todas las apps que lo usan.</string>
     <string name="profile_migration_title">Perfiles actualizados</string>
     <string name="profile_migration_body">Normal pasó a ser Equilibrado, ECO pasó a ser Economía y se creó un nuevo perfil Rendimiento. Los perfiles por app ahora referencian perfiles guardados.</string>
@@ -63,9 +67,11 @@
     <string name="sleep_whitelist_effect">Esto cambia las excepciones de Doze del sistema y puede aumentar el consumo.</string>
     <string name="sleep_failure_hint">Esto puede pasar en algunas versiones del sistema. Revisa el diagnóstico o prueba Doze ligero.</string>
     <string name="sleep_details_hint">Últimas 5 sesiones de sueño. Las sesiones cortas también aparecen.</string>
+    <string name="sleep_warning_toggle">Aviso importante</string>
 
     <!-- AOD: detalle. -->
-    <string name="aod_section_rate">Tasa</string>
+    <string name="aod_rate_title">Tasa en AOD</string>
+    <string name="aod_brightness_restore_confirm">Restaurar brillo</string>
     <string name="aod_brightness_restore_confirm_title">¿Restaurar brillo del sistema?</string>
     <string name="aod_brightness_restore_body">Elimina el valor guardado y devuelve el brillo del AOD al sistema.</string>
     <string name="aod_brightness_failed">No se pudo aplicar el brillo del AOD. Revisa Shizuku.</string>
@@ -86,9 +92,8 @@
     <string name="backup_import_hint">La importación reemplaza la configuración de comportamiento actual.</string>
     <string name="backup_import_success_title">Importación completada</string>
     <string name="backup_import_error_title">Error de importación</string>
-    <string name="backup_error_too_large">El archivo es demasiado grande.</string>
     <string name="backup_error_invalid">Este no es un backup válido de OneHZ.</string>
-    <string name="backup_error_unreadable">No se pudo leer el archivo.</string>
+    <string name="backup_error_unreadable">No se pudo leer el archivo (o es demasiado grande).</string>
     <string name="backup_import_sleep_not_included">Este backup no incluye Sueño; se mantuvieron los ajustes actuales.</string>
     <string name="backup_import_master_note">El interruptor maestro seguirá el archivo.</string>
 </resources>

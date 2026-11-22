@@ -63,7 +63,7 @@ de bateria do sistema está ativa.
   taxa do HyperOS é salva e restaurada da mesma forma. Isso evita que as configurações do
   sistema fiquem alteradas após um crash ou desinstalação.
 
-## 4. AOD: taxa com a tela desligada
+## 4. Taxa no AOD
 
 **O que faz:** aplica uma taxa fixa enquanto a tela está desligada / Always On Display
 está ativo.
@@ -163,7 +163,7 @@ chegam juntos.
   - **Economia**: máxima 1 s → 60 Hz (ou a maior abaixo de 60) 6 s → mínima;
   - **Equilibrado**: máxima 2 s → maior acima de 60 Hz (ou 60) 5 s → mínima;
   - **Desempenho**: máxima 5 s → maior acima de 60 Hz 8 s → 60 Hz ou maior;
-- o piso de vídeo é 30 Hz na Economia e 60 Hz no Equilibrado/Desempenho;
+- o mínimo de vídeo é 30 Hz na Economia e 60 Hz no Equilibrado/Desempenho;
 - taxas não suportadas são rejeitadas no editor;
 - no S25+ testado (10/20/24/27/30/40/48/60/80/120 Hz), os perfis gerados são Economia
   120 → 60 → 10, Equilibrado 120 → 80 → 10 e Desempenho 120 → 80 → 60.
@@ -238,7 +238,7 @@ confirmação porque notificações e chamadas por internet podem atrasar:
 - `unforce` ao acender a tela, ao desligar o recurso e depois de crash ou reboot;
 - verificação pelo estado real de device-idle, com a mensagem explícita "a ROM não entrou
   em Doze" em vez de um falso sucesso;
-- lista de apps que podem acordar o aparelho, gravada na whitelist de Doze pelo Shizuku;
+- lista de apps que podem acordar o aparelho, gravada nas exceções do Doze pelo Shizuku;
 - medições locais: tempo com a tela apagada e em Doze nas últimas 24h, último descanso
   (30 min ou mais), nível de bateria e %/h por sessão.
 

@@ -124,16 +124,6 @@ notifications and internet calls (WhatsApp, Telegram, etc.) may be delayed. Slee
 by default, asks for confirmation before the first enable, and can be paused for one hour
 at any time. See [SLEEP](SLEEP.md).
 
-### What changed in the reusable profiles beta?
-
-- Economy, Balanced and Performance profiles generated from the panel.
-- Manual profile selection, with automatic Economy while battery saver is on.
-- Custom profiles, rename/edit/delete and “Restore default” for the built-ins.
-- Per-app profiles now reference a saved profile instead of copying its staircase.
-- Video settings belong to each profile.
-- AOD always uses the panel minimum.
-- Versioned JSON backup and restore.
-
 ### Will updating change my profiles?
 
 The staircases are kept, but the model changes. Normal becomes Balanced, ECO becomes

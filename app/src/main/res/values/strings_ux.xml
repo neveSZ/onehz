@@ -3,9 +3,10 @@
     <!-- Home status and screen-off summary (1.2.0 UX pass). -->
     <string name="home_status_on">On</string>
     <string name="home_control_on">Controlling</string>
-    <string name="home_control_waiting">Waiting for Shizuku</string>
     <string name="home_control_none">No control</string>
     <string name="home_source_profile">Profile: %1$s</string>
+    <string name="home_source_app">App: %1$s · %2$s</string>
+    <string name="home_source_video_suffix"> · video</string>
     <string name="home_source_economy">Automatic Economy</string>
     <string name="home_source_aod">AOD · %1$d Hz</string>
     <string name="home_source_video">Video · %1$d Hz minimum</string>
@@ -16,7 +17,8 @@
 
     <!-- Profiles: selection, reference and migration. -->
     <string name="profile_in_use">In use: %1$s</string>
-    <string name="profile_auto_economy_badge">Automatic</string>
+    <string name="profile_in_use_auto">In use: %1$s (automatic)</string>
+    <string name="profile_low_rate_home">30 Hz can make the screen dimmer on this device.</string>
     <string name="profile_auto_economy_title">Automatic Economy</string>
     <string name="profile_auto_economy_desc">Use Economy while the system battery saver is on.</string>
     <string name="profile_auto_economy_footer">Apps can keep their own profile with the option below.</string>
@@ -28,6 +30,8 @@
     <string name="profile_delete_active_note">This is the selected profile. %1$s will be selected.</string>
     <string name="profile_reset_editor_body">The fields return to the device defaults. Review and tap Save.</string>
     <string name="profile_reset_editor_confirm">Reset fields</string>
+    <string name="profile_reset_editor_title">Reset fields?</string>
+    <string name="profile_limit_reached">Profile limit reached. Delete an unused profile first.</string>
     <string name="profile_used_by_apps_edit_note">Changes affect every app that uses it.</string>
     <string name="profile_migration_title">Profiles updated</string>
     <string name="profile_migration_body">Normal became Balanced, ECO became Economy, and a new Performance profile was created. Per-app profiles now reference saved profiles.</string>
@@ -63,9 +67,11 @@
     <string name="sleep_whitelist_effect">This changes the system Doze exceptions and may increase battery use.</string>
     <string name="sleep_failure_hint">This can happen on some system builds. Check the diagnostics or try light Doze.</string>
     <string name="sleep_details_hint">Last 5 sleep sessions. Short sessions are also listed.</string>
+    <string name="sleep_warning_toggle">Important warning</string>
 
     <!-- AOD detail. -->
-    <string name="aod_section_rate">Rate</string>
+    <string name="aod_rate_title">AOD rate</string>
+    <string name="aod_brightness_restore_confirm">Restore brightness</string>
     <string name="aod_brightness_restore_confirm_title">Restore system brightness?</string>
     <string name="aod_brightness_restore_body">Removes the stored value and returns AOD brightness to the system.</string>
     <string name="aod_brightness_failed">Could not apply AOD brightness. Check Shizuku.</string>
@@ -86,9 +92,8 @@
     <string name="backup_import_hint">Import replaces the current behavior configuration.</string>
     <string name="backup_import_success_title">Import complete</string>
     <string name="backup_import_error_title">Import failed</string>
-    <string name="backup_error_too_large">The file is too large.</string>
     <string name="backup_error_invalid">This is not a valid OneHZ backup.</string>
-    <string name="backup_error_unreadable">Could not read the file.</string>
+    <string name="backup_error_unreadable">Could not read the file (or it is too large).</string>
     <string name="backup_import_sleep_not_included">This backup does not include Sleep settings; the current Sleep settings were kept.</string>
     <string name="backup_import_master_note">The master switch will follow the file.</string>
 </resources>

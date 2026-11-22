@@ -27,7 +27,7 @@
 <p align="center">
   <a href="docs/assets/screenshots/home-en.png"><img src="docs/assets/screenshots/home-en.png" width="230" alt="Home screen"></a>
   <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profiles screen"></a>
-  <a href="docs/assets/screenshots/video-en.png"><img src="docs/assets/screenshots/video-en.png" width="230" alt="Video detection rules"></a>
+  <a href="docs/assets/screenshots/sleep-en.png"><img src="docs/assets/screenshots/sleep-en.png" width="230" alt="Sleep details"></a>
 </p>
 
 OneHZ changes the display refresh rate through **Shizuku only** — no root, no direct ADB
@@ -82,7 +82,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
 | **Automatic Economy** | Switches to Economy while the system battery saver is on. Can be disabled in **Manage profiles**; each app can keep its own profile. |
 | **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
-| **AOD refresh rate** | Always the lowest rate exposed by the panel; there is no separate AOD picker. |
+| **AOD rate** | Always the lowest rate exposed by the panel; there is no separate AOD picker. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
 | **Sleep (forced Doze)** | Optional and off by default. Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |

@@ -519,7 +519,7 @@ fun ProfileEditorScreen(
 
         if (confirmReset && defaultProfile != null) {
             ConfirmDialog(
-                title = stringResource(R.string.profile_reset_title),
+                title = stringResource(R.string.profile_reset_editor_title),
                 body = stringResource(R.string.profile_reset_editor_body),
                 confirmLabel = stringResource(R.string.profile_reset_editor_confirm),
                 onConfirm = {

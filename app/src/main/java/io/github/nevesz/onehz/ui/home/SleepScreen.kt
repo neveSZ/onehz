@@ -120,6 +120,9 @@ fun SleepScreen(
     var showDetails by rememberSaveable { mutableStateOf(false) }
     var showWhitelist by rememberSaveable { mutableStateOf(false) }
     var showConfirm by rememberSaveable { mutableStateOf(false) }
+    var showWarning by rememberSaveable {
+        mutableStateOf(!SleepPreferences.warningSeen(context))
+    }
     var pickStart by rememberSaveable { mutableStateOf(false) }
     var pickEnd by rememberSaveable { mutableStateOf(false) }
     var testing by rememberSaveable { mutableStateOf(false) }
@@ -198,11 +201,16 @@ fun SleepScreen(
                     )
                     AnimatedVisibility(visible = ui.enabled) {
                         Column {
-                            Spacer(Modifier.height(10.dp))
-                            InfoBanner(
-                                body = stringResource(R.string.sleep_delay_warning),
-                                tone = BannerTone.WARN,
-                            )
+                            Spacer(Modifier.height(4.dp))
+                            TextButton(onClick = { showWarning = !showWarning }) {
+                                Text(stringResource(R.string.sleep_warning_toggle))
+                            }
+                            AnimatedVisibility(visible = showWarning) {
+                                InfoBanner(
+                                    body = stringResource(R.string.sleep_delay_warning),
+                                    tone = BannerTone.WARN,
+                                )
+                            }
                             if (phase == DozePhase.FAILED) {
                                 Spacer(Modifier.height(6.dp))
                                 Text(
@@ -391,6 +399,7 @@ fun SleepScreen(
                     ui = ui.copy(enabled = true)
                     SleepPreferences.setEnabled(context, true)
                     DozeController.onPrefsChanged()
+                    showWarning = false
                     showConfirm = false
                 }) {
                     Text(stringResource(R.string.sleep_confirm_enable))

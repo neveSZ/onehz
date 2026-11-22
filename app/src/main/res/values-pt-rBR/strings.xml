@@ -4,7 +4,7 @@
     <string name="app_name">OneHZ</string>
 
     <string name="tab_home">Início</string>
-    <string name="tab_apps">Aplicativos</string>
+    <string name="tab_apps">Apps</string>
     <string name="tab_settings">Ajustes</string>
 
     <string name="language">Idioma</string>
@@ -377,8 +377,8 @@
     <string name="profile_app_create">Criar perfil para este app</string>
     <string name="profile_app_remove_title">Remover atribuição?</string>
     <string name="profile_app_remove_body">%1$s voltará a usar o perfil ativo.</string>
-    <string name="aod_minimum">Taxa do AOD: %1$d Hz</string>
-    <string name="aod_minimum_hint">É sempre a menor taxa da tela. O AOD pode parecer menos fluido.</string>
+    <string name="aod_minimum">Mínimo da tela: %1$d Hz</string>
+    <string name="aod_minimum_hint">Enquanto o AOD está ativo, o OneHZ usa a menor taxa exposta pela tela. Não há seletor de Hz.</string>
     <string name="settings_backup">Backup e restauração</string>
     <string name="settings_backup_desc">Exportar ou importar perfis e configurações de comportamento</string>
     <string name="backup_export">Exportar configuração</string>

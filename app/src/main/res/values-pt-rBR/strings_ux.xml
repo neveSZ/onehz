@@ -3,9 +3,10 @@
     <!-- Home: status e resumo de tela desligada. -->
     <string name="home_status_on">Ligado</string>
     <string name="home_control_on">Controlando</string>
-    <string name="home_control_waiting">Aguardando o Shizuku</string>
     <string name="home_control_none">Sem controle</string>
     <string name="home_source_profile">Perfil: %1$s</string>
+    <string name="home_source_app">App: %1$s · %2$s</string>
+    <string name="home_source_video_suffix"> · vídeo</string>
     <string name="home_source_economy">Economia automática</string>
     <string name="home_source_aod">AOD · %1$d Hz</string>
     <string name="home_source_video">Vídeo · mínimo %1$d Hz</string>
@@ -16,7 +17,8 @@
 
     <!-- Perfis: seleção, referência e migração. -->
     <string name="profile_in_use">Em uso: %1$s</string>
-    <string name="profile_auto_economy_badge">Automática</string>
+    <string name="profile_in_use_auto">Em uso: %1$s (automática)</string>
+    <string name="profile_low_rate_home">30 Hz pode deixar a tela mais escura neste aparelho.</string>
     <string name="profile_auto_economy_title">Economia automática</string>
     <string name="profile_auto_economy_desc">Usar Economia enquanto a economia de bateria do sistema estiver ativa.</string>
     <string name="profile_auto_economy_footer">Apps podem manter o próprio perfil com a opção abaixo.</string>
@@ -28,6 +30,8 @@
     <string name="profile_delete_active_note">Este é o perfil selecionado. %1$s será selecionado.</string>
     <string name="profile_reset_editor_body">Os campos voltam ao padrão do aparelho. Revise e toque em Salvar.</string>
     <string name="profile_reset_editor_confirm">Redefinir campos</string>
+    <string name="profile_reset_editor_title">Redefinir campos?</string>
+    <string name="profile_limit_reached">Limite de perfis atingido. Exclua um perfil sem uso primeiro.</string>
     <string name="profile_used_by_apps_edit_note">Alterações afetam todos os apps que o usam.</string>
     <string name="profile_migration_title">Perfis atualizados</string>
     <string name="profile_migration_body">Normal virou Equilibrado, ECO virou Economia e um novo perfil Desempenho foi criado. Perfis por app agora referenciam perfis salvos.</string>
@@ -63,9 +67,11 @@
     <string name="sleep_whitelist_effect">Isso altera as exceções do Doze do sistema e pode aumentar o consumo.</string>
     <string name="sleep_failure_hint">Isso pode acontecer em algumas versões do sistema. Veja o diagnóstico ou tente o Doze leve.</string>
     <string name="sleep_details_hint">Últimas 5 sessões de sono. Sessões curtas também aparecem.</string>
+    <string name="sleep_warning_toggle">Aviso importante</string>
 
     <!-- AOD: detalhe. -->
-    <string name="aod_section_rate">Taxa</string>
+    <string name="aod_rate_title">Taxa no AOD</string>
+    <string name="aod_brightness_restore_confirm">Restaurar brilho</string>
     <string name="aod_brightness_restore_confirm_title">Restaurar brilho do sistema?</string>
     <string name="aod_brightness_restore_body">Remove o valor gravado e devolve o brilho do AOD ao sistema.</string>
     <string name="aod_brightness_failed">Não foi possível aplicar o brilho do AOD. Verifique o Shizuku.</string>
@@ -86,9 +92,8 @@
     <string name="backup_import_hint">A importação substitui a configuração de comportamento atual.</string>
     <string name="backup_import_success_title">Importação concluída</string>
     <string name="backup_import_error_title">Falha na importação</string>
-    <string name="backup_error_too_large">O arquivo é grande demais.</string>
     <string name="backup_error_invalid">Este não é um backup válido do OneHZ.</string>
-    <string name="backup_error_unreadable">Não foi possível ler o arquivo.</string>
+    <string name="backup_error_unreadable">Não foi possível ler o arquivo (ou ele é grande demais).</string>
     <string name="backup_import_sleep_not_included">Este backup não inclui o Sono; as configurações atuais foram mantidas.</string>
     <string name="backup_import_master_note">O switch mestre seguirá o arquivo.</string>
 </resources>

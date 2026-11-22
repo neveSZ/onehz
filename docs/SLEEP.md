@@ -104,7 +104,7 @@ Doze. Turning the screen on always exits Doze.
 
 ## Ordering and timing
 
-Screen-off is a chain: the AOD brightness key is written, the AOD refresh rate is applied,
+Screen-off is a chain: the AOD brightness key is written, the AOD rate is applied,
 and only then Sleep forces idle. A fixed delay of 0.8 s is used, with no wake lock. The
 delay lets the AOD-related Binder calls complete before the CPU is allowed to suspend. It
 is internal and not exposed in the UI.

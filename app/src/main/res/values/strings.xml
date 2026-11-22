@@ -373,8 +373,8 @@
     <string name="profile_app_create">Create a profile for this app</string>
     <string name="profile_app_remove_title">Remove assignment?</string>
     <string name="profile_app_remove_body">%1$s will use the active profile again.</string>
-    <string name="aod_minimum">AOD rate: %1$d Hz</string>
-    <string name="aod_minimum_hint">Always the panel\'s lowest rate. The AOD may look less smooth.</string>
+    <string name="aod_minimum">Panel minimum: %1$d Hz</string>
+    <string name="aod_minimum_hint">While AOD is active, OneHZ uses the lowest rate exposed by the panel. There is no Hz picker.</string>
     <string name="settings_backup">Backup and restore</string>
     <string name="settings_backup_desc">Export or import profiles and behavior settings</string>
     <string name="backup_export">Export configuration</string>
