@@ -42,6 +42,9 @@ Shizuku.
    bateria/Doze/notificação.
 6. Ative a chave principal.
 
+O Sono (Doze forçado) é opcional, vem desligado e não exige configuração extra; ele usa a
+permissão do Shizuku que já existe.
+
 > Se você vem de uma versão debug assinada com outra chave, desinstale primeiro:
 > `adb uninstall io.github.nevesz.onehz`.
 

@@ -26,6 +26,18 @@ Out of scope (deliberately):
 
 The feature is opt-in, off by default, and only runs while OneHZ itself is enabled.
 
+## Options and defaults
+
+| Option | Default | Notes |
+|---|---|---|
+| Sleep | off | Requires the OneHZ master switch. |
+| Deep Doze | on | Turn it off to request light idle. |
+| Skip while charging | on | Read from the sticky battery broadcast. |
+| Skip while music is playing | on | `AudioManager.isMusicActive`. |
+| Time window | off, 23:00–07:00 | Evaluated only at screen-off; may cross midnight. |
+| Pause | off | One hour from the moment it is pressed. |
+| Apps that may wake the device | empty | System Doze whitelist through Shizuku. |
+
 ## Platform mechanism
 
 Android exposes the device-idle controller through its debug shell interface. A shell

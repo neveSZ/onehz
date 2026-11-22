@@ -94,6 +94,10 @@ deixaria a tela inteira mais escura.
 - **Light idle no HyperOS:** no POCO X7 Pro testado, o deep idle é forçado
   (`mForceIdle=true`), enquanto o light idle já é o estado normal com a tela apagada
   (`mState=IDLE`, `mLightState=OVERRIDE`) e não altera `mForceIdle`.
+- **Entrega do SCREEN_OFF no HyperOS:** no mesmo aparelho, o broadcast `SCREEN_OFF` às
+  vezes chegou cerca de 10 segundos depois do keyevent com o app em segundo plano
+  (`QUICK_DOZE_DELAY`); o serviço em primeiro plano ainda o recebeu e o force foi
+  aplicado em seguida.
 - **As medições do Sono incluem o AOD.** Em aparelhos com Always On Display, a janela de
   tela apagada também contém o consumo do AOD, então o %/h não é um número de deep idle
   puro.

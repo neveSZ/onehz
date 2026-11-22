@@ -95,6 +95,10 @@ brightness there is no headroom to compensate upward, and dimming 60/120 Hz to m
 - **HyperOS light idle:** on the tested POCO X7 Pro, deep idle is forced
   (`mForceIdle=true`), while light idle is already the normal screen-off state
   (`mState=IDLE`, `mLightState=OVERRIDE`) and does not set `mForceIdle`.
+- **HyperOS screen-off delivery:** on the same device, the `SCREEN_OFF` broadcast was
+  occasionally delivered about 10 seconds after the key event while the app was in the
+  background (`QUICK_DOZE_DELAY`); the foreground service still received it and the force
+  was applied afterwards.
 - **Sleep measurements include the AOD.** On devices with Always On Display, the
   screen-off window also contains AOD draw, so the percent per hour is not a pure
   deep-idle figure.

@@ -40,6 +40,9 @@ Shizuku instead.
    permissions.
 6. Turn on the master switch.
 
+Sleep (forced Doze) is optional, off by default, and needs no extra setup; it uses the
+existing Shizuku permission.
+
 > If you are coming from a debug build signed with a different key, uninstall it first:
 > `adb uninstall io.github.nevesz.onehz`.
 
