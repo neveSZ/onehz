@@ -14,7 +14,7 @@ data class SleepBackup(
     val enabled: Boolean = false,
     val deep: Boolean = true,
     val skipCharging: Boolean = true,
-    val skipMusic: Boolean = true,
+    val dozeWithMusic: Boolean = false,
     val windowEnabled: Boolean = false,
     val windowStartMinute: Int = 23 * 60,
     val windowEndMinute: Int = 7 * 60
@@ -62,7 +62,9 @@ object BackupCodec {
                 put("enabled", sleep.enabled)
                 put("deep", sleep.deep)
                 put("skipCharging", sleep.skipCharging)
-                put("skipMusic", sleep.skipMusic)
+                put("dozeWithMusic", sleep.dozeWithMusic)
+                // Kept so a 1.2.x install can restore a backup made by this version.
+                put("skipMusic", !sleep.dozeWithMusic)
                 put("windowEnabled", sleep.windowEnabled)
                 put("windowStartMinute", sleep.windowStartMinute)
                 put("windowEndMinute", sleep.windowEndMinute)
@@ -105,7 +107,12 @@ object BackupCodec {
                     enabled = it.optBoolean("enabled", false),
                     deep = it.optBoolean("deep", true),
                     skipCharging = it.optBoolean("skipCharging", true),
-                    skipMusic = it.optBoolean("skipMusic", true),
+                    dozeWithMusic = if (it.has("dozeWithMusic")) {
+                        it.optBoolean("dozeWithMusic", false)
+                    } else {
+                        // Old backups stored the negative switch.
+                        !it.optBoolean("skipMusic", true)
+                    },
                     windowEnabled = it.optBoolean("windowEnabled", false),
                     windowStartMinute = it.optInt("windowStartMinute", 23 * 60)
                         .coerceIn(0, SleepWindow.MINUTES_PER_DAY - 1),

@@ -15,8 +15,9 @@
     <string name="sleep_deep_desc">Use the deepest idle state. Turn it off if the Always On Display freezes.</string>
     <string name="sleep_skip_charging_title">Pause while charging</string>
     <string name="sleep_skip_charging_desc">Do not force Doze when the device is plugged in.</string>
-    <string name="sleep_skip_music_title">Pause while music is playing</string>
-    <string name="sleep_skip_music_desc">Do not force Doze when audio is playing in the background.</string>
+    <string name="sleep_doze_music_title">Doze with music</string>
+    <string name="sleep_doze_music_on">Doze is ignoring music playback. Audio may stutter on some devices.</string>
+    <string name="sleep_doze_music_off">Doze pauses while music is playing.</string>
     <string name="sleep_window_title">Only within a time window</string>
     <string name="sleep_window_desc">Useful for a fixed routine. The range may cross midnight.</string>
     <string name="sleep_window_start">Start</string>

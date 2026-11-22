@@ -306,7 +306,7 @@ object DozeController {
                 ),
                 skipCharging = SleepPreferences.skipCharging(ctx),
                 charging = isCharging(ctx),
-                skipMusic = SleepPreferences.skipMusic(ctx),
+                dozeWithMusic = SleepPreferences.dozeWithMusic(ctx),
                 musicActive = isMusicActive(ctx),
                 serviceReady = ShizukuGateway.service != null,
                 deep = SleepPreferences.deep(ctx),

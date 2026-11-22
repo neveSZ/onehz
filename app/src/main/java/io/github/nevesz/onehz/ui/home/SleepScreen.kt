@@ -73,7 +73,7 @@ private data class SleepUi(
     val enabled: Boolean,
     val deep: Boolean,
     val skipCharging: Boolean,
-    val skipMusic: Boolean,
+    val dozeWithMusic: Boolean,
     val windowEnabled: Boolean,
     val window: SleepWindow,
     val pausedUntil: Long,
@@ -84,7 +84,7 @@ private fun loadSleep(context: Context): SleepUi = SleepUi(
     enabled = SleepPreferences.enabled(context),
     deep = SleepPreferences.deep(context),
     skipCharging = SleepPreferences.skipCharging(context),
-    skipMusic = SleepPreferences.skipMusic(context),
+    dozeWithMusic = SleepPreferences.dozeWithMusic(context),
     windowEnabled = SleepPreferences.windowEnabled(context),
     window = SleepPreferences.window(context),
     pausedUntil = SleepPreferences.pausedUntil(context),
@@ -323,12 +323,13 @@ fun SleepScreen(
                     )
                     ToggleRow(
                         icon = AppIcons.pause(),
-                        title = stringResource(R.string.sleep_skip_music_title),
-                        description = stringResource(R.string.sleep_skip_music_desc),
-                        checked = ui.skipMusic,
+                        title = stringResource(R.string.sleep_doze_music_title),
+                        descriptionOn = stringResource(R.string.sleep_doze_music_on),
+                        descriptionOff = stringResource(R.string.sleep_doze_music_off),
+                        checked = ui.dozeWithMusic,
                         onCheckedChange = { on ->
-                            ui = ui.copy(skipMusic = on)
-                            SleepPreferences.setSkipMusic(context, on)
+                            ui = ui.copy(dozeWithMusic = on)
+                            SleepPreferences.setDozeWithMusic(context, on)
                             DozeController.onPrefsChanged()
                         },
                     )
