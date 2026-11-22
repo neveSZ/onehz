@@ -80,6 +80,11 @@ brightness there is no headroom to compensate upward, and dimming 60/120 Hz to m
   compatibility gate.
 - **Multi-rate display required.** The gate requires at least two refresh rates; LTPO
   is not required.
+- **Two-rate panels.** Economy, Balanced and Performance use the same two bands and
+  differ only by the hold at the maximum. The time at the minimum is the resting time
+  until the next touch.
+- **AOD minimum.** The AOD uses the lowest rate exposed by the panel. On panels that
+  reject very low rates in AOD, the engine falls back to 30 Hz and logs the failure.
 - **Two devices tested.** Samsung S25+ `SM-S936B` (Android 17 / One UI 9.0) and
   POCO X7 Pro `2412DPC0AG` (Android 16 / HyperOS 3.0).
 - Other Android/One UI/HyperOS versions and WQHD+ are untested.

@@ -26,46 +26,55 @@ exceto a última, um tempo de espera.
 - enquanto o dedo está na tela, a descida é adiada (até 20 rechecagens de 100 ms) para
   a interface não cair durante a interação.
 
-## 2. Perfil normal
+## 2. Perfis: Economia, Balanceado e Performance
 
-**O que faz:** é o perfil usado quando a economia de bateria do sistema **não** está
-ativa.
+**O que faz:** guarda configurações reutilizáveis e aplica a selecionada.
 
-**Como funciona:** é independente do perfil ECO e pode ser desativado sozinho. Quando
-desativado, o OneHZ para de controlar a taxa nessa situação e devolve o comportamento
-adaptativo do sistema.
+**Como funciona:**
 
-O perfil normal padrão é **máximo do aparelho → 60 Hz → mínimo do aparelho**, segurando
-cada nível por **2 s e 5 s**.
+- uma instalação nova cria três perfis base:
+  - **Economia** — as faixas mais baixas, geradas a partir do mínimo do painel;
+  - **Balanceado** — o perfil padrão, usando a maior taxa acima de 60 Hz quando existe;
+  - **Performance** — mantém um repouso de 60 Hz ou mais;
+- o perfil ativo é escolhido na Home;
+- os perfis base podem ser editados e restaurados para o padrão do aparelho;
+- perfis customizados podem ser criados, renomeados, editados e excluídos;
+- cada perfil guarda suas próprias configurações de vídeo;
+- perfis por app referenciam um perfil salvo em vez de copiar a escada.
 
-## 3. Perfil ECO (economia de bateria)
+Em uma tela com apenas duas taxas, os três perfis usam as mesmas duas faixas e diferem
+apenas no tempo na máxima. O tempo na mínima é o repouso até o próximo toque, então há
+apenas uma espera ajustável nesses painéis.
 
-**O que faz:** é o perfil usado enquanto a economia de bateria do sistema está ativa.
+## 3. Economia de bateria e o perfil ativo
+
+**O que faz:** mantém o comportamento atual de trocar para Economia enquanto a economia
+de bateria do sistema está ativa.
 
 **Como funciona:**
 
 - o app escuta o broadcast de economia do sistema e reaplica a política;
-- o perfil ECO padrão começa em 60 Hz (ou na taxa suportada mais próxima abaixo disso),
-  segura por 2 s e depois usa o mínimo do aparelho;
-- um app pode optar por **“Ignorar ECO”**, mantendo o próprio perfil/normal enquanto a
-  economia está ativa;
-- enquanto o ECO está ativo, o OneHZ desativa os limites de taxa da economia da Samsung e
-  **restaura os valores originais** ao encerrar a sessão. No Xiaomi, a chave de taxa do
-  HyperOS é salva e restaurada da mesma forma. Isso evita que as configurações do sistema
-  fiquem alteradas após um crash ou desinstalação.
+- enquanto a economia está ligada, Economia é aplicada automaticamente, a menos que o app
+  em primeiro plano use **“Ignorar ECO”**;
+- quando a economia desliga, o perfil selecionado volta;
+- o comportamento pode ser desativado para usar sempre o perfil selecionado;
+- enquanto Economia está ativa, o OneHZ desativa os limites de taxa da economia da
+  Samsung e **restaura os valores originais** ao encerrar a sessão. No Xiaomi, a chave de
+  taxa do HyperOS é salva e restaurada da mesma forma. Isso evita que as configurações do
+  sistema fiquem alteradas após um crash ou desinstalação.
 
 ## 4. AOD: taxa com a tela desligada
 
-**O que faz:** aplica uma taxa fixa dedicada enquanto a tela está desligada / Always On
-Display está ativo.
+**O que faz:** aplica uma taxa fixa enquanto a tela está desligada / Always On Display
+está ativo.
 
 **Como funciona:**
 
-- a chave do AOD é independente dos perfis normal e ECO;
-- o padrão é 30 Hz (o padrão do sistema);
+- a chave do AOD é independente dos perfis;
+- o AOD sempre usa a **menor taxa exposta pela tela**;
 - quando a tela desliga, timers e o monitor de toque param, então o aparelho entra no
   Doze normalmente;
-- ao ligar a tela, a escada normal volta e o pulso de despertar é aplicado.
+- ao ligar a tela, o perfil ativo volta e o pulso de despertar é aplicado.
 
 ## 5. Brilho do AOD
 
@@ -92,22 +101,25 @@ adb shell settings delete system debug_aod_brightness
 
 ## 6. Perfis por aplicativo
 
-**O que faz:** atribui um perfil a um aplicativo instalado.
+**O que faz:** atribui um perfil salvo a um aplicativo instalado.
 
 **Como funciona:**
 
-- o app pode começar pelo perfil normal, pelo perfil ECO ou por um perfil personalizado;
-- o app em primeiro plano é consultado apenas quando existe pelo menos um perfil por
-  aplicativo;
+- um app referencia um dos perfis salvos (base ou customizado);
+- o app em primeiro plano é consultado apenas quando existe pelo menos uma atribuição;
 - no toque e no retorno ao app, o OneHZ pergunta ao serviço do Shizuku qual é o pacote em
   primeiro plano;
 - não há polling periódico;
-- se o app não tem perfil, a política normal/ECO se aplica.
+- editar o perfil referenciado atualiza todos os apps que o usam;
+- excluir um perfil reatribui os apps dele para Balanceado;
+- se o app não tem atribuição, o perfil ativo se aplica;
+- durante a Economia automática, o app só mantém o perfil se **“Ignorar ECO”** estiver
+  ligado.
 
 ## 7. Modo vídeo
 
-**O que faz:** mantém a taxa de atualização em um piso configurável enquanto um vídeo
-está tocando.
+**O que faz:** mantém a taxa de atualização no piso configurado no perfil ativo enquanto
+um vídeo está tocando.
 
 **Como funciona:**
 
@@ -119,14 +131,12 @@ está tocando.
   acionam o piso;
 - uma sondagem roda ~1,8 s depois de soltar o dedo e uma rechecagem lenta roda a cada 12 s
   enquanto um vídeo está ativo;
-- o piso de vídeo tem prioridade sobre o perfil do app/normal/ECO enquanto a reprodução
-  durar.
+- o piso de vídeo tem prioridade sobre o perfil enquanto a reprodução durar.
 
-Cada regra acima pode ser ativada ou desativada em **Modo vídeo → Configurar detecção**,
-para apps que informam sessões ou decodificadores de forma diferente. A mesma tela guarda
-uma lista de apps que devem ser sempre tratados como vídeo em primeiro plano, mesmo sem
-sessão, decodificador ou áudio. Os padrões reproduzem o comportamento original.
-**PiP ainda não é tratado** (veja o [backlog](BACKLOG.md)).
+Os padrões ligam MediaSession, o veto de sessão pausada e a regra de decodificador; a
+regra de áudio de mídia fica desligada. Cada regra pode ser alterada por perfil no editor.
+A lista de apps forçados é global. **PiP ainda não é tratado** (veja o
+[backlog](BACKLOG.md)).
 
 ## 8. Pulso de despertar
 
@@ -145,13 +155,20 @@ chegam juntos.
 
 - lê as taxas do painel da lista estática da Samsung ou do fallback
   `Display.supportedModes` no Xiaomi;
-- o perfil normal padrão é **máximo do painel → 60 Hz → mínimo do painel**, com esperas
-  de 2 s e 5 s (no S25+ testado: 120 → 60 → 10);
-- o ECO padrão começa em 60 Hz, segura por 2 s e depois usa o mínimo do painel;
-- taxas não suportadas são rejeitadas no editor.
+- em uma tela com duas taxas, os três perfis usam a máxima e a mínima e diferem apenas no
+  tempo na máxima (1 s / 2 s / 5 s);
+- em uma tela com mais taxas:
+  - **Economia**: máxima 1 s → 60 Hz (ou a maior abaixo de 60) 6 s → mínima;
+  - **Balanceado**: máxima 2 s → maior acima de 60 Hz (ou 60) 5 s → mínima;
+  - **Performance**: máxima 5 s → maior acima de 60 Hz 8 s → 60 Hz ou maior;
+- o piso de vídeo é 30 Hz na Economia e 60 Hz no Balanceado/Performance;
+- taxas não suportadas são rejeitadas no editor;
+- no S25+ testado (10/20/24/27/30/40/48/60/80/120 Hz), os perfis gerados são Economia
+  120 → 60 → 10, Balanceado 120 → 80 → 10 e Performance 120 → 80 → 60.
 
-Os padrões são criados **somente em uma instalação nova**. Perfis existentes são mantidos
-ao atualizar, inclusive ao instalar esta beta sobre a 1.0.1.
+Usuários existentes mantêm as escadas Normal/ECO como Balanceado/Economia e recebem um
+novo perfil Performance. As regras de vídeo antigas são preservadas, mas o mínimo de vídeo
+segue os novos padrões 30/60/60.
 
 ## 10. Configuração guiada
 
@@ -183,7 +200,24 @@ broadcasts do sistema, não por polling.
 
 Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 
-## 14. Idiomas
+## 14. Backup e restauração
+
+**O que faz:** exporta e importa a configuração de comportamento completa.
+
+**Como funciona:**
+
+- Ajustes → **Backup e restauração** grava um JSON versionado pelo seletor de arquivos do
+  sistema, sem permissão de armazenamento;
+- o arquivo inclui todos os perfis, o perfil ativo, atribuições de apps, vídeo, AOD,
+  switch mestre e a lista global de apps forçados como vídeo;
+- tema, idioma, diagnóstico, cache de atualização e snapshots internos de restauração do
+  sistema não entram;
+- a importação substitui a configuração atual depois de uma confirmação;
+- perfis com taxas não suportadas pela tela atual são adaptados para a taxa mais próxima,
+  e o resumo informa quantos foram adaptados;
+- atribuições para um perfil ausente caem em Balanceado.
+
+## 15. Idiomas
 
 Português (Brasil), inglês e espanhol. Veja o
 [status das traduções](TRANSLATIONS.md).

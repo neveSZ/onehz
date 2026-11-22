@@ -46,9 +46,11 @@ These are documented as known limitations rather than promises.
 
 ## Ideas
 
-- Export/import profiles.
+- Optional activation rules: time window, charging state or battery level, with explicit
+  priority and a visible reason for the active profile.
+- Quick Settings tile to switch the active profile.
+- Side-by-side profile comparison.
 - More granular per-app rules (e.g. per-orientation).
-- Widget/quick-settings tile for the master switch.
 - Additional translations.
 
 To propose something, open a feature request. Explain the problem and the device you can

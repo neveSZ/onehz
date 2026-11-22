@@ -11,12 +11,15 @@
 Unit tests cover the pure logic:
 
 - `FrequencyProfile` serialization, validation, defaults;
+- `ProfileDefaults` for two-rate and multi-rate panels;
+- `ProfileCodec` serialization and frequency adaptation;
+- `BackupCodec` round trip, schema/app validation and forced packages;
 - `VideoSignals` parsers and rule decisions (captured real-device fixtures);
 - `VideoConfig` encoding, validation, and defaults;
 - `MtTouchParser` MT-B edges;
 - `TouchDeviceSelector` device filtering;
 - `AodBrightnessMath`;
-- `PolicyResolver` precedence;
+- `PolicyResolver` precedence, automatic Economy and profile video;
 - `SemanticVersion` and pre-release precedence;
 - `ReleaseSelector` channel filtering and URL validation;
 - update interval gating.
@@ -50,20 +53,23 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Confirm the final tier stays at rest.
 - [ ] Put a finger on the screen while a hold expires; the step is deferred.
 - [ ] Turn the master switch off; the system adaptive default returns.
-- [ ] Disable the normal profile; control stops with the expected message.
+- [ ] Select Economy, Balanced, Performance and a custom profile; each applies.
 
-### ECO
+### Profiles and battery saver
 
-- [ ] Turn on system battery saver; the ECO profile is applied.
-- [ ] Turn battery saver off; the normal profile returns.
-- [ ] Mark an app “Ignore ECO”; its profile stays while battery saver is on.
-- [ ] Disable the ECO profile; control stops during battery saver.
+- [ ] Edit a built-in profile; it is marked as modified.
+- [ ] Restore a built-in profile; it returns to the device defaults.
+- [ ] Create, rename, edit and delete a custom profile.
+- [ ] Delete a custom profile used by an app; the app moves to Balanced.
+- [ ] Turn on system battery saver; Economy is applied and the card shows it.
+- [ ] Turn battery saver off; the selected profile returns.
+- [ ] Mark an app "Ignore ECO"; its profile stays while battery saver is on.
 - [ ] Confirm Samsung ECO settings are restored after turning OneHZ off.
 - [ ] On Xiaomi, confirm `secure/miui_refresh_rate` is restored after turning OneHZ off.
 
 ### AOD
 
-- [ ] Enable AOD frequency; lock the screen and confirm the AOD rate.
+- [ ] Enable AOD; lock the screen and confirm the panel minimum is applied.
 - [ ] Enable AOD brightness (Samsung only); lock and check
       `adb shell settings get system debug_aod_brightness`.
 - [ ] Change screen brightness while awake; the target updates.
@@ -73,10 +79,21 @@ Test on the target device with a clean install of the signed release APK.
 
 ### Per-app profiles
 
-- [ ] Add a custom profile for a test app.
-- [ ] Open the app; the profile is applied on touch/resume.
-- [ ] Remove the profile; the normal profile returns.
-- [ ] Confirm no foreground polling when no app profiles exist.
+- [ ] Assign an existing profile to a test app.
+- [ ] Open the app; the assigned profile is applied on touch/resume.
+- [ ] Edit the assigned profile; the app uses the updated staircase.
+- [ ] Create a custom profile from the app sheet and confirm it is assigned.
+- [ ] Remove the assignment; the active profile returns.
+- [ ] Confirm no foreground polling when no assignments exist.
+
+### Backup and restore
+
+- [ ] Export a configuration with built-in, custom and per-app assignments.
+- [ ] Change several settings, then import the file; the summary is shown.
+- [ ] Confirm profiles, active profile, video, AOD and assignments are restored.
+- [ ] Import a file with unsupported rates; confirm the adapted count is reported.
+- [ ] Import a file with a missing profile reference; the app moves to Balanced.
+- [ ] Confirm theme and language are unchanged.
 
 ### Video mode
 

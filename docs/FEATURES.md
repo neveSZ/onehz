@@ -26,45 +26,55 @@ except the last one, a hold time.
 - while a finger is on the screen, the step-down is deferred (up to 20 rechecks of
   100 ms) so the UI does not drop while you are interacting.
 
-## 2. Normal profile
+## 2. Profiles: Economy, Balanced and Performance
 
-**What it does:** the profile used when the system battery saver is **not** active.
+**What it does:** stores reusable configurations and applies the selected one.
 
-**How it works:** it is independent from the ECO profile and can be disabled on its own.
-When disabled, OneHZ stops controlling the rate in that situation and restores the
-system adaptive behavior.
+**How it works:**
 
-The default normal profile is **device maximum → 60 Hz → device minimum**, holding each
-level for **2 s and 5 s**.
+- a fresh install creates three built-in profiles:
+  - **Economy** — the lowest bands, generated from the panel minimum;
+  - **Balanced** — the default profile, using the highest rate above 60 Hz when available;
+  - **Performance** — preserves a 60 Hz-or-higher resting floor;
+- the active profile is selected by the user on Home;
+- built-in profiles can be edited and restored to the device defaults;
+- custom profiles can be created, renamed, edited and deleted;
+- every profile stores its own video settings;
+- per-app assignments reference a saved profile instead of copying its staircase.
 
-## 3. ECO profile (battery saver)
+On a panel with only two rates, the three profiles use the same two bands and differ only
+by how long the maximum is held. The time at the minimum is the resting time until the
+next touch, so there is only one adjustable hold on such panels.
 
-**What it does:** the profile used while the system battery saver is active.
+## 3. Battery saver and the active profile
+
+**What it does:** keeps the current behavior of switching to Economy while the system
+battery saver is active.
 
 **How it works:**
 
 - the app listens to the system battery-saver broadcast and reapplies the policy;
-- the default ECO profile starts at 60 Hz (or the nearest supported rate below it),
-  holds it for 2 s and then uses the device minimum;
-- an app can opt out with **“Ignore ECO”**, keeping its own/normal profile while battery
-  saver is on;
-- while ECO is active, OneHZ disables Samsung's own battery-saver refresh-rate caps and
-  **restores the original values** when the session ends. On Xiaomi, the HyperOS rate key
-  is snapshotted and restored the same way. This prevents the system settings from
+- while battery saver is on, Economy is applied automatically unless the foreground app
+  opts out with **“Ignore ECO”**;
+- when battery saver turns off, the selected profile returns;
+- the behavior can be disabled so the selected profile is always used;
+- while Economy is active, OneHZ disables Samsung's own battery-saver refresh-rate caps
+  and **restores the original values** when the session ends. On Xiaomi, the HyperOS rate
+  key is snapshotted and restored the same way. This prevents the system settings from
   staying modified after a crash or uninstall.
 
 ## 4. AOD: screen-off refresh rate
 
-**What it does:** applies a dedicated fixed rate while the screen is off / Always On
-Display is active.
+**What it does:** applies a fixed rate while the screen is off / Always On Display is
+active.
 
 **How it works:**
 
-- the AOD switch is independent from the normal and ECO profiles;
-- the default is 30 Hz (the system default);
+- the AOD switch is independent from the profiles;
+- the AOD always uses the **lowest rate exposed by the panel**;
 - when the screen turns off, timers and the touch monitor stop, so the device can enter
   Doze normally;
-- turning the screen on resumes the normal staircase and applies the wake pulse.
+- turning the screen on resumes the active profile and applies the wake pulse.
 
 ## 5. AOD brightness
 
@@ -91,20 +101,23 @@ adb shell settings delete system debug_aod_brightness
 
 ## 6. Per-app profiles
 
-**What it does:** assigns a profile to an installed app.
+**What it does:** assigns a saved profile to an installed app.
 
 **How it works:**
 
-- apps can start from the normal profile, the ECO profile, or a custom profile;
-- the foreground app is read only when at least one app profile exists;
+- an app references one of the saved profiles (built-in or custom);
+- the foreground app is read only when at least one assignment exists;
 - on touch and on resume, the app asks the Shizuku service for the foreground package;
 - there is no periodic polling;
-- if the app has no profile, the normal/ECO policy applies.
+- editing the referenced profile updates every app that uses it;
+- deleting a profile reassigns its apps to Balanced;
+- if the app has no assignment, the active profile applies;
+- during automatic Economy, an app only keeps its profile when **“Ignore ECO”** is on.
 
 ## 7. Video mode
 
-**What it does:** keeps the refresh rate at a configurable floor while a video is
-playing.
+**What it does:** keeps the refresh rate at the floor configured in the active profile
+while a video is playing.
 
 **How it works:**
 
@@ -116,13 +129,11 @@ playing.
   trigger the floor;
 - a probe runs ~1.8 s after the finger lifts and a slow recheck runs every 12 s while a
   video is active;
-- the video floor has priority over the app/normal/ECO profile while playback lasts.
+- the video floor has priority over the profile while playback lasts.
 
-Every rule above can be toggled from **Video mode → Configure detection** for apps that
-report sessions or decoders differently. The same sheet keeps a list of apps that must
-always be treated as video while in the foreground, even without a session, decoder, or
-audio. The defaults reproduce the original behavior. **PiP is not handled yet** (see the
-[backlog](BACKLOG.md)).
+The defaults enable MediaSession, the paused-session veto, and the decoder rule; the
+media-audio rule is off. Every rule can be changed per profile in the profile editor. The
+forced-app list is global. **PiP is not handled yet** (see the [backlog](BACKLOG.md)).
 
 ## 8. Wake pulse
 
@@ -141,13 +152,20 @@ together.
 
 - reads the panel rates from the static Samsung feature list or from the Xiaomi
   `Display.supportedModes` fallback;
-- the default normal profile is **panel maximum → 60 Hz → panel minimum**, with 2 s and
-  5 s holds (on the tested S25+: 120 → 60 → 10);
-- the ECO default starts at 60 Hz, holds it for 2 s and then uses the panel minimum;
-- unsupported rates are rejected in the editor.
+- on a panel with two rates, all three profiles use the maximum and minimum and differ
+  only by the hold at the maximum (1 s / 2 s / 5 s);
+- on a panel with more rates:
+  - **Economy**: maximum 1 s → 60 Hz (or the highest rate below 60) 6 s → minimum;
+  - **Balanced**: maximum 2 s → highest rate above 60 Hz (or 60) 5 s → minimum;
+  - **Performance**: maximum 5 s → highest rate above 60 Hz 8 s → 60 Hz or higher;
+- Economy video floor is 30 Hz; Balanced and Performance use 60 Hz;
+- unsupported rates are rejected in the editor;
+- on the tested S25+ (10/20/24/27/30/40/48/60/80/120 Hz), the generated profiles are
+  Economy 120 → 60 → 10, Balanced 120 → 80 → 10 and Performance 120 → 80 → 60.
 
-Defaults are created **only on a fresh install**. Existing profiles are kept when you
-update, including after installing this beta over 1.0.1.
+Existing users keep their Normal/ECO staircases as Balanced/Economy and receive a new
+Performance profile. The old video rules are preserved, while the video minimum follows
+the new 30/60/60 defaults.
 
 ## 10. Guided setup
 
@@ -178,6 +196,23 @@ polling.
 
 System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
 
-## 14. Languages
+## 14. Backup and restore
+
+**What it does:** exports and imports the complete behavior configuration.
+
+**How it works:**
+
+- Settings → **Backup and restore** writes a versioned JSON file through the system file
+  picker, without storage permissions;
+- the file includes all profiles, the active profile, app assignments, video settings,
+  AOD settings, the master switch, and the forced-video app list;
+- theme, language, diagnostics, update cache, and internal system-restore snapshots are
+  not included;
+- import replaces the current behavior configuration after a confirmation;
+- profiles whose rates are not supported by the current panel are adapted to the nearest
+  supported rate, and the result summary reports how many were adapted;
+- app assignments pointing to a missing profile fall back to Balanced.
+
+## 15. Languages
 
 Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS.md).
