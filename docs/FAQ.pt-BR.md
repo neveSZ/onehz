@@ -30,17 +30,24 @@ funciona.
 A escada alterna entre taxas. Uma tela de taxa única não tem para onde mudar, então o app
 falha fechado. **LTPO não é obrigatório**; uma tela 120/90/60/30 já basta.
 
-### O que são Economia, Balanceado e Performance?
+### O que são Economia, Equilibrado e Desempenho?
 
 São três perfis base gerados conforme a tela:
 
 - **Economia** usa as faixas mais baixas úteis e é aplicado automaticamente enquanto a
   economia de bateria do sistema está ligada;
-- **Balanceado** é o perfil padrão e usa a maior taxa acima de 60 Hz quando existe;
-- **Performance** mantém um repouso de 60 Hz ou mais.
+- **Equilibrado** é o perfil padrão e usa a maior taxa acima de 60 Hz quando existe;
+- **Desempenho** mantém um repouso de 60 Hz ou mais.
 
 Você pode escolher o perfil ativo na Home, editar qualquer perfil base e restaurá-lo para
-o padrão do aparelho. Perfis customizados também são suportados.
+o padrão do aparelho. Perfis personalizados também são suportados.
+
+### Por que o card mostra um perfil selecionado e outro em uso?
+
+Quando a **Economia automática** está ligada e a economia de bateria do sistema está
+ativa, o OneHZ usa Economia mesmo que outro perfil esteja selecionado. O card mostra o
+perfil selecionado e o perfil em uso. Desligue a **Economia automática** em **Gerenciar
+perfis** para usar sempre o perfil selecionado.
 
 ### O que acontece em uma tela com apenas duas taxas?
 
@@ -56,9 +63,19 @@ o painel rejeitar uma taxa muito baixa no AOD, o motor cai para 30 Hz e registra
 ### Posso fazer backup das configurações?
 
 Sim. Ajustes → **Backup e restauração** exporta um JSON versionado pelo seletor de
-arquivos do sistema. Ele inclui todos os perfis, atribuições de apps, vídeo, AOD e o
-switch mestre. Tema e idioma não entram. A importação substitui a configuração de
-comportamento atual e adapta taxas não suportadas para a tela atual.
+arquivos do sistema. Ele inclui todos os perfis, atribuições de apps, vídeo, AOD,
+configurações do Sono e o switch mestre. Tema, idioma, diagnóstico, medições do Sono e
+exceções do Doze do sistema não entram. A importação substitui a configuração de
+comportamento atual e adapta taxas não suportadas para a tela atual. Um backup criado
+antes de o Sono existir **não** altera as configurações atuais do Sono.
+
+### O que é o Sono (Doze)?
+
+O Sono é um recurso opcional que pede ao Android para entrar em **Doze** assim que a tela
+apaga. Doze é o estado de repouso profundo do Android. Ligações normais e alarmes
+continuam funcionando, mas notificações e chamadas por internet (WhatsApp, Telegram etc.)
+podem atrasar. O Sono vem desligado, pede confirmação antes do primeiro enable e pode ser
+pausado por 1 hora a qualquer momento. Veja [SONO](SLEEP.md).
 
 ### O brilho do AOD funciona no Xiaomi?
 
@@ -95,31 +112,24 @@ então ela instala por cima da 1.0.1 mantendo os ajustes. A próxima estável te
 `versionCode` maior, então instalar a estável por cima da beta devolve você ao canal
 estável.
 
-### O que mudou na 1.1.0?
+### O que mudou na 1.2.0?
 
-- Suporte a Xiaomi/Redmi/POCO (HyperOS 2/3, com fallback para HyperOS 1).
-- O requisito de LTPO foi substituído por uma verificação de capacidade: pelo menos duas
-  taxas de atualização.
-- Novos perfis padrão em instalações novas: normal **máximo → 60 Hz → mínimo** (2 s /
-  5 s) e ECO **60 Hz → mínimo** (2 s).
-- Regras de detecção de vídeo configuráveis e lista de apps forçados.
-- O diagnóstico agora inclui brilho/modo da tela, estado da economia de bateria e a rota
-  de taxa ativa.
-
-### O que mudou na beta de perfis reutilizáveis?
-
-- Perfis Economia, Balanceado e Performance gerados conforme a tela.
-- Seleção manual do perfil ativo, com Economia automática durante a economia de bateria.
-- Perfis customizados, renomear/editar/excluir e “Restaurar padrão” nos base.
+- Perfis reutilizáveis **Economia, Equilibrado e Desempenho**, além de perfis
+  personalizados.
+- Seleção manual do perfil ativo, com **Economia automática** opcional durante a economia
+  de bateria.
 - Perfis por app agora referenciam um perfil salvo em vez de copiar a escada.
-- Configurações de vídeo pertencem a cada perfil.
-- O AOD sempre usa a mínima da tela.
-- Backup e restauração JSON versionados.
+- Mínimo de vídeo e regras de detecção por perfil; a lista de apps forçados é global.
+- O AOD sempre usa a mínima da tela; o brilho do AOD tem ação de restauração do sistema.
+- **Sono** opcional (Doze forçado), com aviso antes do primeiro enable, proteções e
+  medições locais.
+- Backup inclui as configurações do Sono; um backup sem Sono não altera as atuais.
+- Home reorganizada; AOD e Sono agora têm telas de detalhe.
 
 ### Atualizar vai mudar meus perfis?
 
-As escadas são mantidas, mas o modelo muda. Normal vira Balanceado, ECO vira Economia e
-um novo perfil Performance é criado. Perfis por app copiados viram referências a um perfil
+As escadas são mantidas, mas o modelo muda. Normal vira Equilibrado, ECO vira Economia e
+um novo perfil Desempenho é criado. Perfis por app copiados viram referências a um perfil
 correspondente (ou a um perfil customizado deduplicado). As chaves antigas do
 SharedPreferences continuam por segurança. Se quiser o layout antigo de volta, edite os
 perfis ou restaure os base para o padrão do aparelho.

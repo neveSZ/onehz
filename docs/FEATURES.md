@@ -36,7 +36,7 @@ except the last one, a hold time.
   - **Economy** — the lowest bands, generated from the panel minimum;
   - **Balanced** — the default profile, using the highest rate above 60 Hz when available;
   - **Performance** — preserves a 60 Hz-or-higher resting floor;
-- the active profile is selected by the user on Home;
+- the active profile is selected by the user on Home; the card shows the **selected** profile and, when they differ, the profile **in use**;
 - built-in profiles can be edited and restored to the device defaults;
 - custom profiles can be created, renamed, edited and deleted;
 - every profile stores its own video settings;
@@ -57,7 +57,7 @@ battery saver is active.
 - while battery saver is on, Economy is applied automatically unless the foreground app
   opts out with **“Do not use Economy during battery saver”**;
 - when battery saver turns off, the selected profile returns;
-- the behavior can be disabled so the selected profile is always used;
+- the behavior can be disabled in **Manage profiles → Automatic Economy**, so the selected profile is always used;
 - while Economy is active, OneHZ disables Samsung's own battery-saver refresh-rate caps
   and **restores the original values** when the session ends. On Xiaomi, the HyperOS rate
   key is snapshotted and restored the same way. This prevents the system settings from
@@ -106,6 +106,7 @@ adb shell settings delete system debug_aod_brightness
 **How it works:**
 
 - an app references one of the saved profiles (built-in or custom);
+- the app row and the assignment sheet state: “This app uses profile X. Editing it changes every app that uses it.”;
 - the foreground app is read only when at least one assignment exists;
 - on touch and on resume, the app asks the Shizuku service for the foreground package;
 - there is no periodic polling;
@@ -117,7 +118,7 @@ adb shell settings delete system debug_aod_brightness
 
 ## 7. Video mode
 
-**What it does:** keeps the refresh rate at the floor configured in the active profile
+**What it does:** keeps the refresh rate at the minimum configured in the active profile
 while a video is playing.
 
 **How it works:**
@@ -130,7 +131,9 @@ while a video is playing.
   trigger the floor;
 - a probe runs ~1.8 s after the finger lifts and a slow recheck runs every 12 s while a
   video is active;
-- the video floor has priority over the profile while playback lasts.
+- the video minimum has priority over the profile while playback lasts;
+- the forced-app list is global and applies to every profile, but the rules and the minimum
+  are stored per profile.
 
 The defaults enable MediaSession, the paused-session veto, and the decoder rule; the
 media-audio rule is off. Every rule can be changed per profile in the profile editor. The
@@ -207,10 +210,12 @@ System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
   picker, without storage permissions;
 - the file includes all profiles, the active profile, app assignments, video settings,
   AOD settings, Sleep settings, the master switch, and the forced-video app list;
-- the system Doze whitelist, Sleep measurements, and the pause/forced state are
+- the system Doze exceptions, Sleep measurements, and the pause/forced state are
   system/transient state and are not included;
 - theme, language, diagnostics, update cache, and internal system-restore snapshots are
   not included;
+- a backup created before Sleep settings existed does **not** change the current Sleep
+  settings on import;
 - import replaces the current behavior configuration after a confirmation;
 - profiles whose rates are not supported by the current panel are adapted to the nearest
   supported rate, and the result summary reports how many were adapted;
@@ -222,8 +227,9 @@ Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS
 
 ## 16. Sleep (forced Doze)
 
-Optional and off by default. When the screen turns off, OneHZ asks the platform to enter
-Doze immediately instead of waiting for the inactivity timers:
+Optional and off by default. The first enable asks for confirmation because notifications
+and internet calls can be delayed. When the screen turns off, OneHZ asks the platform to
+enter Doze immediately instead of waiting for the inactivity timers:
 
 - deep idle (default) or light idle;
 - guards evaluated only at screen-off: pause for one hour, a time window that may cross

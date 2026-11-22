@@ -80,14 +80,14 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
 | **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
-| **Automatic Economy** | Switches to Economy while the system battery saver is on, with a per-app option to not use Economy during battery saver. |
+| **Automatic Economy** | Switches to Economy while the system battery saver is on. Can be disabled in **Manage profiles**; each app can keep its own profile. |
 | **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
-| **AOD refresh rate** | Always the lowest rate exposed by the panel. |
+| **AOD refresh rate** | Always the lowest rate exposed by the panel; there is no separate AOD picker. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
-| **Sleep (forced Doze)** | Enters Doze as soon as the screen turns off, with guards and local measurements. |
+| **Sleep (forced Doze)** | Optional and off by default. Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
-| **Video mode** | A per-profile refresh-rate floor while a video plays, with configurable detection rules. |
-| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video, AOD and Sleep. |
+| **Video mode** | A per-profile minimum rate while a video plays, with configurable detection rules and a global forced-app list. |
+| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video, AOD, Sleep settings and the master switch. Sleep measurements and the system Doze exceptions are not included. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
 | **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |

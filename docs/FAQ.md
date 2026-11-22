@@ -41,6 +41,13 @@ They are three built-in profiles generated from the panel:
 You can select the active profile on Home, edit any built-in profile and restore it to the
 device defaults. Custom profiles are also supported.
 
+### Why does the card show one profile selected and another in use?
+
+When **Automatic Economy** is on and the system battery saver is active, OneHZ uses
+Economy even if another profile is selected. The Home card shows the selected profile and
+the profile in use. Turn off **Automatic Economy** in **Manage profiles** to always use the
+selected profile.
+
 ### What happens on a panel with only two refresh rates?
 
 All three profiles use the same two bands and differ only by how long the maximum is held
@@ -55,9 +62,11 @@ panel rejects a very low rate in AOD, the engine falls back to 30 Hz and logs th
 ### Can I back up my settings?
 
 Yes. Settings → **Backup and restore** exports a versioned JSON file through the system
-file picker. It includes all profiles, app assignments, video, AOD settings and the master
-switch. Theme and language are not included. Importing replaces the current behavior
-configuration and adapts unsupported rates to the current panel.
+file picker. It includes all profiles, app assignments, video, AOD settings, Sleep
+settings and the master switch. Theme, language, diagnostics, Sleep measurements and the
+system Doze exceptions are not included. Importing replaces the current behavior
+configuration and adapts unsupported rates to the current panel. A backup created before
+Sleep settings existed does **not** change the current Sleep settings.
 
 ### Does AOD brightness work on Xiaomi?
 
@@ -93,15 +102,27 @@ A beta uses the same signing key and a higher `versionCode` than the current sta
 it installs over 1.0.1 and keeps your settings. The next stable has a higher
 `versionCode`, so installing it over the beta returns you to the stable channel.
 
-### What changed in 1.1.0?
+### What changed in 1.2.0?
 
-- Xiaomi/Redmi/POCO support (HyperOS 2/3, with a HyperOS 1 fallback).
-- The LTPO requirement was replaced by a capability check: at least two refresh rates.
-- New default profiles for fresh installs: normal **maximum → 60 Hz → minimum**
-  (2 s / 5 s) and ECO **60 Hz → minimum** (2 s).
-- Configurable video detection rules and a forced-app list.
-- Diagnostics now include screen brightness/mode, battery-saver state, and the active
-  rate route.
+- Reusable **Economy, Balanced and Performance** profiles, plus custom profiles.
+- Manual profile selection with optional **Automatic Economy** while the system battery
+  saver is on.
+- Per-app assignments now reference a saved profile instead of copying its staircase.
+- Per-profile video minimum and detection rules; the forced-app list is global.
+- AOD always uses the panel minimum; the AOD brightness action now has a system restore.
+- Optional **Sleep** (forced Doze) with a first-enable warning, guards and local
+  measurements.
+- Backup includes Sleep settings; a backup without Sleep does not change them.
+- Home was reorganized; AOD and Sleep now have detail screens.
+- Portuguese profile names are **Economia / Equilibrado / Desempenho**.
+
+### What is Sleep (Doze)?
+
+Sleep is an optional feature that asks Android to enter **Doze** as soon as the screen
+turns off. Doze is Android's deep sleep state. Regular calls and alarms still work, but
+notifications and internet calls (WhatsApp, Telegram, etc.) may be delayed. Sleep is off
+by default, asks for confirmation before the first enable, and can be paused for one hour
+at any time. See [SLEEP](SLEEP.md).
 
 ### What changed in the reusable profiles beta?
 

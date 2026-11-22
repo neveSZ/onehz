@@ -80,15 +80,15 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | Recurso | O que faz |
 |---|---|
 | **Escada de taxa de atualização** | 1 a 5 faixas decrescentes por perfil, com tempo de espera em cada faixa. |
-| **Economia / Balanceado / Performance** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
-| **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada, com a opção por app de não usar Economia durante a economia de bateria. |
+| **Economia / Equilibrado / Desempenho** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
+| **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada. Pode ser desligada em **Gerenciar perfis**; cada app pode manter o próprio perfil. |
 | **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
-| **Taxa do AOD** | Sempre a menor taxa exposta pela tela. |
+| **Taxa do AOD** | Sempre a menor taxa exposta pela tela; não há mais seletor separado de AOD. |
 | **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
-| **Sono (Doze forçado)** | Entra em Doze assim que a tela apaga, com filtros e medições locais. |
+| **Sono (Doze forçado)** | Opcional e desligado por padrão. Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
 | **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca, com regras de detecção configuráveis. |
-| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo, AOD e Sono. |
+| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo, AOD, configurações do Sono e switch mestre. Medições do Sono e exceções do Doze não entram. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
 | **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze e notificações. |

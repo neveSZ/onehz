@@ -26,7 +26,7 @@ exceto a última, um tempo de espera.
 - enquanto o dedo está na tela, a descida é adiada (até 20 rechecagens de 100 ms) para
   a interface não cair durante a interação.
 
-## 2. Perfis: Economia, Balanceado e Performance
+## 2. Perfis: Economia, Equilibrado e Desempenho
 
 **O que faz:** guarda configurações reutilizáveis e aplica a selecionada.
 
@@ -34,9 +34,9 @@ exceto a última, um tempo de espera.
 
 - uma instalação nova cria três perfis base:
   - **Economia** — as faixas mais baixas, geradas a partir do mínimo do painel;
-  - **Balanceado** — o perfil padrão, usando a maior taxa acima de 60 Hz quando existe;
-  - **Performance** — mantém um repouso de 60 Hz ou mais;
-- o perfil ativo é escolhido na Home;
+  - **Equilibrado** — o perfil padrão, usando a maior taxa acima de 60 Hz quando existe;
+  - **Desempenho** — mantém um repouso de 60 Hz ou mais;
+- o perfil ativo é escolhido na Home; o card mostra o perfil **selecionado** e, quando forem diferentes, o perfil **em uso**;
 - os perfis base podem ser editados e restaurados para o padrão do aparelho;
 - perfis customizados podem ser criados, renomeados, editados e excluídos;
 - cada perfil guarda suas próprias configurações de vídeo;
@@ -57,7 +57,7 @@ de bateria do sistema está ativa.
 - enquanto a economia está ligada, Economia é aplicada automaticamente, a menos que o app
   em primeiro plano use **“Não usar Economia durante a economia de bateria”**;
 - quando a economia desliga, o perfil selecionado volta;
-- o comportamento pode ser desativado para usar sempre o perfil selecionado;
+- o comportamento pode ser desativado em **Gerenciar perfis → Economia automática**, para usar sempre o perfil selecionado;
 - enquanto Economia está ativa, o OneHZ desativa os limites de taxa da economia da
   Samsung e **restaura os valores originais** ao encerrar a sessão. No Xiaomi, a chave de
   taxa do HyperOS é salva e restaurada da mesma forma. Isso evita que as configurações do
@@ -105,20 +105,21 @@ adb shell settings delete system debug_aod_brightness
 
 **Como funciona:**
 
-- um app referencia um dos perfis salvos (base ou customizado);
+- um app referencia um dos perfis salvos (base ou personalizado);
+- a linha do app e a folha de atribuição dizem: “Este app usa o perfil X. Editar esse perfil muda todos os apps que o usam.”;
 - o app em primeiro plano é consultado apenas quando existe pelo menos uma atribuição;
 - no toque e no retorno ao app, o OneHZ pergunta ao serviço do Shizuku qual é o pacote em
   primeiro plano;
 - não há polling periódico;
 - editar o perfil referenciado atualiza todos os apps que o usam;
-- excluir um perfil reatribui os apps dele para Balanceado;
+- excluir um perfil reatribui os apps dele para Equilibrado;
 - se o app não tem atribuição, o perfil ativo se aplica;
 - durante a Economia automática, o app só mantém o perfil se
   **“Não usar Economia durante a economia de bateria”** estiver ligado.
 
 ## 7. Modo vídeo
 
-**O que faz:** mantém a taxa de atualização no piso configurado no perfil ativo enquanto
+**O que faz:** mantém a taxa de atualização no mínimo configurado no perfil ativo enquanto
 um vídeo está tocando.
 
 **Como funciona:**
@@ -131,7 +132,8 @@ um vídeo está tocando.
   acionam o piso;
 - uma sondagem roda ~1,8 s depois de soltar o dedo e uma rechecagem lenta roda a cada 12 s
   enquanto um vídeo está ativo;
-- o piso de vídeo tem prioridade sobre o perfil enquanto a reprodução durar.
+- o mínimo de vídeo tem prioridade sobre o perfil enquanto a reprodução durar;
+- a lista de apps forçados é global e vale para todos os perfis, mas as regras e o mínimo ficam em cada perfil.
 
 Os padrões ligam MediaSession, o veto de sessão pausada e a regra de decodificador; a
 regra de áudio de mídia fica desligada. Cada regra pode ser alterada por perfil no editor.
@@ -159,15 +161,15 @@ chegam juntos.
   tempo na máxima (1 s / 2 s / 5 s);
 - em uma tela com mais taxas:
   - **Economia**: máxima 1 s → 60 Hz (ou a maior abaixo de 60) 6 s → mínima;
-  - **Balanceado**: máxima 2 s → maior acima de 60 Hz (ou 60) 5 s → mínima;
-  - **Performance**: máxima 5 s → maior acima de 60 Hz 8 s → 60 Hz ou maior;
-- o piso de vídeo é 30 Hz na Economia e 60 Hz no Balanceado/Performance;
+  - **Equilibrado**: máxima 2 s → maior acima de 60 Hz (ou 60) 5 s → mínima;
+  - **Desempenho**: máxima 5 s → maior acima de 60 Hz 8 s → 60 Hz ou maior;
+- o piso de vídeo é 30 Hz na Economia e 60 Hz no Equilibrado/Desempenho;
 - taxas não suportadas são rejeitadas no editor;
 - no S25+ testado (10/20/24/27/30/40/48/60/80/120 Hz), os perfis gerados são Economia
-  120 → 60 → 10, Balanceado 120 → 80 → 10 e Performance 120 → 80 → 60.
+  120 → 60 → 10, Equilibrado 120 → 80 → 10 e Desempenho 120 → 80 → 60.
 
-Usuários existentes mantêm as escadas Normal/ECO como Balanceado/Economia e recebem um
-novo perfil Performance. As regras de vídeo antigas são preservadas, mas o mínimo de vídeo
+Usuários existentes mantêm as escadas Normal/ECO como Equilibrado/Economia e recebem um
+novo perfil Desempenho. As regras de vídeo antigas são preservadas, mas o mínimo de vídeo
 segue os novos padrões 30/60/60.
 
 ## 10. Configuração guiada
@@ -211,12 +213,13 @@ Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 - o arquivo inclui todos os perfis, o perfil ativo, atribuições de apps, vídeo, AOD,
   configurações do Sono, switch mestre e a lista global de apps forçados como vídeo;
 - a lista de exceções do Doze, as medições e o estado de pausa do Sono não entram;
+- um backup criado antes de o Sono existir **não** altera as configurações atuais do Sono na importação;
 - tema, idioma, diagnóstico, cache de atualização e snapshots internos de restauração do
   sistema não entram;
 - a importação substitui a configuração atual depois de uma confirmação;
 - perfis com taxas não suportadas pela tela atual são adaptados para a taxa mais próxima,
   e o resumo informa quantos foram adaptados;
-- atribuições para um perfil ausente caem em Balanceado.
+- atribuições para um perfil ausente caem em Equilibrado.
 
 ## 15. Idiomas
 
@@ -226,7 +229,8 @@ Português (Brasil), inglês e espanhol. Veja o
 ## 16. Sono (Doze forçado)
 
 Opcional e desligado por padrão. Ao apagar a tela, o OneHZ pede ao sistema para entrar em
-Doze na hora, em vez de esperar os temporizadores de inatividade:
+Doze na hora, em vez de esperar os temporizadores de inatividade. O primeiro enable pede
+confirmação porque notificações e chamadas por internet podem atrasar:
 
 - Doze profundo (padrão) ou leve;
 - condições avaliadas só no momento em que a tela apaga: pausa de uma hora, janela de

@@ -80,7 +80,7 @@ deixaria a tela inteira mais escura.
   verificação de compatibilidade.
 - **Tela multi-taxa obrigatória.** A verificação exige pelo menos duas taxas de
   atualização; LTPO não é obrigatório.
-- **Telas com duas taxas.** Economia, Balanceado e Performance usam as mesmas duas faixas
+- **Telas com duas taxas.** Economia, Equilibrado e Desempenho usam as mesmas duas faixas
   e diferem apenas no tempo na máxima. O tempo na mínima é o repouso até o próximo toque.
 - **Mínimo do AOD.** O AOD usa a menor taxa exposta pela tela. Em painéis que rejeitam
   taxas muito baixas no AOD, o motor cai para 30 Hz e registra a falha.
