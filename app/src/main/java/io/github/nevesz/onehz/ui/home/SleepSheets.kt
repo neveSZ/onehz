@@ -184,6 +184,12 @@ fun SleepWhitelistSheet(context: Context, onDismiss: () -> Unit) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.sleep_whitelist_effect),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Spacer(Modifier.height(12.dp))
 
             if (!ready) {

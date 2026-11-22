@@ -15,7 +15,20 @@ body:
     attributes:
       label: OneHZ version
       description: From About or the APK filename.
-      placeholder: "1.1.0-beta.1"
+      placeholder: "1.2.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install_source
+    attributes:
+      label: Install source
+      options:
+        - Shizu Store
+        - GitHub Releases
+        - Obtainium
+        - Built from source
+        - Other
     validations:
       required: true
 

@@ -70,7 +70,8 @@ está ativo.
 
 **Chave principal.** O switch do AOD na tela inicial é o único master desta seção.
 Desligá-lo pausa a taxa e o brilho sem redefinir as escolhas. A tela de detalhe do AOD
-não repete o master.
+não repete o master. O switch de taxa está disponível em todos os aparelhos suportados;
+somente o brilho depende do fabricante.
 
 **Como funciona:**
 
@@ -98,8 +99,9 @@ taxa está desligada. Ele ainda obedece ao master do AOD na tela inicial.
 - uma faixa mínima/máxima mantém o AOD legível;
 - “Restaurar brilho do sistema” remove a chave e devolve o controle ao sistema.
 
-Este recurso é **somente Samsung** e fica oculto no Xiaomi, onde o brilho do AOD é
-controlado pelo processo do próprio fabricante. Se você desinstalar o OneHZ, desative o
+Este recurso é **somente Samsung**. No Xiaomi, onde o processo do fabricante controla
+o brilho do AOD, a linha aparece como um switch desabilitado explicando que o painel
+cuida disso. Se você desinstalar o OneHZ, desative o
 brilho do AOD antes. Se a chave ficar para trás, remova com:
 
 ```powershell
@@ -143,8 +145,10 @@ um vídeo está tocando.
 - a lista de apps forçados é global e vale para todos os perfis, mas as regras e o mínimo ficam em cada perfil.
 
 Os padrões ligam MediaSession, o veto de sessão pausada e a regra de decodificador; a
-regra de áudio de mídia fica desligada. Cada regra pode ser alterada por perfil no editor.
-A lista de apps forçados é global. **PiP ainda não é tratado** (veja o
+regra de áudio de mídia fica desligada. Cada regra pode ser alterada por perfil em uma
+sheet de detecção dedicada; o card mostra a contagem de regras ativas e avisa quando
+nenhum sinal positivo está ativo. A lista de apps forçados é global e abre na mesma
+sheet. **PiP ainda não é tratado** (veja o
 [backlog](BACKLOG.md)).
 
 ## 8. Pulso de despertar
@@ -238,7 +242,9 @@ Português (Brasil), inglês e espanhol. Veja o
 Opcional e desligado por padrão. O switch do Sono na tela inicial é o único master. Com o
 Sono desligado, o detalhe mantém as opções de comportamento, a lista de apps que acordam e
 as medições históricas visíveis e editáveis; apenas "Testar agora" e pausar/retomar exigem
-o Sono ligado.
+o Sono ligado. O detalhe mostra uma nota compacta quando o Sono está desligado, uma linha
+de status só para estados de ativo/pausado/falha e um aviso dispensável dentro do card
+"Como funciona".
 
 Ao apagar a tela, o OneHZ pede ao sistema para entrar em
 Doze na hora, em vez de esperar os temporizadores de inatividade. O primeiro enable pede

@@ -2,8 +2,8 @@
 
 [English](INSTALL.md) · **Português (Brasil)**
 
-O OneHZ é distribuído como APK assinado no GitHub Releases. Ele não está no Google Play
-e depende do Shizuku.
+O OneHZ é distribuído como APK assinado no GitHub Releases, no Shizu Store e pelo
+Obtainium. Ele não está no Google Play e depende do Shizuku.
 
 ## Requisitos
 
@@ -35,7 +35,9 @@ Shizuku.
 ## Instalação
 
 1. Instale o Shizuku e inicie-o.
-2. Baixe o APK no [GitHub Releases](../../releases).
+2. Baixe o APK no [Shizu Store](https://shizustore.com/apps/onehz),
+   [GitHub Releases](../../releases), ou adicione o repositório ao Obtainium usando o
+   badge no README.
 3. Abra o APK e instale. O Android pode pedir para permitir instalações dessa origem.
 4. Abra o OneHZ e permita o acesso ao Shizuku.
 5. Siga a tela de configuração: compatibilidade, Shizuku, permissões opcionais de
@@ -51,7 +53,8 @@ permissão do Shizuku que já existe.
 ## Builds beta
 
 Builds beta são publicadas como **pré-releases** na mesma página de releases e usam o
-mesmo nome de pacote e a mesma chave.
+mesmo nome de pacote e a mesma chave. **A 1.2.1 é a estável atual; a 1.2.1-beta.1 foi a
+única pré-release dela.**
 
 - Estável e beta não podem ser instaladas lado a lado.
 - O `versionCode` da beta é maior que o da estável atual, então ela instala por cima da
@@ -62,6 +65,16 @@ mesmo nome de pacote e a mesma chave.
   avisado sobre betas. O canal estável nunca oferece uma pré-release.
 - O Obtainium também acompanha pré-releases; ative essa opção nas configurações da fonte.
 
+## Shizu Store (recomendado)
+
+O [Shizu Store](https://shizustore.com/apps/onehz) lista o OneHZ e baixa o APK do release
+oficial no GitHub. A assinatura é a mesma, então as atualizações instalam por cima, e a
+loja pode verificar versões novas. Instale-o em
+<https://github.com/timschneeb/ShizuStore/releases/latest>.
+
+O Shizu Store é a forma recomendada de instalar e atualizar o OneHZ. GitHub Releases e
+Obtainium continuam suportados como alternativas.
+
 ## Atualizações automáticas com o Obtainium
 
 O [Obtainium](https://obtainium.imranr.dev/) pode acompanhar os releases do OneHZ e avisar
@@ -71,15 +84,21 @@ quando houver uma versão nova:
 2. Adicione `https://github.com/neveSZ/onehz` como fonte, ou use o badge no README.
 3. Deixe o Obtainium verificar e instalar as novas versões.
 
-O GitHub Releases e o Obtainium usam o mesmo APK assinado e a mesma chave. A verificação
-opcional dentro do app é separada: ela só abre a página do release no GitHub quando você
-ativa. O Obtainium é a forma recomendada de receber atualizações automáticas.
+O GitHub Releases, o Shizu Store e o Obtainium usam o mesmo APK assinado e a mesma chave.
+A verificação opcional dentro do app é separada: ela só abre a página do release no GitHub
+quando você ativa. O Shizu Store é a forma recomendada de instalar e receber atualizações;
+o Obtainium também pode acompanhar os releases.
 
 ## Atualização
 
 Instale o novo APK por cima do antigo. Atualizações exigem a mesma chave de assinatura.
 Seus ajustes e perfis são mantidos. Se o Shizuku estiver rodando, o app reconecta
 sozinho.
+
+A partir da 1.2.1, as preferências são migradas para o DataStore na primeira abertura. O
+`onehz_prefs.xml` antigo é limpo após a migração, então voltar para a 1.2.0 ou para a
+1.2.1-beta.1 mostra os padrões para ajustes alterados depois da migração. Exporte um
+backup antes de fazer downgrade.
 
 O OneHZ pode checar opcionalmente se há uma versão nova no GitHub quando você abre o
 app. A checagem fica **desligada por padrão**: ative em **Ajustes → Atualizações**,

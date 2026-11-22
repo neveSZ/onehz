@@ -24,7 +24,8 @@ These are documented as known limitations rather than promises.
 
 - Xiaomi controls AOD brightness in its own AOD process/light sensor
   (`aod_brightness_level` is a factory feature, not a Settings key).
-- There is no tested Settings/Shizuku route, so the option stays Samsung-only.
+- There is no tested Settings/Shizuku route, so the row is shown disabled with an
+  explanation outside Samsung.
 
 ### Equal brightness at 30 Hz
 

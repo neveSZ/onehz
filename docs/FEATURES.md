@@ -70,7 +70,8 @@ active.
 
 **Master switch.** The AOD switch on the Home screen is the only master for this section.
 Turning it off pauses both the rate and the brightness without resetting their choices.
-The AOD detail screen has no duplicate master.
+The AOD detail screen has no duplicate master. The rate switch is available on every
+supported device; only brightness is vendor-gated.
 
 **How it works:**
 
@@ -98,8 +99,8 @@ rate is off. It still obeys the AOD master switch on Home.
 - a minimum/maximum percentage band keeps the AOD readable;
 - “Restore system brightness” removes the key and returns control to the system.
 
-This feature is **Samsung-only** and is hidden on Xiaomi, where AOD brightness is
-controlled by the vendor's own process. If you uninstall OneHZ, disable AOD brightness
+This feature is **Samsung-only**. On Xiaomi, where the vendor process controls AOD
+brightness, the row is shown as a disabled switch that explains the panel manages it. If you uninstall OneHZ, disable AOD brightness
 first. If the key stays behind, remove it with:
 
 ```powershell
@@ -143,8 +144,9 @@ while a video is playing.
   are stored per profile.
 
 The defaults enable MediaSession, the paused-session veto, and the decoder rule; the
-media-audio rule is off. Every rule can be changed per profile in the profile editor. The
-forced-app list is global. **PiP is not handled yet** (see the [backlog](BACKLOG.md)).
+media-audio rule is off. Every rule can be changed per profile in a focused detection
+sheet; the card shows the active rule count and warns when no positive signal is enabled.
+The forced-app list is global and opens from the same sheet. **PiP is not handled yet** (see the [backlog](BACKLOG.md)).
 
 ## 8. Wake pulse
 
@@ -237,7 +239,9 @@ Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS
 Optional and off by default. The first enable asks for confirmation because notifications
 and internet calls can be delayed. The Sleep switch on Home is the only master. With Sleep
 off, the detail keeps the behavior options, wake-up list and historical measurements
-visible and editable; only "Test now" and pause/resume require Sleep to be on.
+visible and editable; only "Test now" and pause/resume require Sleep to be on. The detail
+shows a compact note when Sleep is off, a status line only for active, paused or failure
+states, and one dismissible warning inside the "How it works" card.
 
 When the screen turns off, OneHZ asks the platform to
 enter Doze immediately instead of waiting for the inactivity timers:

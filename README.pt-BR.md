@@ -19,15 +19,17 @@
 </p>
 
 <p align="center">
-  <a href="../../releases/latest"><img src="docs/assets/github-badge.png" alt="Obter no GitHub" height="48"></a>
+  <a href="https://shizustore.com/apps/onehz"><img src="docs/assets/shizustore-badge.png" alt="Obter no ShizuStore" height="64"></a>
   &nbsp;&nbsp;
-  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Obter no Obtainium" height="48"></a>
+  <a href="../../releases/latest"><img src="docs/assets/github-badge.png" alt="Obter no GitHub" height="64"></a>
+  &nbsp;&nbsp;
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Obter no Obtainium" height="64"></a>
 </p>
 
 <p align="center">
-  <a href="docs/assets/screenshots/home-pt.png"><img src="docs/assets/screenshots/home-pt.png" width="230" alt="Tela inicial"></a>
-  <a href="docs/assets/screenshots/profile-pt.png"><img src="docs/assets/screenshots/profile-pt.png" width="230" alt="Tela de perfis"></a>
-  <a href="docs/assets/screenshots/sleep-pt.png"><img src="docs/assets/screenshots/sleep-pt.png" width="230" alt="Detalhes do Sono"></a>
+  <a href="fastlane/metadata/android/pt-BR/images/phoneScreenshots/1.png"><img src="fastlane/metadata/android/pt-BR/images/phoneScreenshots/1.png" width="230" alt="Tela inicial"></a>
+  <a href="fastlane/metadata/android/pt-BR/images/phoneScreenshots/2.png"><img src="fastlane/metadata/android/pt-BR/images/phoneScreenshots/2.png" width="230" alt="Tela de perfis"></a>
+  <a href="fastlane/metadata/android/pt-BR/images/phoneScreenshots/4.png"><img src="fastlane/metadata/android/pt-BR/images/phoneScreenshots/4.png" width="230" alt="Detalhes do Sono"></a>
 </p>
 
 [English](README.md) · **Português (Brasil)**
@@ -46,8 +48,8 @@ direto pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
 
 | | |
 |---|---|
-| Versão mais recente | **1.2.1-beta.1** (pré-release) |
-| Última estável | **1.2.0** |
+| Versão mais recente | **1.2.1** (estável) |
+| Estável anterior | **1.2.0** |
 | Aparelhos testados | Samsung Galaxy S25+ (`SM-S936B`), POCO X7 Pro (`2412DPC0AG`) |
 | Fabricantes | Samsung, Xiaomi/Redmi/POCO |
 | Veredito | Tela multi-taxa obrigatória; LTPO **não** é obrigatório |
@@ -63,14 +65,16 @@ continua no estável.
 | Tela | Pelo menos **duas taxas de atualização** (por exemplo 120/90/60/30) |
 | Android | **12 (API 31) ou superior** (`minSdk 31`; Android 16 e 17 testados) |
 | Shizuku | Instalado e em execução |
-| Distribuição | APK assinado do GitHub Releases; fora do Google Play; Obtainium suportado |
+| Distribuição | APK assinado do GitHub Releases, Shizu Store e Obtainium; fora do Google Play |
 
 ## Instalação
 
 1. Instale o Shizuku e inicie-o pela depuração sem fio ou root. O fork testado é o
    [thedjchi `v13.7.0-thedjchi`](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi).
-2. Instale o APK do OneHZ pelo [GitHub Releases](../../releases/latest), ou adicione o
-   repositório ao [Obtainium](https://obtainium.imranr.dev/) usando o badge acima.
+2. **Recomendado:** instale e atualize pelo [Shizu Store](https://shizustore.com/apps/onehz).
+   Você também pode instalar o APK pelo [GitHub Releases](../../releases/latest) ou
+   adicionar o repositório ao [Obtainium](https://obtainium.imranr.dev/) usando o badge
+   acima.
 3. Abra o OneHZ, permita o acesso ao Shizuku e siga a tela de configuração.
 4. Ative a chave principal.
 
@@ -85,11 +89,11 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Economia / Equilibrado / Desempenho** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
 | **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada. Pode ser desligada em **Gerenciar perfis**; cada app pode manter o próprio perfil. |
 | **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |
-| **Taxa no AOD** | Sempre a menor taxa exposta pela tela; não há seletor separado de AOD. |
-| **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema. |
+| **Taxa no AOD** | Sempre a menor taxa exposta pela tela; o switch está disponível em todos os aparelhos suportados. |
+| **Brilho do AOD** | Somente Samsung, com faixa de segurança e ação de restauração do sistema; nos demais aparelhos a linha aparece desabilitada com explicação. |
 | **Sono (Doze forçado)** | Opcional e desligado por padrão. Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
-| **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca, com regras de detecção configuráveis. |
+| **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca. As regras de detecção e a lista global de apps forçados abrem em uma sheet dedicada, e o card avisa quando nenhuma regra está ativa. |
 | **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo, AOD, configurações do Sono e switch mestre. Medições do Sono e exceções do Doze não entram. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
@@ -140,7 +144,7 @@ Cada release inclui um arquivo `.sha256`. O SHA-256 do certificado de assinatura
 `D8:E8:24:B2:5F:6B:1D:29:75:BD:72:D6:89:5F:C4:7F:7B:EB:C2:05:78:41:F7:83:3C:25:67:0A:C2:04:F8:0A`
 
 ```powershell
-apksigner verify --print-certs OneHZ-1.2.1-beta.1.apk
+apksigner verify --print-certs OneHZ-1.2.1.apk
 ```
 
 Veja [docs/INSTALL.pt-BR.md#verificar-o-apk](docs/INSTALL.pt-BR.md#verificar-o-apk).
@@ -179,6 +183,8 @@ documentação permanecem sob suas próprias licenças; veja
 - **Badge do Obtainium** (GPL-3.0): somente documentação, fora do APK e não coberto pela
   licença MIT; veja [docs/assets/README.md](docs/assets/README.md) e
   [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt).
+- **Badge do Shizu Store** (GPL-3.0): somente documentação, fora do APK e não coberto
+  pela licença MIT; veja [docs/assets/README.md](docs/assets/README.md).
 - **Gradle Wrapper** (Apache 2.0): somente build, fora do APK.
 
 Nenhum código ou asset de aplicativos closed-source está incluído.

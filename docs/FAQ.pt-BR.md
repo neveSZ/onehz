@@ -81,7 +81,8 @@ pausado por 1 hora a qualquer momento. Veja [SONO](SLEEP.md).
 
 Não. O brilho do AOD do Xiaomi é automático e controlado pelo processo/sensor de luz do
 AOD (`aod_brightness_level` é um recurso de fábrica, não uma chave de Settings). A rota
-`debug_aod_brightness` da Samsung não existe lá, então a opção fica oculta no Xiaomi.
+`debug_aod_brightness` da Samsung não existe lá, então a linha de brilho aparece como um
+switch desabilitado explicando que o painel cuida disso.
 
 ### Por que a tela fica mais escura em 30 Hz no Xiaomi?
 
@@ -112,6 +113,20 @@ então ela instala por cima da versão estável mantendo os ajustes. A próxima 
 `versionCode` maior, então instalar a estável por cima da beta devolve você ao canal
 estável.
 
+### O que mudou na 1.2.1?
+
+- O switch de taxa do AOD está disponível em todos os aparelhos suportados. Aparelhos que
+  não são Samsung mostram a linha de brilho do AOD desativada, com explicação.
+- O detalhe do Sono foi redesenhado: um único master na Home, opções de comportamento
+  sempre disponíveis, um aviso dispensável, linha de status só para estados de
+  ativo/pausado/falha e ícones consistentes nos switches.
+- As opções de vídeo ficaram mais claras: a taxa mínima é separada das regras de detecção,
+  e as regras + lista global de apps abrem em uma sheet dedicada.
+- As preferências foram para o DataStore com migração automática. Exporte um backup antes
+  de fazer downgrade, porque o XML antigo é limpo após a migração.
+- Baseline Profile, ícones embutidos, edge-to-edge, ViewModels e ferramentas de release.
+- Distribuição pelo Shizu Store (recomendado), GitHub Releases e Obtainium.
+
 ### O que mudou na 1.2.1-beta.1?
 
 - O switch do AOD na Home agora é o único master; a tela de detalhe não repete a chave.
@@ -141,9 +156,10 @@ estável.
 
 As escadas são mantidas, mas o modelo muda. Normal vira Equilibrado, ECO vira Economia e
 um novo perfil Desempenho é criado. Perfis por app copiados viram referências a um perfil
-correspondente (ou a um perfil customizado deduplicado). As chaves antigas do
-SharedPreferences continuam por segurança. Se quiser o layout antigo de volta, edite os
-perfis ou restaure os base para o padrão do aparelho.
+correspondente (ou a um perfil customizado deduplicado). As preferências são migradas para
+o DataStore na primeira abertura; o XML antigo é limpo, então um downgrade depois da
+migração mostra os padrões para ajustes alterados depois. Se quiser o layout antigo de
+volta, edite os perfis ou restaure os base para o padrão do aparelho.
 
 ### Por que o controle para depois de reiniciar?
 
@@ -153,8 +169,8 @@ reconecta quando o Shizuku fica disponível e falha fechado até lá.
 ### Por que o OneHZ não está no Google Play?
 
 Ele usa Shizuku, `QUERY_ALL_PACKAGES` e isenção de otimização de bateria, além de alterar
-ajustes internos da Samsung e do HyperOS. A distribuição por GitHub Releases mantém o
-projeto simples e transparente.
+ajustes internos da Samsung e do HyperOS. A distribuição pelo Shizu Store, GitHub
+Releases e Obtainium mantém o projeto simples e transparente.
 
 ### O OneHZ coleta dados?
 

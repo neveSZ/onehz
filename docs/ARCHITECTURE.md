@@ -89,7 +89,7 @@ an outdated service after an app update.
 
 ## Profiles and app assignments
 
-`ProfileStore` owns a versioned JSON blob in SharedPreferences:
+`ProfileStore` owns a versioned JSON blob in the preferences store (DataStore):
 
 - three built-in profiles (`economy`, `balanced`, `performance`);
 - custom profiles;
@@ -102,7 +102,7 @@ Customized built-ins and custom profiles are kept. Deleting a custom profile rea
 apps to Balanced. App assignments never copy a staircase, so editing a shared profile
 updates every app that references it.
 
-`ProfileCodec` serializes the same model for SharedPreferences and for the backup file.
+`ProfileCodec` serializes the same model for the preferences store and for the backup file.
 `ProfileDefaults` is pure and generates the three profiles from a rate list; it is covered
 by unit tests for two-rate and multi-rate panels.
 

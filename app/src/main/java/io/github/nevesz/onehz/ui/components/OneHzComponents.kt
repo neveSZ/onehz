@@ -78,6 +78,38 @@ fun OneHzCard(
     }
 }
 
+/** Card with the shared "How it works" layout: info icon, title and body. */
+@Composable
+fun HowItWorksCard(
+    title: String,
+    body: String,
+    modifier: Modifier = Modifier,
+    footer: @Composable ColumnScope.() -> Unit = {}
+) {
+    OneHzCard(modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                AppIcons.info(),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(20.dp)
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        footer()
+    }
+}
+
 @Composable
 fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(

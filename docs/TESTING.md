@@ -40,6 +40,10 @@ Test on the target device with a clean install of the signed release APK.
 
 ### Install and setup
 
+- [ ] Install the signed release from Shizu Store, GitHub Releases or Obtainium; the
+  package and signing key must match.
+- [ ] Upgrade from the previous stable/beta and confirm the DataStore migration keeps
+  profiles, app assignments, AOD, Sleep and video settings.
 - [ ] Uninstall any debug build first (`adb uninstall io.github.nevesz.onehz`).
 - [ ] Install the release APK.
 - [ ] Vendor/display compatibility shows OK.
@@ -174,6 +178,33 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] The stable update channel never offers the beta.
 - [ ] The stable + pre-releases channel offers the beta and labels it as a pre-release.
 - [ ] On Xiaomi, the profile editor warns when a step uses 30 Hz.
+
+### AOD and Sleep UI
+
+- [ ] AOD detail shows the rate switch on both a Samsung and a HyperOS device.
+- [ ] On HyperOS, AOD brightness is a disabled switch with the "not adjustable" text.
+- [ ] Turning the AOD master off on Home pauses rate and brightness but keeps both rows
+      visible and editable.
+- [ ] Sleep detail with Sleep off shows the compact note, the "How it works" card and the
+      behavior options; "Test now" and pause require Sleep on.
+- [ ] The warning inside "How it works" can be dismissed with "Got it" and does not reopen
+      after reopening the screen.
+- [ ] Active/paused/failure status appears as a single line, without a status card.
+
+### Video settings
+
+- [ ] The video card shows the minimum-rate picker and a "Video detection" row with the
+      active rule count.
+- [ ] The detection sheet opens, the four rules persist, and the global forced-app list
+      opens from the same sheet.
+- [ ] With zero positive rules, the warning is visible in the card and in the sheet.
+
+### Screenshots and Baseline Profile
+
+- [ ] Regenerate the five store screenshots per locale from the final build and normalize
+      them to 1170×2340.
+- [ ] Regenerate `app/src/release/generated/baselineProfiles/` on a physical device and
+      rebuild the release.
 
 ### Release artifacts
 

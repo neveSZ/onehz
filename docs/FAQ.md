@@ -72,7 +72,8 @@ Sleep settings existed does **not** change the current Sleep settings.
 
 No. Xiaomi's AOD brightness is automatic and controlled by the AOD process/light
 sensor (`aod_brightness_level` is a factory feature, not a Settings key). The Samsung
-`debug_aod_brightness` route does not exist there, so the option is hidden on Xiaomi.
+`debug_aod_brightness` route does not exist there, so the brightness row is shown as a
+disabled switch that explains the panel manages it.
 
 ### Why is the screen darker at 30 Hz on Xiaomi?
 
@@ -101,6 +102,20 @@ Beta builds are published as pre-releases on the same
 A beta uses the same signing key and a higher `versionCode` than the current stable, so
 it installs over the stable release and keeps your settings. The next stable has a higher
 `versionCode`, so installing it over the beta returns you to the stable channel.
+
+### What changed in 1.2.1?
+
+- The AOD rate switch is available on every supported device. Non-Samsung devices show
+  the AOD brightness row as a disabled switch with an explanation.
+- The Sleep detail was redesigned: one master on Home, behavior options always available,
+  one dismissible warning, a status line only for active/paused/failure states, and
+  consistent icons on the switches.
+- Video settings are clearer: the minimum rate is separate from the detection rules, and
+  the rules plus the global forced-app list open in a focused sheet.
+- Preferences moved to DataStore with a one-time migration. Export a backup before
+  downgrading, because the legacy XML is cleared after the migration.
+- Baseline Profile, bundled icons, edge-to-edge, ViewModels, and release tooling.
+- Distributed through Shizu Store (recommended), GitHub Releases, and Obtainium.
 
 ### What changed in 1.2.1-beta.1?
 
@@ -139,9 +154,10 @@ at any time. See [SLEEP](SLEEP.md).
 
 The staircases are kept, but the model changes. Normal becomes Balanced, ECO becomes
 Economy, and a new Performance profile is created. Copied per-app profiles become
-references to a matching profile (or to a deduplicated custom profile). The old
-SharedPreferences keys remain for safety. If you want the old layout back, edit the
-profiles or restore the built-ins to their device defaults.
+references to a matching profile (or to a deduplicated custom profile). Preferences are
+migrated to DataStore on the first start; the old XML is cleared, so downgrading after the
+migration shows defaults for settings changed later. If you want the old layout back, edit
+the profiles or restore the built-ins to their device defaults.
 
 ### Why does control stop after a reboot?
 
@@ -151,8 +167,8 @@ reconnects when Shizuku becomes available and fails closed until then.
 ### Why is OneHZ not on Google Play?
 
 It uses Shizuku, `QUERY_ALL_PACKAGES`, and a battery-optimization exemption, and it
-modifies hidden Samsung and HyperOS settings. Sideloading through GitHub Releases keeps
-the project simple and transparent.
+modifies hidden Samsung and HyperOS settings. Distribution through Shizu Store, GitHub
+Releases and Obtainium keeps the project simple and transparent.
 
 ### Does OneHZ collect data?
 

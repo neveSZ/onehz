@@ -56,9 +56,9 @@
     <string name="aod_brightness_restore">Restaurar brilho do sistema</string>
 
     <string name="video_mode_title">Modo vídeo</string>
-    <string name="video_mode_desc">Evita que a taxa caia demais enquanto um vídeo toca.</string>
-    <string name="video_min_hz">Mínimo durante vídeos</string>
-    <string name="video_min_hint">Durante um vídeo, este mínimo tem prioridade sobre a taxa do perfil.</string>
+    <string name="video_mode_desc">Reconhece vídeos automaticamente pelas regras de detecção.</string>
+    <string name="video_min_hz">Taxa mínima no vídeo</string>
+    <string name="video_min_hint">Substitui a taxa do perfil enquanto o vídeo está em reprodução.</string>
     <string name="video_state_playing">tocando</string>
     <string name="video_state_idle">inativo</string>
     <string name="video_diag_title">Detecção de vídeo</string>
@@ -67,12 +67,9 @@
     <string name="video_diag_hint">Use com um vídeo tocando para ver o pacote, a sessão, o codec e o áudio.</string>
     <string name="video_diag_config">Regras: %1$s · forçados: %2$d</string>
     <string name="video_rules_title">Regras de detecção</string>
+    <string name="video_detection_title">Detecção de vídeo</string>
     <string name="video_rules_desc">Escolha quais sinais o OneHZ usa para decidir que um vídeo está tocando.</string>
-    <plurals name="video_rules_summary">
-        <item quantity="one">%1$d de %2$d regra ativa</item>
-        <item quantity="other">%1$d de %2$d regras ativas</item>
-        <item quantity="many">%1$d de %2$d regras ativas</item>
-    </plurals>
+    <string name="video_rules_summary">%1$d de %2$d regras ativas</string>
     <string name="video_rule_session_title">Usar MediaSession</string>
     <string name="video_rule_session_desc">Lê o estado de reprodução informado pela sessão de mídia do app.</string>
     <string name="video_rule_paused_title">Sessão pausada bloqueia vídeo</string>
@@ -83,7 +80,7 @@
     <string name="video_rule_audio_desc">Sem sessão, um player USAGE_MEDIA iniciado confirma a reprodução. Desative para aceitar apenas o decodificador.</string>
     <string name="video_rules_none_warning">Nenhuma regra de detecção está ativa. O vídeo não será detectado, exceto para apps da lista forçada.</string>
     <string name="video_forced_title">Apps sempre tratados como vídeo</string>
-    <string name="video_forced_desc">O mínimo de vídeo se aplica enquanto um destes apps estiver em primeiro plano, mesmo sem sessão, decodificador ou áudio.</string>
+    <string name="video_forced_desc">A taxa mínima de vídeo se aplica enquanto um destes apps estiver em primeiro plano, mesmo sem sessão, decodificador ou áudio.</string>
     <string name="video_forced_manage">Gerenciar apps</string>
     <string name="video_forced_clear">Limpar</string>
     <string name="video_forced_missing">Não instalados</string>
@@ -374,7 +371,7 @@
     <string name="profile_battery_override_hint">A economia de bateria do sistema está ativa. O OneHZ está usando Economia.</string>
     <string name="profile_idle_off">Nenhum perfil selecionado: a frequência não está sendo controlada.</string>
     <string name="profile_video_title">Vídeo</string>
-    <string name="profile_video_desc">O mínimo de vídeo deste perfil.</string>
+    <string name="profile_video_desc">Mantém a taxa acima de um mínimo enquanto um vídeo está em reprodução.</string>
     <string name="profile_video_summary">Vídeo: mínimo %1$d Hz</string>
     <string name="profile_app_assigned">Perfil: %1$s</string>
     <string name="profile_app_choose">Perfil deste app</string>

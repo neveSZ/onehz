@@ -50,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.DisplayVendor
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.ProfileIssue
@@ -60,12 +61,15 @@ import io.github.nevesz.onehz.core.profile.ProfileCodec
 import io.github.nevesz.onehz.core.profile.ProfileKind
 import io.github.nevesz.onehz.core.profile.VideoRules
 import io.github.nevesz.onehz.core.profile.VideoSettings
+import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.DurationStepper
+import io.github.nevesz.onehz.ui.components.HowItWorksCard
 import io.github.nevesz.onehz.ui.components.HzPicker
 import io.github.nevesz.onehz.ui.components.OneHzCard
+import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
-import io.github.nevesz.onehz.ui.home.VideoForcedAppsSheet
+import io.github.nevesz.onehz.ui.home.VideoConfigSheet
 import io.github.nevesz.onehz.ui.icons.AppIcons
 
 /**
@@ -110,7 +114,9 @@ fun ProfileEditorScreen(
     var confirmDelete by remember { mutableStateOf(false) }
     var confirmReset by remember { mutableStateOf(false) }
     var showVideoRules by rememberSaveable { mutableStateOf(false) }
-    var showForcedApps by rememberSaveable { mutableStateOf(false) }
+    var forcedPackages by remember {
+        mutableStateOf(OneHzPreferences.forcedVideoPackages(context))
+    }
 
     val frequency = FrequencyProfile(steps)
     val video = VideoSettings(
@@ -275,27 +281,10 @@ fun ProfileEditorScreen(
             }
 
             item {
-                OneHzCard {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            AppIcons.info(),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.profile_how_title),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier.padding(start = 8.dp)
-                        )
-                    }
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.profile_how_body),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                HowItWorksCard(
+                    title = stringResource(R.string.profile_how_title),
+                    body = stringResource(R.string.profile_how_body)
+                )
             }
 
             if (showsLowRateWarning) {
@@ -303,12 +292,12 @@ fun ProfileEditorScreen(
                     OneHzCard {
                         Text(
                             text = stringResource(R.string.profile_low_rate_warning_title),
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = stringResource(R.string.profile_low_rate_warning_body),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
@@ -364,24 +353,25 @@ fun ProfileEditorScreen(
                 OneHzCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            AppIcons.movie(),
+                            AppIcons.ondemandVideo(),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
                             text = stringResource(R.string.profile_video_title),
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(start = 8.dp)
                         )
                     }
                     Text(
                         text = stringResource(R.string.profile_video_desc),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
                     ToggleRow(
+                        icon = AppIcons.movie(),
                         title = stringResource(R.string.video_mode_title),
                         description = stringResource(R.string.video_mode_desc),
                         checked = videoEnabled,
@@ -402,69 +392,24 @@ fun ProfileEditorScreen(
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(Modifier.height(4.dp))
-                        TextButton(onClick = { showVideoRules = !showVideoRules }) {
-                            Text(stringResource(R.string.profile_video_advanced))
-                        }
-                        if (showVideoRules) {
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = stringResource(R.string.video_rules_title),
-                                style = MaterialTheme.typography.titleSmall
-                            )
-                            Text(
-                                text = pluralStringResource(
-                                    R.plurals.video_rules_summary,
-                                    video.rules.activeRuleCount,
-                                    video.rules.activeRuleCount,
-                                    VideoConfig.RULE_COUNT
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_session_title),
-                                description = stringResource(R.string.video_rule_session_desc),
-                                checked = useSession,
-                                onCheckedChange = { useSession = it }
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_paused_title),
-                                description = stringResource(R.string.video_rule_paused_desc),
-                                checked = pausedBlocks,
-                                enabled = useSession,
-                                onCheckedChange = { pausedBlocks = it }
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_codec_title),
-                                description = stringResource(R.string.video_rule_codec_desc),
-                                checked = requireCodec,
-                                onCheckedChange = { requireCodec = it }
-                            )
-                            ToggleRow(
-                                title = stringResource(R.string.video_rule_audio_title),
-                                description = stringResource(R.string.video_rule_audio_desc),
-                                checked = requireAudio,
-                                onCheckedChange = { requireAudio = it }
-                            )
-                            if (!video.rules.hasPositiveSignal) {
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = stringResource(R.string.video_rules_none_warning),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = stringResource(R.string.profile_reference_global),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Spacer(Modifier.height(8.dp))
+                        SettingRow(
+                            icon = AppIcons.tune(),
+                            title = stringResource(R.string.video_detection_title),
+                            subtitle = stringResource(
+                                R.string.video_rules_summary,
+                                video.rules.activeRuleCount,
+                                VideoConfig.RULE_COUNT
+                            ),
+                            onClick = { showVideoRules = true }
                         )
-                        TextButton(onClick = { showForcedApps = true }) {
-                            Text(stringResource(R.string.video_forced_manage))
+                        if (!video.rules.hasPositiveSignal) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = stringResource(R.string.video_rules_none_warning),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     }
                 }
@@ -559,8 +504,29 @@ fun ProfileEditorScreen(
             )
         }
 
-        if (showForcedApps) {
-            VideoForcedAppsSheet(context = context, onDismiss = { showForcedApps = false })
+        if (showVideoRules) {
+            VideoConfigSheet(
+                context = context,
+                config = VideoConfig(
+                    useMediaSession = useSession,
+                    pausedSessionBlocks = pausedBlocks,
+                    requireVideoCodec = requireCodec,
+                    requireStartedAudio = requireAudio,
+                    forcedPackages = forcedPackages
+                ),
+                onDismiss = { showVideoRules = false },
+                onConfigChange = { updated ->
+                    useSession = updated.useMediaSession
+                    pausedBlocks = updated.pausedSessionBlocks
+                    requireCodec = updated.requireVideoCodec
+                    requireAudio = updated.requireStartedAudio
+                    if (updated.forcedPackages != forcedPackages) {
+                        forcedPackages = updated.forcedPackages
+                        OneHzPreferences.setForcedVideoPackages(context, updated.forcedPackages)
+                        OneHzEngine.onVideoConfigChanged()
+                    }
+                }
+            )
         }
     }
 }

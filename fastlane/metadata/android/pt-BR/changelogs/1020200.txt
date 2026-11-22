@@ -1,0 +1,7 @@
+Versão 1.2.1
+* AOD: switch de taxa em todos os aparelhos; brilho não suportado aparece desativado
+* Sono: um único master na Home, opções sempre disponíveis e cards mais limpos
+* Vídeo: taxa mínima separada das regras de detecção, agora em uma sheet dedicada
+* Configurações em DataStore com migração automática; exporte um backup antes
+* Inicialização mais rápida com Baseline Profile e menos dependência de ícones
+* Novo: instale e atualize pelo Shizu Store

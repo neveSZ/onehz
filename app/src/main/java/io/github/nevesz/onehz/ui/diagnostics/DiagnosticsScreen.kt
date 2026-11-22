@@ -295,9 +295,8 @@ fun DiagnosticsScreen() {
                         Text(
                             text = stringResource(
                                 R.string.video_diag_config,
-                                pluralStringResource(
-                                    R.plurals.video_rules_summary,
-                                    videoConfig.activeRuleCount,
+                                stringResource(
+                                    R.string.video_rules_summary,
                                     videoConfig.activeRuleCount,
                                     VideoConfig.RULE_COUNT
                                 ),

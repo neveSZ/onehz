@@ -50,6 +50,8 @@ import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.apps.AppIcon
+import io.github.nevesz.onehz.ui.components.BannerTone
+import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.components.rememberPartialSheetState
 import io.github.nevesz.onehz.ui.icons.AppIcons
@@ -128,11 +130,11 @@ private fun RulesPage(
     ) {
         Text(
             text = stringResource(R.string.video_rules_title),
-            style = MaterialTheme.typography.titleLarge
+            style = MaterialTheme.typography.headlineSmall
         )
         Text(
             text = stringResource(R.string.video_rules_desc),
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(8.dp))
@@ -162,11 +164,10 @@ private fun RulesPage(
             onCheckedChange = { onConfigChange(config.copy(requireStartedAudio = it)) }
         )
         if (!config.hasPositiveSignal) {
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = stringResource(R.string.video_rules_none_warning),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
+            Spacer(Modifier.height(8.dp))
+            InfoBanner(
+                body = stringResource(R.string.video_rules_none_warning),
+                tone = BannerTone.WARN
             )
         }
         Spacer(Modifier.height(12.dp))

@@ -22,7 +22,7 @@ Requirements
 The Shizuku app is separate and is not bundled with OneHZ. OneHZ includes only the MIT-licensed Shizuku API client library. Without the Shizuku app, OneHZ cannot control the display. OneHZ is tested on the Samsung Galaxy S25+ (SM-S936B) with Android 17 / One UI 9.0 and on the POCO X7 Pro (2412DPC0AG) with Android 16 / HyperOS 3.0; other models and Android versions may work but are not tested.
 
 Notes
-* AOD brightness is Samsung-only and is hidden on Xiaomi.
+* AOD brightness is Samsung-only; on Xiaomi the row is shown disabled with an explanation.
 * On the tested POCO X7 Pro, 30 Hz is dimmer at the panel level. OneHZ cannot compensate and shows a warning in the profile editor.
 * Video in picture-in-picture is not detected yet.
 
