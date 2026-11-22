@@ -290,7 +290,8 @@
     <!-- Atualizações -->
     <string name="update_section_title">Atualizações</string>
     <string name="update_check_title">Verificar atualizações</string>
-    <string name="update_check_desc">Consulta o GitHub somente quando você abre o OneHZ. Nada roda em segundo plano.</string>
+    <string name="update_check_desc_on">Consulta o GitHub quando você abre o OneHZ. Nada roda em segundo plano.</string>
+    <string name="update_check_desc_off">Sem consultas automáticas ao GitHub. Você ainda pode verificar manualmente.</string>
     <string name="update_enable_dialog_title">Permitir consulta ao GitHub?</string>
     <string name="update_enable_dialog_body">O OneHZ consultará a API pública do GitHub somente quando você abrir o app. A checagem automática acontece no máximo uma vez por intervalo escolhido. Nenhuma conta, identificador ou telemetria é enviado. O GitHub recebe seu endereço IP e o User-Agent do app, como em qualquer requisição HTTPS. A verificação nunca roda em segundo plano. O Android concede acesso à internet na instalação; esta opção controla apenas se o OneHZ usa esse acesso.\n\nVocê pode mudar para pré-releases depois, mas elas podem ser instáveis.</string>
     <string name="update_enable_confirm">Ativar checagem</string>
