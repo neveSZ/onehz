@@ -229,6 +229,53 @@ private fun OneHzShell(
         if (uri != null) pendingImport = uri
     }
 
+    pendingImport?.let { uri ->
+        ConfirmDialog(
+            title = stringResource(R.string.backup_import_confirm_title),
+            body = stringResource(R.string.backup_import_confirm_body) + " " +
+                stringResource(R.string.backup_import_master_note),
+            confirmLabel = stringResource(R.string.backup_import),
+            onConfirm = {
+                pendingImport = null
+                scope.launch {
+                    val result = withContext(Dispatchers.IO) {
+                        BackupManager.import(context, uri, rates)
+                    }
+                    importResult = result
+                    dataVersion++
+                    if (OneHzPreferences.isEnabled(context)) {
+                        OneHzEngine.start(context)
+                        OneHzEngine.reapply()
+                    } else {
+                        OneHzEngine.reapply()
+                    }
+                    DozeController.onPrefsChanged()
+                }
+            },
+            onDismiss = { pendingImport = null }
+        )
+    }
+
+    importResult?.let { result ->
+        AlertDialog(
+            onDismissRequest = { importResult = null },
+            title = {
+                Text(
+                    stringResource(
+                        if (result.success) R.string.backup_import_success_title
+                        else R.string.backup_import_error_title
+                    )
+                )
+            },
+            text = { Text(importResultMessage(context, result)) },
+            confirmButton = {
+                TextButton(onClick = { importResult = null }) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        )
+    }
+
     BackHandler(enabled = showSetup && setupDone) { showSetup = false }
 
     if (showSetup) {
@@ -480,53 +527,6 @@ private fun OneHzShell(
 
     if (showLanguage) {
         LanguageDialog(onDismiss = { showLanguage = false })
-    }
-
-    pendingImport?.let { uri ->
-        ConfirmDialog(
-            title = stringResource(R.string.backup_import_confirm_title),
-            body = stringResource(R.string.backup_import_confirm_body) + " " +
-                stringResource(R.string.backup_import_master_note),
-            confirmLabel = stringResource(R.string.backup_import),
-            onConfirm = {
-                pendingImport = null
-                scope.launch {
-                    val result = withContext(Dispatchers.IO) {
-                        BackupManager.import(context, uri, rates)
-                    }
-                    importResult = result
-                    dataVersion++
-                    if (OneHzPreferences.isEnabled(context)) {
-                        OneHzEngine.start(context)
-                        OneHzEngine.reapply()
-                    } else {
-                        OneHzEngine.reapply()
-                    }
-                    DozeController.onPrefsChanged()
-                }
-            },
-            onDismiss = { pendingImport = null }
-        )
-    }
-
-    importResult?.let { result ->
-        AlertDialog(
-            onDismissRequest = { importResult = null },
-            title = {
-                Text(
-                    stringResource(
-                        if (result.success) R.string.backup_import_success_title
-                        else R.string.backup_import_error_title
-                    )
-                )
-            },
-            text = { Text(importResultMessage(context, result)) },
-            confirmButton = {
-                TextButton(onClick = { importResult = null }) {
-                    Text(stringResource(R.string.close))
-                }
-            }
-        )
     }
 }
 
