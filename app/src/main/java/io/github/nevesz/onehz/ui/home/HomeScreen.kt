@@ -8,6 +8,7 @@ import android.os.PowerManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,10 +35,13 @@ import androidx.compose.material.icons.outlined.Nightlight
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -71,6 +75,10 @@ import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
+import io.github.nevesz.onehz.core.profile.DeviceProfile
+import io.github.nevesz.onehz.core.profile.ProfileState
+import io.github.nevesz.onehz.core.profile.ProfileStore
+import io.github.nevesz.onehz.core.profile.VideoRules
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.AodBrightnessController
@@ -86,49 +94,46 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
+import io.github.nevesz.onehz.ui.profile.profileLabel
+import io.github.nevesz.onehz.ui.profile.profileSummary
 import io.github.nevesz.onehz.ui.update.UpdateBanner
 import kotlin.math.roundToInt
 
 private data class HomeState(
     val enabled: Boolean,
-    val normalEnabled: Boolean,
-    val normal: FrequencyProfile,
-    val ecoEnabled: Boolean,
-    val eco: FrequencyProfile,
+    val profileState: ProfileState,
     val aodEnabled: Boolean,
     val aodHz: Int,
     val aodBrightnessEnabled: Boolean,
     val aodBrightnessPct: Int,
     val aodBrightnessMinPct: Int,
     val aodBrightnessMaxPct: Int,
-    val videoEnabled: Boolean,
-    val videoMinHz: Int,
     val videoConfig: VideoConfig,
     val ecoActive: Boolean
-)
+) {
+    val activeProfile: DeviceProfile? get() = profileState.activeProfile()
+    val displayProfile: DeviceProfile?
+        get() = if (ecoActive && profileState.autoEconomyOnBatterySaver) {
+            profileState.economyProfile() ?: profileState.activeProfile()
+        } else {
+            profileState.activeProfile()
+        }
+}
 
 private fun loadState(context: Context, rates: List<Int>): HomeState {
-    val storedVideo = OneHzPreferences.videoMinHz(context)
-    val videoMinHz = if (rates.isEmpty() || storedVideo in rates) {
-        storedVideo
-    } else {
-        rates.minByOrNull { kotlin.math.abs(it - storedVideo) } ?: storedVideo
-    }
+    val profileState = ProfileStore.state(context, rates)
+    val active = profileState.activeProfile()
+    val forced = OneHzPreferences.forcedVideoPackages(context)
     return HomeState(
         enabled = OneHzPreferences.isEnabled(context),
-        normalEnabled = OneHzPreferences.normalEnabled(context),
-        normal = OneHzPreferences.normalProfile(context),
-        ecoEnabled = OneHzPreferences.ecoEnabled(context),
-        eco = OneHzPreferences.ecoProfile(context),
+        profileState = profileState,
         aodEnabled = OneHzPreferences.aodEnabled(context),
         aodHz = OneHzPreferences.aodHz(context),
         aodBrightnessEnabled = OneHzPreferences.aodBrightnessEnabled(context),
         aodBrightnessPct = OneHzPreferences.aodBrightnessPct(context),
         aodBrightnessMinPct = OneHzPreferences.aodBrightnessMinPct(context),
         aodBrightnessMaxPct = OneHzPreferences.aodBrightnessMaxPct(context),
-        videoEnabled = OneHzPreferences.videoEnabled(context),
-        videoMinHz = videoMinHz,
-        videoConfig = OneHzPreferences.videoConfig(context),
+        videoConfig = active?.video?.rules?.toVideoConfig(forced) ?: VideoConfig.DEFAULT,
         ecoActive = (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
     )
 }
@@ -139,8 +144,8 @@ fun HomeScreen(
     context: Context,
     rates: List<Int>,
     dataVersion: Int,
-    onEditNormal: () -> Unit,
-    onEditEco: () -> Unit
+    onEditProfile: (String) -> Unit,
+    onManageProfiles: () -> Unit
 ) {
     val shizuku by ShizukuGateway.state.collectAsState()
     val update by UpdateCenter.state.collectAsState()
@@ -163,6 +168,7 @@ fun HomeScreen(
     }
     var state by remember(refresh, dataVersion) { mutableStateOf(loadState(context, rates)) }
     var showVideoConfig by rememberSaveable { mutableStateOf(false) }
+    var showProfileSwitcher by rememberSaveable { mutableStateOf(false) }
 
     // Battery saver can change while the app stays open (quick settings, automation).
     // Refresh the banner state immediately instead of waiting for the next resume.
@@ -181,14 +187,11 @@ fun HomeScreen(
         onDispose { runCatching { context.unregisterReceiver(receiver) } }
     }
 
-    val activeProfile = when {
-        state.ecoActive && state.ecoEnabled -> state.eco
-        !state.ecoActive && state.normalEnabled -> state.normal
-        else -> null
-    }
+    val activeProfile = state.displayProfile
     val fallbackHz = when {
         activeKey == "AOD" -> state.aodHz
-        else -> activeProfile?.steps?.getOrNull((activeStep - 1).coerceAtLeast(0))?.hz ?: 0
+        else -> activeProfile?.frequency?.steps
+            ?.getOrNull((activeStep - 1).coerceAtLeast(0))?.hz ?: 0
     }
     val displayHz = when {
         !state.enabled || activeKey == "OFF" || activeKey == "—" -> 0
@@ -300,58 +303,65 @@ fun HomeScreen(
 
         item {
             OneHzCard {
-                ToggleRow(
-                    icon = Icons.Outlined.Tune,
-                    title = stringResource(R.string.profile_normal_title),
-                    description = if (state.normal.steps.isEmpty()) {
-                        stringResource(R.string.profile_need_tiers)
-                    } else {
-                        profileSummary(state.normal)
-                    },
-                    checked = state.normalEnabled,
-                    enabled = state.enabled && state.normal.steps.isNotEmpty(),
-                    onCheckedChange = { on ->
-                        state = state.copy(normalEnabled = on)
-                        OneHzPreferences.setNormalEnabled(context, on)
-                        OneHzEngine.reapply()
-                    }
-                )
-                Spacer(Modifier.height(4.dp))
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    EditProfileButton(onClick = onEditNormal)
-                }
-            }
-        }
-
-        item {
-            OneHzCard {
-                ToggleRow(
-                    icon = Icons.Outlined.BatterySaver,
-                    title = stringResource(R.string.profile_eco_title),
-                    description = if (state.eco.steps.isEmpty()) {
-                        stringResource(R.string.profile_need_tiers)
-                    } else {
-                        profileSummary(state.eco)
-                    },
-                    checked = state.ecoEnabled,
-                    enabled = state.enabled && state.eco.steps.isNotEmpty(),
-                    onCheckedChange = { on ->
-                        state = state.copy(ecoEnabled = on)
-                        OneHzPreferences.setEcoEnabled(context, on)
-                        OneHzEngine.reapply()
-                    }
-                )
-                Spacer(Modifier.height(6.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (state.ecoActive) {
-                        StatusBadge(
-                            text = stringResource(R.string.eco_active_now),
-                            tone = StatusTone.OK,
-                            icon = Icons.Outlined.CheckCircle
+                    Icon(
+                        Icons.Outlined.Tune,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Column(Modifier.weight(1f).padding(start = 10.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = activeProfile?.let { profileLabel(it) }
+                                    ?: stringResource(R.string.profile_empty),
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            if (state.ecoActive && state.profileState.autoEconomyOnBatterySaver) {
+                                Spacer(Modifier.size(8.dp))
+                                StatusBadge(
+                                    text = stringResource(R.string.eco_active_now),
+                                    tone = StatusTone.OK
+                                )
+                            }
+                        }
+                        Text(
+                            text = activeProfile?.let { profileSummary(it) }
+                                ?: stringResource(R.string.profile_need_tiers),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        activeProfile?.let { profile ->
+                            Text(
+                                text = stringResource(
+                                    R.string.profile_video_follows,
+                                    profile.video.minHz
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
-                    Spacer(Modifier.weight(1f))
-                    EditProfileButton(onClick = onEditEco)
+                }
+                Spacer(Modifier.height(8.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(
+                        onClick = { showProfileSwitcher = true },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(stringResource(R.string.profile_select))
+                    }
+                    TextButton(onClick = onManageProfiles) {
+                        Text(stringResource(R.string.profile_manage))
+                    }
+                }
+                activeProfile?.let { profile ->
+                    TextButton(
+                        onClick = { onEditProfile(profile.id) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.profile_edit))
+                    }
                 }
             }
         }
@@ -367,68 +377,63 @@ fun HomeScreen(
 
         item {
             OneHzCard {
-                ToggleRow(
-                    icon = Icons.Outlined.Movie,
-                    title = stringResource(R.string.video_mode_title),
-                    description = stringResource(R.string.video_mode_desc),
-                    checked = state.videoEnabled,
-                    enabled = state.enabled,
-                    onCheckedChange = { on ->
-                        state = state.copy(videoEnabled = on)
-                        OneHzPreferences.setVideoEnabled(context, on)
-                        OneHzEngine.reapply()
-                    }
-                )
-                AnimatedVisibility(visible = state.videoEnabled) {
-                    Column {
-                        Spacer(Modifier.height(12.dp))
-                        HzPicker(
-                            label = stringResource(R.string.video_min_hz),
-                            value = state.videoMinHz,
-                            options = rates,
-                            onSelect = { hz ->
-                                state = state.copy(videoMinHz = hz)
-                                OneHzPreferences.setVideoMinHz(context, hz)
-                                OneHzEngine.reapply()
-                            }
-                        )
-                        Spacer(Modifier.height(6.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Outlined.Movie,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Column(Modifier.weight(1f).padding(start = 10.dp)) {
                         Text(
-                            text = stringResource(R.string.video_min_hint),
+                            text = stringResource(R.string.video_mode_title),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = activeProfile?.let {
+                                stringResource(R.string.profile_video_summary, it.video.minHz)
+                            } ?: stringResource(R.string.profile_idle_off),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(Modifier.height(12.dp))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        Spacer(Modifier.height(8.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Column(Modifier.weight(1f)) {
-                                Text(
-                                    text = stringResource(R.string.video_rules_title),
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.video_rules_summary,
-                                        state.videoConfig.activeRuleCount,
-                                        VideoConfig.RULE_COUNT
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                                Text(
-                                    text = pluralStringResource(
-                                        R.plurals.video_forced_count,
-                                        state.videoConfig.forcedPackages.size,
-                                        state.videoConfig.forcedPackages.size
-                                    ),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            TextButton(onClick = { showVideoConfig = true }) {
-                                Text(stringResource(R.string.video_config_manage))
-                            }
+                    }
+                    activeProfile?.let { profile ->
+                        TextButton(onClick = { onEditProfile(profile.id) }) {
+                            Text(stringResource(R.string.profile_edit))
+                        }
+                    }
+                }
+                if (activeProfile != null) {
+                    Spacer(Modifier.height(8.dp))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    Spacer(Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.video_rules_title),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                text = stringResource(
+                                    R.string.video_rules_summary,
+                                    state.videoConfig.activeRuleCount,
+                                    VideoConfig.RULE_COUNT
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = pluralStringResource(
+                                    R.plurals.video_forced_count,
+                                    state.videoConfig.forcedPackages.size,
+                                    state.videoConfig.forcedPackages.size
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        TextButton(onClick = { showVideoConfig = true }) {
+                            Text(stringResource(R.string.video_config_manage))
                         }
                     }
                 }
@@ -439,7 +444,6 @@ fun HomeScreen(
             AodCard(
                 context = context,
                 state = state,
-                rates = rates,
                 showAodBrightness = gate.profile.supportsAodBrightness,
                 onStateChange = { state = it }
             )
@@ -454,11 +458,109 @@ fun HomeScreen(
             config = state.videoConfig,
             onDismiss = { showVideoConfig = false },
             onConfigChange = { updated ->
-                state = state.copy(videoConfig = updated)
-                OneHzPreferences.setVideoConfig(context, updated)
+                state.displayProfile?.let { active ->
+                    ProfileStore.updateProfile(
+                        context,
+                        active.copy(
+                            video = active.video.copy(rules = VideoRules.from(updated))
+                        )
+                    )
+                    OneHzPreferences.setForcedVideoPackages(context, updated.forcedPackages)
+                    state = loadState(context, rates)
+                }
                 OneHzEngine.onVideoConfigChanged()
             }
         )
+    }
+
+    if (showProfileSwitcher) {
+        ProfileSwitcherSheet(
+            state = state.profileState,
+            batterySaverActive = state.ecoActive,
+            onDismiss = { showProfileSwitcher = false },
+            onSelect = { profile ->
+                ProfileStore.select(context, profile.id)
+                OneHzEngine.reapply()
+                state = loadState(context, rates)
+                showProfileSwitcher = false
+            },
+            onManage = {
+                showProfileSwitcher = false
+                onManageProfiles()
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileSwitcherSheet(
+    state: ProfileState,
+    batterySaverActive: Boolean,
+    onDismiss: () -> Unit,
+    onSelect: (DeviceProfile) -> Unit,
+    onManage: () -> Unit
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(Modifier.fillMaxWidth().padding(bottom = 24.dp)) {
+            Text(
+                text = stringResource(R.string.home_section_profiles),
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+            )
+            if (batterySaverActive && state.autoEconomyOnBatterySaver) {
+                Text(
+                    text = stringResource(R.string.profile_battery_override_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
+                )
+            }
+            state.profiles.forEach { profile ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onSelect(profile) }
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = profile.id == state.activeProfileId,
+                        onClick = { onSelect(profile) }
+                    )
+                    Column(Modifier.weight(1f).padding(start = 8.dp)) {
+                        Text(
+                            text = profileLabel(profile),
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Text(
+                            text = profileSummary(profile),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = stringResource(
+                                R.string.profile_video_summary,
+                                profile.video.minHz
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OutlinedButton(onClick = onManage, modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.profile_manage))
+                }
+                TextButton(onClick = onDismiss) {
+                    Text(stringResource(R.string.close))
+                }
+            }
+        }
     }
 }
 
@@ -523,7 +625,6 @@ private fun HeroCard(
 private fun AodCard(
     context: Context,
     state: HomeState,
-    rates: List<Int>,
     showAodBrightness: Boolean,
     onStateChange: (HomeState) -> Unit
 ) {
@@ -545,19 +646,13 @@ private fun AodCard(
         AnimatedVisibility(visible = state.aodEnabled) {
             Column {
                 Spacer(Modifier.height(12.dp))
-                HzPicker(
-                    label = stringResource(R.string.aod_frequency),
-                    value = state.aodHz,
-                    options = rates,
-                    onSelect = { hz ->
-                        onStateChange(state.copy(aodHz = hz))
-                        OneHzPreferences.setAodHz(context, hz)
-                        OneHzEngine.reapply()
-                    }
-                )
-                Spacer(Modifier.height(6.dp))
                 Text(
-                    text = stringResource(R.string.aod_cost_hint),
+                    text = stringResource(R.string.aod_minimum, state.aodHz),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.aod_minimum_hint),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -673,15 +768,6 @@ private fun AodCard(
     }
 }
 
-// Small helper so the preference setters stay in one place without passing the context everywhere.
-@Composable
-private fun EditProfileButton(onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Icon(Icons.Outlined.Tune, contentDescription = null, modifier = Modifier.size(18.dp))
-        Text(stringResource(R.string.profile_edit), Modifier.padding(start = 6.dp))
-    }
-}
-
 @Composable
 private fun statusText(
     state: HomeState,
@@ -697,21 +783,11 @@ private fun statusText(
 }
 
 @Composable
-private fun profileSummary(profile: FrequencyProfile): String {
-    if (profile.steps.isEmpty()) return stringResource(R.string.profile_empty)
-    if (profile.isFixed) return stringResource(R.string.profile_fixed, profile.steps[0].hz)
-    val chain = profile.steps.joinToString(" → ") { "${it.hz}" }
-    val holds = profile.steps.dropLast(1).joinToString(" / ") { formatSeconds(it.holdMs ?: 0L) }
-    return "$chain Hz · $holds"
-}
-
-@Composable
 private fun idleText(state: HomeState, reason: IdleReason?): String? = when {
     !state.enabled -> stringResource(R.string.master_off_hint)
-    reason == IdleReason.NORMAL_PROFILE_DISABLED -> stringResource(R.string.idle_normal_off)
-    reason == IdleReason.ECO_PROFILE_DISABLED -> stringResource(R.string.idle_eco_off)
+    reason == IdleReason.PROFILE_DISABLED -> stringResource(R.string.profile_idle_off)
+    reason == IdleReason.PROFILE_EMPTY -> stringResource(R.string.profile_need_tiers)
     reason == IdleReason.AOD_DISABLED -> stringResource(R.string.idle_aod_off)
-    reason == IdleReason.EMPTY_PROFILE -> stringResource(R.string.profile_need_tiers)
     else -> null
 }
 
@@ -758,6 +834,3 @@ private fun RateRing(hz: Int, max: Int) {
         }
     }
 }
-
-private fun formatSeconds(ms: Long): String =
-    String.format(java.util.Locale.getDefault(), "%.1f s", ms / 1000f)
