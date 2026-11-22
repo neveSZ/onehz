@@ -53,6 +53,7 @@ import io.github.nevesz.onehz.ui.components.SettingRow
 private const val DEV_URL = "https://github.com/neveSZ"
 private const val REPO_URL = "https://github.com/neveSZ/onehz"
 private const val LICENSE_URL = "https://github.com/neveSZ/onehz/blob/main/LICENSE"
+private const val SHIZUKU_API_URL = "https://github.com/RikkaApps/Shizuku-API"
 private const val SHIZUKU_URL = "https://github.com/RikkaApps/Shizuku"
 private const val SHIZUKU_FORK_URL = "https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi"
 private const val ADAPTIVE_URL = "https://github.com/mahmutaunal/Adaptive-Hz"
@@ -193,6 +194,13 @@ fun AboutScreen(
                     title = stringResource(R.string.credits_adaptive),
                     subtitle = stringResource(R.string.credits_adaptive_subtitle),
                     url = ADAPTIVE_URL
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                LinkRow(
+                    icon = Icons.Outlined.Extension,
+                    title = stringResource(R.string.credits_shizuku_api),
+                    subtitle = stringResource(R.string.credits_shizuku_api_subtitle),
+                    url = SHIZUKU_API_URL
                 )
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LinkRow(

@@ -101,10 +101,11 @@ Details, defaults, and behavior: [docs/FEATURES.md](docs/FEATURES.md).
 
 | Project | Role in OneHZ | License |
 |---|---|---|
-| [Shizuku](https://github.com/RikkaApps/Shizuku) by RikkaApps | Privileged display and settings bridge | Apache-2.0 |
-| [Shizuku fork](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi) by thedjchi | Build used for testing | Apache-2.0 |
+| [Shizuku API](https://github.com/RikkaApps/Shizuku-API) by RikkaW | Bundled privileged API client | MIT |
+| [Shizuku](https://github.com/RikkaApps/Shizuku) by RikkaApps | External app required at runtime (not bundled) | Apache-2.0 |
+| [Shizuku fork](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi) by thedjchi | External app used for testing (not bundled) | Apache-2.0 |
 | [Adaptive Hz](https://github.com/mahmutaunal/Adaptive-Hz) by Mahmut Alperen Ünal | Portions derived into OneHZ | MIT |
-| [Obtainium](https://github.com/ImranR98/Obtainium) | Automatic updates from GitHub Releases | GPL-3.0 |
+| [Obtainium](https://github.com/ImranR98/Obtainium) | Update client; badge only in the docs | GPL-3.0 |
 | [Jetpack Compose](https://developer.android.com/jetpack/compose) | UI toolkit | Apache-2.0 |
 
 Full credits: [CREDITS.md](CREDITS.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
@@ -154,16 +155,24 @@ personal data before posting.
 ## License and credits
 
 OneHZ is released under the **MIT License**. See [LICENSE](LICENSE) and the
-[unofficial Portuguese translation](LICENSE.pt-BR.md).
+[unofficial Portuguese translation](LICENSE.pt-BR.md). Portions are derived from Adaptive
+Hz (MIT, © 2025 Mahmut Alperen Ünal). Third-party components and documentation assets
+remain under their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 - **Author:** [neveSZ](https://github.com/neveSZ).
 - **LLM assistance:** developed with help from LLMs through the
   [OpenCode](https://opencode.ai) coding agent harness, then reviewed and tested by the
   author.
 - **Adaptive Hz** by Mahmut Alperen Ünal (MIT): OneHZ includes portions derived from it.
-- **Shizuku** by RikkaApps (Apache 2.0) and the **thedjchi fork** (Apache 2.0).
+- **Shizuku API** by RikkaW (MIT): bundled in the app.
+- **Shizuku app** by RikkaApps (Apache 2.0) and the **thedjchi fork** (Apache 2.0):
+  installed separately; not bundled.
 - **AndroidX / Jetpack Compose / Kotlin / kotlinx.coroutines** (Apache 2.0).
 - **JUnit 4** (test only, Eclipse Public License 1.0; not distributed in the app).
+- **Obtainium badge** (GPL-3.0): documentation only, not part of the APK and not covered
+  by the MIT license; see [docs/assets/README.md](docs/assets/README.md) and
+  [LICENSES/GPL-3.0.txt](LICENSES/GPL-3.0.txt).
+- **Gradle Wrapper** (Apache 2.0): build only, not part of the APK.
 
 No code or assets from closed-source applications are included.
 
