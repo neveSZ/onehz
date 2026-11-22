@@ -99,7 +99,7 @@ Beta builds are published as pre-releases on the same
 - enable pre-releases for the OneHZ source in Obtainium.
 
 A beta uses the same signing key and a higher `versionCode` than the current stable, so
-it installs over 1.0.1 and keeps your settings. The next stable has a higher
+it installs over the stable release and keeps your settings. The next stable has a higher
 `versionCode`, so installing it over the beta returns you to the stable channel.
 
 ### What changed in 1.2.0?

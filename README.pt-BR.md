@@ -19,6 +19,8 @@
 </p>
 
 <p align="center">
+  <a href="../../releases/latest"><img src="docs/assets/github-badge.png" alt="Obter no GitHub" height="48"></a>
+  &nbsp;&nbsp;
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Obter no Obtainium" height="48"></a>
 </p>
 
@@ -44,8 +46,8 @@ direto pelo app, sem `WRITE_SECURE_SETTINGS` e **sem AccessibilityService**.
 
 | | |
 |---|---|
-| Versão mais recente | **1.1.0-beta.1** (pré-release) |
-| Última estável | **1.0.1** |
+| Versão mais recente | **1.2.0** |
+| Última estável | **1.2.0** |
 | Aparelhos testados | Samsung Galaxy S25+ (`SM-S936B`), POCO X7 Pro (`2412DPC0AG`) |
 | Fabricantes | Samsung, Xiaomi/Redmi/POCO |
 | Veredito | Tela multi-taxa obrigatória; LTPO **não** é obrigatório |
@@ -67,7 +69,7 @@ continua no estável.
 
 1. Instale o Shizuku e inicie-o pela depuração sem fio ou root. O fork testado é o
    [thedjchi `v13.7.0-thedjchi`](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi).
-2. Instale o APK do OneHZ pelo [GitHub Releases](../../releases), ou adicione o
+2. Instale o APK do OneHZ pelo [GitHub Releases](../../releases/latest), ou adicione o
    repositório ao [Obtainium](https://obtainium.imranr.dev/) usando o badge acima.
 3. Abra o OneHZ, permita o acesso ao Shizuku e siga a tela de configuração.
 4. Ative a chave principal.
@@ -138,7 +140,7 @@ Cada release inclui um arquivo `.sha256`. O SHA-256 do certificado de assinatura
 `D8:E8:24:B2:5F:6B:1D:29:75:BD:72:D6:89:5F:C4:7F:7B:EB:C2:05:78:41:F7:83:3C:25:67:0A:C2:04:F8:0A`
 
 ```powershell
-apksigner verify --print-certs OneHZ-1.1.0-beta.1.apk
+apksigner verify --print-certs OneHZ-1.2.0.apk
 ```
 
 Veja [docs/INSTALL.pt-BR.md#verificar-o-apk](docs/INSTALL.pt-BR.md#verificar-o-apk).

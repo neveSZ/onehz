@@ -15,7 +15,7 @@
 | Taxas do painel | 120, 80, 60, 48, 40, 30, 26,67, 24, 20, 10 Hz | 120, 90, 60, 30 Hz |
 | Rota de controle | `refresh_rate_mode` + `peak/min` | `secure/miui_refresh_rate` |
 | Shizuku | fork thedjchi `v13.7.0-thedjchi` | fork thedjchi `v13.7.0-thedjchi` |
-| OneHZ | 1.1.0-beta.1 | 1.1.0-beta.1 |
+| OneHZ | 1.2.0 | 1.2.0 |
 
 Todo o resto é **não testado**.
 

@@ -108,7 +108,7 @@ Builds beta são publicadas como pré-releases na mesma
 - ative pré-releases para a fonte do OneHZ no Obtainium.
 
 Uma beta usa a mesma chave de assinatura e um `versionCode` maior que o da estável atual,
-então ela instala por cima da 1.0.1 mantendo os ajustes. A próxima estável tem
+então ela instala por cima da versão estável mantendo os ajustes. A próxima estável tem
 `versionCode` maior, então instalar a estável por cima da beta devolve você ao canal
 estável.
 

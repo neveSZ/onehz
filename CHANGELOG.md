@@ -193,6 +193,7 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.2.0]: https://github.com/neveSZ/onehz/releases/tag/v1.2.0
 [1.1.0-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.1.0-beta.1
 [1.0.1]: https://github.com/neveSZ/onehz/releases/tag/v1.0.1
 [1.0.0]: https://github.com/neveSZ/onehz/releases/tag/v1.0.0
