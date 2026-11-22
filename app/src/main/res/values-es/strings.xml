@@ -42,9 +42,11 @@
     <string name="step_of">Nivel %1$d de %2$d</string>
 
     <string name="aod_title">AOD (Always On Display)</string>
-    <string name="aod_hint">Se aplica solo con la pantalla apagada y el AOD activo. Si el AOD está desactivado, no tiene efecto.</string>
+    <string name="aod_hint_on">Mantiene la tasa mínima con la pantalla apagada. Solo se aplica con el AOD activo.</string>
+    <string name="aod_hint_off">Usa la tasa adaptativa del sistema. Solo se aplica con el AOD activo.</string>
     <string name="aod_brightness_title">Brillo del AOD</string>
-    <string name="aod_brightness_desc">Usa una parte del brillo de la pantalla al bloquear. Mientras está activo, el AOD no sigue la luz ambiente.</string>
+    <string name="aod_brightness_desc_on">Aplica un %1$d%% de brillo en el AOD al bloquear. El AOD no sigue la luz ambiente.</string>
+    <string name="aod_brightness_desc_off">El AOD sigue el brillo del sistema y la luz ambiente.</string>
     <string name="aod_brightness_pct_label">Brillo del AOD: %1$d%% del brillo de la pantalla</string>
     <string name="aod_brightness_show_limits">Límites de seguridad</string>
     <string name="aod_brightness_hide_limits">Ocultar límites de seguridad</string>

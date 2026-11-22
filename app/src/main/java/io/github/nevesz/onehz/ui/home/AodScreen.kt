@@ -151,7 +151,8 @@ fun AodScreen(
                     ToggleRow(
                         icon = AppIcons.nightlight(),
                         title = stringResource(R.string.aod_rate_title),
-                        description = stringResource(R.string.aod_hint),
+                        descriptionOn = stringResource(R.string.aod_hint_on),
+                        descriptionOff = stringResource(R.string.aod_hint_off),
                         checked = state.rateEnabled,
                         enabled = oneHzEnabled,
                         onCheckedChange = { on ->
@@ -184,7 +185,11 @@ fun AodScreen(
                         ToggleRow(
                             icon = AppIcons.brightnessMedium(),
                             title = stringResource(R.string.aod_brightness_title),
-                            description = stringResource(R.string.aod_brightness_desc),
+                            descriptionOn = stringResource(
+                                R.string.aod_brightness_desc_on,
+                                state.brightnessPct,
+                            ),
+                            descriptionOff = stringResource(R.string.aod_brightness_desc_off),
                             checked = state.brightnessEnabled,
                             enabled = oneHzEnabled,
                             onCheckedChange = { on ->

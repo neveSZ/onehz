@@ -42,9 +42,11 @@
     <string name="step_of">Level %1$d of %2$d</string>
 
     <string name="aod_title">Always On Display (AOD)</string>
-    <string name="aod_hint">Applied only while the screen is off and AOD is active. If AOD is off, this has no effect.</string>
+    <string name="aod_hint_on">Keeps the panel minimum while the screen is off. Only applies while AOD is on.</string>
+    <string name="aod_hint_off">Uses the system\'s adaptive rate. Only applies while AOD is on.</string>
     <string name="aod_brightness_title">AOD brightness</string>
-    <string name="aod_brightness_desc">Uses a share of screen brightness when you lock the screen. While active, the AOD does not follow ambient light.</string>
+    <string name="aod_brightness_desc_on">Applies %1$d%% brightness to the AOD when locked. The AOD does not follow ambient light.</string>
+    <string name="aod_brightness_desc_off">The AOD follows the system brightness and ambient light.</string>
     <string name="aod_brightness_pct_label">AOD brightness: %1$d%% of screen brightness</string>
     <string name="aod_brightness_show_limits">Safety limits</string>
     <string name="aod_brightness_hide_limits">Hide safety limits</string>
