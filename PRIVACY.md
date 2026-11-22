@@ -1,6 +1,6 @@
 # Privacy Policy
 
-**Last updated:** 2026-11-21
+**Last updated:** 2026-11-22
 
 OneHZ is a local-first Android app. This document explains what the app does with your
 data.
@@ -10,7 +10,7 @@ data.
 - OneHZ requests the `INTERNET` permission **only for the optional update checker**,
   which is **off by default**.
 - There is **no analytics, advertising, telemetry, crash reporting, or account system**.
-- Configuration and diagnostics stay on your device.
+- Configuration, Sleep measurements, and diagnostics stay on your device.
 
 ## Data stored on the device
 
@@ -18,6 +18,9 @@ OneHZ stores its settings in Android `SharedPreferences`:
 
 - profiles (normal, ECO, AOD, and per-app);
 - feature toggles and theme/language preferences;
+- Sleep state and measurements: pause, time-window, and forced flags, plus a bounded local
+  ledger of screen-off and device-idle spans with the battery level at the start and end
+  of each session. It is used only to show the 24-hour totals in the app;
 - session markers used to restore system settings after a crash;
 - a small backup of the Samsung battery-saver settings and the HyperOS rate key that
   OneHZ changed;
