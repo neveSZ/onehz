@@ -1,6 +1,6 @@
 # Third-party notices
 
-OneHZ includes portions derived from the following open-source projects. The full license texts are reproduced below. This file is kept in sync with `app/src/main/res/raw/third_party_notices.txt`.
+OneHZ includes or depends on the following open-source projects. The full license texts for the components distributed in the APK are reproduced below. Documentation-only assets are listed in [docs/assets/README.md](docs/assets/README.md) and [LICENSES/](LICENSES/). This file is kept in sync with `app/src/main/res/raw/third_party_notices.txt`.
 
 ---
 
@@ -41,12 +41,49 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 IN THE SOFTWARE.
 
 ======================================================================
-Shizuku
+Shizuku API (bundled)
+https://github.com/RikkaApps/Shizuku-API
+Copyright (c) 2021 RikkaW
+MIT License
+
+OneHZ bundles the Shizuku API client library. The Shizuku app itself is a
+separate application and is not bundled.
+======================================================================
+
+MIT License
+
+Copyright (c) 2021 RikkaW
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+
+======================================================================
+Shizuku app (not bundled)
 https://github.com/RikkaApps/Shizuku
 Copyright (c) RikkaApps
 Apache License, Version 2.0
 
-Shizuku fork used by this build
+The Shizuku app is installed separately by the user; it is not part of the
+OneHZ APK.
+======================================================================
+
+======================================================================
+Shizuku fork used for testing (not bundled)
 https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi
 Copyright (c) thedjchi and contributors
 Apache License, Version 2.0
@@ -238,3 +275,28 @@ Apache License, Version 2.0 (text below)
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
+
+======================================================================
+Documentation and build assets (not distributed in the APK)
+======================================================================
+
+Obtainium badge
+https://github.com/ImranR98/Obtainium
+Copyright (c) ImranR98 and Obtainium contributors
+GNU General Public License v3.0
+
+docs/assets/obtainium-badge.png is the official Obtainium badge, trimmed for
+display. It is used only in the README and documentation, is not part of the
+OneHZ APK, and is not covered by the MIT license of the OneHZ source code.
+The GPL-3.0 text is available in LICENSES/GPL-3.0.txt.
+
+======================================================================
+
+Gradle Wrapper
+https://github.com/gradle/gradle
+Copyright (c) Gradle Inc.
+Apache License, Version 2.0
+
+gradle/wrapper/gradle-wrapper.jar is build tooling and is not part of the
+OneHZ APK.
+======================================================================
