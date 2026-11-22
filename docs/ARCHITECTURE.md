@@ -257,6 +257,7 @@ preference events then re-evaluate the same decision while the screen stays off.
 ```text
 cmd deviceidle force-idle [light]         # deep when no argument is given
 cmd deviceidle unforce
+cmd deviceidle motion                     # returns to INACTIVE off-screen
 dumpsys deviceidle force-idle [light]     # fallback for builds without cmd
 dumpsys deviceidle                        # reads mState= and mLightState=
 ```
@@ -269,8 +270,9 @@ still off.
 An `AudioManager.AudioPlaybackCallback` is registered on the controller thread and
 debounced for 200 ms. The plug state and audio state are cached from their events so a
 re-evaluation does not repeat binder or sticky-broadcast reads. A guard that starts
-blocking sends `unforce`; a guard that stops blocking forces idle without the screen-off
-settling delay.
+blocking runs `unforce` followed by `motion`, because `unforce` alone can leave the state
+at IDLE while the screen is off. A guard that stops blocking forces idle without the
+screen-off settling delay.
 
 `cmd`/`dumpsys` exit with 0 even for an unknown subcommand, so success is confirmed through
 the printed `mState` and `mLightState` values (with `PowerManager.isDeviceIdleMode()` as a

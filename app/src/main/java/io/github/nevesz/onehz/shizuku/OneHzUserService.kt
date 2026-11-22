@@ -282,8 +282,14 @@ class OneHzUserService : IOneHzService.Stub() {
     override fun unforceIdle(): Boolean {
         // Same order as forceIdle. The controller still verifies the real idle state before
         // clearing its persisted flag, so a false positive here is not trusted.
-        if (exec("/system/bin/cmd", "deviceidle", "unforce").success) return true
-        return exec("/system/bin/dumpsys", "deviceidle", "unforce").success
+        val unforced = exec("/system/bin/cmd", "deviceidle", "unforce").success ||
+            exec("/system/bin/dumpsys", "deviceidle", "unforce").success
+        if (!unforced) return false
+        // `unforce` only clears the forced flag. On One UI the state can stay IDLE while
+        // the screen is off, so a guard change would not actually leave idle. The
+        // documented motion command brings the device back to INACTIVE without waking it.
+        exec("/system/bin/cmd", "deviceidle", "motion")
+        return true
     }
 
     override fun idleState(): String {

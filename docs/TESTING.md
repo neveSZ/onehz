@@ -99,8 +99,8 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Turn on **Doze with music** while music is playing and the screen is off; Doze is
       forced without waiting for another screen-off.
 - [ ] Stop the music with the option off; Doze is forced without touching the screen.
-- [ ] Start music while Doze is active and the option is off; the device leaves idle and
-      the card shows the music state.
+- [ ] Start music while Doze is active and the option is off; the device leaves idle
+      (`mState=INACTIVE`, not just `mForceIdle=false`) and the card shows the music state.
 - [ ] Check the diagnostics timings: the idle command takes a few tens of milliseconds and
       confirmation appears at the first retry on a responsive ROM.
 - [ ] Set light mode; confirm the state still becomes `IDLE` (or report the ROM result).

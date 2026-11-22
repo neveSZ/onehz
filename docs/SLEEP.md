@@ -61,10 +61,16 @@ process (UID 2000) may drive it with:
 ```
 cmd deviceidle force-idle [light]
 cmd deviceidle unforce
+cmd deviceidle motion
 dumpsys deviceidle force-idle [light]
 dumpsys deviceidle unforce
 dumpsys deviceidle whitelist
 ```
+
+`unforce` clears the forced flag but does not always leave the IDLE state while the screen
+is off. After a successful unforce, OneHZ sends `motion`, the documented shell command
+that returns the device to INACTIVE without waking the screen. This is what makes a guard
+change (music starting, charger connected) take effect off-screen.
 
 `cmd` is tried first because it starts the platform command directly and is the faster path
 on Android 12+. `dumpsys` remains the fallback for builds where `cmd deviceidle` is not

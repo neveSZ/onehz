@@ -28,6 +28,8 @@ All notable changes to OneHZ are documented here. The format follows
   cycle; music starting or the charger being plugged in leaves idle.
 - Music playback is observed through the platform callback instead of being read only at
   screen-off, with a short debounce and no polling.
+- Leaving idle after a guard change now also sends `deviceidle motion`; `unforce` alone
+  could keep the device in IDLE while the screen stayed off.
 - A delayed idle verification can no longer overwrite the state after screen-on or after a
   guard change.
 - The old pause-with-music preference and 1.2.x backups migrate to the positive Doze with
