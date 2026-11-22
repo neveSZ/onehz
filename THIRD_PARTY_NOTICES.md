@@ -1,6 +1,6 @@
 # Third-party notices
 
-OneHZ includes or depends on the following open-source projects. The full license texts for the components distributed in the APK are reproduced below. Documentation-only assets are listed in [docs/assets/README.md](docs/assets/README.md) and [LICENSES/](LICENSES/). This file is kept in sync with `app/src/main/res/raw/third_party_notices.txt`.
+OneHZ includes or depends on the following open-source projects. The full license texts for the components distributed in the APK are reproduced below. Documentation-only assets are listed in [docs/assets/README.md](docs/assets/README.md) and [LICENSES/](LICENSES/). The APK-relevant sections are kept in sync with `app/src/main/res/raw/third_party_notices.txt`.
 
 ---
 
