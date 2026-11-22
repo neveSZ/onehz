@@ -84,10 +84,7 @@ object DozeController {
                 val stillIdle = !isInteractive(ctx) &&
                     ShizukuGateway.service != null &&
                     DozeState.isIdleEncoded(ShizukuGateway.idleState())
-                if (!stillIdle) {
-                    if (ShizukuGateway.service != null) ShizukuGateway.unforceIdle()
-                    SleepPreferences.setForced(ctx, false)
-                }
+                if (!stillIdle) unforce(ctx, "start")
             }
             Diagnostics.dozeActiveSince.value =
                 if (SleepPreferences.forced(ctx)) SleepPreferences.forcedAt(ctx) else 0L
@@ -104,8 +101,7 @@ object DozeController {
             val ctx = appContext
             if (ctx != null) {
                 if (SleepPreferences.forced(ctx) || testing) {
-                    ShizukuGateway.unforceIdle()
-                    SleepPreferences.setForced(ctx, false)
+                    unforce(ctx, "stop")
                 }
                 closeSession(ctx, System.currentTimeMillis(), "stop")
             }
@@ -152,9 +148,7 @@ object DozeController {
         handler.removeCallbacks(forceRunnable)
         closeSession(ctx, System.currentTimeMillis(), "screen on")
         if (SleepPreferences.forced(ctx) || testing) {
-            val ok = ShizukuGateway.unforceIdle()
-            SleepPreferences.setForced(ctx, false)
-            Diagnostics.log(TAG, "unforce ${if (ok) "ok" else "failed"}")
+            unforce(ctx, "screen on")
         }
         testing = false
         Diagnostics.dozeActiveSince.value = 0L
@@ -177,11 +171,12 @@ object DozeController {
         if (!isCharging(ctx)) return@post
         if (!SleepPreferences.skipCharging(ctx)) return@post
         if (!SleepPreferences.forced(ctx)) return@post
-        ShizukuGateway.unforceIdle()
-        SleepPreferences.setForced(ctx, false)
-        Diagnostics.dozeActiveSince.value = 0L
-        Diagnostics.dozePhase.value = DozePhase.CHARGING
-        Diagnostics.log(TAG, "charger connected: left Doze")
+        val ok = unforce(ctx, "charger connected")
+        if (ok) {
+            Diagnostics.dozeActiveSince.value = 0L
+            Diagnostics.dozePhase.value = DozePhase.CHARGING
+        }
+        Diagnostics.log(TAG, "charger connected: ${if (ok) "left Doze" else "unforce pending"}")
     }
 
     fun onServiceUnavailable() = handler.post {
@@ -194,14 +189,14 @@ object DozeController {
     fun onServiceAvailable() = handler.post {
         val ctx = appContext ?: return@post
         if (!started) return@post
+        // The service returned while the screen is on: clear a state we cannot confirm,
+        // even if the feature was disabled while the service was away.
+        if (SleepPreferences.forced(ctx) && isInteractive(ctx)) {
+            unforce(ctx, "service available")
+        }
         if (!isActive(ctx)) {
             Diagnostics.dozePhase.value = DozePhase.OFF
             return@post
-        }
-        // The service returned while the screen is on: clear a state we cannot confirm.
-        if (SleepPreferences.forced(ctx) && isInteractive(ctx)) {
-            ShizukuGateway.unforceIdle()
-            SleepPreferences.setForced(ctx, false)
         }
         val decision = decide(ctx)
         if (!isInteractive(ctx) && decision is DozeDecision.Force) {
@@ -218,8 +213,7 @@ object DozeController {
             pendingDeep = null
             handler.removeCallbacks(forceRunnable)
             if (SleepPreferences.forced(ctx) || testing) {
-                ShizukuGateway.unforceIdle()
-                SleepPreferences.setForced(ctx, false)
+                unforce(ctx, "feature disabled")
             }
             testing = false
             closeSession(ctx, System.currentTimeMillis(), "feature disabled")
@@ -238,8 +232,7 @@ object DozeController {
         pendingDeep = null
         handler.removeCallbacks(forceRunnable)
         if (SleepPreferences.forced(ctx)) {
-            ShizukuGateway.unforceIdle()
-            SleepPreferences.setForced(ctx, false)
+            unforce(ctx, "pause")
         }
         Diagnostics.dozeActiveSince.value = 0L
         Diagnostics.dozePhase.value = DozePhase.PAUSED
@@ -272,10 +265,8 @@ object DozeController {
             Diagnostics.log(TAG, "test force deep=$deep -> ${raw.ifBlank { "no state" }}")
         }, VERIFY_DELAY_MS)
         handler.postDelayed({
-            if (!isInteractive(ctx)) return@postDelayed
-            ShizukuGateway.unforceIdle()
+            unforce(ctx, "test finished")
             testing = false
-            Diagnostics.log(TAG, "test finished")
             refreshPhase(ctx, "test")
         }, TEST_DURATION_MS)
     }
@@ -335,6 +326,27 @@ object DozeController {
             }
         }
         Diagnostics.log(TAG, "phase=${Diagnostics.dozePhase.value} ($source)")
+    }
+
+    /**
+     * Leaves idle and clears the persisted flag only when the privileged service confirms the
+     * command. If the service is unavailable, the flag is kept so the next reconnect or
+     * screen-on retries instead of leaving the device forced with a false "off" state.
+     */
+    private fun unforce(ctx: Context, reason: String): Boolean {
+        if (ShizukuGateway.service == null) {
+            Diagnostics.log(TAG, "unforce pending ($reason): service unavailable")
+            return false
+        }
+        val ok = ShizukuGateway.unforceIdle()
+        if (ok) {
+            SleepPreferences.setForced(ctx, false)
+            Diagnostics.dozeActiveSince.value = 0L
+            Diagnostics.log(TAG, "unforce ok ($reason)")
+        } else {
+            Diagnostics.log(TAG, "unforce failed ($reason); keeping the flag for retry")
+        }
+        return ok
     }
 
     private fun closeSession(ctx: Context, now: Long, reason: String) {

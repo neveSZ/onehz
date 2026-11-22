@@ -268,17 +268,26 @@ class OneHzUserService : IOneHzService.Stub() {
      * Android 12+. `light` is only sent when the user asks for it.
      */
     override fun forceIdle(deep: Boolean): Boolean {
-        if (deep) {
-            if (exec("/system/bin/dumpsys", "deviceidle", "force-idle").success) return true
-            return exec("/system/bin/cmd", "deviceidle", "force-idle").success
+        val args = if (deep) {
+            arrayOf("deviceidle", "force-idle")
+        } else {
+            arrayOf("deviceidle", "force-idle", "light")
         }
-        if (exec("/system/bin/dumpsys", "deviceidle", "force-idle", "light").success) return true
-        return exec("/system/bin/cmd", "deviceidle", "force-idle", "light").success
+        // `dumpsys` returns success even for unsupported commands on some builds, so try
+        // the `cmd` form as well instead of trusting the first exit code.
+        val dumpsys = exec("/system/bin/dumpsys", *args).success
+        val cmd = exec("/system/bin/cmd", *args).success
+        return dumpsys || cmd
     }
 
-    override fun unforceIdle(): Boolean =
-        exec("/system/bin/dumpsys", "deviceidle", "unforce").success ||
-            exec("/system/bin/cmd", "deviceidle", "unforce").success
+    override fun unforceIdle(): Boolean {
+        // Same as forceIdle: a zero exit code from `dumpsys` is not proof that the state
+        // changed. Try both forms and let the controller keep the flag if the service
+        // reports that the device is still idle.
+        val dumpsys = exec("/system/bin/dumpsys", "deviceidle", "unforce").success
+        val cmd = exec("/system/bin/cmd", "deviceidle", "unforce").success
+        return dumpsys || cmd
+    }
 
     override fun idleState(): String {
         // The state lines are at the end of a ~23 KB dump on One UI; a smaller cap
