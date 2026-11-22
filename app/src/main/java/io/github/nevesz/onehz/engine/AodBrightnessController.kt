@@ -146,7 +146,9 @@ object AodBrightnessController {
     }
 
     private fun isEnabled(context: Context) =
-        OneHzPreferences.isEnabled(context) && OneHzPreferences.aodBrightnessEnabled(context)
+        OneHzPreferences.isEnabled(context) &&
+            OneHzPreferences.aodMasterEnabled(context) &&
+            OneHzPreferences.aodBrightnessEnabled(context)
 
     private fun syncNow(reason: String) {
         val ctx = appContext ?: return

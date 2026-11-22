@@ -68,9 +68,13 @@ de bateria do sistema está ativa.
 **O que faz:** aplica uma taxa fixa enquanto a tela está desligada / Always On Display
 está ativo.
 
+**Chave principal.** O switch do AOD na tela inicial é o único master desta seção.
+Desligá-lo pausa a taxa e o brilho sem redefinir as escolhas. A tela de detalhe do AOD
+não repete o master.
+
 **Como funciona:**
 
-- a chave do AOD é independente dos perfis;
+- o master do AOD é independente dos perfis;
 - o AOD sempre usa a **menor taxa exposta pela tela**;
 - quando a tela desliga, timers e o monitor de toque param, então o aparelho entra no
   Doze normalmente;
@@ -80,6 +84,9 @@ está ativo.
 
 **O que faz:** na Samsung, define o brilho do AOD a partir de uma porcentagem do brilho
 da tela no momento do bloqueio, com uma faixa de segurança.
+
+**Independente da taxa.** O brilho tem o próprio switch e continua disponível quando a
+taxa está desligada. Ele ainda obedece ao master do AOD na tela inicial.
 
 **Como funciona:**
 
@@ -228,7 +235,12 @@ Português (Brasil), inglês e espanhol. Veja o
 
 ## 16. Sono (Doze forçado)
 
-Opcional e desligado por padrão. Ao apagar a tela, o OneHZ pede ao sistema para entrar em
+Opcional e desligado por padrão. O switch do Sono na tela inicial é o único master. Com o
+Sono desligado, o detalhe mantém as opções de comportamento, a lista de apps que acordam e
+as medições históricas visíveis e editáveis; apenas "Testar agora" e pausar/retomar exigem
+o Sono ligado.
+
+Ao apagar a tela, o OneHZ pede ao sistema para entrar em
 Doze na hora, em vez de esperar os temporizadores de inatividade. O primeiro enable pede
 confirmação porque notificações e chamadas por internet podem atrasar:
 

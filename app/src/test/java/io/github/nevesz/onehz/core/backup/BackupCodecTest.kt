@@ -20,7 +20,8 @@ class BackupCodecTest {
             autoEconomyOnBatterySaver = true
         ),
         enabled = true,
-        aodEnabled = true,
+        aodMasterEnabled = true,
+        aodRateEnabled = true,
         aodBrightnessEnabled = false,
         aodBrightnessPct = 12,
         aodBrightnessMinPct = 6,
@@ -99,5 +100,36 @@ class BackupCodecTest {
     fun `forced packages are preserved`() {
         val decoded = BackupCodec.decode(BackupCodec.encode(data))
         assertTrue(decoded?.forcedVideoPackages?.contains("com.example.video") == true)
+    }
+
+    @Test
+    fun `old backup derives the AOD master from the sub-options`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        root.getJSONObject("settings").remove("aodMasterEnabled")
+        val decoded = BackupCodec.decode(root.toString())
+        assertNotNull(decoded)
+        assertTrue(decoded?.aodMasterEnabled == true)
+    }
+
+    @Test
+    fun `old brightness-only backup derives the AOD master`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        val settings = root.getJSONObject("settings")
+        settings.remove("aodMasterEnabled")
+        settings.put("aodEnabled", false)
+        settings.put("aodBrightnessEnabled", true)
+        val decoded = BackupCodec.decode(root.toString())
+        assertNotNull(decoded)
+        assertTrue(decoded?.aodMasterEnabled == true)
+        assertEquals(false, decoded?.aodRateEnabled)
+        assertEquals(true, decoded?.aodBrightnessEnabled)
+    }
+
+    @Test
+    fun `new backup preserves an explicit AOD master off`() {
+        val copy = data.copy(aodMasterEnabled = false, aodRateEnabled = true)
+        val decoded = BackupCodec.decode(BackupCodec.encode(copy))
+        assertEquals(false, decoded?.aodMasterEnabled)
+        assertEquals(true, decoded?.aodRateEnabled)
     }
 }

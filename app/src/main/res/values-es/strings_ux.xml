@@ -15,7 +15,8 @@
     <string name="home_aod_summary_off">Desactivado</string>
     <string name="home_aod_summary_on">Tasa %1$d Hz · brillo %2$d%%</string>
     <string name="home_aod_summary_rate">Tasa %1$d Hz</string>
-    <string name="home_sleep_summary_off">Entra en Doze cuando se apaga la pantalla.</string>
+    <string name="home_aod_summary_brightness">Brillo %1$d%%</string>
+    <string name="home_sleep_summary_off">Desactivado</string>
 
     <!-- Perfiles: selección, referencia y migración. -->
     <string name="profile_in_use">En uso: %1$s</string>
@@ -54,9 +55,11 @@
     <string name="sleep_confirm_enable">Activar</string>
     <string name="sleep_confirm_cancel">Ahora no</string>
     <string name="sleep_state_ready_desc">Entra en Doze cuando se apaga la pantalla.</string>
+    <string name="sleep_state_off">Sueño desactivado. Actívalo desde la pantalla de inicio.</string>
     <string name="sleep_how_title">Cómo funciona Sueño</string>
     <string name="sleep_how_body">Doze es el estado de reposo profundo de Android. Sueño entra en él en cuanto se apaga la pantalla y sale cuando se enciende. Las llamadas normales y las alarmas siguen despertando el dispositivo. Las llamadas por internet y las notificaciones pueden retrasarse hasta que Android abra una ventana de mantenimiento.</string>
     <string name="sleep_options_title">Comportamiento</string>
+    <string name="sleep_paused_note">Las opciones de abajo están en pausa; tus elecciones se mantienen.</string>
     <string name="sleep_measurements_title">Mediciones</string>
     <string name="sleep_advanced_title">Avanzado</string>
     <string name="sleep_test_running">Probando…</string>
@@ -72,6 +75,10 @@
     <string name="sleep_warning_toggle">Aviso importante</string>
 
     <!-- AOD: detalle. -->
+    <string name="aod_master_title">Control del AOD</string>
+    <string name="aod_control_off">Control del AOD desactivado. Actívalo desde la pantalla de inicio.</string>
+    <string name="aod_requires_master">Activa OneHZ para controlar el AOD.</string>
+    <string name="aod_rate_master_desc">Controlado por el interruptor del AOD en la pantalla de inicio.</string>
     <string name="aod_rate_title">Tasa en AOD</string>
     <string name="aod_brightness_restore_confirm">Restaurar brillo</string>
     <string name="aod_brightness_restore_confirm_title">¿Restaurar brillo del sistema?</string>

@@ -15,7 +15,8 @@
     <string name="home_aod_summary_off">Off</string>
     <string name="home_aod_summary_on">Rate %1$d Hz · brightness %2$d%%</string>
     <string name="home_aod_summary_rate">Rate %1$d Hz</string>
-    <string name="home_sleep_summary_off">Enters Doze when the screen turns off.</string>
+    <string name="home_aod_summary_brightness">Brightness %1$d%%</string>
+    <string name="home_sleep_summary_off">Off</string>
 
     <!-- Profiles: selection, reference and migration. -->
     <string name="profile_in_use">In use: %1$s</string>
@@ -54,9 +55,11 @@
     <string name="sleep_confirm_enable">Enable</string>
     <string name="sleep_confirm_cancel">Not now</string>
     <string name="sleep_state_ready_desc">Enters Doze when the screen turns off.</string>
+    <string name="sleep_state_off">Sleep is off. Turn it on from the Home screen.</string>
     <string name="sleep_how_title">How Sleep works</string>
     <string name="sleep_how_body">Doze is Android\'s deep sleep state. Sleep enters it as soon as the screen turns off and leaves it when the screen turns on. Regular calls and alarms still wake the device. Internet calls and notifications may be delayed until Android opens a maintenance window.</string>
     <string name="sleep_options_title">Behavior</string>
+    <string name="sleep_paused_note">The options below are paused; your choices are kept.</string>
     <string name="sleep_measurements_title">Measurements</string>
     <string name="sleep_advanced_title">Advanced</string>
     <string name="sleep_test_running">Testing…</string>
@@ -72,6 +75,10 @@
     <string name="sleep_warning_toggle">Important warning</string>
 
     <!-- AOD detail. -->
+    <string name="aod_master_title">AOD control</string>
+    <string name="aod_control_off">AOD control is off. Turn it on from the Home screen.</string>
+    <string name="aod_requires_master">Turn on OneHZ to control AOD.</string>
+    <string name="aod_rate_master_desc">Controlled by the AOD switch on the Home screen.</string>
     <string name="aod_rate_title">AOD rate</string>
     <string name="aod_brightness_restore_confirm">Restore brightness</string>
     <string name="aod_brightness_restore_confirm_title">Restore system brightness?</string>

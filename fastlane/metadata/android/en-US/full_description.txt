@@ -7,8 +7,8 @@ Features
 * Manual profile selection with optional Automatic Economy while the system battery saver is on.
 * Per-app assignments that reference a saved profile instead of copying its staircase.
 * Per-profile video minimum and detection rules, plus a global forced-video app list.
-* AOD always uses the panel minimum; Samsung-only AOD brightness with a safety band and a system restore action.
-* Optional Sleep (forced Doze) with a first-enable warning, guards and local measurements.
+* AOD control has a single master switch on Home; rate and brightness are independent. AOD always uses the panel minimum; Samsung-only AOD brightness with a safety band and a system restore action.
+* Optional Sleep (forced Doze) with a first-enable warning, guards and local measurements. With Sleep off, its behavior options and history stay visible.
 * Backup and restore of profiles, app assignments, video, AOD, Sleep settings and the master switch.
 * Device-aware default profiles on a fresh install.
 * Guided setup for display compatibility, Shizuku, battery optimization, Doze, and notifications.

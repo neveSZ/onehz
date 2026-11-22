@@ -45,7 +45,7 @@ from the app, no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 
 | | |
 |---|---|
-| Latest release | **1.2.0** |
+| Latest release | **1.2.1-beta.1** (pre-release) |
 | Last stable | **1.2.0** |
 | Tested devices | Samsung Galaxy S25+ (`SM-S936B`), POCO X7 Pro (`2412DPC0AG`) |
 | Vendors | Samsung, Xiaomi/Redmi/POCO |
@@ -137,7 +137,7 @@ Every release includes a `.sha256` file. The signing certificate SHA-256 is:
 `D8:E8:24:B2:5F:6B:1D:29:75:BD:72:D6:89:5F:C4:7F:7B:EB:C2:05:78:41:F7:83:3C:25:67:0A:C2:04:F8:0A`
 
 ```powershell
-apksigner verify --print-certs OneHZ-1.2.0.apk
+apksigner verify --print-certs OneHZ-1.2.1-beta.1.apk
 ```
 
 See [docs/INSTALL.md#verify-the-apk](docs/INSTALL.md#verify-the-apk).

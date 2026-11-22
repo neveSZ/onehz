@@ -17,6 +17,7 @@ object OneHzPreferences {
     internal const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
     internal const val KEY_PROFILE_ECO = "profile_eco"
     internal const val KEY_PROFILE_ECO_ENABLED = "profile_eco_enabled"
+    internal const val KEY_AOD_MASTER_ENABLED = "aod_master_enabled"
     internal const val KEY_AOD_ENABLED = "aod_enabled"
     internal const val KEY_AOD_HZ = "aod_hz"
     private const val KEY_AOD_BRIGHTNESS_ENABLED = "aod_brightness_enabled"
@@ -141,13 +142,53 @@ object OneHzPreferences {
 
     // --------------------------------------------------------------------- AOD
 
-    fun aodEnabled(context: Context) = prefs(context).getBoolean(KEY_AOD_ENABLED, false)
+    /**
+     * Master switch for the AOD section. It pauses both the rate and the brightness
+     * controls without resetting their individual choices.
+     *
+     * The first read migrates installs created before the master existed:
+     * AOD was considered active when either the rate or the brightness was on.
+     */
+    fun aodMasterEnabled(context: Context): Boolean {
+        val p = prefs(context)
+        if (!p.contains(KEY_AOD_MASTER_ENABLED)) {
+            val initial = p.getBoolean(KEY_AOD_ENABLED, false) ||
+                p.getBoolean(KEY_AOD_BRIGHTNESS_ENABLED, false)
+            p.edit { putBoolean(KEY_AOD_MASTER_ENABLED, initial) }
+            return initial
+        }
+        return p.getBoolean(KEY_AOD_MASTER_ENABLED, false)
+    }
+
+    /**
+     * Turns the AOD master on or off. Turning it on with both sub-options off enables the
+     * rate, so the master never becomes a no-op. Turning it off preserves the choices.
+     */
+    fun setAodMasterEnabled(context: Context, value: Boolean) {
+        val p = prefs(context)
+        if (value) {
+            val rate = p.getBoolean(KEY_AOD_ENABLED, false)
+            val brightness = p.getBoolean(KEY_AOD_BRIGHTNESS_ENABLED, false)
+            p.edit {
+                if (!rate && !brightness) putBoolean(KEY_AOD_ENABLED, true)
+                putBoolean(KEY_AOD_MASTER_ENABLED, true)
+            }
+        } else {
+            p.edit { putBoolean(KEY_AOD_MASTER_ENABLED, false) }
+        }
+    }
+
+    fun aodRateEnabled(context: Context) = prefs(context).getBoolean(KEY_AOD_ENABLED, false)
 
     /** AOD always uses the lowest rate exposed by the panel. */
     fun aodHz(context: Context): Int =
         DisplayRates.main(context).filter { it > 0 }.minOrNull() ?: 30
 
-    fun setAodEnabled(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_AOD_ENABLED, value) }
+    fun setAodRateEnabled(context: Context, value: Boolean) {
+        prefs(context).edit { putBoolean(KEY_AOD_ENABLED, value) }
+        normalizeAodMaster(context)
+    }
+
     fun setAodHz(context: Context, value: Int) = prefs(context).edit { putInt(KEY_AOD_HZ, value) }
 
     // ---------------------------------------------------------- AOD brightness
@@ -155,8 +196,35 @@ object OneHzPreferences {
     fun aodBrightnessEnabled(context: Context) =
         prefs(context).getBoolean(KEY_AOD_BRIGHTNESS_ENABLED, false)
 
-    fun setAodBrightnessEnabled(context: Context, value: Boolean) =
+    fun setAodBrightnessEnabled(context: Context, value: Boolean) {
         prefs(context).edit { putBoolean(KEY_AOD_BRIGHTNESS_ENABLED, value) }
+        normalizeAodMaster(context)
+    }
+
+    /** Writes the three AOD switches together, used by backup import. */
+    fun setAodSettings(
+        context: Context,
+        master: Boolean,
+        rate: Boolean,
+        brightness: Boolean
+    ) {
+        prefs(context).edit {
+            putBoolean(KEY_AOD_MASTER_ENABLED, master && (rate || brightness))
+            putBoolean(KEY_AOD_ENABLED, rate)
+            putBoolean(KEY_AOD_BRIGHTNESS_ENABLED, brightness)
+        }
+    }
+
+    /** Keeps the invariant "master on means at least one sub-option is on". */
+    private fun normalizeAodMaster(context: Context) {
+        val p = prefs(context)
+        if (p.getBoolean(KEY_AOD_MASTER_ENABLED, false) &&
+            !p.getBoolean(KEY_AOD_ENABLED, false) &&
+            !p.getBoolean(KEY_AOD_BRIGHTNESS_ENABLED, false)
+        ) {
+            p.edit { putBoolean(KEY_AOD_MASTER_ENABLED, false) }
+        }
+    }
 
     /** Percentage of the screen brightness used for the AOD, independent from the safety band. */
     fun aodBrightnessPct(context: Context): Int =

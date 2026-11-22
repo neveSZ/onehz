@@ -39,7 +39,8 @@ class PolicyResolverTest {
         screenOff: Boolean = false,
         batterySaver: Boolean = false,
         autoEconomy: Boolean = true,
-        aodEnabled: Boolean = false,
+        aodMasterEnabled: Boolean = false,
+        aodRateEnabled: Boolean = false,
         aodHz: Int = 10,
         selectedProfile: DeviceProfile? = balanced,
         economyProfile: DeviceProfile? = economy,
@@ -49,7 +50,8 @@ class PolicyResolverTest {
         screenOff = screenOff,
         batterySaver = batterySaver,
         autoEconomy = autoEconomy,
-        aodEnabled = aodEnabled,
+        aodMasterEnabled = aodMasterEnabled,
+        aodRateEnabled = aodRateEnabled,
         aodHz = aodHz,
         selectedProfile = selectedProfile,
         economyProfile = economyProfile,
@@ -65,9 +67,32 @@ class PolicyResolverTest {
     }
 
     @Test
+    fun `screen off with AOD master off leaves the system alone even if rate is on`() {
+        val decision = PolicyResolver.decide(
+            input(screenOff = true, aodMasterEnabled = false, aodRateEnabled = true),
+            0
+        )
+        assertEquals(PolicyDecision.Idle(IdleReason.AOD_DISABLED), decision)
+    }
+
+    @Test
+    fun `screen off with AOD rate off leaves the system alone even if master is on`() {
+        val decision = PolicyResolver.decide(
+            input(screenOff = true, aodMasterEnabled = true, aodRateEnabled = false),
+            0
+        )
+        assertEquals(PolicyDecision.Idle(IdleReason.AOD_DISABLED), decision)
+    }
+
+    @Test
     fun `screen off with AOD enabled uses the panel minimum`() {
         val decision = PolicyResolver.decide(
-            input(screenOff = true, aodEnabled = true, aodHz = 10),
+            input(
+                screenOff = true,
+                aodMasterEnabled = true,
+                aodRateEnabled = true,
+                aodHz = 10
+            ),
             0
         )
         val policy = (decision as PolicyDecision.Apply).policy

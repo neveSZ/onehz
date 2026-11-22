@@ -102,6 +102,17 @@ A beta uses the same signing key and a higher `versionCode` than the current sta
 it installs over the stable release and keeps your settings. The next stable has a higher
 `versionCode`, so installing it over the beta returns you to the stable channel.
 
+### What changed in 1.2.1-beta.1?
+
+- The Home AOD switch is now the only AOD master; the detail screen no longer repeats it.
+- AOD rate and brightness are independent again. Turning the rate off no longer hides
+  brightness or its restore action.
+- The AOD master is migrated from the old rate/brightness choices, and existing backups
+  stay compatible.
+- With Sleep off, the detail keeps the behavior options, wake-up apps and measurements
+  visible and editable; test and pause require Sleep on.
+- The Home Sleep subtitle now says "Off" when Sleep is disabled.
+
 ### What changed in 1.2.0?
 
 - Reusable **Economy, Balanced and Performance** profiles, plus custom profiles.

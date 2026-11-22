@@ -81,6 +81,7 @@ import io.github.nevesz.onehz.core.profile.ProfileState
 import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.diagnostic.Diagnostics
+import io.github.nevesz.onehz.engine.AodBrightnessController
 import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.engine.IdleReason
 import io.github.nevesz.onehz.engine.OneHzEngine
@@ -102,7 +103,8 @@ import kotlin.math.roundToInt
 private data class HomeState(
     val enabled: Boolean,
     val profileState: ProfileState,
-    val aodEnabled: Boolean,
+    val aodMasterEnabled: Boolean,
+    val aodRateEnabled: Boolean,
     val aodHz: Int,
     val aodBrightnessEnabled: Boolean,
     val aodBrightnessPct: Int,
@@ -125,7 +127,8 @@ private fun loadState(context: Context, rates: List<Int>): HomeState {
     return HomeState(
         enabled = OneHzPreferences.isEnabled(context),
         profileState = profileState,
-        aodEnabled = OneHzPreferences.aodEnabled(context),
+        aodMasterEnabled = OneHzPreferences.aodMasterEnabled(context),
+        aodRateEnabled = OneHzPreferences.aodRateEnabled(context),
         aodHz = OneHzPreferences.aodHz(context),
         aodBrightnessEnabled = OneHzPreferences.aodBrightnessEnabled(context),
         aodBrightnessPct = OneHzPreferences.aodBrightnessPct(context),
@@ -390,12 +393,16 @@ fun HomeScreen(
                     trailing = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Switch(
-                                checked = state.aodEnabled,
+                                checked = state.aodMasterEnabled,
                                 enabled = state.enabled,
+                                modifier = Modifier.semantics {
+                                    contentDescription = context.getString(R.string.aod_master_title)
+                                },
                                 onCheckedChange = { on ->
-                                    state = state.copy(aodEnabled = on)
-                                    OneHzPreferences.setAodEnabled(context, on)
+                                    OneHzPreferences.setAodMasterEnabled(context, on)
+                                    state = loadState(context, rates)
                                     OneHzEngine.reapply()
+                                    AodBrightnessController.onPrefsChanged()
                                 }
                             )
                             Icon(
@@ -492,11 +499,18 @@ fun HomeScreen(
 
 @Composable
 private fun aodSummary(state: HomeState, supportsBrightness: Boolean): String {
-    if (!state.aodEnabled) return stringResource(R.string.home_aod_summary_off)
-    return if (supportsBrightness && state.aodBrightnessEnabled) {
-        stringResource(R.string.home_aod_summary_on, state.aodHz, state.aodBrightnessPct)
-    } else {
-        stringResource(R.string.home_aod_summary_rate, state.aodHz)
+    if (!state.aodMasterEnabled) return stringResource(R.string.home_aod_summary_off)
+    val rate = state.aodRateEnabled
+    val brightness = supportsBrightness && state.aodBrightnessEnabled
+    return when {
+        rate && brightness -> stringResource(
+            R.string.home_aod_summary_on,
+            state.aodHz,
+            state.aodBrightnessPct
+        )
+        rate -> stringResource(R.string.home_aod_summary_rate, state.aodHz)
+        brightness -> stringResource(R.string.home_aod_summary_brightness, state.aodBrightnessPct)
+        else -> stringResource(R.string.home_aod_summary_off)
     }
 }
 
