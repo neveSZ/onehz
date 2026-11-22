@@ -1,0 +1,8 @@
+Versión 1.2.0
+* Perfiles reutilizables Economía, Equilibrado y Rendimiento
+* Economía automática opcional durante el ahorro de batería
+* Sueño (Doze forzado) opcional con aviso y mediciones
+* AOD siempre en la tasa mínima de la pantalla
+* Copia de seguridad con ajustes de Sueño
+* Home reorganizada; AOD y Sueño con pantallas de detalle
+* Nombres y textos revisados en portugués, inglés y español

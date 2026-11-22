@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -81,6 +82,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun SetupScreen(context: Context, onDone: () -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
+    val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     val shizuku by ShizukuGateway.state.collectAsState()
     val gate = remember { DisplayGate.evaluate(context) }
@@ -186,6 +188,17 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                                 }
                             }
                         }
+                        Spacer(Modifier.height(6.dp))
+                        TextButton(onClick = {
+                            uriHandler.openUri("https://github.com/neveSZ/onehz/blob/main/docs/INSTALL.md")
+                        }) {
+                            Text(stringResource(R.string.setup_shizuku_help))
+                        }
+                        Text(
+                            text = stringResource(R.string.setup_shizuku_reboot),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
@@ -218,6 +231,7 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                         title = stringResource(R.string.setup_doze_title),
                         description = stringResource(R.string.setup_doze_desc),
                         granted = dozeWhitelisted,
+                        showAction = shizuku == ShizukuState.READY,
                         actionLabel = stringResource(
                             if (dozeWhitelisted) R.string.setup_doze_remove else R.string.setup_doze_button
                         ),
@@ -278,6 +292,18 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                     Icon(Icons.Outlined.Check, contentDescription = null)
                     Text(stringResource(R.string.setup_finish), Modifier.padding(start = 8.dp))
                 }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.setup_finish_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = stringResource(R.string.setup_sleep_note),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(8.dp))
             }
         }

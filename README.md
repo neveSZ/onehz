@@ -21,13 +21,15 @@
 </p>
 
 <p align="center">
+  <a href="../../releases/latest"><img src="docs/assets/github-badge.png" alt="Get it on GitHub" height="48"></a>
+  &nbsp;&nbsp;
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https%3A%2F%2Fgithub.com%2FneveSZ%2Fonehz"><img src="docs/assets/obtainium-badge.png" alt="Get it on Obtainium" height="48"></a>
 </p>
 
 <p align="center">
   <a href="docs/assets/screenshots/home-en.png"><img src="docs/assets/screenshots/home-en.png" width="230" alt="Home screen"></a>
   <a href="docs/assets/screenshots/profile-en.png"><img src="docs/assets/screenshots/profile-en.png" width="230" alt="Profiles screen"></a>
-  <a href="docs/assets/screenshots/video-en.png"><img src="docs/assets/screenshots/video-en.png" width="230" alt="Video detection rules"></a>
+  <a href="docs/assets/screenshots/sleep-en.png"><img src="docs/assets/screenshots/sleep-en.png" width="230" alt="Sleep details"></a>
 </p>
 
 OneHZ changes the display refresh rate through **Shizuku only** — no root, no direct ADB
@@ -43,8 +45,8 @@ from the app, no `WRITE_SECURE_SETTINGS`, and **no AccessibilityService**.
 
 | | |
 |---|---|
-| Latest release | **1.1.0-beta.1** (pre-release) |
-| Last stable | **1.0.1** |
+| Latest release | **1.2.0** |
+| Last stable | **1.2.0** |
 | Tested devices | Samsung Galaxy S25+ (`SM-S936B`), POCO X7 Pro (`2412DPC0AG`) |
 | Vendors | Samsung, Xiaomi/Redmi/POCO |
 | Verdict | Multi-rate display required, LTPO **not** required |
@@ -66,7 +68,7 @@ channel.
 
 1. Install Shizuku and start it through wireless debugging or root. The tested fork is
    [thedjchi `v13.7.0-thedjchi`](https://github.com/thedjchi/Shizuku/tree/v13.7.0-thedjchi).
-2. Install the OneHZ APK from [GitHub Releases](../../releases), or add the repository to
+2. Install the OneHZ APK from [GitHub Releases](../../releases/latest), or add the repository to
    [Obtainium](https://obtainium.imranr.dev/) using the badge above.
 3. Open OneHZ, allow the Shizuku permission, and follow the setup screen.
 4. Turn on the master switch.
@@ -80,14 +82,14 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
 | **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
-| **Automatic Economy** | Switches to Economy while the system battery saver is on, with a per-app option to not use Economy during battery saver. |
+| **Automatic Economy** | Switches to Economy while the system battery saver is on. Can be disabled in **Manage profiles**; each app can keep its own profile. |
 | **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |
-| **AOD refresh rate** | Always the lowest rate exposed by the panel. |
+| **AOD rate** | Always the lowest rate exposed by the panel; there is no separate AOD picker. |
 | **AOD brightness** | Samsung only, with a safety band and a system restore action. |
-| **Sleep (forced Doze)** | Enters Doze as soon as the screen turns off, with guards and local measurements. |
+| **Sleep (forced Doze)** | Optional and off by default. Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
-| **Video mode** | A per-profile refresh-rate floor while a video plays, with configurable detection rules. |
-| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video, AOD and Sleep. |
+| **Video mode** | A per-profile minimum rate while a video plays, with configurable detection rules and a global forced-app list. |
+| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video, AOD, Sleep settings and the master switch. Sleep measurements and the system Doze exceptions are not included. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
 | **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |
@@ -135,7 +137,7 @@ Every release includes a `.sha256` file. The signing certificate SHA-256 is:
 `D8:E8:24:B2:5F:6B:1D:29:75:BD:72:D6:89:5F:C4:7F:7B:EB:C2:05:78:41:F7:83:3C:25:67:0A:C2:04:F8:0A`
 
 ```powershell
-apksigner verify --print-certs OneHZ-1.1.0-beta.1.apk
+apksigner verify --print-certs OneHZ-1.2.0.apk
 ```
 
 See [docs/INSTALL.md#verify-the-apk](docs/INSTALL.md#verify-the-apk).

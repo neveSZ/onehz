@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home: status e resumo de tela desligada. -->
+    <string name="home_status_on">Ligado</string>
+    <string name="home_control_on">Controlando</string>
+    <string name="home_control_none">Sem controle</string>
+    <string name="home_source_profile">Perfil: %1$s</string>
+    <string name="home_source_app">App: %1$s · %2$s</string>
+    <string name="home_last_app">Última atribuição: %1$s · %2$s</string>
+    <string name="home_source_video_suffix"> · vídeo</string>
+    <string name="home_source_economy">Economia automática</string>
+    <string name="home_source_aod">AOD · %1$d Hz</string>
+    <string name="home_source_video">Vídeo · mínimo %1$d Hz</string>
+    <string name="home_section_screen_off">Tela desligada</string>
+    <string name="home_aod_summary_off">Desligado</string>
+    <string name="home_aod_summary_on">Taxa %1$d Hz · brilho %2$d%%</string>
+    <string name="home_aod_summary_rate">Taxa %1$d Hz</string>
+    <string name="home_sleep_summary_off">Entra em Doze quando a tela apaga.</string>
+
+    <!-- Perfis: seleção, referência e migração. -->
+    <string name="profile_in_use">Em uso: %1$s</string>
+    <string name="profile_in_use_auto">Em uso: %1$s (automática)</string>
+    <string name="profile_low_rate_home">30 Hz pode deixar a tela mais escura neste aparelho.</string>
+    <string name="profile_auto_economy_title">Economia automática</string>
+    <string name="profile_auto_economy_desc">Usar Economia enquanto a economia de bateria do sistema estiver ativa.</string>
+    <string name="profile_auto_economy_footer">Apps podem manter o próprio perfil com a opção abaixo.</string>
+    <string name="profile_reference_hint">Este app usa o perfil %1$s. Editar esse perfil muda todos os apps que o usam.</string>
+    <string name="profile_reference_global">A lista de apps sempre tratados como vídeo é global e vale para todos os perfis.</string>
+    <string name="profile_video_link">Vídeo do perfil: mínimo %1$d Hz</string>
+    <string name="profile_video_advanced">Regras de detecção (avançado)</string>
+    <string name="profile_times_label">Tempos: %1$s</string>
+    <string name="profile_delete_active_note">Este é o perfil selecionado. %1$s será selecionado.</string>
+    <string name="profile_reset_editor_body">Os campos voltam ao padrão do aparelho. Revise e toque em Salvar.</string>
+    <string name="profile_reset_editor_confirm">Redefinir campos</string>
+    <string name="profile_reset_editor_title">Redefinir campos?</string>
+    <string name="profile_limit_reached">Limite de perfis atingido. Exclua um perfil sem uso primeiro.</string>
+    <string name="profile_used_by_apps_edit_note">Alterações afetam todos os apps que o usam.</string>
+    <string name="profile_migration_title">Perfis atualizados</string>
+    <string name="profile_migration_body">Normal virou Equilibrado, ECO virou Economia e um novo perfil Desempenho foi criado. Perfis por app agora referenciam perfis salvos.</string>
+    <string name="profile_migration_more">Saiba mais</string>
+    <string name="profile_migration_dismiss">Entendi</string>
+    <string name="profile_assign">Atribuir perfil</string>
+    <string name="profile_switch_hint">Toque em um perfil para usá-lo.</string>
+    <string name="empty_configured_title">Nenhum app configurado</string>
+    <string name="empty_configured_body">Abra a aba Todos e toque em um app para atribuir um perfil.</string>
+    <string name="empty_system_title">Nenhum app do sistema encontrado</string>
+    <string name="empty_system_body">Tente outra busca.</string>
+    <string name="system_count">Apps do sistema (%1$d)</string>
+    <string name="clear_search">Limpar busca</string>
+
+    <!-- Sono: confirmação, estados e medições. -->
+    <string name="sleep_confirm_title">Ativar o Sono?</string>
+    <string name="sleep_confirm_body">O Sono força o Doze assim que a tela apaga. Notificações e chamadas por internet de apps como WhatsApp e Telegram podem atrasar. Ligações normais e alarmes continuam funcionando. Você pode pausar por 1 hora a qualquer momento.</string>
+    <string name="sleep_confirm_enable">Ativar</string>
+    <string name="sleep_confirm_cancel">Agora não</string>
+    <string name="sleep_state_ready_desc">Entra em Doze quando a tela apaga.</string>
+    <string name="sleep_how_title">Como o Sono funciona</string>
+    <string name="sleep_how_body">Doze é o estado de repouso profundo do Android. O Sono entra nele assim que a tela apaga e sai quando a tela acende. Ligações normais e alarmes continuam acordando o aparelho. Chamadas por internet e notificações podem atrasar até o Android abrir uma janela de manutenção.</string>
+    <string name="sleep_options_title">Comportamento</string>
+    <string name="sleep_measurements_title">Medições</string>
+    <string name="sleep_advanced_title">Avançado</string>
+    <string name="sleep_test_running">Testando…</string>
+    <string name="sleep_test_result_ok">Doze confirmado.</string>
+    <string name="sleep_test_result_failed">Não foi possível confirmar o Doze neste sistema.</string>
+    <string name="sleep_usage_empty_enabled">Ainda sem medições. Deixe a tela apagada por um tempo.</string>
+    <string name="sleep_partial_badge">Dados parciais</string>
+    <string name="sleep_partial_hint">O OneHZ não estava ativo durante todo o período.</string>
+    <string name="sleep_measure_note">Medido pelo OneHZ. Inclui o AOD. O consumo varia com o aparelho e o uso.</string>
+    <string name="sleep_whitelist_effect">Isso altera as exceções do Doze do sistema e pode aumentar o consumo.</string>
+    <string name="sleep_failure_hint">Isso pode acontecer em algumas versões do sistema. Veja o diagnóstico ou tente o Doze leve.</string>
+    <string name="sleep_details_hint">Últimas 5 sessões de sono. Sessões curtas também aparecem.</string>
+    <string name="sleep_warning_toggle">Aviso importante</string>
+
+    <!-- AOD: detalhe. -->
+    <string name="aod_rate_title">Taxa no AOD</string>
+    <string name="aod_brightness_restore_confirm">Restaurar brilho</string>
+    <string name="aod_brightness_restore_confirm_title">Restaurar brilho do sistema?</string>
+    <string name="aod_brightness_restore_body">Remove o valor gravado e devolve o brilho do AOD ao sistema.</string>
+    <string name="aod_brightness_failed">Não foi possível aplicar o brilho do AOD. Verifique o Shizuku.</string>
+
+    <!-- Configuração inicial: esclarecimentos. -->
+    <string name="setup_shizuku_help">Como configurar o Shizuku</string>
+    <string name="setup_shizuku_reboot">O Shizuku pode precisar ser iniciado de novo após reiniciar o aparelho.</string>
+    <string name="setup_finish_note">O OneHZ vai começar a controlar a tela agora.</string>
+    <string name="setup_sleep_note">O Sono é opcional e pode ser ativado depois na tela inicial.</string>
+
+    <!-- Backup: detalhe. -->
+    <string name="backup_intro">Exporte ou importe a configuração de comportamento do OneHZ. O arquivo é um JSON versionado.</string>
+    <string name="backup_includes_title">Inclui</string>
+    <string name="backup_includes_body">Perfis, atribuições de apps, vídeo, AOD, configurações do Sono e o switch mestre.</string>
+    <string name="backup_excludes_title">Não inclui</string>
+    <string name="backup_excludes_body">Tema, idioma, diagnóstico, cache, medições do Sono, pausa/estado forçado e as exceções do Doze do sistema.</string>
+    <string name="backup_export_hint">Exporte antes de mudar a configuração se quiser uma forma de voltar.</string>
+    <string name="backup_import_hint">A importação substitui a configuração de comportamento atual.</string>
+    <string name="backup_import_success_title">Importação concluída</string>
+    <string name="backup_import_error_title">Falha na importação</string>
+    <string name="backup_error_invalid">Este não é um backup válido do OneHZ.</string>
+    <string name="backup_error_unreadable">Não foi possível ler o arquivo (ou ele é grande demais).</string>
+    <string name="backup_import_sleep_not_included">Este backup não inclui o Sono; as configurações atuais foram mantidas.</string>
+    <string name="backup_import_master_note">O switch mestre seguirá o arquivo.</string>
+</resources>

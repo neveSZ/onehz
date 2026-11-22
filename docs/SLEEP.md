@@ -24,7 +24,9 @@ Out of scope (deliberately):
 - root-only behaviour;
 - anything that requires a new Android permission.
 
-The feature is opt-in, off by default, and only runs while OneHZ itself is enabled.
+The feature is opt-in, off by default, and only runs while OneHZ itself is enabled. The
+first enable shows a confirmation dialog explaining that notifications and internet calls
+may be delayed; regular calls and alarms still work.
 
 ## Options and defaults
 
@@ -32,11 +34,11 @@ The feature is opt-in, off by default, and only runs while OneHZ itself is enabl
 |---|---|---|
 | Sleep | off | Requires the OneHZ master switch. |
 | Deep Doze | on | Turn it off to request light idle. |
-| Skip while charging | on | Read from the sticky battery broadcast. |
-| Skip while music is playing | on | `AudioManager.isMusicActive`. |
+| Pause while charging | on | Read from the sticky battery broadcast. |
+| Pause while music is playing | on | `AudioManager.isMusicActive`. |
 | Time window | off, 23:00–07:00 | Evaluated only at screen-off; may cross midnight. |
 | Pause | off | One hour from the moment it is pressed. |
-| Apps that may wake the device | empty | System Doze whitelist through Shizuku. |
+| Doze exceptions | empty | System Doze exception list through Shizuku. |
 
 ## Platform mechanism
 
@@ -102,7 +104,7 @@ Doze. Turning the screen on always exits Doze.
 
 ## Ordering and timing
 
-Screen-off is a chain: the AOD brightness key is written, the AOD refresh rate is applied,
+Screen-off is a chain: the AOD brightness key is written, the AOD rate is applied,
 and only then Sleep forces idle. A fixed delay of 0.8 s is used, with no wake lock. The
 delay lets the AOD-related Binder calls complete before the CPU is allowed to suspend. It
 is internal and not exposed in the UI.
@@ -136,17 +138,17 @@ From those segments:
   sum of `SCREEN_OFF` segments clipped to `[now - 24h, now]`; Doze time is the same
   clipping applied to `IDLE` segments. A rolling window keeps the metric neutral for any
   schedule, including people who work at night.
-- **Last rest**: the most recent session of continuous screen-off time with a duration of
-  at least 30 minutes. Screen-on gaps shorter than 2 minutes are merged into the same
-  session, so a quick glance at the clock does not split a night in two.
-- **Battery rate**: `(levelStart - levelEnd) / hours` for a session, in percent per hour.
-  It is shown as `—` when the session is shorter than 15 minutes, when the level is
-  unknown, or when the level ended higher than it started (which means the device was
-  charging). A session with no measurable drop reports `0.0%/h`.
-- **Maintenance**: the number of idle sessions inside a rest period minus one.
-- **Partial**: when the ledger does not cover the whole window (reboot, app installed
-  mid-day, service stopped), the card prefixes the numbers with "partial" instead of
-  showing zeros.
+- **Last sleep session**: the most recent session of continuous screen-off time with a
+  duration of at least 30 minutes. Screen-on gaps shorter than 2 minutes are merged into
+  the same session, so a quick glance at the clock does not split a night in two.
+- **Battery rate**: `(levelStart - levelEnd) / hours` for a session, in percent per hour,
+  labelled **Battery use**. It is shown as `—` when the session is shorter than 15 minutes,
+  when the level is unknown, or when the level ended higher than it started (which means
+  the device was charging). A session with no measurable drop reports `0.0%/h`.
+- **Maintenance**: the number of idle sessions inside a sleep session minus one.
+- **Partial data**: when the ledger does not cover the whole window (reboot, app installed
+  mid-day, service stopped), the screen shows a **Partial data** badge with an explanation
+  instead of a misleading number.
 
 Time uses the wall clock. Negative or zero-length spans are discarded, which covers clock
 changes. The ledger keeps a bounded number of records; older ones are dropped.
@@ -159,7 +161,8 @@ On Display, the screen-off window includes the AOD, which draws power of its own
 
 - **VoIP**: with the device in deep idle, an incoming call that depends on a background
   network connection may not arrive until a maintenance window. Traditional telephony
-  calls and alarms still leave idle. The activation text states this.
+  calls and alarms still leave idle. The first-enable dialog and the detail screen state
+  this in plain language.
 - **AOD**: deep idle is compatible with AOD on the tested Samsung firmware, but a device
   that freezes its AOD clock can use the light mode instead.
 - **OEM behaviour**: some vendor builds ignore or quickly revert a forced idle. The

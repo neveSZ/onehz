@@ -1,0 +1,8 @@
+Version 1.2.0
+* Reusable Economy, Balanced and Performance profiles
+* Optional Automatic Economy while battery saver is on
+* Optional Sleep (forced Doze) with a warning and measurements
+* AOD always uses the panel minimum
+* Backup includes Sleep settings
+* Home reorganized; AOD and Sleep have detail screens
+* Reviewed Portuguese, English and Spanish copy

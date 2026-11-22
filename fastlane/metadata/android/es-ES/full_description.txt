@@ -1,0 +1,43 @@
+OneHZ mantiene bajo control la frecuencia de actualización de pantallas Samsung y Xiaomi/Redmi/POCO: más fluida al tocar, más tranquila en reposo y más ligera con la pantalla apagada.
+
+Cambia la frecuencia de actualización solo mediante Shizuku. No requiere root, no usa ADB directo desde la app, no usa WRITE_SECURE_SETTINGS y no usa AccessibilityService.
+
+Funciones
+* Perfiles reutilizables Economía, Equilibrado y Rendimiento, además de perfiles personalizados.
+* Selección manual del perfil activo, con Economía automática opcional mientras el ahorro de batería del sistema está activo.
+* Asignaciones por app que referencian un perfil guardado en vez de copiar su escalera.
+* Mínimo de vídeo y reglas de detección por perfil, además de una lista global de apps siempre tratadas como vídeo.
+* El AOD usa siempre la tasa más baja de la pantalla; brillo del AOD solo en Samsung con banda de seguridad y restauración del sistema.
+* Sueño (Doze forzado) opcional, con aviso antes del primer encendido, protecciones y mediciones locales.
+* Copia de seguridad de perfiles, asignaciones, vídeo, AOD, ajustes de Sueño y el interruptor maestro.
+* Perfiles predeterminados según el dispositivo en una instalación nueva.
+* Configuración guiada para compatibilidad de pantalla, Shizuku, optimización de batería, Doze y notificaciones.
+* Diagnóstico, temas claro/oscuro/AMOLED e interfaz en portugués (Brasil), inglés y español.
+
+Requisitos
+* Un teléfono Samsung o Xiaomi/Redmi/POCO cuya pantalla exponga al menos dos tasas de actualización. LTPO no es obligatorio.
+* Android 12 (API 31) o superior.
+* Shizuku instalado y en ejecución.
+
+La app Shizuku es independiente y no está incluida en OneHZ. OneHZ incluye solo la biblioteca cliente Shizuku API, con licencia MIT. Sin la app Shizuku, OneHZ no puede controlar la pantalla. Probado en Samsung Galaxy S25+ (SM-S936B) con Android 17 / One UI 9.0 y en POCO X7 Pro (2412DPC0AG) con Android 16 / HyperOS 3.0; otros modelos y versiones pueden funcionar, pero no están probados.
+
+Notas
+* El brillo del AOD es solo para Samsung y se oculta en Xiaomi.
+* En el POCO X7 Pro probado, 30 Hz es más oscuro a nivel de panel. OneHZ no puede compensarlo y muestra un aviso en el editor de perfiles.
+* El vídeo en picture-in-picture todavía no se detecta.
+
+Privacidad
+* Sin anuncios, analíticas, telemetría ni cuentas.
+* Los perfiles y ajustes se quedan en el dispositivo.
+* La comprobación opcional de actualizaciones está desactivada por defecto. Cuando se activa, solo consulta la API pública de releases de GitHub al abrir la app. Nunca descarga ni instala un APK y nunca se ejecuta en segundo plano.
+
+Permisos
+* QUERY_ALL_PACKAGES: listar las apps instaladas para crear perfiles por app.
+* RECEIVE_BOOT_COMPLETED: reaplicar el perfil después de reiniciar.
+* FOREGROUND_SERVICE / FOREGROUND_SERVICE_SPECIAL_USE: mantener vivo el servicio opcional del motor.
+* POST_NOTIFICATIONS: mostrar la notificación del servicio en primer plano.
+* REQUEST_IGNORE_BATTERY_OPTIMIZATIONS: opcional, para que el sistema no detenga el motor.
+* INTERNET: solo para la comprobación opcional de actualizaciones en GitHub.
+* Permiso de Shizuku: realizar las operaciones privilegiadas de pantalla y ajustes.
+
+OneHZ es software libre bajo la licencia MIT. Código fuente y releases: https://github.com/neveSZ/onehz

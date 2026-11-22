@@ -46,9 +46,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.apps.InstalledApp
+import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.ui.apps.AppIcon
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import kotlinx.coroutines.Dispatchers
@@ -85,6 +87,30 @@ fun VideoConfigSheet(
                 onBack = { pageName = VideoSheetPage.RULES.name }
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VideoForcedAppsSheet(context: Context, onDismiss: () -> Unit) {
+    var config by remember {
+        mutableStateOf(
+            OneHzPreferences.videoConfig(context).copy(
+                forcedPackages = OneHzPreferences.forcedVideoPackages(context)
+            )
+        )
+    }
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        AppsPage(
+            context = context,
+            config = config,
+            onConfigChange = { updated ->
+                config = updated
+                OneHzPreferences.setForcedVideoPackages(context, updated.forcedPackages)
+                OneHzEngine.onVideoConfigChanged()
+            },
+            onBack = onDismiss,
+        )
     }
 }
 

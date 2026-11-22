@@ -45,8 +45,8 @@ English-only.
   - es: ahorro de batería.
 - Translate the profile names:
   - Economy / Economia / Economía;
-  - Balanced / Balanceado / Equilibrado;
-  - Performance / Performance / Rendimiento.
+  - Balanced / Equilibrado / Equilibrado;
+  - Performance / Desempenho / Rendimiento.
 - “ECO” may appear only in historical changelog entries and legacy key names; it is no
   longer the user-facing profile name.
 - User-facing text belongs in resources, never hardcoded in Kotlin.
@@ -60,10 +60,16 @@ English-only.
 | hold | tempo de espera | tiempo de espera |
 | resting rate | taxa de repouso | tasa de reposo |
 | profile | perfil | perfil |
+| selected profile | perfil selecionado | perfil seleccionado |
+| profile in use | perfil em uso | perfil en uso |
 | economy profile | perfil Economia | perfil Economía |
-| balanced profile | perfil Balanceado | perfil Equilibrado |
-| performance profile | perfil Performance | perfil Rendimiento |
+| balanced profile | perfil Equilibrado | perfil Equilibrado |
+| performance profile | perfil Desempenho | perfil Rendimiento |
+| automatic Economy | Economia automática | Economía automática |
 | battery saver | economia de bateria | ahorro de batería |
+| video minimum | mínimo de vídeo | mínimo de vídeo |
+| Doze exceptions | exceções do Doze | excepciones de Doze |
+| Sleep session | sessão de sono | sesión de sueño |
 | backup and restore | backup e restauração | copia de seguridad y restauración |
 | AOD brightness | brilho do AOD | brillo del AOD |
 | foreground app | app em primeiro plano | aplicación en primer plano |

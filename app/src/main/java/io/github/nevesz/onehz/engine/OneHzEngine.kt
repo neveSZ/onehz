@@ -164,6 +164,9 @@ object OneHzEngine {
         Diagnostics.videoDetail.value = "—"
         Diagnostics.idleReason.value = null
         Diagnostics.activeTierKey.value = "OFF"
+        Diagnostics.activeLayer.value = null
+        Diagnostics.activeProfileId.value = null
+        Diagnostics.activeAppPackage.value = null
         Diagnostics.activeStep.value = 0
         Diagnostics.activeStepCount.value = 0
         Diagnostics.appliedHz.value = 0
@@ -497,6 +500,9 @@ object OneHzEngine {
                 if (screenOff) timersPending = false
 
                 Diagnostics.idleReason.value = null
+                Diagnostics.activeLayer.value = policy.layer
+                Diagnostics.activeProfileId.value = policy.profileId
+                Diagnostics.activeAppPackage.value = policy.appPackage
                 Diagnostics.activeStep.value = index + 1
                 Diagnostics.activeStepCount.value = policy.profile.steps.size
                 Diagnostics.activeTierKey.value = when {
@@ -535,6 +541,9 @@ object OneHzEngine {
         clearVideoState("idle")
         SessionArbiter.release(appContext)
         Diagnostics.idleReason.value = reason
+        Diagnostics.activeLayer.value = null
+        Diagnostics.activeProfileId.value = null
+        Diagnostics.activeAppPackage.value = null
         Diagnostics.activeStep.value = 0
         Diagnostics.activeStepCount.value = 0
         Diagnostics.appliedHz.value = 0

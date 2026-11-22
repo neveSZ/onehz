@@ -23,6 +23,7 @@ object SleepPreferences {
     private const val KEY_FORCED_AT = "sleep_forced_at"
     private const val KEY_RECORDS = "sleep_records"
     private const val KEY_OPEN = "sleep_open"
+    private const val KEY_WARNING_SEEN = "sleep_warning_seen"
 
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(NAME, Context.MODE_PRIVATE)
@@ -99,4 +100,9 @@ object SleepPreferences {
             if (record == null) remove(KEY_OPEN)
             else putString(KEY_OPEN, SleepLedger.encode(listOf(record)))
         }
+
+    fun warningSeen(context: Context) = prefs(context).getBoolean(KEY_WARNING_SEEN, false)
+
+    fun setWarningSeen(context: Context) =
+        prefs(context).edit { putBoolean(KEY_WARNING_SEEN, true) }
 }

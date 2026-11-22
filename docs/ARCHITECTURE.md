@@ -58,7 +58,7 @@ want to understand, audit, or modify the app.
 
 - device listing and touch monitoring;
 - foreground package;
-- Doze whitelist and device-idle commands (force, unforce, state);
+- Doze exception list and device-idle commands (force, unforce, state);
 - refresh-rate settings (allowlisted keys);
 - display mode;
 - global settings (allowlisted Samsung and HyperOS keys, read/write);
@@ -144,7 +144,7 @@ On HyperOS 1 the key may be `user_refresh_rate`; the resolver picks whichever ex
 Before the first write, the original value (or its absence) is snapshotted, and release
 replays that snapshot exactly, deleting the key when it did not exist.
 
-### Samsung ECO keys
+### Samsung battery-saver keys
 
 While battery saver is active, Samsung may apply its own refresh-rate cap. OneHZ reads
 the current values of these firmware keys, writes `0` only where needed, and stores the
@@ -157,7 +157,7 @@ psm_refresh_rate_tag
 psm_refresh_rate_cover_tag
 ```
 
-These are literal Samsung firmware names, not OneHZ's ECO naming. The backup survives
+These are literal Samsung firmware names, not OneHZ's profile names. The backup survives
 process death and is restored on release/reconnect. If a restore write fails, the backup
 is kept for the next connection.
 
@@ -213,7 +213,7 @@ The result is cached for a short time in the UserService, keyed by package and c
 When the configuration changes the engine re-probes immediately instead of waiting for
 a touch; otherwise it probes after a touch and rechecks while a video is active.
 
-## AOD refresh rate
+## AOD rate
 
 The AOD is a fixed-rate layer applied while the screen is off. Its rate is always the
 lowest rate exposed by the panel; there is no user-selected AOD frequency. If a very low
@@ -277,7 +277,7 @@ level increased.
 - No vendor/display eligibility → no control.
 - Shizuku missing/dead → stop control, release settings, show a warning.
 - Touch discovery failure → retry with backoff while monitoring is still wanted.
-- Foreground/video dumps fail twice → clear the video floor rather than getting stuck.
+- Foreground/video dumps fail twice → clear the video minimum rather than getting stuck.
 - No positive video signal enabled → no video, except for packages in the forced list.
 - Settings write failures → keep the pending restore marker.
 - Sleep disabled, engine stopped, or service destroyed → send `unforce`.

@@ -55,7 +55,7 @@ mesmo nome de pacote e a mesma chave.
 
 - Estável e beta não podem ser instaladas lado a lado.
 - O `versionCode` da beta é maior que o da estável atual, então ela instala por cima da
-  1.0.1 mantendo os ajustes.
+  versão estável mantendo os ajustes.
 - A futura versão estável tem `versionCode` maior que o da beta, então quem está na beta
   volta ao estável instalando por cima.
 - Na verificação interna de atualizações, escolha **estável + pré-releases** para ser

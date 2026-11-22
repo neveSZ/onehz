@@ -1,0 +1,1 @@
+Control de frecuencia para pantallas Samsung y Xiaomi/Redmi/POCO vía Shizuku

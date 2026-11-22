@@ -52,8 +52,8 @@ Beta builds are published as **pre-releases** on the same releases page and use 
 package name and signing key.
 
 - Stable and beta cannot be installed side by side.
-- A beta `versionCode` is higher than the current stable, so you can install it over
-  1.0.1 and keep your settings.
+- A beta `versionCode` is higher than the current stable, so you can install it over the
+  stable release and keep your settings.
 - The future stable release has a higher `versionCode` than the beta, so beta users can
   move back to stable by installing it over the beta.
 - In the app update checker, select **stable + pre-releases** to be notified about beta

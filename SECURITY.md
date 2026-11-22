@@ -61,7 +61,7 @@ SHA-256 file, and the signing certificate SHA-256 is:
 `D8:E8:24:B2:5F:6B:1D:29:75:BD:72:D6:89:5F:C4:7F:7B:EB:C2:05:78:41:F7:83:3C:25:67:0A:C2:04:F8:0A`
 
 ```powershell
-apksigner verify --print-certs OneHZ-1.1.0-beta.1.apk
+apksigner verify --print-certs OneHZ-1.2.0.apk
 ```
 
 If the fingerprint does not match, do not install the APK.

@@ -4,12 +4,50 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [1.2.0] - 2026-11-22
 
-Beta feature set for reusable profiles and optional forced Doze. No release tag or
-publication yet.
+First stable release after 1.1.0-beta.1. Adds reusable profiles, backup and Sleep, and
+reviews the Home hierarchy, naming and content.
 
 ### Added
+
+- AOD and Sleep now open dedicated detail screens; Home keeps a compact status summary.
+- “Automatic Economy” toggle in **Manage profiles**.
+- First-enable confirmation for Sleep, with the notification/VoIP warning before the
+  feature is turned on.
+- “Restore system brightness” action in the AOD detail screen.
+- “Video” shortcut in the profile card; per-profile video rules stay in the editor and
+  the forced-app list is clearly global.
+- Migration banner explaining Normal/ECO → Equilibrado/Economia and the new Desempenho
+  profile.
+- Dedicated **Backup and restore** screen with explicit “Includes” / “Does not include”
+  lists and a localized import result dialog.
+
+### Changed
+
+- Home now shows the real control state, the selected profile and, when different, the
+  profile in use.
+- Portuguese names are **Economia / Equilibrado / Desempenho**; “ECO” and “Normal” are no
+  longer used in the UI.
+- AOD no longer says “screen off (AOD)”; it always uses the panel minimum and explains it.
+- Sleep status and measurement labels are clearer: “In Doze for…”, “Last sleep session”,
+  “Battery use”, “Partial data”.
+- Apps explain that an assignment references a profile and that editing it affects every
+  app that uses it.
+- Setup explains that the Doze exception is for OneHZ only and is not the Sleep feature,
+  and links to the Shizuku setup guide.
+- Fastlane descriptions and screenshots updated for 1.2.0; Spanish store listing added.
+
+### Fixed
+
+- Importing a backup created before Sleep existed no longer disables/reset Sleep or
+  wrongly reports “Sleep settings restored”.
+- Import errors are localized instead of showing `invalid-backup` / `file-too-large`.
+- The profile card no longer overflows when the automatic-Economy badge is shown (POCO).
+- Plural handling for profile deletion and backup counts (including `many` in PT/ES).
+- Unused legacy strings removed; the AOD profile picker strings are gone.
+
+### Feature set
 
 - Economy, Balanced and Performance profiles generated from the device panel.
 - Manual active-profile selection with automatic Economy while the system battery saver
@@ -155,6 +193,7 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.2.0]: https://github.com/neveSZ/onehz/releases/tag/v1.2.0
 [1.1.0-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.1.0-beta.1
 [1.0.1]: https://github.com/neveSZ/onehz/releases/tag/v1.0.1
 [1.0.0]: https://github.com/neveSZ/onehz/releases/tag/v1.0.0

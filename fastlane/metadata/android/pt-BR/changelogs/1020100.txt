@@ -1,0 +1,8 @@
+Versão 1.2.0
+* Perfis reutilizáveis Economia, Equilibrado e Desempenho
+* Economia automática opcional durante a economia de bateria
+* Sono (Doze forçado) opcional com aviso e medições
+* AOD sempre na menor taxa da tela
+* Backup inclui configurações do Sono
+* Home reorganizada; AOD e Sono com telas de detalhe
+* Textos revisados em português, inglês e espanhol

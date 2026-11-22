@@ -3,11 +3,13 @@ O OneHZ mantém a taxa de atualização das telas Samsung e Xiaomi/Redmi/POCO so
 Ele altera a taxa de atualização exclusivamente pelo Shizuku. Não exige root, não usa ADB direto pelo app, não usa WRITE_SECURE_SETTINGS e não usa AccessibilityService.
 
 Recursos
-* Escada de taxa de atualização com 1 a 5 níveis por perfil.
-* Perfis Normal, ECO (economia de bateria) e AOD independentes.
-* Perfis por aplicativo e modo vídeo.
-* Regras de detecção de vídeo configuráveis e uma lista de apps sempre tratados como vídeo.
-* Controle opcional de brilho do AOD (somente Samsung) com faixa de segurança e ação de restauração.
+* Perfis reutilizáveis Economia, Equilibrado e Desempenho, além de perfis personalizados.
+* Seleção manual do perfil ativo, com Economia automática opcional durante a economia de bateria do sistema.
+* Atribuições por app que referenciam um perfil salvo em vez de copiar a escada.
+* Mínimo de vídeo e regras de detecção por perfil, além de uma lista global de apps sempre tratados como vídeo.
+* O AOD sempre usa a menor taxa da tela; brilho do AOD somente Samsung com faixa de segurança e restauração do sistema.
+* Sono (Doze forçado) opcional, com aviso antes do primeiro enable, proteções e medições locais.
+* Backup e restauração de perfis, atribuições, vídeo, AOD, configurações do Sono e switch mestre.
 * Perfis padrão de acordo com o aparelho em uma instalação nova.
 * Configuração guiada para compatibilidade da tela, Shizuku, otimização de bateria, Doze e notificações.
 * Diagnóstico, temas claro/escuro/AMOLED e interface em português (Brasil), inglês e espanhol.

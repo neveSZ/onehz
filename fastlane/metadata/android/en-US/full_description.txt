@@ -3,11 +3,13 @@ OneHZ keeps the refresh rate of Samsung and Xiaomi/Redmi/POCO displays under con
 It changes the display refresh rate through Shizuku only. There is no root requirement, no direct ADB from the app, no WRITE_SECURE_SETTINGS, and no AccessibilityService.
 
 Features
-* Refresh-rate staircase with 1 to 5 tiers per profile.
-* Independent Normal, ECO (battery saver), and AOD profiles.
-* Per-app profiles and a video mode.
-* Configurable video detection rules and a list of apps always treated as video.
-* Optional AOD brightness control (Samsung only) with a safety band and a restore action.
+* Reusable Economy, Balanced and Performance profiles, plus custom profiles.
+* Manual profile selection with optional Automatic Economy while the system battery saver is on.
+* Per-app assignments that reference a saved profile instead of copying its staircase.
+* Per-profile video minimum and detection rules, plus a global forced-video app list.
+* AOD always uses the panel minimum; Samsung-only AOD brightness with a safety band and a system restore action.
+* Optional Sleep (forced Doze) with a first-enable warning, guards and local measurements.
+* Backup and restore of profiles, app assignments, video, AOD, Sleep settings and the master switch.
 * Device-aware default profiles on a fresh install.
 * Guided setup for display compatibility, Shizuku, battery optimization, Doze, and notifications.
 * Diagnostics, light/dark/AMOLED themes, and English, Portuguese (Brazil), and Spanish UI.

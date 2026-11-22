@@ -22,7 +22,7 @@ Unit tests cover the pure logic:
 - `AodBrightnessMath`;
 - `PolicyResolver` precedence, automatic Economy and profile video;
 - `DozeState`, `DozeSchedule`, `DozeDecision`, `DozeWhitelist` and `SleepLedger` (sleep
-  decisions, cross-midnight windows, whitelist parsing, 24-hour clipping, rest sessions);
+  decisions, cross-midnight windows, exception-list parsing, 24-hour clipping, sleep sessions);
 - `SemanticVersion` and pre-release precedence;
 - `ReleaseSelector` channel filtering and URL validation;
 - update interval gating.
@@ -45,7 +45,7 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Vendor/display compatibility shows OK.
 - [ ] Shizuku permission is requested and granted.
 - [ ] Battery exemption is optional and works.
-- [ ] Doze whitelist toggle works.
+- [ ] Doze exception toggle works.
 - [ ] Notification permission and persistent notification work.
 
 ### Basic engine
@@ -67,7 +67,7 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Turn on system battery saver; Economy is applied and the card shows it.
 - [ ] Turn battery saver off; the selected profile returns.
 - [ ] Mark an app "Do not use Economy during battery saver"; its profile stays while battery saver is on.
-- [ ] Confirm Samsung ECO settings are restored after turning OneHZ off.
+- [ ] Confirm Samsung battery-saver settings are restored after turning OneHZ off.
 - [ ] On Xiaomi, confirm `secure/miui_refresh_rate` is restored after turning OneHZ off.
 
 ### AOD
@@ -115,7 +115,7 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Export a configuration with built-in, custom and per-app assignments.
 - [ ] Change several settings, then import the file; the summary is shown.
 - [ ] Confirm profiles, active profile, video, AOD, Sleep and assignments are restored.
-- [ ] Confirm the system Doze whitelist is unchanged by the import.
+- [ ] Confirm the system Doze exception list is unchanged by the import.
 - [ ] Import a file with unsupported rates; confirm the adapted count is reported.
 - [ ] Import a file with a missing profile reference; the app moves to Balanced.
 - [ ] Confirm theme and language are unchanged.

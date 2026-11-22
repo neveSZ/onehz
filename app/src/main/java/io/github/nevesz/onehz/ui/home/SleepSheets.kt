@@ -59,7 +59,6 @@ fun SleepDetailsSheet(
     records: List<SleepRecord>,
     now: Long,
     onDismiss: () -> Unit,
-    onTest: () -> Unit,
 ) {
     // The details sheet lists every recent session; the 30-minute threshold only drives
     // the "last rest" metric on the card.
@@ -80,7 +79,7 @@ fun SleepDetailsSheet(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = stringResource(R.string.sleep_rest_hint),
+                text = stringResource(R.string.sleep_details_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -98,23 +97,7 @@ fun SleepDetailsSheet(
             }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Text(
-                text = stringResource(R.string.sleep_measured_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(Modifier.height(14.dp))
-            OutlinedButton(onClick = onTest, modifier = Modifier.fillMaxWidth()) {
-                Icon(
-                    Icons.Outlined.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.sleep_test))
-            }
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = stringResource(R.string.sleep_test_hint),
+                text = stringResource(R.string.sleep_measure_note),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

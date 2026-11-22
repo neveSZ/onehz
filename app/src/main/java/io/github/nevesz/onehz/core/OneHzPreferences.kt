@@ -27,6 +27,7 @@ object OneHzPreferences {
     internal const val KEY_VIDEO_ENABLED = "video_enabled"
     internal const val KEY_VIDEO_MIN_HZ = "video_min_hz"
     internal const val KEY_VIDEO_CONFIG = "video_config"
+    private const val KEY_PROFILES_MIGRATION_NOTICE = "profiles_migration_notice"
     private const val KEY_SESSION_PENDING = "session_pending"
     private const val KEY_ECO_GLOBAL_BACKUP = "eco_global_backup"
     private const val KEY_RATE_BACKUP = "rate_backup"
@@ -224,6 +225,12 @@ object OneHzPreferences {
         prefs(context).edit { putString(KEY_VIDEO_CONFIG, config.encode()) }
 
     /** Forced apps are global; the four detection rules belong to each device profile. */
+    fun profilesMigrationNoticePending(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_PROFILES_MIGRATION_NOTICE, false)
+
+    fun setProfilesMigrationNoticePending(context: Context, pending: Boolean) =
+        prefs(context).edit { putBoolean(KEY_PROFILES_MIGRATION_NOTICE, pending) }
+
     fun forcedVideoPackages(context: Context): Set<String> =
         videoConfig(context).forcedPackages
 

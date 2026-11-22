@@ -38,7 +38,7 @@ Settings → **Backup and restore** is user-initiated. OneHZ opens the Android s
 picker and writes or reads a JSON file at the location you choose. The file contains the
 profiles, active profile, per-app assignments, video and AOD settings, Sleep settings,
 the master switch and the forced-video app list. It may therefore contain the package
-names of apps you configured. The system Doze whitelist is not included.
+names of apps you configured. The system Doze exception list is not included.
 
 The file is not uploaded, synchronized or sent anywhere by OneHZ. You control where it is
 stored and when it is deleted. The app does not request broad storage permission; access

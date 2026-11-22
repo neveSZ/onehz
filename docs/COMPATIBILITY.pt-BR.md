@@ -15,7 +15,7 @@
 | Taxas do painel | 120, 80, 60, 48, 40, 30, 26,67, 24, 20, 10 Hz | 120, 90, 60, 30 Hz |
 | Rota de controle | `refresh_rate_mode` + `peak/min` | `secure/miui_refresh_rate` |
 | Shizuku | fork thedjchi `v13.7.0-thedjchi` | fork thedjchi `v13.7.0-thedjchi` |
-| OneHZ | 1.1.0-beta.1 | 1.1.0-beta.1 |
+| OneHZ | 1.2.0 | 1.2.0 |
 
 Todo o resto é **não testado**.
 
@@ -80,7 +80,7 @@ deixaria a tela inteira mais escura.
   verificação de compatibilidade.
 - **Tela multi-taxa obrigatória.** A verificação exige pelo menos duas taxas de
   atualização; LTPO não é obrigatório.
-- **Telas com duas taxas.** Economia, Balanceado e Performance usam as mesmas duas faixas
+- **Telas com duas taxas.** Economia, Equilibrado e Desempenho usam as mesmas duas faixas
   e diferem apenas no tempo na máxima. O tempo na mínima é o repouso até o próximo toque.
 - **Mínimo do AOD.** O AOD usa a menor taxa exposta pela tela. Em painéis que rejeitam
   taxas muito baixas no AOD, o motor cai para 30 Hz e registra a falha.
