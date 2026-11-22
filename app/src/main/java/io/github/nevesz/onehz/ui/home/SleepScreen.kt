@@ -255,6 +255,22 @@ fun SleepScreen(
                                         color = MaterialTheme.colorScheme.error
                                     )
                                 }
+                                if (phase == DozePhase.MUSIC && !ui.dozeWithMusic) {
+                                    Spacer(Modifier.height(2.dp))
+                                    Text(
+                                        text = stringResource(R.string.sleep_state_music_hint),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                if (phase == DozePhase.CHARGING && ui.skipCharging) {
+                                    Spacer(Modifier.height(2.dp))
+                                    Text(
+                                        text = stringResource(R.string.sleep_state_charging_hint),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -302,7 +318,8 @@ fun SleepScreen(
                     ToggleRow(
                         icon = AppIcons.bedtime(),
                         title = stringResource(R.string.sleep_deep_title),
-                        description = stringResource(R.string.sleep_deep_desc),
+                        descriptionOn = stringResource(R.string.sleep_deep_desc_on),
+                        descriptionOff = stringResource(R.string.sleep_deep_desc_off),
                         checked = ui.deep,
                         onCheckedChange = { on ->
                             ui = ui.copy(deep = on)
@@ -313,7 +330,8 @@ fun SleepScreen(
                     ToggleRow(
                         icon = AppIcons.bolt(),
                         title = stringResource(R.string.sleep_skip_charging_title),
-                        description = stringResource(R.string.sleep_skip_charging_desc),
+                        descriptionOn = stringResource(R.string.sleep_skip_charging_desc_on),
+                        descriptionOff = stringResource(R.string.sleep_skip_charging_desc_off),
                         checked = ui.skipCharging,
                         onCheckedChange = { on ->
                             ui = ui.copy(skipCharging = on)
@@ -336,7 +354,12 @@ fun SleepScreen(
                     ToggleRow(
                         icon = AppIcons.schedule(),
                         title = stringResource(R.string.sleep_window_title),
-                        description = stringResource(R.string.sleep_window_desc),
+                        descriptionOn = stringResource(
+                            R.string.sleep_window_desc_on,
+                            formatSleepMinute(ui.window.startMinute),
+                            formatSleepMinute(ui.window.endMinute),
+                        ),
+                        descriptionOff = stringResource(R.string.sleep_window_desc_off),
                         checked = ui.windowEnabled,
                         onCheckedChange = { on ->
                             ui = ui.copy(windowEnabled = on)
