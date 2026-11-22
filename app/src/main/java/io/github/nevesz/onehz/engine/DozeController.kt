@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
+import android.media.AudioPlaybackConfiguration
 import android.os.BatteryManager
 import android.os.Handler
 import android.os.HandlerThread
@@ -25,7 +26,8 @@ import java.util.Calendar
 
 /**
  * Forces deep or light idle when the screen turns off, and leaves it when the screen turns
- * on. Every guard is evaluated once at screen-off; nothing is polled while the device sleeps.
+ * on. Screen-off is the anchor, but charging, audio playback and preference changes are
+ * event-driven and re-evaluated while the screen is off; nothing is polled.
  *
  * All work runs on its own thread. The wake path is never blocked by a shell call: leaving
  * idle is dispatched here while the refresh-rate engine applies its wake pulse in parallel.
@@ -36,6 +38,7 @@ object DozeController {
     private const val FORCE_DELAY_MS = 800L
     private const val VERIFY_DELAY_MS = 1_200L
     private const val TEST_DURATION_MS = 10_000L
+    private const val MUSIC_CHECK_MS = 200L
 
     private val thread = HandlerThread("OneHzDoze").apply { start() }
     private val handler = Handler(thread.looper)
@@ -49,6 +52,30 @@ object DozeController {
     private var open: SleepRecord? = null
     private var pendingDeep: Boolean? = null
     private var testing = false
+
+    /** Guard values cached from their events; read on the controller thread only. */
+    private var charging = false
+    private var musicActive = false
+
+    private var audioManager: AudioManager? = null
+
+    private val musicCheck = Runnable {
+        val ctx = appContext ?: return@Runnable
+        if (!started) return@Runnable
+        val active = isMusicActive(ctx)
+        if (active == musicActive) return@Runnable
+        musicActive = active
+        onGuardChanged(ctx, "music")
+    }
+
+    private val audioCallback = object : AudioManager.AudioPlaybackCallback() {
+        override fun onPlaybackConfigChanged(configs: MutableList<AudioPlaybackConfiguration>) {
+            // Playback callbacks arrive in bursts when a track changes. Coalesce them and
+            // compare the final value before touching Doze.
+            handler.removeCallbacks(musicCheck)
+            handler.postDelayed(musicCheck, MUSIC_CHECK_MS)
+        }
+    }
 
     private val forceRunnable = Runnable {
         val ctx = appContext ?: return@Runnable
@@ -75,6 +102,12 @@ object DozeController {
         if (started) return
         started = true
         handler.post {
+            charging = isCharging(ctx)
+            musicActive = isMusicActive(ctx)
+            (ctx.getSystemService(Context.AUDIO_SERVICE) as? AudioManager)?.let { manager ->
+                manager.registerAudioPlaybackCallback(audioCallback, handler)
+                audioManager = manager
+            }
             open = SleepPreferences.openRecord(ctx)
             if (open != null && isInteractive(ctx)) {
                 closeSession(ctx, System.currentTimeMillis(), "restart while awake")
@@ -97,6 +130,10 @@ object DozeController {
         started = false
         handler.post {
             handler.removeCallbacksAndMessages(null)
+            audioManager?.let { manager ->
+                runCatching { manager.unregisterAudioPlaybackCallback(audioCallback) }
+            }
+            audioManager = null
             pendingDeep = null
             val ctx = appContext
             if (ctx != null) {
@@ -124,6 +161,8 @@ object DozeController {
         if (open != null) closeSession(ctx, now, "stale session")
         open = SleepLedger.start(now, batteryLevel(ctx), SleepPreferences.deep(ctx))
         saveOpen(ctx)
+        charging = isCharging(ctx)
+        musicActive = isMusicActive(ctx)
 
         when (val decision = decide(ctx)) {
             is DozeDecision.Skip -> {
@@ -146,6 +185,8 @@ object DozeController {
         val ctx = appContext ?: return@post
         pendingDeep = null
         handler.removeCallbacks(forceRunnable)
+        charging = isCharging(ctx)
+        musicActive = isMusicActive(ctx)
         closeSession(ctx, System.currentTimeMillis(), "screen on")
         if (SleepPreferences.forced(ctx) || testing) {
             unforce(ctx, "screen on")
@@ -166,17 +207,12 @@ object DozeController {
         refreshPhase(ctx, "idle")
     }
 
-    fun onPowerChanged() = handler.post {
+    fun onPowerChanged(pluggedIn: Boolean) = handler.post {
         val ctx = appContext ?: return@post
-        if (!isCharging(ctx)) return@post
-        if (!SleepPreferences.skipCharging(ctx)) return@post
-        if (!SleepPreferences.forced(ctx)) return@post
-        val ok = unforce(ctx, "charger connected")
-        if (ok) {
-            Diagnostics.dozeActiveSince.value = 0L
-            Diagnostics.dozePhase.value = DozePhase.CHARGING
-        }
-        Diagnostics.log(TAG, "charger connected: ${if (ok) "left Doze" else "unforce pending"}")
+        if (!started) return@post
+        charging = pluggedIn
+        Diagnostics.log(TAG, "power ${if (pluggedIn) "connected" else "disconnected"}")
+        onGuardChanged(ctx, "power")
     }
 
     fun onServiceUnavailable() = handler.post {
@@ -198,13 +234,10 @@ object DozeController {
             Diagnostics.dozePhase.value = DozePhase.OFF
             return@post
         }
-        val decision = decide(ctx)
-        if (!isInteractive(ctx) && decision is DozeDecision.Force) {
-            pendingDeep = decision.deep
-            handler.removeCallbacks(forceRunnable)
-            handler.postDelayed(forceRunnable, FORCE_DELAY_MS)
-        }
-        refreshPhase(ctx, "service available")
+        // Events may have been missed while the service was away.
+        charging = isCharging(ctx)
+        musicActive = isMusicActive(ctx)
+        onGuardChanged(ctx, "service available")
     }
 
     fun onPrefsChanged() = handler.post {
@@ -222,7 +255,48 @@ object DozeController {
             Diagnostics.log(TAG, "feature off")
             return@post
         }
-        refreshPhase(ctx, "preferences")
+        onGuardChanged(ctx, "preferences")
+    }
+
+    /**
+     * Applies a guard change to the current screen-off state without waiting for the next
+     * screen cycle. Runs on the controller thread.
+     */
+    private fun onGuardChanged(ctx: Context, source: String) {
+        if (!started) return
+        if (isInteractive(ctx)) {
+            refreshPhase(ctx, source)
+            return
+        }
+        if (!isActive(ctx)) {
+            Diagnostics.dozePhase.value = DozePhase.OFF
+            return
+        }
+        if (testing) return
+        when (val decision = decide(ctx)) {
+            is DozeDecision.Skip -> {
+                pendingDeep = null
+                handler.removeCallbacks(forceRunnable)
+                if (SleepPreferences.forced(ctx)) {
+                    unforce(ctx, source)
+                }
+                Diagnostics.dozePhase.value = phaseOf(decision.reason)
+                Diagnostics.dozeDetail.value = decision.reason.name
+                Diagnostics.log(TAG, "$source -> skip: ${decision.reason}")
+            }
+            is DozeDecision.Force -> {
+                if (!SleepPreferences.forced(ctx)) {
+                    pendingDeep = decision.deep
+                    handler.removeCallbacks(forceRunnable)
+                    // The AOD has already settled; this change does not need the screen-off delay.
+                    handler.post(forceRunnable)
+                    Diagnostics.log(TAG, "$source -> force now (deep=${decision.deep})")
+                } else {
+                    Diagnostics.dozePhase.value = DozePhase.ACTIVE
+                }
+            }
+        }
+        refreshPhase(ctx, source)
     }
 
     fun pauseFor(durationMs: Long) = handler.post {
@@ -242,7 +316,7 @@ object DozeController {
     fun resume() = handler.post {
         val ctx = appContext ?: return@post
         SleepPreferences.setPausedUntil(ctx, 0L)
-        refreshPhase(ctx, "resumed")
+        onGuardChanged(ctx, "resumed")
     }
 
     /** Forces idle for a few seconds and leaves again; used by the details sheet. */
@@ -305,9 +379,9 @@ object DozeController {
                     calendar.get(Calendar.MINUTE),
                 ),
                 skipCharging = SleepPreferences.skipCharging(ctx),
-                charging = isCharging(ctx),
+                charging = charging,
                 dozeWithMusic = SleepPreferences.dozeWithMusic(ctx),
-                musicActive = isMusicActive(ctx),
+                musicActive = musicActive,
                 serviceReady = ShizukuGateway.service != null,
                 deep = SleepPreferences.deep(ctx),
             ),

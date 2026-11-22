@@ -27,8 +27,11 @@ class ScreenStateReceiver : BroadcastReceiver() {
             PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED -> {
                 DozeController.onIdleChanged()
             }
-            Intent.ACTION_POWER_CONNECTED, Intent.ACTION_POWER_DISCONNECTED -> {
-                DozeController.onPowerChanged()
+            Intent.ACTION_POWER_CONNECTED -> {
+                DozeController.onPowerChanged(true)
+            }
+            Intent.ACTION_POWER_DISCONNECTED -> {
+                DozeController.onPowerChanged(false)
             }
             PowerManager.ACTION_POWER_SAVE_MODE_CHANGED -> {
                 val active = (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
