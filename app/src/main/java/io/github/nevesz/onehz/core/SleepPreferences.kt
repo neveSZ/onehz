@@ -12,7 +12,8 @@ object SleepPreferences {
 
     private const val KEY_ENABLED = "sleep_enabled"
     private const val KEY_DEEP = "sleep_deep"
-    private const val KEY_SKIP_CHARGING = "sleep_skip_charging"
+    private const val KEY_DOZE_WHILE_CHARGING = "sleep_doze_while_charging"
+    private const val LEGACY_KEY_SKIP_CHARGING = "sleep_skip_charging"
     private const val KEY_DOZE_WITH_MUSIC = "sleep_doze_with_music"
 
     /** Written by 1.2.x before the music option became a positive "doze with music" switch. */
@@ -39,10 +40,29 @@ object SleepPreferences {
     fun setDeep(context: Context, value: Boolean) =
         prefs(context).edit { putBoolean(KEY_DEEP, value) }
 
-    fun skipCharging(context: Context) = prefs(context).getBoolean(KEY_SKIP_CHARGING, true)
+    /**
+     * Keeps Doze active while the device is charging.
+     *
+     * New installs default to on. An explicit choice from the old negative switch is
+     * preserved; an absent legacy value means the user never changed it, so it follows the
+     * new default.
+     */
+    fun dozeWhileCharging(context: Context): Boolean {
+        val p = prefs(context)
+        if (p.contains(KEY_DOZE_WHILE_CHARGING)) {
+            return p.getBoolean(KEY_DOZE_WHILE_CHARGING, true)
+        }
+        if (p.contains(LEGACY_KEY_SKIP_CHARGING)) {
+            return !p.getBoolean(LEGACY_KEY_SKIP_CHARGING, true)
+        }
+        return true
+    }
 
-    fun setSkipCharging(context: Context, value: Boolean) =
-        prefs(context).edit { putBoolean(KEY_SKIP_CHARGING, value) }
+    fun setDozeWhileCharging(context: Context, value: Boolean) =
+        prefs(context).edit {
+            putBoolean(KEY_DOZE_WHILE_CHARGING, value)
+            putBoolean(LEGACY_KEY_SKIP_CHARGING, !value)
+        }
 
     /**
      * Keeps Doze active even while music is playing.

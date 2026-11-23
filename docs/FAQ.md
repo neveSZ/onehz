@@ -271,6 +271,12 @@ streaming or background audio in deep idle, so the option is off by default. The
 re-evaluated when playback starts or stops and when the charger is connected or removed;
 you do not need to turn the screen off again.
 
+### Does Sleep keep Doze active while charging?
+
+By default, yes. **Doze while charging** stays on, so the charger does not pause Sleep.
+Turn it off in the Sleep detail to pause Doze while the device is plugged in. The charger
+state is re-evaluated when the cable is connected or removed.
+
 ### How are the Sleep numbers measured?
 
 Everything is local. “Last 24 hours” is a rolling window: screen-off and Doze time are the

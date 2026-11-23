@@ -14,10 +14,10 @@
     <string name="sleep_deep_title">Doze profundo</string>
     <string name="sleep_deep_desc_on">Usa o repouso mais profundo. Desligue se o AOD congelar.</string>
     <string name="sleep_deep_desc_off">Usa o Doze leve, com janelas de manutenção mais frequentes.</string>
-    <string name="sleep_skip_charging_title">Pausar ao carregar</string>
-    <string name="sleep_skip_charging_desc_on">O Doze pausa enquanto o aparelho está na tomada.</string>
-    <string name="sleep_skip_charging_desc_off">O Doze continua mesmo com o aparelho na tomada.</string>
-    <string name="sleep_state_charging_hint">Desligue \"Pausar ao carregar\" para manter o Doze na tomada.</string>
+    <string name="sleep_doze_charging_title">Doze durante o carregamento</string>
+    <string name="sleep_doze_charging_desc_on">O Doze continua com o aparelho na tomada.</string>
+    <string name="sleep_doze_charging_desc_off">O Doze pausa enquanto o aparelho está na tomada.</string>
+    <string name="sleep_state_charging_hint">Ligue \"Doze durante o carregamento\" para manter o Doze na tomada.</string>
     <string name="sleep_state_music_hint">Ligue \"Doze com música\" para manter o Doze durante o áudio.</string>
     <string name="sleep_doze_music_title">Doze com música</string>
     <string name="sleep_doze_music_on">O Doze está ignorando se tem música tocando. O áudio pode falhar em alguns aparelhos.</string>

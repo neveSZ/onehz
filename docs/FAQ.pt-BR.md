@@ -277,6 +277,12 @@ Alguns aparelhos podem interromper streaming ou áudio em segundo plano no Doze 
 por isso a opção vem desligada. A condição é reavaliada quando a música começa ou termina e
 quando o carregador é conectado ou removido; não é preciso apagar a tela de novo.
 
+### O Sono mantém o Doze durante o carregamento?
+
+Por padrão, sim. **Doze durante o carregamento** fica ligado, então o carregador não pausa
+o Sono. Desligue no detalhe do Sono para pausar o Doze enquanto o aparelho está na tomada.
+O estado do carregador é reavaliado quando o cabo é conectado ou removido.
+
 ### Como as medições do Sono funcionam?
 
 Tudo é local. “Últimas 24h” é uma janela móvel: o tempo com a tela apagada e o tempo em

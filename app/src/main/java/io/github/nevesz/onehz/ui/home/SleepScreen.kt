@@ -72,7 +72,7 @@ import kotlinx.coroutines.delay
 private data class SleepUi(
     val enabled: Boolean,
     val deep: Boolean,
-    val skipCharging: Boolean,
+    val dozeWhileCharging: Boolean,
     val dozeWithMusic: Boolean,
     val windowEnabled: Boolean,
     val window: SleepWindow,
@@ -83,7 +83,7 @@ private data class SleepUi(
 private fun loadSleep(context: Context): SleepUi = SleepUi(
     enabled = SleepPreferences.enabled(context),
     deep = SleepPreferences.deep(context),
-    skipCharging = SleepPreferences.skipCharging(context),
+    dozeWhileCharging = SleepPreferences.dozeWhileCharging(context),
     dozeWithMusic = SleepPreferences.dozeWithMusic(context),
     windowEnabled = SleepPreferences.windowEnabled(context),
     window = SleepPreferences.window(context),
@@ -263,7 +263,7 @@ fun SleepScreen(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
-                                if (phase == DozePhase.CHARGING && ui.skipCharging) {
+                                if (phase == DozePhase.CHARGING && !ui.dozeWhileCharging) {
                                     Spacer(Modifier.height(2.dp))
                                     Text(
                                         text = stringResource(R.string.sleep_state_charging_hint),
@@ -329,13 +329,13 @@ fun SleepScreen(
                     )
                     ToggleRow(
                         icon = AppIcons.bolt(),
-                        title = stringResource(R.string.sleep_skip_charging_title),
-                        descriptionOn = stringResource(R.string.sleep_skip_charging_desc_on),
-                        descriptionOff = stringResource(R.string.sleep_skip_charging_desc_off),
-                        checked = ui.skipCharging,
+                        title = stringResource(R.string.sleep_doze_charging_title),
+                        descriptionOn = stringResource(R.string.sleep_doze_charging_desc_on),
+                        descriptionOff = stringResource(R.string.sleep_doze_charging_desc_off),
+                        checked = ui.dozeWhileCharging,
                         onCheckedChange = { on ->
-                            ui = ui.copy(skipCharging = on)
-                            SleepPreferences.setSkipCharging(context, on)
+                            ui = ui.copy(dozeWhileCharging = on)
+                            SleepPreferences.setDozeWhileCharging(context, on)
                             DozeController.onPrefsChanged()
                         },
                     )

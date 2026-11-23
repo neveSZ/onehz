@@ -14,10 +14,10 @@
     <string name="sleep_deep_title">Deep Doze</string>
     <string name="sleep_deep_desc_on">Use the deepest idle state. Turn it off if the Always On Display freezes.</string>
     <string name="sleep_deep_desc_off">Use light Doze, with more frequent maintenance windows.</string>
-    <string name="sleep_skip_charging_title">Pause while charging</string>
-    <string name="sleep_skip_charging_desc_on">Doze pauses while the device is plugged in.</string>
-    <string name="sleep_skip_charging_desc_off">Doze continues even while the device is plugged in.</string>
-    <string name="sleep_state_charging_hint">Turn off \"Pause while charging\" to keep Doze plugged in.</string>
+    <string name="sleep_doze_charging_title">Doze while charging</string>
+    <string name="sleep_doze_charging_desc_on">Doze continues while the device is plugged in.</string>
+    <string name="sleep_doze_charging_desc_off">Doze pauses while the device is plugged in.</string>
+    <string name="sleep_state_charging_hint">Turn on \"Doze while charging\" to keep Doze plugged in.</string>
     <string name="sleep_state_music_hint">Turn on \"Doze with music\" to keep Doze during audio.</string>
     <string name="sleep_doze_music_title">Doze with music</string>
     <string name="sleep_doze_music_on">Doze is ignoring music playback. Audio may stutter on some devices.</string>
