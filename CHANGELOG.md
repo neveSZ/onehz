@@ -16,6 +16,9 @@ All notable changes to OneHZ are documented here. The format follows
 
 ### Changed
 
+- Sleep now keeps Doze active while charging by default. The old "Pause while charging"
+  switch became **Doze while charging**; explicit 1.2.1 choices are preserved when
+  upgrading, and new installs start with it on.
 - Switch descriptions now explain the effect of the current state across Home, AOD, Sleep,
   video, profiles, apps, and update settings. Titles stay stable.
 - Sleep idle commands prefer `cmd deviceidle` and fall back to `dumpsys`, cutting the

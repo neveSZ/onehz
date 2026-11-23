@@ -47,7 +47,7 @@ may be delayed; regular calls and alarms still work.
 |---|---|---|
 | Sleep | off | Requires the OneHZ master switch. |
 | Deep Doze | on | Turn it off to request light idle. |
-| Pause while charging | on | Plug state comes from the power broadcasts; unplugging re-evaluates the guard. |
+| Doze while charging | on | When on, Doze stays active while plugged in. When off, Doze pauses while charging. Plug state comes from the power broadcasts; unplugging re-evaluates the guard. |
 | Doze with music | off | When on, Doze ignores audio playback. When off, Doze pauses with music. |
 | Time window | off, 23:00–07:00 | Evaluated at screen-off and on preference changes; may cross midnight. |
 | Pause | off | One hour from the moment it is pressed. |
@@ -119,7 +119,7 @@ Nothing is polled.
 | 1 | OneHZ master disabled or Sleep disabled | skip |
 | 2 | Pause active | skip |
 | 3 | Time window enabled and the current minute is outside it | skip |
-| 4 | Charging and "Pause while charging" enabled | skip |
+| 4 | Charging and "Doze while charging" disabled | skip |
 | 5 | Music playing and "Doze with music" disabled | skip |
 | 6 | Shizuku service not ready | wait, then retry when it connects (if the screen is still off) |
 | 7 | otherwise | force deep or light idle |

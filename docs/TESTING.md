@@ -92,9 +92,13 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Turn the feature off while forced; the device leaves idle.
 - [ ] Pause for 1 hour; the next screen-off does not force and the card shows the deadline.
 - [ ] Enable the time window with a range that crosses midnight; forcing only happens inside it.
-- [ ] Enable the charger guard and plug the device in while asleep; it leaves idle.
+- [ ] With "Doze while charging" on (default), plug the device in while asleep; Doze
+      stays active or enters idle.
+- [ ] Turn "Doze while charging" off; plug the device in while asleep; it leaves idle.
 - [ ] Unplug the charger while the screen is still off; Doze is forced again without a new
       screen cycle.
+- [ ] Toggle "Doze while charging" while the screen is off; the decision updates
+      immediately.
 - [ ] Play background music, turn the screen off, and confirm the music guard skips forcing.
 - [ ] Turn on **Doze with music** while music is playing and the screen is off; Doze is
       forced without waiting for another screen-off.
