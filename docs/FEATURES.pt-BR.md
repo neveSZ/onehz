@@ -326,3 +326,12 @@ copiam um perfil, então editar o perfil muda todas as regras e apps que apontam
 Precedência: pausa e AOD primeiro, depois a proteção de bateria, a janela, o carregador, a
 atribuição do app em primeiro plano e, por fim, o perfil selecionado. A camada ativa aparece
 no Diagnóstico e o tempo entra em Uso.
+
+## 21. Alvos por app
+
+Uma atribuição de app pode apontar para um perfil salvo, fixar uma taxa ou devolver o
+controle ao sistema. A taxa fixa trava a atualização enquanto o app está em primeiro plano e
+ignora o piso de vídeo; o alvo "padrão do sistema" libera os valores do OneHZ para aquele
+app. Editar um perfil referenciado continua mudando todos os apps que apontam para ele, e o
+backup mantém o tipo de alvo. O schema 2 de perfis lê arquivos schema 1 e o backup mantém a
+mesma compatibilidade.

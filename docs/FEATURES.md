@@ -323,3 +323,11 @@ profile, so editing it changes every rule and app that points at it.
 Precedence: pause and AOD first, then the low-battery guard, the time window, charging, the
 foreground-app assignment, and finally the selected profile. The active layer is shown in
 Diagnostics and the activity is counted in Usage.
+
+## 21. App targets
+
+An app assignment can point at a saved profile, pin a fixed rate, or hand control back to
+the system. Fixed rates lock the refresh rate while the app is in the foreground and skip
+the video floor; the system-default target releases the OneHZ values for that app. Editing
+a referenced profile still changes every app that points at it, and backups keep the target
+type. Profile schema 2 reads schema 1 files and the backup keeps the same compatibility.
