@@ -84,10 +84,11 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | Feature | What it does |
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
-| **Quick controls** | One-hour pause, Quick Settings tile, state-aware notification and launcher shortcuts. |
+| **Quick controls** | One-hour pause, Quick Settings tile, state-aware notification (optionally pinned) and launcher shortcuts. |
 | **Activation rules** | Low-battery guard, charging and a time window, each pointing at a saved profile. |
 | **Per-app targets** | Follow a profile, pin a fixed rate or hand control back to the system. |
 | **Usage** | Time per rate, AOD and uncontrolled time, plus the profile split, all local. |
+| **System changes** | Lists the keys OneHZ may write, shows original values, restores everything and exports a panel report. |
 | **Automation** | Explicit pause, resume, profile and toggle broadcasts for automation tools. |
 | **AOD night schedule** | Samsung-only brightness window inside the safety band. |
 | **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
@@ -98,7 +99,8 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **Sleep (forced Doze)** | Optional and off by default. Enters Doze as soon as the screen turns off, with guards and local measurements. |
 | **Per-app profiles** | Apps reference a saved profile, without copying the staircase or polling. |
 | **Video mode** | A per-profile minimum rate while a video plays. Detection rules and the global forced-app list open in a dedicated sheet, and the card warns when no rule is active. |
-| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, video, AOD, Sleep settings and the master switch. Sleep measurements and the system Doze exceptions are not included. |
+| **Picture-in-picture** | Detected from the pinned task; the video floor stays active while the window is visible. |
+| **Backup and restore** | Versioned JSON export/import of profiles, app assignments, activation rules, video, AOD, Sleep settings and the master switch. Sleep measurements, the notification pin and the system Doze exceptions are not included. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
 | **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |

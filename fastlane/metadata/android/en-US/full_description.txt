@@ -5,11 +5,14 @@ It changes the display refresh rate through Shizuku only. There is no root requi
 Features
 * Reusable Economy, Balanced and Performance profiles, plus custom profiles.
 * Manual profile selection with optional Automatic Economy while the system battery saver is on.
-* Per-app assignments that reference a saved profile instead of copying its staircase.
-* Per-profile video minimum and detection rules, plus a global forced-video app list.
-* AOD control has a single master switch on Home; rate and brightness are independent. AOD always uses the panel minimum; Samsung-only AOD brightness with a safety band and a system restore action.
-* Optional Sleep (forced Doze) with a first-enable warning, guards and local measurements. With Sleep off, its behavior options and history stay visible.
-* Backup and restore of profiles, app assignments, video, AOD, Sleep settings and the master switch.
+* Per-app assignments that follow a saved profile, pin a fixed rate or hand control back to the system.
+* Activation rules for low battery, charging and a time window, each pointing at a saved profile.
+* Per-profile video minimum and detection rules, plus a global forced-video app list. Picture-in-picture is detected from the pinned task.
+* AOD control has a single master switch on Home; rate and brightness are independent. AOD always uses the panel minimum; Samsung-only AOD brightness with a safety band, a night schedule and a system restore action.
+* Optional Sleep (forced Doze) with a first-enable warning, guards and local measurements. Usage shows the Sleep/Doze summary, and the Sleep detail keeps a compact summary.
+* Backup and restore of profiles, app assignments and targets, activation rules, video, AOD, Sleep settings and the master switch.
+* Quick controls: one-hour pause, an on/off Quick Settings tile, a state-aware notification with an optional pinned mode, and launcher shortcuts.
+* System changes screen with the keys OneHZ may write, current and original values, restore-all and a panel report.
 * Device-aware default profiles on a fresh install.
 * Guided setup for display compatibility, Shizuku, battery optimization, Doze, and notifications.
 * Diagnostics, light/dark/AMOLED themes, and English, Portuguese (Brazil), and Spanish UI.
@@ -24,7 +27,6 @@ The Shizuku app is separate and is not bundled with OneHZ. OneHZ includes only t
 Notes
 * AOD brightness is Samsung-only; on Xiaomi the row is shown disabled with an explanation.
 * On the tested POCO X7 Pro, 30 Hz is dimmer at the panel level. OneHZ cannot compensate and shows a warning in the profile editor.
-* Video in picture-in-picture is not detected yet.
 
 Privacy
 * No ads, analytics, telemetry, or accounts.

@@ -86,10 +86,11 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | Recurso | O que faz |
 |---|---|
 | **Escada de taxa de atualização** | 1 a 5 faixas decrescentes por perfil, com tempo de espera em cada faixa. |
-| **Controles rápidos** | Pausa de uma hora, tile nas Configurações Rápidas, notificação com estado e atalhos do app. |
+| **Controles rápidos** | Pausa de uma hora, tile nas Configurações Rápidas, notificação com estado (opcionalmente fixada) e atalhos do app. |
 | **Regras de ativação** | Proteção de bateria baixa, carregador e janela de horário, cada uma apontando para um perfil salvo. |
 | **Alvos por app** | Seguir um perfil, fixar uma taxa ou devolver o controle ao sistema. |
 | **Uso** | Tempo por taxa, AOD e sem controle, além da divisão por perfil, tudo local. |
+| **Alterações no sistema** | Lista as chaves que o OneHZ pode gravar, mostra os valores originais, restaura tudo e exporta um relatório do painel. |
 | **Automação** | Broadcasts explícitos de pausa, retomada, perfil e alternância para ferramentas de automação. |
 | **Agenda noturna do AOD** | Janela de brilho somente Samsung dentro da faixa de segurança. |
 | **Economia / Equilibrado / Desempenho** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
@@ -100,7 +101,8 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Sono (Doze forçado)** | Opcional e desligado por padrão. Entra em Doze assim que a tela apaga, com filtros e medições locais. |
 | **Perfis por aplicativo** | Apps referenciam um perfil salvo, sem copiar a escada e sem polling. |
 | **Modo vídeo** | Piso de taxa por perfil enquanto um vídeo toca. As regras de detecção e a lista global de apps forçados abrem em uma sheet dedicada, e o card avisa quando nenhuma regra está ativa. |
-| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, vídeo, AOD, configurações do Sono e switch mestre. Medições do Sono e exceções do Doze não entram. |
+| **Picture-in-picture** | Detectado pela tarefa fixada; o piso de vídeo continua ativo enquanto a janela está visível. |
+| **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, regras de ativação, vídeo, AOD, configurações do Sono e switch mestre. Medições do Sono, a notificação fixa e exceções do Doze não entram. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
 | **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze e notificações. |

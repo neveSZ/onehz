@@ -5,11 +5,14 @@ Cambia la frecuencia de actualización solo mediante Shizuku. No requiere root, 
 Funciones
 * Perfiles reutilizables Economía, Equilibrado y Rendimiento, además de perfiles personalizados.
 * Selección manual del perfil activo, con Economía automática opcional mientras el ahorro de batería del sistema está activo.
-* Asignaciones por app que referencian un perfil guardado en vez de copiar su escalera.
-* Mínimo de vídeo y reglas de detección por perfil, además de una lista global de apps siempre tratadas como vídeo.
-* El control del AOD tiene un único interruptor maestro en Inicio; tasa y brillo son independientes. El AOD usa siempre la tasa más baja de la pantalla; brillo del AOD solo en Samsung con banda de seguridad y restauración del sistema.
-* Sueño (Doze forzado) opcional, con aviso antes del primer encendido, protecciones y mediciones locales. Con Sueño desactivado, las opciones de comportamiento y el historial siguen visibles.
-* Copia de seguridad de perfiles, asignaciones, vídeo, AOD, ajustes de Sueño y el interruptor maestro.
+* Asignaciones por app que siguen un perfil guardado, fijan una tasa o devuelven el control al sistema.
+* Reglas de activación por batería baja, cargador y franja horaria, cada una apuntando a un perfil guardado.
+* Mínimo de vídeo y reglas de detección por perfil, además de una lista global de apps siempre tratadas como vídeo. Picture-in-picture se detecta en la tarea fijada.
+* El control del AOD tiene un único interruptor maestro en Inicio; tasa y brillo son independientes. El AOD usa siempre la tasa más baja de la pantalla; brillo del AOD solo en Samsung con banda de seguridad, horario nocturno y restauración del sistema.
+* Sueño (Doze forzado) opcional, con aviso al activarlo, protecciones y mediciones locales. Uso muestra el resumen de Sueño/Doze, y el detalle de Sueño mantiene un resumen compacto.
+* Copia de seguridad de perfiles, asignaciones y destinos por app, reglas de activación, vídeo, AOD, ajustes de Sueño y el interruptor maestro.
+* Controles rápidos: pausa de una hora, tile de encendido/apagado, notificación con estado y modo fijado opcional, y atajos.
+* Pantalla de cambios del sistema con las claves que OneHZ puede escribir, valores actuales y originales, restauración total y un informe del panel.
 * Perfiles predeterminados según el dispositivo en una instalación nueva.
 * Configuración guiada para compatibilidad de pantalla, Shizuku, optimización de batería, Doze y notificaciones.
 * Diagnóstico, temas claro/oscuro/AMOLED e interfaz en portugués (Brasil), inglés y español.
@@ -24,7 +27,6 @@ La app Shizuku es independiente y no está incluida en OneHZ. OneHZ incluye solo
 Notas
 * El brillo del AOD es solo para Samsung; en Xiaomi la fila aparece desactivada con una explicación.
 * En el POCO X7 Pro probado, 30 Hz es más oscuro a nivel de panel. OneHZ no puede compensarlo y muestra un aviso en el editor de perfiles.
-* El vídeo en picture-in-picture todavía no se detecta.
 
 Privacidad
 * Sin anuncios, analíticas, telemetría ni cuentas.
