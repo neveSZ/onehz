@@ -243,6 +243,7 @@ object SessionArbiter {
             DisplayVendor.UNSUPPORTED -> false
         }
         if (mismatch) {
+            Diagnostics.externalChange.value = true
             Diagnostics.log("arbiter", "external settings detected; reapplying")
             bumpEpoch()
         }

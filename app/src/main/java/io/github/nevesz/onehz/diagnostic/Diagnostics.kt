@@ -72,6 +72,7 @@ object Diagnostics {
     val screenBrightness = MutableStateFlow("-")
     val batterySaver = MutableStateFlow(false)
     val displayRoute = MutableStateFlow("-")
+    val externalChange = MutableStateFlow(false)
 
     private fun timeNow(): String = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date())
 

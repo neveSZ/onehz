@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="system_changes_title">Alterações no sistema</string>
+    <string name="system_changes_short">Valores que o OneHZ gravou, com restauração</string>
+    <string name="system_changes_desc">Valores que o OneHZ pode gravar pelo Shizuku, com o valor original quando a sessão guardou um backup. Restaurar desliga a chave principal primeiro.</string>
+    <string name="system_changes_unavailable">Conecte o Shizuku para ler os valores atuais.</string>
+    <string name="system_changes_empty">O OneHZ não está sobrescrevendo nenhum valor agora.</string>
+    <string name="system_changes_external">Outro app alterou uma configuração de taxa desde a última checagem. O OneHZ reaplicou os valores dele.</string>
+    <string name="system_changes_current">Atual</string>
+    <string name="system_changes_original">Original</string>
+    <string name="system_changes_unknown">desconhecido</string>
+    <string name="system_changes_doze">OneHZ na lista de exceções do Doze</string>
+    <string name="system_changes_export">Exportar relatório do painel</string>
+    <string name="system_changes_export_failed">Não foi possível gravar o relatório.</string>
+    <string name="system_changes_restore">Restaurar tudo</string>
+    <string name="system_changes_restore_title">Restaurar os valores do sistema?</string>
+    <string name="system_changes_restore_body">Isso desliga o OneHZ, restaura os valores de taxa e economia de bateria capturados e limpa a sobrescrita de brilho do AOD. Sono, perfis e atribuições continuam salvos.</string>
+    <string name="system_changes_restore_confirm">Restaurar</string>
+    <string name="system_changes_restored">Valores do sistema restaurados. O OneHZ está desligado.</string>
+</resources>

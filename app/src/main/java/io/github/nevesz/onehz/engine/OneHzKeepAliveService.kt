@@ -120,6 +120,7 @@ class OneHzKeepAliveService : Service() {
         AodBrightnessController.stop()
         DozeController.stop()
         OneHzEngine.stop()
+        ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
         super.onDestroy()
     }
 

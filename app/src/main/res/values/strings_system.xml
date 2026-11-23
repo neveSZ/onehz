@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="system_changes_title">System changes</string>
+    <string name="system_changes_short">Values OneHZ wrote, with restore</string>
+    <string name="system_changes_desc">Values OneHZ may write through Shizuku, with the original value when a session kept a backup. Restoring turns the master switch off first.</string>
+    <string name="system_changes_unavailable">Connect Shizuku to read the current values.</string>
+    <string name="system_changes_empty">OneHZ is not overriding any value right now.</string>
+    <string name="system_changes_external">Another app changed a rate setting since the last check. OneHZ reapplied its values.</string>
+    <string name="system_changes_current">Current</string>
+    <string name="system_changes_original">Original</string>
+    <string name="system_changes_unknown">unknown</string>
+    <string name="system_changes_doze">OneHZ in the Doze exception list</string>
+    <string name="system_changes_export">Export panel report</string>
+    <string name="system_changes_export_failed">Could not write the report.</string>
+    <string name="system_changes_restore">Restore everything</string>
+    <string name="system_changes_restore_title">Restore system values?</string>
+    <string name="system_changes_restore_body">This turns OneHZ off, restores the captured rate and battery-saver values, and clears the AOD brightness override. Sleep, profiles and app assignments stay saved.</string>
+    <string name="system_changes_restore_confirm">Restore</string>
+    <string name="system_changes_restored">System values restored. OneHZ is off.</string>
+</resources>

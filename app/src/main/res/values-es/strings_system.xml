@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="system_changes_title">Cambios en el sistema</string>
+    <string name="system_changes_short">Valores que OneHZ escribió, con restauración</string>
+    <string name="system_changes_desc">Valores que OneHZ puede escribir mediante Shizuku, con el valor original cuando la sesión guardó una copia. Restaurar desactiva primero el interruptor principal.</string>
+    <string name="system_changes_unavailable">Conecta Shizuku para leer los valores actuales.</string>
+    <string name="system_changes_empty">OneHZ no está sobrescribiendo ningún valor ahora.</string>
+    <string name="system_changes_external">Otra app cambió un ajuste de tasa desde la última comprobación. OneHZ volvió a aplicar sus valores.</string>
+    <string name="system_changes_current">Actual</string>
+    <string name="system_changes_original">Original</string>
+    <string name="system_changes_unknown">desconocido</string>
+    <string name="system_changes_doze">OneHZ en la lista de excepciones de Doze</string>
+    <string name="system_changes_export">Exportar informe del panel</string>
+    <string name="system_changes_export_failed">No se pudo escribir el informe.</string>
+    <string name="system_changes_restore">Restaurar todo</string>
+    <string name="system_changes_restore_title">¿Restaurar los valores del sistema?</string>
+    <string name="system_changes_restore_body">Esto desactiva OneHZ, restaura los valores de tasa y ahorro de batería capturados y borra el brillo del AOD. El Sueño, los perfiles y las asignaciones siguen guardados.</string>
+    <string name="system_changes_restore_confirm">Restaurar</string>
+    <string name="system_changes_restored">Valores del sistema restaurados. OneHZ está desactivado.</string>
+</resources>
