@@ -32,8 +32,11 @@ may be delayed; regular calls and alarms still work.
 ## Detail screen
 
 - The Sleep switch on **Home** is the only master. The detail screen does not duplicate it.
-- The behavior options, wake-up list and measurements stay visible and editable while
-  Sleep is off; only "Test now" and pause/resume require Sleep to be on.
+- The behavior options and wake-up list stay visible and editable while Sleep is off; only
+  "Test now" and pause/resume require Sleep to be on. The compact summary (screen-off,
+  Doze and the last session) also stays visible.
+- The full 24-hour rows and the session history live in **Usage**; the Sleep card links
+  there instead of repeating them.
 - When Sleep is off, the detail shows a compact note. A status line appears only for
   active, paused, charging, music, outside-window or failure states.
 - The delay warning lives inside the "How it works" card and can be dismissed with
@@ -99,6 +102,18 @@ State is read from two independent sources:
 Whitelist changes use `cmd deviceidle whitelist` and are confirmed by reading the list
 back: `dumpsys deviceidle sys-whitelist` exits successfully without changing anything on
 some builds, and `dumpsys` exits 0 even for unknown commands.
+
+### Maintenance windows
+
+Android may open a short maintenance window inside deep idle (`IDLE_MAINTENANCE`). OneHZ
+treats that window as idle for the measurements, so the screen-off and Doze totals remain
+continuous and the session is not split. The maintenance count comes from the idle spans
+when the platform reports the transition.
+
+The AOD rate is part of the normal screen-off state. After a maintenance window, the engine
+reapplies it when it detects a transition or when the app resumes. The deterministic
+`dumpsys deviceidle step` gate in [TESTING](TESTING.md) verifies the reapplied force and AOD
+rate, and checks that there is no write loop and no wake lock.
 
 Charging is read from the sticky `ACTION_BATTERY_CHANGED` broadcast in addition to
 `BatteryManager.isCharging()`: on the tested Samsung firmware the property returned
@@ -186,6 +201,8 @@ Segments are recorded only while the feature is enabled:
 
 From those segments:
 
+- **Sleep card**: screen-off, Doze and the last session of at least 30 minutes. The full
+  rows below live in **Usage**.
 - **Last 24 hours**: rolling window, no midnight or charging reset. Screen-off time is the
   sum of `SCREEN_OFF` segments clipped to `[now - 24h, now]`; Doze time is the same
   clipping applied to `IDLE` segments. A rolling window keeps the metric neutral for any
