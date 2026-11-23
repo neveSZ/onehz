@@ -38,7 +38,9 @@ exceto a última, um tempo de espera.
   - **Desempenho** — mantém um repouso de 60 Hz ou mais;
 - o perfil ativo é escolhido na Home; o card mostra o perfil **selecionado** e, quando forem diferentes, o perfil **em uso**;
 - os perfis base podem ser editados e restaurados para o padrão do aparelho;
-- perfis customizados podem ser criados, renomeados, editados e excluídos;
+- perfis customizados podem ser criados, renomeados, editados, duplicados e excluídos;
+- um perfil excluído pode ser restaurado pela ação curta **Desfazer**, incluindo as
+  atribuições de apps que ele tinha;
 - cada perfil guarda suas próprias configurações de vídeo;
 - perfis por app referenciam um perfil salvo em vez de copiar a escada.
 

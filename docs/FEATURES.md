@@ -38,7 +38,9 @@ except the last one, a hold time.
   - **Performance** — preserves a 60 Hz-or-higher resting floor;
 - the active profile is selected by the user on Home; the card shows the **selected** profile and, when they differ, the profile **in use**;
 - built-in profiles can be edited and restored to the device defaults;
-- custom profiles can be created, renamed, edited and deleted;
+- custom profiles can be created, renamed, edited, duplicated and deleted;
+- a deleted profile can be restored with the short **Undo** action, including the app
+  assignments it had;
 - every profile stores its own video settings;
 - per-app assignments reference a saved profile instead of copying its staircase.
 
