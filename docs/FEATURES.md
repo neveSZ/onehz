@@ -270,10 +270,10 @@ measured by OneHZ; they include the Always On Display time. See [SLEEP.md](SLEEP
 system values. The card shows the deadline and a **Resume now** action. The pause is
 time-boxed and survives a restart; the engine resumes on its own.
 
-**Quick Settings tile.** The OneHZ tile enables the app when it is off, pauses it for one
-hour while controlling, and resumes it while paused. The tile reports when Shizuku is
-unavailable. Turning the app off entirely stays in the app, so a stray tap cannot disable
-control.
+**Quick Settings tile.** The OneHZ tile turns the app on and off; pause and resume stay in
+the notification, Home and the launcher shortcut. Settings has an **Add Quick Settings
+tile** action that asks the system to place it. The tile reports when Shizuku is
+unavailable.
 
 **Notification.** The foreground notification shows the active profile and the current
 rate, and exposes **Pause for 1 hour** / **Resume now** plus **Disable**. It updates only

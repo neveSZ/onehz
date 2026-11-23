@@ -272,10 +272,10 @@ identificadas como medidas pelo OneHZ; incluem o tempo de AOD. Veja [SLEEP.md](S
 restaura os valores do sistema. O card mostra o horário de retorno e a ação **Retomar
 agora**. A pausa tem prazo, sobrevive a um reinício e o motor volta sozinho.
 
-**Tile nas Configurações Rápidas.** O tile do OneHZ liga o app quando ele está desligado,
-pausa por uma hora enquanto está controlando e retoma quando está pausado. O tile indica
-quando o Shizuku está indisponível. Desligar o app por completo continua sendo feito no
-app, para que um toque acidental não tire o controle.
+**Tile nas Configurações Rápidas.** O tile do OneHZ liga e desliga o app; pausar e retomar
+ficam na notificação, na Home e no atalho do app. Ajustes tem a ação **Adicionar tile nas
+Configurações Rápidas**, que pede ao sistema para colocá-lo. O tile indica quando o
+Shizuku está indisponível.
 
 **Notificação.** A notificação do serviço em primeiro plano mostra o perfil ativo e a taxa
 atual, e oferece **Pausar por 1 hora** / **Retomar agora** e **Desativar**. Ela só é
