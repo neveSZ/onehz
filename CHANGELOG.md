@@ -25,6 +25,8 @@ Local release candidate. The stable tag follows the screen-off and Samsung valid
   that still read schema 1.
 - Suggested filter for unassigned games, players and camera apps.
 - Explicit automation broadcasts for pause, resume, profile selection and toggle.
+- Picture-in-picture detection from the pinned task; the video floor stays active while a
+  PiP window is visible.
 - Samsung AOD night brightness schedule and AOD rate reapply after a Doze maintenance
   window.
 
