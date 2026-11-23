@@ -288,7 +288,9 @@ class OneHzUserService : IOneHzService.Stub() {
         // `unforce` only clears the forced flag. On One UI the state can stay IDLE while
         // the screen is off, so a guard change would not actually leave idle. The
         // documented motion command brings the device back to INACTIVE without waking it.
-        exec("/system/bin/cmd", "deviceidle", "motion")
+        if (!exec("/system/bin/cmd", "deviceidle", "motion").success) {
+            exec("/system/bin/dumpsys", "deviceidle", "motion")
+        }
         return true
     }
 
