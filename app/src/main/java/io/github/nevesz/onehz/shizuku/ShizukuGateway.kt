@@ -29,7 +29,7 @@ object ShizukuGateway {
     private const val TAG = "Shizuku"
     private const val SERVICE_TAG = "onehz_privileged_service"
     private const val PROCESS_SUFFIX = "onehz_core"
-    private const val API_REVISION = 14
+    private const val API_REVISION = 15
     private const val TOUCH_ACTION_DOWN = 0
     private const val TOUCH_ACTION_UP = 1
     private const val TOUCH_ACTION_STOPPED = 2
@@ -42,6 +42,11 @@ object ShizukuGateway {
 
     @Volatile
     var service: IOneHzService? = null
+        private set
+
+    /** True while the privileged service is reporting task-stack changes. */
+    @Volatile
+    var foregroundMonitorActive = false
         private set
 
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -102,6 +107,13 @@ object ShizukuGateway {
         }
     }
 
+    private val foregroundCallback = object : IForegroundCallback.Stub() {
+        override fun onForegroundPackage(packageName: String?) {
+            if (packageName.isNullOrBlank()) return
+            OneHzEngine.setForegroundPackage(packageName)
+        }
+    }
+
     private val userServiceArgs by lazy {
         Shizuku.UserServiceArgs(
             ComponentName(BuildConfig.APPLICATION_ID, OneHzUserService::class.java.name)
@@ -120,6 +132,7 @@ object ShizukuGateway {
                 return
             }
             service = IOneHzService.Stub.asInterface(binder)
+            foregroundMonitorActive = false
             binding = false
             rebindAttempt = 0
             rebindPending = false
@@ -149,6 +162,7 @@ object ShizukuGateway {
 
     private val binderDead = Shizuku.OnBinderDeadListener {
         service = null
+        foregroundMonitorActive = false
         publishState(ShizukuState.NOT_RUNNING)
         Diagnostics.log(TAG, "binder died")
         onUnavailable?.invoke()
@@ -185,6 +199,7 @@ object ShizukuGateway {
             val running = runCatching { Shizuku.pingBinder() }.getOrDefault(false)
             if (!running) {
                 service = null
+                foregroundMonitorActive = false
                 publishState(ShizukuState.NOT_RUNNING)
                 onUnavailable?.invoke()
                 scheduleRebind()
@@ -208,6 +223,36 @@ object ShizukuGateway {
     /** One binder call per interaction; no polling. */
     fun foregroundPackage(): String? =
         runCatching { service?.foregroundPackage() }.getOrNull()?.takeIf { it.isNotBlank() }
+
+    /** Bypasses the UserService TTL cache for policy decisions. */
+    fun foregroundPackageFresh(): String? =
+        runCatching { service?.foregroundPackageFresh() }.getOrNull()?.takeIf { it.isNotBlank() }
+            ?: foregroundPackage()
+
+    /**
+     * Asks the UserService to report task-stack changes. Returns false when the platform
+     * blocks the hidden listener; the engine then uses the touch probe.
+     */
+    fun startForegroundMonitoring(): Boolean {
+        val active = service ?: return false
+        val started = runCatching {
+            active.startForegroundMonitoring(foregroundCallback)
+        }.getOrDefault(false)
+        foregroundMonitorActive = started
+        Diagnostics.foregroundSource.value = if (started) "listener" else "probe"
+        Diagnostics.log(
+            TAG,
+            if (started) "foreground listener active" else "foreground listener unavailable"
+        )
+        return started
+    }
+
+    fun stopForegroundMonitoring() {
+        if (!foregroundMonitorActive) return
+        foregroundMonitorActive = false
+        runCatching { service?.stopForegroundMonitoring() }
+        Diagnostics.foregroundSource.value = "off"
+    }
 
     fun setDozeWhitelisted(packageName: String, enabled: Boolean): Boolean =
         runCatching { service?.setDozeWhitelist(packageName, enabled) == true }.getOrDefault(false)
@@ -332,6 +377,7 @@ object ShizukuGateway {
 
     private fun lost(reason: String) {
         service = null
+        foregroundMonitorActive = false
         binding = false
         publishState(ShizukuState.SERVICE_UNAVAILABLE)
         Diagnostics.log(TAG, "UserService $reason")
@@ -464,6 +510,7 @@ object ShizukuGateway {
     fun destroy() {
         destroyed = true
         monitoringRequested = false
+        stopForegroundMonitoring()
         synchronized(downDevices) { downDevices.clear() }
         cachedDevices = emptyList()
         service?.let { runCatching { it.destroy() } }

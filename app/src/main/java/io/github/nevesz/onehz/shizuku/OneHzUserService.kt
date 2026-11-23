@@ -1,12 +1,18 @@
 package io.github.nevesz.onehz.shizuku
 
+import android.os.Binder
+import android.os.Handler
+import android.os.HandlerThread
 import android.os.IBinder
+import android.os.Parcel
 import android.os.RemoteException
+import android.util.Log
 import io.github.nevesz.onehz.core.DozeState
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.reflect.Proxy
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -43,6 +49,7 @@ class OneHzUserService : IOneHzService.Stub() {
     private val clientDeath = IBinder.DeathRecipient {
         // The app process is gone: release everything and end this process. Keeping it alive
         // leaves orphaned UserServices behind on every app update/restart.
+        stopForegroundMonitoring()
         stopTouchMonitoring()
         exitProcess(0)
     }
@@ -62,17 +69,30 @@ class OneHzUserService : IOneHzService.Stub() {
         timeoutMs = 5_000
     ).output
 
-    @Volatile
-    private var cachedForeground: String? = null
+    private val foregroundCache = ForegroundCache(FOREGROUND_CACHE_MS)
+    private val foregroundThread = HandlerThread("OneHzForeground").apply { start() }
+    private val foregroundHandler = Handler(foregroundThread.looper)
 
     @Volatile
-    private var cachedForegroundAt = 0L
+    private var foregroundCallback: IForegroundCallback? = null
 
-    override fun foregroundPackage(): String {
+    @Volatile
+    private var taskStackListener: Any? = null
+
+    @Volatile
+    private var lastForegroundNotified: String? = null
+
+    private val foregroundDeath = IBinder.DeathRecipient {
+        stopForegroundMonitoring()
+    }
+
+    override fun foregroundPackage(): String = queryForeground(force = false)
+
+    override fun foregroundPackageFresh(): String = queryForeground(force = true)
+
+    private fun queryForeground(force: Boolean): String {
         val now = System.currentTimeMillis()
-        cachedForeground?.let {
-            if (now - cachedForegroundAt < 250L) return it
-        }
+        if (!force) foregroundCache.get(now)?.let { return it }
         val pkg = parseForeground(
             exec(
                 "/system/bin/sh",
@@ -82,9 +102,105 @@ class OneHzUserService : IOneHzService.Stub() {
                 timeoutMs = 2_500
             ).output
         ) ?: ""
-        cachedForeground = pkg
-        cachedForegroundAt = now
+        foregroundCache.put(now, pkg)
         return pkg
+    }
+
+    /**
+     * Registers an [android.app.ITaskStackListener] through the hidden task-manager service.
+     * The shell UID has MANAGE_ACTIVITY_TASKS, but hidden-API access and the callback ABI can
+     * vary by platform; returning false lets the app fall back to the touch probe.
+     */
+    override fun startForegroundMonitoring(callback: IForegroundCallback?): Boolean {
+        if (callback == null) return false
+        stopForegroundMonitoring()
+        foregroundCallback = callback
+        runCatching { callback.asBinder().linkToDeath(foregroundDeath, 0) }
+        val registered = runCatching { registerTaskStackListener() }
+            .onFailure { Log.w(TAG, "foreground listener unavailable: ${it.message}") }
+            .getOrDefault(false)
+        if (!registered) {
+            foregroundCallback = null
+            return false
+        }
+        scheduleForegroundQuery(immediate = true)
+        return true
+    }
+
+    override fun stopForegroundMonitoring() {
+        foregroundCallback?.let { callback ->
+            runCatching { callback.asBinder().unlinkToDeath(foregroundDeath, 0) }
+        }
+        foregroundCallback = null
+        lastForegroundNotified = null
+        foregroundHandler.removeCallbacks(foregroundQuery)
+        unregisterTaskStackListener()
+    }
+
+    private fun registerTaskStackListener(): Boolean {
+        if (taskStackListener != null) return true
+        val listenerInterface = Class.forName("android.app.ITaskStackListener")
+        val callbackBinder = object : Binder() {
+            override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
+                // ITaskStackListener.onTaskStackChanged() is the first oneway method.
+                if (code == TASK_STACK_CHANGED_TRANSACTION) {
+                    scheduleForegroundQuery(immediate = false)
+                    return true
+                }
+                return super.onTransact(code, data, reply, flags)
+            }
+        }
+        val listener = Proxy.newProxyInstance(
+            listenerInterface.classLoader,
+            arrayOf(listenerInterface)
+        ) { _, method, args ->
+            when (method.name) {
+                "asBinder" -> callbackBinder
+                "hashCode" -> System.identityHashCode(callbackBinder)
+                "equals" -> callbackBinder === args?.firstOrNull()
+                "toString" -> "OneHzTaskStackListener"
+                else -> null
+            }
+        }
+        val taskManager = Class.forName("android.app.ActivityTaskManager")
+            .getMethod("getService")
+            .invoke(null) ?: return false
+        Class.forName("android.app.IActivityTaskManager")
+            .getMethod("registerTaskStackListener", listenerInterface)
+            .invoke(taskManager, listener)
+        taskStackListener = listener
+        return true
+    }
+
+    private fun unregisterTaskStackListener() {
+        val listener = taskStackListener ?: return
+        taskStackListener = null
+        runCatching {
+            val listenerInterface = Class.forName("android.app.ITaskStackListener")
+            val taskManager = Class.forName("android.app.ActivityTaskManager")
+                .getMethod("getService")
+                .invoke(null) ?: return@runCatching
+            Class.forName("android.app.IActivityTaskManager")
+                .getMethod("unregisterTaskStackListener", listenerInterface)
+                .invoke(taskManager, listener)
+        }
+    }
+
+    private val foregroundQuery = Runnable {
+        val callback = foregroundCallback ?: return@Runnable
+        val pkg = queryForeground(force = true)
+        if (pkg.isBlank() || pkg == lastForegroundNotified) return@Runnable
+        lastForegroundNotified = pkg
+        runCatching { callback.onForegroundPackage(pkg) }
+    }
+
+    private fun scheduleForegroundQuery(immediate: Boolean) {
+        if (foregroundCallback == null) return
+        foregroundHandler.removeCallbacks(foregroundQuery)
+        foregroundHandler.postDelayed(
+            foregroundQuery,
+            if (immediate) 0L else FOREGROUND_DEBOUNCE_MS
+        )
     }
 
     @Volatile
@@ -544,7 +660,9 @@ class OneHzUserService : IOneHzService.Stub() {
         return "mode=$mode · peak=$peak · min=$min"
     }
 
-    override fun serviceStats(): String = "commands=${commandCount.get()} · monitors=${monitors.size}"
+    override fun serviceStats(): String =
+        "commands=${commandCount.get()} · monitors=${monitors.size} · " +
+            "foreground=${if (foregroundCallback != null) "listener" else "off"}"
 
     override fun registerClient(client: IBinder?) {
         if (client == null || client === clientBinder) return
@@ -559,6 +677,7 @@ class OneHzUserService : IOneHzService.Stub() {
     }
 
     override fun destroy() {
+        stopForegroundMonitoring()
         stopTouchMonitoring()
         exitProcess(0)
     }
@@ -632,6 +751,7 @@ class OneHzUserService : IOneHzService.Stub() {
     private data class CommandResult(val success: Boolean, val output: String)
 
     private companion object {
+        const val TAG = "OneHzForeground"
         const val MODE_KEY = "refresh_rate_mode"
         const val AOD_BRIGHTNESS_KEY = "debug_aod_brightness"
 
@@ -640,6 +760,10 @@ class OneHzUserService : IOneHzService.Stub() {
         const val ACTION_STOPPED = 2
         const val MAX_MONITORS = 4
         const val THREAD_JOIN_MS = 250L
+
+        const val FOREGROUND_CACHE_MS = 250L
+        const val FOREGROUND_DEBOUNCE_MS = 250L
+        const val TASK_STACK_CHANGED_TRANSACTION = 1
 
         val DEVICE_PATH = Regex("/dev/input/event[0-9]+")
         val PACKAGE_NAME = Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")

@@ -1,6 +1,7 @@
 package io.github.nevesz.onehz.shizuku;
 
 import android.os.IBinder;
+import io.github.nevesz.onehz.shizuku.IForegroundCallback;
 import io.github.nevesz.onehz.shizuku.ITouchCallback;
 
 interface IOneHzService {
@@ -41,4 +42,14 @@ interface IOneHzService {
     boolean forceIdle(boolean deep);
     boolean unforceIdle();
     String idleState();
+
+    /** Uncached foreground read for policy decisions. */
+    String foregroundPackageFresh();
+
+    /**
+     * Starts task-stack foreground callbacks. Returns false when the platform does not
+     * allow the listener, in which case the app falls back to the touch probe.
+     */
+    boolean startForegroundMonitoring(IForegroundCallback callback);
+    void stopForegroundMonitoring();
 }
