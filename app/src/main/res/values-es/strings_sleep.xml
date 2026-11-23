@@ -41,6 +41,7 @@
     <string name="sleep_rest_none">Ninguna sesión de sueño de 30 min o más en las últimas 24 h.</string>
     <string name="sleep_rest_hint">Una sesión de sueño cuenta a partir de 30 min con la pantalla apagada. Las pausas cortas solo cuentan en el total de 24 h.</string>
     <string name="sleep_details">Detalles</string>
+    <string name="sleep_history_in_usage">Ver historial en Uso</string>
 
     <string name="sleep_details_title">Sesiones de sueño</string>
     <string name="sleep_details_empty">Aún no hay sesiones registradas.</string>

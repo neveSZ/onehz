@@ -98,6 +98,7 @@ fun SleepScreen(
     masterEnabled: Boolean,
     dataVersion: Int,
     onBack: () -> Unit,
+    onOpenUsage: () -> Unit,
 ) {
     val vm: SleepViewModel = viewModel()
     val phase by vm.phase.collectAsStateWithLifecycle()
@@ -116,7 +117,6 @@ fun SleepScreen(
     }
     LaunchedEffect(dataVersion, refresh) { ui = loadSleep(context) }
 
-    var showDetails by rememberSaveable { mutableStateOf(false) }
     var showWhitelist by rememberSaveable { mutableStateOf(false) }
     var warningSeen by rememberSaveable {
         mutableStateOf(SleepPreferences.warningSeen(context))
@@ -401,7 +401,7 @@ fun SleepScreen(
                 MeasurementsCard(
                     ui = ui,
                     showPause = ui.enabled,
-                    onOpenDetails = { showDetails = true },
+                    onOpenUsage = onOpenUsage,
                     onPauseResume = {
                         if (ui.pausedUntil > System.currentTimeMillis()) {
                             DozeController.resume()
@@ -463,13 +463,6 @@ fun SleepScreen(
         }
     }
 
-    if (showDetails) {
-        SleepDetailsSheet(
-            records = ui.records,
-            now = System.currentTimeMillis(),
-            onDismiss = { showDetails = false },
-        )
-    }
     if (showWhitelist) {
         SleepWhitelistSheet(context = context, onDismiss = { showWhitelist = false })
     }
@@ -479,7 +472,7 @@ fun SleepScreen(
 private fun MeasurementsCard(
     ui: SleepUi,
     showPause: Boolean,
-    onOpenDetails: () -> Unit,
+    onOpenUsage: () -> Unit,
     onPauseResume: () -> Unit,
 ) {
     val now = System.currentTimeMillis()
@@ -527,8 +520,8 @@ private fun MeasurementsCard(
         )
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            TextButton(onClick = onOpenDetails) {
-                Text(stringResource(R.string.sleep_details))
+            TextButton(onClick = onOpenUsage) {
+                Text(stringResource(R.string.sleep_history_in_usage))
             }
             Spacer(Modifier.weight(1f))
             if (showPause) {

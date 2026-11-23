@@ -422,7 +422,12 @@ private fun OneHzShell(
                 context = context,
                 masterEnabled = OneHzPreferences.isEnabled(context),
                 dataVersion = dataVersion,
-                onBack = { homePage = null }
+                onBack = { homePage = null },
+                onOpenUsage = {
+                    homePage = null
+                    tab = 2
+                    settingsPage = "usage"
+                }
             )
             return
         }
