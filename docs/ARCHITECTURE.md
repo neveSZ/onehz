@@ -319,6 +319,21 @@ level increased.
 - Sleep disabled, engine stopped, or service destroyed → send `unforce`.
 - Forced idle not confirmed by the device-idle state → report failure instead of success.
 
+## 1.3.0 components
+
+- `core/RateStats` accumulates applied-rate time from engine transitions in daily buckets
+  and persists a small JSON blob on a debounced schedule.
+- `core/ActivationRules` keeps the battery, charging and time-window rules, the hysteresis
+  and the pure precedence evaluator used by `PolicyResolver`.
+- `core/AppTarget` is a sealed target on every app assignment: saved profile, fixed rate or
+  system default. `ProfileCodec` schema 2 reads schema 1.
+- `core/SystemChanges` reads the keys OneHZ may write, restores them and builds the panel
+  report; `SessionArbiter.audit` marks external changes.
+- `ui/tile/OneHzTileService` and `engine/OneHzActionReceiver` reuse the same preference and
+  engine actions as the app.
+- `OneHzKeepAliveService` builds the notification from diagnostics state transitions and
+  removes it when the service stops.
+
 ## Security notes
 
 - `INTERNET` is declared only for the opt-in update checker; there is no background

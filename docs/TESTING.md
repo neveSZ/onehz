@@ -265,6 +265,31 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] SHA-256 file matches the APK.
 - [ ] APK size is reasonable (~3–4 MB).
 
+### Screen-off and Samsung gate (1.3.0)
+
+These checks require the user to unlock the device; they are not automated from ADB.
+
+POCO:
+
+- [ ] Enable OneHZ, turn the AOD rate on, lock and unlock; the AOD uses the panel minimum
+      and the active profile returns after unlock.
+- [ ] Pause for one hour, lock and unlock; the pause survives, the system values stay
+      restored, and Resume now works.
+- [ ] Set a low-battery rule, lower the battery with `dumpsys battery set level`, and
+      confirm the guard enters and leaves with hysteresis; reset with
+      `dumpsys battery reset`.
+- [ ] After a screen-off period, Usage counts AOD and uncontrolled time separately.
+- [ ] Sleep/Doze still enters and leaves correctly after the AOD reapply change.
+
+Samsung:
+
+- [ ] AOD brightness on, base 10%, night schedule 22:00-07:00 at 15%.
+- [ ] Lock inside the window: the debug key uses the scheduled value inside the band.
+- [ ] Lock outside the window: the key uses the base value.
+- [ ] Restore everything: the key is removed, the rate keys return to the system default
+      and OneHZ turns off.
+- [ ] Re-enable and confirm the rate and AOD still work after the restore.
+
 ## Device matrix
 
 | Device | Android | Software | Build | Status |

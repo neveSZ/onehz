@@ -293,3 +293,38 @@ da sessão por hora e aparece como `—` para sessões menores que 15 minutos ou
 nível aumentou (carregando). Os números incluem o AOD e são medidos pelo OneHZ, não pelo
 sistema; nada é enviado. Se o app não estava rodando a janela inteira, os totais aparecem
 com o prefixo “parcial”.
+
+### Como pauso o OneHZ rapidamente?
+
+Use **Pausar por 1 hora** no card da Home, na notificação, no tile das Configurações
+Rápidas ou no atalho do app. A pausa restaura os valores do sistema e volta sozinha;
+**Retomar agora** encerra antes.
+
+### O que as regras de ativação fazem?
+
+Elas escolhem temporariamente um perfil salvo conforme bateria baixa, carregador ou janela
+de horário. A proteção de bateria tem histerese, o motivo ativo aparece no Diagnóstico e o
+tempo entra em Uso.
+
+### Um app pode usar uma taxa fixa em vez de um perfil?
+
+Sim. A atribuição de um app pode seguir um perfil salvo, fixar uma taxa ou devolver o
+controle ao sistema. A taxa fixa ignora o piso de vídeo enquanto aquele app está em
+primeiro plano.
+
+### O que a tela Alterações no sistema mostra?
+
+As chaves que o OneHZ pode gravar, o valor atual e o original capturado. **Restaurar
+tudo** desliga o controle primeiro e restaura taxa, economia de bateria e brilho do AOD.
+O relatório do painel não inclui lista de apps nem dados pessoais.
+
+### O Uso coleta dados por app?
+
+Não. Ele registra tempo por taxa, AOD e sem controle a partir das transições do motor.
+Atribuição por app exigiria ler o app em primeiro plano o tempo todo.
+
+### Outro app pode controlar o OneHZ?
+
+Sim, pelos broadcasts explícitos de pausa, retomada, perfil e alternância documentados em
+[FEATURES.pt-BR](FEATURES.pt-BR.md). Nenhum dado é retornado e nenhuma operação
+privilegiada é exposta.

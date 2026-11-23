@@ -331,3 +331,26 @@ the system. Fixed rates lock the refresh rate while the app is in the foreground
 the video floor; the system-default target releases the OneHZ values for that app. Editing
 a referenced profile still changes every app that points at it, and backups keep the target
 type. Profile schema 2 reads schema 1 files and the backup keeps the same compatibility.
+
+## 22. Automation
+
+OneHZ accepts explicit broadcasts for automation tools. The actions map to existing user
+actions and return no data:
+
+```text
+io.github.nevesz.onehz.action.PAUSE_TIMED   extra: minutes (1-1440, default 60)
+io.github.nevesz.onehz.action.RESUME
+io.github.nevesz.onehz.action.SET_PROFILE   extra: profileId
+io.github.nevesz.onehz.action.TOGGLE
+```
+
+Send an explicit broadcast to `io.github.nevesz.onehz` (for example with `am broadcast -a
+... -n io.github.nevesz.onehz/.engine.OneHzActionReceiver`). The receiver only selects
+saved profiles and pause/toggle state; there is no privileged operation.
+
+## 23. AOD night schedule (Samsung)
+
+On Samsung panels with AOD brightness support, a night window can use a different
+brightness inside the safety band. The value is chosen when the screen turns off, uses the
+same band and is clamped like the base percentage. Changing the window applies on the next
+lock; nothing is written while the screen is off.

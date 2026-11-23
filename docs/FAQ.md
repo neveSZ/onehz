@@ -287,3 +287,37 @@ minutes are merged. The battery rate is the session's level drop per hour and is
 figures include the Always On Display and are measured by OneHZ, not by the system; they
 are never uploaded. If the app was not running for the whole window, the totals are
 prefixed with “partial”.
+
+### How do I pause OneHZ quickly?
+
+Use **Pause for 1 hour** on the Home card, the notification action, the Quick Settings
+tile or the launcher shortcut. Pausing restores the system values and resumes on its own;
+**Resume now** ends it early.
+
+### What do activation rules do?
+
+They temporarily choose a saved profile based on low battery, the charger or a time
+window. The low-battery guard has hysteresis, and the active reason appears in
+Diagnostics and the activity is counted in Usage.
+
+### Can an app use a fixed rate instead of a profile?
+
+Yes. An app assignment can follow a saved profile, pin a fixed rate or hand control back
+to the system. Fixed rates ignore the video floor while that app is in the foreground.
+
+### What does the System changes screen show?
+
+The keys OneHZ may write, the current value and the captured original. **Restore
+everything** turns control off first and restores the rate, battery-saver and AOD
+brightness values. The panel report contains no installed-app list or personal data.
+
+### Does Usage collect per-app data?
+
+No. It records time per rate, AOD and uncontrolled time from engine transitions. Per-app
+attribution would require reading the foreground app continuously.
+
+### Can another app control OneHZ?
+
+Yes, through the explicit pause, resume, profile and toggle broadcasts documented in
+[FEATURES](FEATURES.md#22-automation). No data is returned and no privileged operation is
+exposed.

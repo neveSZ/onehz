@@ -335,3 +335,26 @@ ignora o piso de vídeo; o alvo "padrão do sistema" libera os valores do OneHZ 
 app. Editar um perfil referenciado continua mudando todos os apps que apontam para ele, e o
 backup mantém o tipo de alvo. O schema 2 de perfis lê arquivos schema 1 e o backup mantém a
 mesma compatibilidade.
+
+## 22. Automação
+
+O OneHZ aceita broadcasts explícitos para ferramentas de automação. As ações mapeiam ações
+que já existem no app e não retornam dados:
+
+```text
+io.github.nevesz.onehz.action.PAUSE_TIMED   extra: minutes (1-1440, padrão 60)
+io.github.nevesz.onehz.action.RESUME
+io.github.nevesz.onehz.action.SET_PROFILE   extra: profileId
+io.github.nevesz.onehz.action.TOGGLE
+```
+
+Envie um broadcast explícito para `io.github.nevesz.onehz` (por exemplo com `am broadcast
+-a ... -n io.github.nevesz.onehz/.engine.OneHzActionReceiver`). O receiver só seleciona
+perfis salvos e estado de pausa/alternância; não há operação privilegiada.
+
+## 23. Agenda noturna do AOD (Samsung)
+
+Em telas Samsung com suporte a brilho do AOD, uma janela noturna pode usar outro brilho
+dentro da faixa de segurança. O valor é escolhido quando a tela apaga, usa a mesma faixa e
+é limitado como o percentual base. Mudar a janela vale no próximo bloqueio; nada é gravado
+com a tela desligada.

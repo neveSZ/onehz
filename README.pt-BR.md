@@ -86,6 +86,12 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | Recurso | O que faz |
 |---|---|
 | **Escada de taxa de atualização** | 1 a 5 faixas decrescentes por perfil, com tempo de espera em cada faixa. |
+| **Controles rápidos** | Pausa de uma hora, tile nas Configurações Rápidas, notificação com estado e atalhos do app. |
+| **Regras de ativação** | Proteção de bateria baixa, carregador e janela de horário, cada uma apontando para um perfil salvo. |
+| **Alvos por app** | Seguir um perfil, fixar uma taxa ou devolver o controle ao sistema. |
+| **Uso** | Tempo por taxa, AOD e sem controle, além da divisão por perfil, tudo local. |
+| **Automação** | Broadcasts explícitos de pausa, retomada, perfil e alternância para ferramentas de automação. |
+| **Agenda noturna do AOD** | Janela de brilho somente Samsung dentro da faixa de segurança. |
 | **Economia / Equilibrado / Desempenho** | Três perfis gerados conforme a tela na primeira abertura; o ativo é escolhido manualmente. |
 | **Economia automática** | Troca para Economia enquanto a economia de bateria do sistema está ligada. Pode ser desligada em **Gerenciar perfis**; cada app pode manter o próprio perfil. |
 | **Perfis customizados** | Criar, editar, renomear e excluir perfis; os base restauram para o padrão do aparelho. |

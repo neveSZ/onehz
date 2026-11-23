@@ -4,6 +4,45 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.0] - 2026-11-23
+
+Local release candidate. The stable tag follows the screen-off and Samsung validation gate.
+
+### Added
+
+- One-hour master pause next to the master switch, with a deadline, a resume action and
+  automatic resume. Pausing restores the captured system values.
+- Quick Settings tile for enable, pause and resume, with a Shizuku-unavailable state.
+- Foreground notification with the active profile and rate, pause/resume and disable.
+- Launcher shortcuts for pause, Economy and diagnostics.
+- System changes screen with the keys OneHZ may write, current and original values,
+  restore-all, an external-change warning and a sanitized panel report export.
+- Usage screen with time per rate, Always On Display and uncontrolled time, plus the
+  profile split, for today and the last seven days.
+- Activation rules: low-battery guard with hysteresis, charging and a time window, each
+  pointing at a saved profile.
+- Per-app fixed rates and a system-default target, with schema 2 profile and backup files
+  that still read schema 1.
+- Suggested filter for unassigned games, players and camera apps.
+- Explicit automation broadcasts for pause, resume, profile selection and toggle.
+- Samsung AOD night brightness schedule and AOD rate reapply after a Doze maintenance
+  window.
+
+### Changed
+
+- Profile duplication and a short undo for profile deletion, including app assignments.
+- The foreground notification updates from state transitions instead of showing a static
+  message.
+- Activation rules, app targets and usage are included in Diagnostics or the existing
+  settings flow without adding new permissions.
+
+### Fixed
+
+- The foreground notification is removed when the service stops.
+- Leaving a Doze maintenance window reapplies the AOD rate instead of waiting for another
+  screen cycle.
+- App targets are applied when the app comes to the foreground.
+
 ## [1.2.2-beta.1] - 2026-11-22
 
 ### Added

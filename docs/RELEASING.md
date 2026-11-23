@@ -33,6 +33,8 @@ Examples:
 | 1.2.0 | 1,020,100 |
 | 1.2.1-beta.1 | 1,020,101 |
 | 1.2.1 | 1,020,200 |
+| 1.3.0-rc.1 | 1,030,099 |
+| 1.3.0 | 1,030,100 |
 
 `1.0.0` is the historical exception (published as `10000`). The jump to
 `1,000,200` is valid because Android only requires the new `versionCode` to be higher

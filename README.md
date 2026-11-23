@@ -84,6 +84,12 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | Feature | What it does |
 |---|---|
 | **Refresh-rate staircase** | 1 to 5 descending tiers per profile, with per-tier hold times. |
+| **Quick controls** | One-hour pause, Quick Settings tile, state-aware notification and launcher shortcuts. |
+| **Activation rules** | Low-battery guard, charging and a time window, each pointing at a saved profile. |
+| **Per-app targets** | Follow a profile, pin a fixed rate or hand control back to the system. |
+| **Usage** | Time per rate, AOD and uncontrolled time, plus the profile split, all local. |
+| **Automation** | Explicit pause, resume, profile and toggle broadcasts for automation tools. |
+| **AOD night schedule** | Samsung-only brightness window inside the safety band. |
 | **Economy / Balanced / Performance** | Three device-aware profiles created on first open; the active one is selected manually. |
 | **Automatic Economy** | Switches to Economy while the system battery saver is on. Can be disabled in **Manage profiles**; each app can keep its own profile. |
 | **Custom profiles** | Create, edit, rename and delete profiles; built-ins restore to the device defaults. |

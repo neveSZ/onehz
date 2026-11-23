@@ -81,11 +81,11 @@ keyPassword=...
 `version.properties` is the single source of truth:
 
 ```properties
-versionName=1.2.1
-versionCode=1020200
+versionName=1.3.0
+versionCode=1030100
 ```
 
-The release workflow checks that the tag (`v1.2.1`) matches `versionName`. The
+The release workflow checks that the tag (`v1.3.0`) matches `versionName`. The
 full versionCode scheme is documented in [RELEASING](RELEASING.md#versioning).
 
 ## R8
