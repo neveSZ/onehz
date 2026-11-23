@@ -71,12 +71,22 @@ data class DeviceProfile(
     val isFixed: Boolean get() = frequency.isFixed
 }
 
-/** A package assigned to a saved profile. The profile itself is never copied. */
+/** What an app assignment does: follow a saved profile, pin a rate, or leave it alone. */
+sealed interface AppTarget {
+    data class Profile(val profileId: String) : AppTarget
+    data class Fixed(val hz: Int) : AppTarget
+    data object Ignore : AppTarget
+}
+
+/** A package assigned to a target. Profiles themselves are never copied. */
 data class AppAssignment(
     val packageName: String,
-    val profileId: String,
+    val target: AppTarget,
     val ignoreEco: Boolean = false
-)
+) {
+    val profileId: String?
+        get() = (target as? AppTarget.Profile)?.profileId
+}
 
 data class ProfileState(
     val profiles: List<DeviceProfile>,

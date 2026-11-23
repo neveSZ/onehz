@@ -58,6 +58,7 @@ import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.apps.AppCatalog
 import io.github.nevesz.onehz.core.apps.InstalledApp
 import io.github.nevesz.onehz.core.profile.AppAssignment
+import io.github.nevesz.onehz.core.profile.AppTarget
 import io.github.nevesz.onehz.core.profile.DeviceProfile
 import io.github.nevesz.onehz.core.profile.ProfileKind
 import io.github.nevesz.onehz.core.profile.ProfileStore
@@ -248,6 +249,7 @@ fun AppsScreen(
                     app = app,
                     configured = assignment != null,
                     profile = profile,
+                    target = assignment?.target,
                     ignoreEco = assignment?.ignoreEco == true,
                     selectionMode = selectionMode,
                     checked = app.packageName in selected,
@@ -276,6 +278,7 @@ fun AppsScreen(
             context = context,
             packageName = pkg,
             profiles = profileState.profiles,
+            rates = rates,
             activeProfileId = profileState.activeProfileId,
             onDismiss = { addPkg = null },
             onCustomize = { profileId ->
@@ -295,6 +298,7 @@ fun AppsScreen(
             context = context,
             packageName = pkg,
             profiles = profileState.profiles,
+            rates = rates,
             assignment = assignments[pkg],
             onDismiss = { editPkg = null },
             onEditProfile = { profileId ->
@@ -334,6 +338,7 @@ private fun AppRow(
     app: InstalledApp,
     configured: Boolean,
     profile: DeviceProfile?,
+    target: AppTarget?,
     ignoreEco: Boolean,
     selectionMode: Boolean,
     checked: Boolean,
@@ -351,13 +356,23 @@ private fun AppRow(
                 fontWeight = FontWeight.Medium,
                 maxLines = 1
             )
-            if (configured && profile != null) {
-                Text(
+            when {
+                configured && target is AppTarget.Profile && profile != null -> Text(
                     text = stringResource(R.string.profile_app_assigned, profileLabel(profile)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
+                )
+                configured && target is AppTarget.Fixed -> Text(
+                    text = stringResource(R.string.app_target_fixed_value, target.hz),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                configured && target is AppTarget.Ignore -> Text(
+                    text = stringResource(R.string.app_target_ignore),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -379,20 +394,22 @@ fun AppIcon(context: Context, packageName: String) {
     }
     IconSurface(icon = AppIcons.apps(), bitmap = icon, size = 40)
 }
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun AddSheet(
     context: Context,
     packageName: String,
     profiles: List<DeviceProfile>,
+    rates: List<Int>,
     activeProfileId: String,
     onDismiss: () -> Unit,
     onCustomize: (String) -> Unit,
     onAdded: () -> Unit
 ) {
-    var selectedId by remember { mutableStateOf(activeProfileId) }
+    var target by remember { mutableStateOf<AppTarget>(AppTarget.Profile(activeProfileId)) }
+    val selectedId = (target as? AppTarget.Profile)?.profileId
     val selectedProfile = profiles.firstOrNull { it.id == selectedId }
+    val defaultFixed = rates.firstOrNull { it == 60 } ?: rates.firstOrNull() ?: 60
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
             Modifier
@@ -413,29 +430,72 @@ private fun AddSheet(
                     )
                 }
             }
-            Text(stringResource(R.string.profile_app_choose), style = MaterialTheme.typography.titleSmall)
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 280.dp)) {
-                items(profiles, key = { it.id }) { profile ->
-                    ProfileChoiceRow(
-                        profile = profile,
-                        selected = profile.id == selectedId,
-                        onClick = { selectedId = profile.id }
+            Text(stringResource(R.string.app_target_title), style = MaterialTheme.typography.titleSmall)
+            TargetChips(
+                target = target,
+                onProfile = { target = AppTarget.Profile(activeProfileId) },
+                onFixed = { target = AppTarget.Fixed(defaultFixed) },
+                onIgnore = { target = AppTarget.Ignore }
+            )
+            when (target) {
+                is AppTarget.Profile -> {
+                    Text(stringResource(R.string.profile_app_choose), style = MaterialTheme.typography.titleSmall)
+                    LazyColumn(Modifier.fillMaxWidth().heightIn(max = 260.dp)) {
+                        items(profiles, key = { it.id }) { profile ->
+                            ProfileChoiceRow(
+                                profile = profile,
+                                selected = profile.id == selectedId,
+                                onClick = { target = AppTarget.Profile(profile.id) }
+                            )
+                        }
+                    }
+                    selectedProfile?.let { profile ->
+                        Text(
+                            text = stringResource(R.string.profile_reference_hint, profileLabel(profile)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                is AppTarget.Fixed -> {
+                    Text(
+                        text = stringResource(R.string.app_target_fixed_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    LazyColumn(Modifier.fillMaxWidth().heightIn(max = 220.dp)) {
+                        items(rates.sortedDescending()) { hz ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .selectable(
+                                        selected = target == AppTarget.Fixed(hz),
+                                        role = Role.RadioButton,
+                                        onClick = { target = AppTarget.Fixed(hz) }
+                                    )
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(selected = target == AppTarget.Fixed(hz), onClick = null)
+                                Text(
+                                    text = stringResource(R.string.app_target_fixed_value, hz),
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                AppTarget.Ignore -> {
+                    Text(
+                        text = stringResource(R.string.app_target_ignore_desc),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-            selectedProfile?.let { profile ->
-                Text(
-                    text = stringResource(R.string.profile_reference_hint, profileLabel(profile)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
             Button(
                 onClick = {
-                    ProfileStore.saveAssignment(
-                        context,
-                        AppAssignment(packageName, selectedId)
-                    )
+                    ProfileStore.saveAssignment(context, AppAssignment(packageName, target))
                     OneHzEngine.reapply()
                     onAdded()
                 },
@@ -444,42 +504,45 @@ private fun AddSheet(
                 Icon(AppIcons.add(), contentDescription = null)
                 Text(stringResource(R.string.profile_assign), Modifier.padding(start = 6.dp))
             }
-            OutlinedButton(
-                onClick = {
-                    val created = ProfileStore.createCustom(
-                        context,
-                        AppCatalog.label(context, packageName),
-                        selectedId
-                    )
-                    if (created != null) {
-                        ProfileStore.saveAssignment(
+            if (target is AppTarget.Profile) {
+                OutlinedButton(
+                    onClick = {
+                        val created = ProfileStore.createCustom(
                             context,
-                            AppAssignment(packageName, created.id)
+                            AppCatalog.label(context, packageName),
+                            selectedId
                         )
-                        OneHzEngine.reapply()
-                        onCustomize(created.id)
-                    } else {
-                        Toast.makeText(
-                            context,
-                            R.string.profile_limit_reached,
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.profile_app_create))
+                        if (created != null) {
+                            ProfileStore.saveAssignment(
+                                context,
+                                AppAssignment(packageName, AppTarget.Profile(created.id))
+                            )
+                            OneHzEngine.reapply()
+                            onCustomize(created.id)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                R.string.profile_limit_reached,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(stringResource(R.string.profile_app_create))
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun EditSheet(
     context: Context,
     packageName: String,
     profiles: List<DeviceProfile>,
+    rates: List<Int>,
     assignment: AppAssignment?,
     onDismiss: () -> Unit,
     onEditProfile: (String) -> Unit,
@@ -487,23 +550,30 @@ private fun EditSheet(
     onRemoved: () -> Unit
 ) {
     if (assignment == null) return
-    var selectedId by remember(assignment.profileId) { mutableStateOf(assignment.profileId) }
+    var target by remember(assignment.target) { mutableStateOf(assignment.target) }
     var ignoreEco by remember(assignment.ignoreEco) { mutableStateOf(assignment.ignoreEco) }
     var confirmRemove by remember { mutableStateOf(false) }
+    val selectedId = (target as? AppTarget.Profile)?.profileId
     val selectedProfile = profiles.firstOrNull { it.id == selectedId }
-    val canIgnoreEco = selectedProfile?.kind != ProfileKind.ECONOMY
+    val canIgnoreEco = target !is AppTarget.Ignore &&
+        selectedProfile?.kind != ProfileKind.ECONOMY
+    val defaultFixed = rates.firstOrNull { it == 60 } ?: rates.firstOrNull() ?: 60
 
-    fun save(profileId: String = selectedId, ignore: Boolean = ignoreEco) {
-        val effectiveIgnore = if (
-            profiles.firstOrNull { it.id == profileId }?.kind == ProfileKind.ECONOMY
+    fun save(next: AppTarget, ignore: Boolean = ignoreEco) {
+        val effectiveIgnore = if (next is AppTarget.Ignore) {
+            false
+        } else if (profiles.firstOrNull { it.id == (next as? AppTarget.Profile)?.profileId }
+                ?.kind == ProfileKind.ECONOMY
         ) {
             false
         } else {
             ignore
         }
+        target = next
+        ignoreEco = effectiveIgnore
         ProfileStore.saveAssignment(
             context,
-            AppAssignment(packageName, profileId, effectiveIgnore)
+            AppAssignment(packageName, next, effectiveIgnore)
         )
         OneHzEngine.reapply()
         onChanged()
@@ -529,25 +599,68 @@ private fun EditSheet(
                     )
                 }
             }
-            Text(stringResource(R.string.profile_app_choose), style = MaterialTheme.typography.titleSmall)
-            LazyColumn(Modifier.fillMaxWidth().heightIn(max = 240.dp)) {
-                items(profiles, key = { it.id }) { profile ->
-                    ProfileChoiceRow(
-                        profile = profile,
-                        selected = profile.id == selectedId,
-                        onClick = {
-                            selectedId = profile.id
-                            save(profileId = profile.id)
+            Text(stringResource(R.string.app_target_title), style = MaterialTheme.typography.titleSmall)
+            TargetChips(
+                target = target,
+                onProfile = { save(AppTarget.Profile(profiles.first().id)) },
+                onFixed = { save(AppTarget.Fixed(defaultFixed)) },
+                onIgnore = { save(AppTarget.Ignore) }
+            )
+            when (target) {
+                is AppTarget.Profile -> {
+                    Text(stringResource(R.string.profile_app_choose), style = MaterialTheme.typography.titleSmall)
+                    LazyColumn(Modifier.fillMaxWidth().heightIn(max = 240.dp)) {
+                        items(profiles, key = { it.id }) { profile ->
+                            ProfileChoiceRow(
+                                profile = profile,
+                                selected = profile.id == selectedId,
+                                onClick = { save(AppTarget.Profile(profile.id)) }
+                            )
                         }
+                    }
+                    selectedProfile?.let { profile ->
+                        Text(
+                            text = stringResource(R.string.profile_reference_hint, profileLabel(profile)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                is AppTarget.Fixed -> {
+                    Text(
+                        text = stringResource(R.string.app_target_fixed_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    LazyColumn(Modifier.fillMaxWidth().heightIn(max = 220.dp)) {
+                        items(rates.sortedDescending()) { hz ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .selectable(
+                                        selected = target == AppTarget.Fixed(hz),
+                                        role = Role.RadioButton,
+                                        onClick = { save(AppTarget.Fixed(hz)) }
+                                    )
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                RadioButton(selected = target == AppTarget.Fixed(hz), onClick = null)
+                                Text(
+                                    text = stringResource(R.string.app_target_fixed_value, hz),
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                AppTarget.Ignore -> {
+                    Text(
+                        text = stringResource(R.string.app_target_ignore_desc),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-            }
-            selectedProfile?.let { profile ->
-                Text(
-                    text = stringResource(R.string.profile_reference_hint, profileLabel(profile)),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             }
             ToggleRow(
                 title = stringResource(R.string.ignore_eco_label),
@@ -557,12 +670,14 @@ private fun EditSheet(
                 enabled = canIgnoreEco,
                 onCheckedChange = {
                     ignoreEco = it
-                    save(ignore = it)
+                    save(target, it)
                 }
             )
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { onEditProfile(selectedId) }) {
-                    Text(stringResource(R.string.profile_edit))
+                if (target is AppTarget.Profile) {
+                    Button(onClick = { onEditProfile(selectedId!!) }) {
+                        Text(stringResource(R.string.profile_edit))
+                    }
                 }
                 TextButton(onClick = { confirmRemove = true }) {
                     Text(stringResource(R.string.remove), color = MaterialTheme.colorScheme.error)
@@ -584,8 +699,36 @@ private fun EditSheet(
                 ProfileStore.removeAssignment(context, packageName)
                 OneHzEngine.reapply()
                 onRemoved()
+                onDismiss()
             },
             onDismiss = { confirmRemove = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun TargetChips(
+    target: AppTarget,
+    onProfile: () -> Unit,
+    onFixed: () -> Unit,
+    onIgnore: () -> Unit
+) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FilterChip(
+            selected = target is AppTarget.Profile,
+            onClick = onProfile,
+            label = { Text(stringResource(R.string.app_target_profile)) }
+        )
+        FilterChip(
+            selected = target is AppTarget.Fixed,
+            onClick = onFixed,
+            label = { Text(stringResource(R.string.app_target_fixed)) }
+        )
+        FilterChip(
+            selected = target is AppTarget.Ignore,
+            onClick = onIgnore,
+            label = { Text(stringResource(R.string.app_target_ignore)) }
         )
     }
 }

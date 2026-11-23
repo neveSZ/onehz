@@ -14,8 +14,10 @@ class ProfileCodecTest {
         profiles = ProfileDefaults.forRates(listOf(30, 60, 90, 120)),
         activeProfileId = "balanced",
         assignments = listOf(
-            AppAssignment("com.example.game", "performance"),
-            AppAssignment("com.example.reader", "economy", ignoreEco = true)
+            AppAssignment("com.example.game", AppTarget.Profile("performance")),
+            AppAssignment("com.example.reader", AppTarget.Profile("economy"), ignoreEco = true),
+            AppAssignment("com.example.player", AppTarget.Fixed(60)),
+            AppAssignment("com.example.bank", AppTarget.Ignore)
         ),
         autoEconomyOnBatterySaver = false
     )
@@ -38,7 +40,7 @@ class ProfileCodecTest {
     @Test
     fun `invalid schema is rejected`() {
         val raw = ProfileCodec.encode(state)
-            .replace("\"schemaVersion\":1", "\"schemaVersion\":99")
+            .replace("\"schemaVersion\":2", "\"schemaVersion\":99")
         assertNull(ProfileCodec.decode(raw))
     }
 
@@ -54,7 +56,11 @@ class ProfileCodecTest {
     fun `assignment to unknown profile is dropped`() {
         val raw = ProfileCodec.encode(state).replace("\"performance\"", "\"missing\"")
         val decoded = ProfileCodec.decode(raw)
-        assertEquals(listOf("com.example.reader"), decoded?.assignments?.map { it.packageName })
+        val packages = decoded?.assignments?.map { it.packageName }
+        assertNotNull(packages)
+        assertTrue("com.example.game" !in packages!!)
+        assertTrue("com.example.reader" in packages)
+        assertEquals(3, packages.size)
     }
 
     @Test

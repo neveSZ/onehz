@@ -116,7 +116,7 @@ object BackupManager {
                 assignment
             } else {
                 missingAssignments++
-                assignment.copy(profileId = fallbackId)
+                assignment.copy(target = io.github.nevesz.onehz.core.profile.AppTarget.Profile(fallbackId))
             }
         }
         val active = data.state.activeProfileId.takeIf { it in validIds } ?: fallbackId

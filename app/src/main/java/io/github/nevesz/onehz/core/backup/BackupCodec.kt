@@ -43,7 +43,8 @@ data class BackupData(
 /** Versioned JSON file format used by manual export/import. */
 object BackupCodec {
 
-    const val SCHEMA_VERSION = 1
+    const val SCHEMA_VERSION = 2
+    const val MIN_SCHEMA_VERSION = 1
     const val APP_ID = "io.github.nevesz.onehz"
 
     fun encode(data: BackupData): String = JSONObject().apply {
@@ -85,7 +86,9 @@ object BackupCodec {
         if (text.isEmpty()) return null
         return runCatching {
             val root = JSONObject(text)
-            if (root.optInt("schemaVersion", -1) != SCHEMA_VERSION) return null
+            if (root.optInt("schemaVersion", -1) !in MIN_SCHEMA_VERSION..SCHEMA_VERSION) {
+                return null
+            }
             if (root.optString("app") != APP_ID) return null
 
             val profileJson = root.optJSONObject("profileState") ?: return null

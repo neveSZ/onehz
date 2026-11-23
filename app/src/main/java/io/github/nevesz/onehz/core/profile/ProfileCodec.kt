@@ -12,7 +12,8 @@ import org.json.JSONObject
  */
 object ProfileCodec {
 
-    const val SCHEMA_VERSION = 1
+    const val SCHEMA_VERSION = 2
+    const val MIN_SCHEMA_VERSION = 1
     const val MAX_PROFILES = 32
     const val MAX_ASSIGNMENTS = 512
     const val MAX_NAME_LENGTH = 40
@@ -31,7 +32,11 @@ object ProfileCodec {
             state.assignments.forEach { assignment ->
                 put(JSONObject().apply {
                     put("packageName", assignment.packageName)
-                    put("profileId", assignment.profileId)
+                    when (val target = assignment.target) {
+                        is AppTarget.Profile -> put("profileId", target.profileId)
+                        is AppTarget.Fixed -> put("fixedHz", target.hz)
+                        AppTarget.Ignore -> put("ignore", true)
+                    }
                     put("ignoreEco", assignment.ignoreEco)
                 })
             }
@@ -70,7 +75,8 @@ object ProfileCodec {
         if (text.isEmpty()) return null
         return runCatching {
             val root = JSONObject(text)
-            if (root.optInt("schemaVersion", -1) != SCHEMA_VERSION) return null
+            val schema = root.optInt("schemaVersion", -1)
+            if (schema !in MIN_SCHEMA_VERSION..SCHEMA_VERSION) return null
             val profilesJson = root.optJSONArray("profiles") ?: return null
             if (profilesJson.length() == 0 || profilesJson.length() > MAX_PROFILES) return null
 
@@ -90,13 +96,24 @@ object ProfileCodec {
                 for (index in 0 until limit) {
                     val item = assignmentsJson.optJSONObject(index) ?: continue
                     val packageName = item.optString("packageName").trim()
-                    val profileId = item.optString("profileId").trim()
                     if (!PACKAGE_PATTERN.matches(packageName)) continue
-                    if (profiles.none { it.id == profileId }) continue
                     if (assignments.any { it.packageName == packageName }) continue
+                    val target = when {
+                        item.optBoolean("ignore", false) -> AppTarget.Ignore
+                        item.has("fixedHz") -> {
+                            val hz = item.optInt("fixedHz", 0)
+                            if (hz <= 0) continue
+                            AppTarget.Fixed(hz)
+                        }
+                        else -> {
+                            val profileId = item.optString("profileId").trim()
+                            if (profiles.none { it.id == profileId }) continue
+                            AppTarget.Profile(profileId)
+                        }
+                    }
                     assignments += AppAssignment(
                         packageName = packageName,
-                        profileId = profileId,
+                        target = target,
                         ignoreEco = item.optBoolean("ignoreEco", false)
                     )
                 }

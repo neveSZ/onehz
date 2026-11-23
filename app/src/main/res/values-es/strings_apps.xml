@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_target_title">Qué usa esta app</string>
+    <string name="app_target_profile">Perfil</string>
+    <string name="app_target_fixed">Tasa fija</string>
+    <string name="app_target_ignore">Predeterminado del sistema</string>
+    <string name="app_target_ignore_desc">OneHZ deja de controlar mientras esta app está en primer plano.</string>
+    <string name="app_target_fixed_desc">Fija esta tasa mientras la app está en primer plano.</string>
+    <string name="app_target_fixed_value">%1$d Hz</string>
+</resources>

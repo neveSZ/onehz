@@ -2,6 +2,7 @@ package io.github.nevesz.onehz.engine
 
 import android.content.Context
 import io.github.nevesz.onehz.core.FrequencyProfile
+import io.github.nevesz.onehz.core.profile.AppTarget
 import io.github.nevesz.onehz.core.profile.DeviceProfile
 import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.profile.VideoSettings
@@ -13,7 +14,8 @@ enum class IdleReason {
     PAUSED,
     AOD_DISABLED,
     PROFILE_DISABLED,
-    PROFILE_EMPTY
+    PROFILE_EMPTY,
+    APP_IGNORED
 }
 
 data class ResolvedPolicy(
@@ -41,6 +43,7 @@ data class PolicyInput(
     val appProfile: DeviceProfile? = null,
     val appPackageName: String? = null,
     val appIgnoreEco: Boolean = false,
+    val appTarget: AppTarget? = null,
     val paused: Boolean = false,
     val ruleProfile: DeviceProfile? = null,
     val ruleLayer: String? = null
@@ -89,6 +92,7 @@ object PolicyResolver {
                 appProfile = appProfile,
                 appPackageName = assignment?.packageName,
                 appIgnoreEco = assignment?.ignoreEco == true,
+                appTarget = assignment?.target,
                 paused = io.github.nevesz.onehz.core.OneHzPreferences.isPaused(context),
                 ruleProfile = ruleProfile,
                 ruleLayer = ruleLayer
@@ -119,12 +123,28 @@ object PolicyResolver {
             return applyProfile(rule, input.ruleLayer ?: "rule", index)
         }
 
-        val app = input.appProfile?.takeIf { it.frequency.steps.isNotEmpty() }
+        if (input.appTarget is AppTarget.Ignore) {
+            return PolicyDecision.Idle(IdleReason.APP_IGNORED)
+        }
+
+        val app = when (val target = input.appTarget) {
+            is AppTarget.Fixed -> DeviceProfile(
+                id = "app_fixed_${target.hz}",
+                kind = io.github.nevesz.onehz.core.profile.ProfileKind.CUSTOM,
+                frequency = FrequencyProfile.fixed(target.hz),
+                video = VideoSettings(enabled = false, minHz = target.hz)
+            )
+            else -> input.appProfile?.takeIf { it.frequency.steps.isNotEmpty() }
+        }
+        val appLayer = when (val target = input.appTarget) {
+            is AppTarget.Fixed -> "app:fixed:${target.hz}"
+            else -> "app:${input.appPackageName ?: app?.id}"
+        }
         if (input.batterySaver && input.autoEconomy) {
             if (app != null && input.appIgnoreEco) {
                 return applyProfile(
                     app,
-                    "app:${input.appPackageName ?: app.id}",
+                    appLayer,
                     index,
                     appPackage = input.appPackageName
                 )
@@ -137,7 +157,7 @@ object PolicyResolver {
         if (app != null) {
             return applyProfile(
                 app,
-                "app:${input.appPackageName ?: app.id}",
+                appLayer,
                 index,
                 appPackage = input.appPackageName
             )

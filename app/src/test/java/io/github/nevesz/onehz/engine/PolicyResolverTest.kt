@@ -48,7 +48,8 @@ class PolicyResolverTest {
         appIgnoreEco: Boolean = false,
         paused: Boolean = false,
         ruleProfile: DeviceProfile? = null,
-        ruleLayer: String? = null
+        ruleLayer: String? = null,
+        appTarget: io.github.nevesz.onehz.core.profile.AppTarget? = null
     ) = PolicyInput(
         screenOff = screenOff,
         batterySaver = batterySaver,
@@ -61,10 +62,32 @@ class PolicyResolverTest {
         appProfile = app,
         appPackageName = app?.let { "com.example.app" },
         appIgnoreEco = appIgnoreEco,
+        appTarget = appTarget,
         paused = paused,
         ruleProfile = ruleProfile,
         ruleLayer = ruleLayer
     )
+
+    @Test
+    fun `fixed app target pins the rate`() {
+        val decision = PolicyResolver.decide(
+            input(appTarget = io.github.nevesz.onehz.core.profile.AppTarget.Fixed(60)),
+            0
+        )
+        assertTrue(decision is PolicyDecision.Apply)
+        val policy = (decision as PolicyDecision.Apply).policy
+        assertEquals("app:fixed:60", policy.layer)
+        assertEquals(60, policy.profile.steps.first().hz)
+    }
+
+    @Test
+    fun `ignored app stops control`() {
+        val decision = PolicyResolver.decide(
+            input(appTarget = io.github.nevesz.onehz.core.profile.AppTarget.Ignore),
+            0
+        )
+        assertEquals(PolicyDecision.Idle(IdleReason.APP_IGNORED), decision)
+    }
 
     @Test
     fun `activation rule wins over the app and selected profile`() {

@@ -680,6 +680,7 @@ object OneHzEngine {
             IdleReason.AOD_DISABLED -> "no control: AOD disabled"
             IdleReason.PROFILE_DISABLED -> "no control: no active profile"
             IdleReason.PROFILE_EMPTY -> "no control: no tiers configured"
+            IdleReason.APP_IGNORED -> "no control: app ignored"
             null -> "OneHZ disabled"
         }
         syncTouchMonitoring(false)

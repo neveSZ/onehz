@@ -167,7 +167,11 @@ object ProfileStore {
             ?: state.profiles.firstOrNull { it.id != profileId }
             ?: return false
         val assignments = state.assignments.map {
-            if (it.profileId == profileId) it.copy(profileId = fallback.id) else it
+            if (it.profileId == profileId) {
+                it.copy(target = AppTarget.Profile(fallback.id))
+            } else {
+                it
+            }
         }
         val active = if (state.activeProfileId == profileId) fallback.id else state.activeProfileId
         save(
@@ -187,7 +191,11 @@ object ProfileStore {
     fun saveAssignment(context: Context, assignment: AppAssignment) {
         if (!PACKAGE_PATTERN.matches(assignment.packageName)) return
         val state = state(context)
-        if (state.profiles.none { it.id == assignment.profileId }) return
+        when (val target = assignment.target) {
+            is AppTarget.Profile -> if (state.profiles.none { it.id == target.profileId }) return
+            is AppTarget.Fixed -> if (target.hz <= 0) return
+            AppTarget.Ignore -> Unit
+        }
         val existing = state.assignments.filterNot { it.packageName == assignment.packageName }
         save(context, state.copy(assignments = existing + assignment))
     }
@@ -259,10 +267,21 @@ object ProfileStore {
         val assignments = state.assignments.asSequence()
             .filter { PACKAGE_PATTERN.matches(it.packageName) }
             .map { assignment ->
-                if (profiles.any { it.id == assignment.profileId }) {
-                    assignment
-                } else {
-                    assignment.copy(profileId = balancedId)
+                when (val target = assignment.target) {
+                    is AppTarget.Profile -> {
+                        if (profiles.any { it.id == target.profileId }) {
+                            assignment
+                        } else {
+                            assignment.copy(target = AppTarget.Profile(balancedId))
+                        }
+                    }
+
+                    is AppTarget.Fixed -> {
+                        if (target.hz > 0) assignment
+                        else assignment.copy(target = AppTarget.Profile(balancedId))
+                    }
+
+                    AppTarget.Ignore -> assignment
                 }
             }
             .distinctBy { it.packageName }
@@ -381,7 +400,7 @@ object ProfileStore {
                 null
             }
             if (profileId != null) {
-                assignments += AppAssignment(packageName, profileId, ignoreEco)
+                assignments += AppAssignment(packageName, AppTarget.Profile(profileId), ignoreEco)
             }
         }
 

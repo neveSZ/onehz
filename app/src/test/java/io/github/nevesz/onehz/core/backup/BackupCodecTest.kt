@@ -2,6 +2,7 @@ package io.github.nevesz.onehz.core.backup
 
 import io.github.nevesz.onehz.core.ActivationRules
 import io.github.nevesz.onehz.core.profile.AppAssignment
+import io.github.nevesz.onehz.core.profile.AppTarget
 import io.github.nevesz.onehz.core.profile.ProfileDefaults
 import io.github.nevesz.onehz.core.profile.ProfileState
 import org.json.JSONObject
@@ -17,7 +18,9 @@ class BackupCodecTest {
         state = ProfileState(
             profiles = ProfileDefaults.forRates(listOf(30, 60, 90, 120)),
             activeProfileId = "performance",
-            assignments = listOf(AppAssignment("com.example.game", "performance")),
+            assignments = listOf(
+                AppAssignment("com.example.game", AppTarget.Profile("performance"))
+            ),
             autoEconomyOnBatterySaver = true
         ),
         enabled = true,
@@ -70,8 +73,8 @@ class BackupCodecTest {
     @Test
     fun `unknown schema is rejected`() {
         val raw = BackupCodec.encode(data).replace(
-            "\"schemaVersion\": 1",
-            "\"schemaVersion\": 2"
+            "\"schemaVersion\": 2",
+            "\"schemaVersion\": 3"
         )
         assertNull(BackupCodec.decode(raw))
     }
