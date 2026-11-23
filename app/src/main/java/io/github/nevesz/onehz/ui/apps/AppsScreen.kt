@@ -295,6 +295,7 @@ fun AppsScreen(
             profiles = profileState.profiles,
             rates = rates,
             activeProfileId = profileState.activeProfileId,
+            autoEconomy = profileState.autoEconomyOnBatterySaver,
             onDismiss = { addPkg = null },
             onCustomize = { profileId ->
                 addPkg = null
@@ -315,6 +316,7 @@ fun AppsScreen(
             profiles = profileState.profiles,
             rates = rates,
             assignment = assignments[pkg],
+            autoEconomy = profileState.autoEconomyOnBatterySaver,
             onDismiss = { editPkg = null },
             onEditProfile = { profileId ->
                 editPkg = null
@@ -394,8 +396,8 @@ private fun AppRow(
         when {
             selectionMode && configured -> Checkbox(checked = checked, onCheckedChange = { onClick() })
             configured && ignoreEco -> StatusBadge(
-                text = stringResource(R.string.eco_ignored),
-                tone = StatusTone.WARN,
+                text = stringResource(R.string.eco_kept),
+                tone = StatusTone.OK,
                 icon = AppIcons.batterySaver()
             )
         }
@@ -417,13 +419,17 @@ private fun AddSheet(
     profiles: List<DeviceProfile>,
     rates: List<Int>,
     activeProfileId: String,
+    autoEconomy: Boolean,
     onDismiss: () -> Unit,
     onCustomize: (String) -> Unit,
     onAdded: () -> Unit
 ) {
     var target by remember { mutableStateOf<AppTarget>(AppTarget.Profile(activeProfileId)) }
+    var ignoreEco by remember { mutableStateOf(false) }
     val selectedId = (target as? AppTarget.Profile)?.profileId
     val selectedProfile = profiles.firstOrNull { it.id == selectedId }
+    val canIgnoreEco = target !is AppTarget.Ignore &&
+        selectedProfile?.kind != ProfileKind.ECONOMY
     val defaultFixed = rates.firstOrNull { it == 60 } ?: rates.firstOrNull() ?: 60
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
@@ -508,9 +514,27 @@ private fun AddSheet(
                     )
                 }
             }
+            ToggleRow(
+                title = stringResource(R.string.ignore_eco_label),
+                descriptionOn = stringResource(R.string.ignore_eco_desc_on),
+                descriptionOff = stringResource(R.string.ignore_eco_desc_off),
+                checked = ignoreEco && canIgnoreEco,
+                enabled = canIgnoreEco,
+                onCheckedChange = { ignoreEco = it }
+            )
+            if (autoEconomy && canIgnoreEco) {
+                Text(
+                    text = stringResource(R.string.app_economy_override_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Button(
                 onClick = {
-                    ProfileStore.saveAssignment(context, AppAssignment(packageName, target))
+                    ProfileStore.saveAssignment(
+                        context,
+                        AppAssignment(packageName, target, ignoreEco && canIgnoreEco)
+                    )
                     OneHzEngine.reapply()
                     onAdded()
                 },
@@ -530,7 +554,11 @@ private fun AddSheet(
                         if (created != null) {
                             ProfileStore.saveAssignment(
                                 context,
-                                AppAssignment(packageName, AppTarget.Profile(created.id))
+                                AppAssignment(
+                                    packageName,
+                                    AppTarget.Profile(created.id),
+                                    ignoreEco && canIgnoreEco
+                                )
                             )
                             OneHzEngine.reapply()
                             onCustomize(created.id)
@@ -559,6 +587,7 @@ private fun EditSheet(
     profiles: List<DeviceProfile>,
     rates: List<Int>,
     assignment: AppAssignment?,
+    autoEconomy: Boolean,
     onDismiss: () -> Unit,
     onEditProfile: (String) -> Unit,
     onChanged: () -> Unit,
@@ -688,6 +717,13 @@ private fun EditSheet(
                     save(target, it)
                 }
             )
+            if (autoEconomy && canIgnoreEco) {
+                Text(
+                    text = stringResource(R.string.app_economy_override_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (target is AppTarget.Profile) {
                     Button(onClick = { onEditProfile(selectedId!!) }) {

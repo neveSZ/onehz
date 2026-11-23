@@ -145,10 +145,11 @@
     <string name="delete_selected_confirm_body">The selected apps will no longer have a profile. OneHZ will use the active profile for them.</string>
     <string name="app_added">App added</string>
     <string name="app_removed">App removed</string>
-    <string name="eco_ignored">Economy ignored</string>
+    <string name="eco_kept">Keeps its profile</string>
     <string name="ignore_eco_label">Keep this app\'s profile during battery saver</string>
     <string name="ignore_eco_desc_on">Keeps this app\'s profile even while system battery saver is on.</string>
     <string name="ignore_eco_desc_off">Follows the automatic Economy setting while battery saver is on.</string>
+    <string name="app_economy_override_hint">While battery saver is on, the automatic Economy setting replaces this profile unless the switch above is on.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d selected</item>
         <item quantity="other">%1$d selected</item>

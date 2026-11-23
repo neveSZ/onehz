@@ -49,6 +49,14 @@ ativa, o OneHZ usa Economia mesmo que outro perfil esteja selecionado. O card mo
 perfil selecionado e o perfil em uso. Desligue a **Economia automática** em **Gerenciar
 perfis** para usar sempre o perfil selecionado.
 
+### Por que o perfil do meu app vira Economia com a economia de bateria ligada?
+
+Quando a economia de bateria do sistema está ligada e a **Economia automática** está
+ativada, Economia se aplica a todos os apps, a menos que o app mantenha o próprio perfil.
+Abra **Apps → Configurados**, toque no app e ligue **“Manter o perfil deste app durante a
+economia de bateria”**. A mesma opção aparece ao adicionar o app. A linha do app passa a
+mostrar **Mantém o perfil** em vez do selo de Economia.
+
 ### O que acontece em uma tela com apenas duas taxas?
 
 Os três perfis usam as mesmas duas faixas e diferem apenas no tempo na máxima (1 s / 2 s /

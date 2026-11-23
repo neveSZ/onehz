@@ -43,6 +43,16 @@ All notable changes to OneHZ are documented here. The format follows
   screen cycle.
 - App targets are applied when the app comes to the foreground.
 
+## [1.2.2-beta.2] - 2026-11-23
+
+### Changed
+
+- The per-app battery-saver exception is offered when an app is added, not only when the
+  assignment is edited. The add sheet and the edit sheet now show the same switch, and the
+  chosen value is kept when the app is saved with a new custom profile.
+- The app row badge now reads **Keeps its profile** instead of **Economy ignored**, and uses
+  the normal accent color instead of the warning color.
+
 ## [1.2.2-beta.1] - 2026-11-22
 
 ### Added
@@ -154,7 +164,7 @@ options available while the feature is off.
 ### Changed
 
 - Backup includes the AOD master switch (`aodMasterEnabled`).
-=======
+
 ## [Unreleased]
 
 Modernization pass preparing 1.3.0. No user-facing feature changes yet.

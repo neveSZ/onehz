@@ -1,0 +1,1 @@
+Al añadir una app, la excepción del ahorro de batería ahora aparece directamente en la hoja de alta, no solo después de asignarla. La fila de la app muestra "Mantiene su perfil" en vez de "Economía ignorada". La política no cambia: con el ahorro activo, Economía sigue ganando salvo que la excepción esté activada.
