@@ -798,7 +798,15 @@ object OneHzEngine {
             videoCheckInFlight = false
         }
 
-        if (verdict.source == VideoSignals.Source.UNKNOWN) {
+        val effectiveVerdict = if (verdict.source == VideoSignals.Source.PLAYING) {
+            verdict
+        } else {
+            ShizukuGateway.pipPackage()?.let { pip ->
+                VideoSignals.Verdict(VideoSignals.Source.PIP, pip, "pip")
+            } ?: verdict
+        }
+
+        if (effectiveVerdict.source == VideoSignals.Source.UNKNOWN) {
             videoFailures++
             Diagnostics.log("video", "check unavailable ($reason) $videoFailures/$VIDEO_UNKNOWN_LIMIT")
             if (videoActive && videoFailures >= VIDEO_UNKNOWN_LIMIT) {
@@ -809,30 +817,31 @@ object OneHzEngine {
         }
         videoFailures = 0
 
-        val pkg = verdict.packageName
+        val pkg = effectiveVerdict.packageName
         if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
             foregroundPackage = pkg
             Diagnostics.foregroundPackage.value = pkg
         }
-        val active = verdict.source == VideoSignals.Source.PLAYING
+        val active = effectiveVerdict.source == VideoSignals.Source.PLAYING ||
+            effectiveVerdict.source == VideoSignals.Source.PIP
         val wasActive = videoActive
         val changed = active != wasActive ||
-            (active && (pkg != videoPackage || verdict.source != videoSource))
+            (active && (pkg != videoPackage || effectiveVerdict.source != videoSource))
 
         videoActive = active
         videoPackage = if (active) pkg else null
-        videoSource = if (active) verdict.source else VideoSignals.Source.NONE
+        videoSource = if (active) effectiveVerdict.source else VideoSignals.Source.NONE
         Diagnostics.videoSource.value = videoSource
         Diagnostics.videoDetail.value = buildString {
             if (!pkg.isNullOrBlank()) append(pkg)
-            verdict.detail?.let {
+            effectiveVerdict.detail?.let {
                 if (isNotEmpty()) append(" · ")
                 append(it)
             }
-        }.ifBlank { "—" }
+        }.ifBlank { "-" }
         if (active) {
             if (changed) {
-                Diagnostics.log("video", "active (${verdict.source.name.lowercase()}) in $pkg ($reason)")
+                Diagnostics.log("video", "active (${effectiveVerdict.source.name.lowercase()}) in $pkg ($reason)")
             }
         } else if (wasActive) {
             Diagnostics.log("video", "inactive ($reason) in ${pkg ?: "?"}")

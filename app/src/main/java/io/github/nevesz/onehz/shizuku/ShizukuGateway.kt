@@ -8,6 +8,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import io.github.nevesz.onehz.BuildConfig
+import io.github.nevesz.onehz.core.PipSignals
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.diagnostic.Diagnostics
@@ -271,6 +272,11 @@ object ShizukuGateway {
 
     fun idleState(): String =
         runCatching { service?.idleState() }.getOrNull().orEmpty()
+
+    /** Package in a pinned/PiP task, or null when no PiP window exists. */
+    fun pipPackage(): String? = runCatching {
+        PipSignals.packageName(service?.pipPackage())
+    }.getOrNull()
 
     fun readSystemRate(key: String): String? =
         runCatching { service?.readRefreshRateSetting(key) }.getOrNull()?.takeIf { it.isNotBlank() }

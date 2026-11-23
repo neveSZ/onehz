@@ -417,6 +417,14 @@ class OneHzUserService : IOneHzService.Stub() {
         return DozeState.encode(dump)
     }
 
+    override fun pipPackage(): String = exec(
+        "/system/bin/sh",
+        "-c",
+        "dumpsys activity activities | grep 'mode=pinned'",
+        maxBytes = 32_768,
+        timeoutMs = 2_500
+    ).output
+
     private fun parseForeground(text: String): String? {
         if (text.isBlank()) return null
         val patterns = listOf(

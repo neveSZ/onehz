@@ -71,6 +71,7 @@
     <string name="video_min_hz">Minimum rate during video</string>
     <string name="video_min_hint">Replaces the profile rate while the video is playing.</string>
     <string name="video_state_playing">playing</string>
+    <string name="video_state_pip">picture-in-picture</string>
     <string name="video_state_idle">idle</string>
     <string name="video_diag_title">Video detection</string>
     <string name="video_diag_state">State</string>

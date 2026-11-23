@@ -222,7 +222,8 @@ fun HomeScreen(
     }
     val lastAssignedProfile = lastAssignment?.let { state.profileState.profile(it.profileId) }
     val appliedProfile = activeProfileId?.let { state.profileState.profile(it) }
-    val videoPlaying = videoSource == VideoSignals.Source.PLAYING
+    val videoPlaying = videoSource == VideoSignals.Source.PLAYING ||
+        videoSource == VideoSignals.Source.PIP
     val sourceText = when {
         !state.enabled -> stringResource(R.string.master_off_hint)
         paused -> stringResource(R.string.home_paused_until, pausedUntilLabel)

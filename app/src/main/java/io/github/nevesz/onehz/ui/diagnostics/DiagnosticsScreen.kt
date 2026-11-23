@@ -451,6 +451,7 @@ private fun inputStateLabel(state: InputMonitorState): String = when (state) {
 @Composable
 private fun videoSourceLabel(source: VideoSignals.Source): String = when (source) {
     VideoSignals.Source.PLAYING -> stringResource(R.string.video_state_playing)
+    VideoSignals.Source.PIP -> stringResource(R.string.video_state_pip)
     else -> stringResource(R.string.video_state_idle)
 }
 

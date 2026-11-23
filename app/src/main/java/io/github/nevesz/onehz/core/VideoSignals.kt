@@ -16,7 +16,7 @@ package io.github.nevesz.onehz.core
  */
 object VideoSignals {
 
-    enum class Source { PLAYING, NONE, UNKNOWN }
+    enum class Source { PLAYING, PIP, NONE, UNKNOWN }
 
     data class Verdict(
         val source: Source,
@@ -35,6 +35,7 @@ object VideoSignals {
                     // "screen" came from the old window-held implementation; map it to playing
                     // so an old UserService during an upgrade cannot leave the floor stuck.
                     "playing", "screen" -> Source.PLAYING
+                    "pip" -> Source.PIP
                     "none" -> Source.NONE
                     else -> Source.UNKNOWN
                 }

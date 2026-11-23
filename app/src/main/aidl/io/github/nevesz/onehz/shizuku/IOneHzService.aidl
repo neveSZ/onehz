@@ -52,4 +52,7 @@ interface IOneHzService {
      */
     boolean startForegroundMonitoring(IForegroundCallback callback);
     void stopForegroundMonitoring();
+
+    /** Raw task line for the pinned (PiP) task, or an empty string. */
+    String pipPackage();
 }
