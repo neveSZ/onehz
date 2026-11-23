@@ -4,12 +4,13 @@
 
 | Language | File | Status |
 |---|---|---|
-| English | `app/src/main/res/values/strings.xml`, `app/src/main/res/values/strings_sleep.xml` | Base strings, **AI-generated**, not reviewed by a native speaker |
-| Portuguese (Brazil) | `app/src/main/res/values-pt-rBR/strings.xml`, `app/src/main/res/values-pt-rBR/strings_sleep.xml` | Reviewed by the author |
-| Spanish | `app/src/main/res/values-es/strings.xml`, `app/src/main/res/values-es/strings_sleep.xml` | AI-generated, reviewed for consistency, **not reviewed by a native speaker** |
+| English | `app/src/main/res/values/strings*.xml` | Base strings, **AI-generated**, not reviewed by a native speaker |
+| Portuguese (Brazil) | `app/src/main/res/values-pt-rBR/strings*.xml` | Reviewed by the author |
+| Spanish | `app/src/main/res/values-es/strings*.xml` | AI-generated, reviewed for consistency, **not reviewed by a native speaker** |
 
-Strings may be split into feature files (for example `strings_sleep.xml`); Android merges
-all `values/*.xml` files at build time, so keys must be unique across the whole locale.
+Strings are split across `strings*.xml` feature files (`strings_control.xml`,
+`strings_usage.xml`, `strings_ux.xml`, `strings_sleep.xml`). Android merges all
+`values/*.xml` files at build time, so keys must be unique across the whole locale.
 
 The README, license, and documentation follow the same policy where applicable.
 Corrections from native speakers are very welcome.
@@ -21,18 +22,19 @@ English-only.
 
 ## Files
 
-- English base: `app/src/main/res/values/strings.xml`
-- Portuguese: `app/src/main/res/values-pt-rBR/strings.xml`
-- Spanish: `app/src/main/res/values-es/strings.xml`
-- Sleep strings: `app/src/main/res/values/strings_sleep.xml` and the same file in the
-  `values-pt-rBR` and `values-es` folders
+- English base: `app/src/main/res/values/strings*.xml` (`strings.xml` plus the feature
+  files)
+- Portuguese: `app/src/main/res/values-pt-rBR/strings*.xml`
+- Spanish: `app/src/main/res/values-es/strings*.xml`
+- Feature files: `strings_control.xml`, `strings_usage.xml`, `strings_ux.xml` and
+  `strings_sleep.xml` in each locale folder
 - Locale list: `app/src/main/res/xml/locales_config.xml`
 - In-app language selector: `core/LanguageManager.kt`
 
 ## Rules
 
-- Keep the same keys in all three locales, across `strings.xml` and feature files such as
-  `strings_sleep.xml`.
+- Keep the same keys in all three locales, across `strings.xml` and the split
+  `strings*.xml` feature files.
 - State-aware switch copy uses `_on` / `_off` suffixes (`sleep_doze_music_on`, or
   `aod_hint_on` / `aod_hint_off`). Keep the title stable and describe the effect of the
   current state; see [UI guidelines](UI_GUIDELINES.md).

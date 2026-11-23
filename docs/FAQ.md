@@ -111,6 +111,27 @@ A beta uses the same signing key and a higher `versionCode` than the current sta
 it installs over the stable release and keeps your settings. The next stable has a higher
 `versionCode`, so installing it over the beta returns you to the stable channel.
 
+### What changed in 1.3.0?
+
+- Quick controls: one-hour pause, an on/off Quick Settings tile, a state-aware notification
+  with an optional pinned mode, and launcher shortcuts. Pause restores the system values
+  and resumes on its own.
+- Usage shows time per rate, AOD and uncontrolled time for today and seven days, plus the
+  Sleep/Doze summary and session history. The Sleep detail keeps a compact summary and
+  links to Usage.
+- Activation rules for low battery, charging and a time window; per-app fixed rates and a
+  system-default target. Profile schema 2 still reads schema 1.
+- Picture-in-picture is detected from the pinned task, and Samsung gets an AOD night
+  schedule.
+- System changes lists the keys OneHZ may write and restores the captured values.
+- Export a backup before downgrading: older versions cannot read schema 2 app targets.
+
+### What changed in 1.2.2-beta.2?
+
+- The per-app battery-saver exception is now offered when an app is added, not only when
+  its assignment is edited. The app row shows **Keeps its profile** instead of **Economy
+  ignored**.
+
 ### What changed in 1.2.1?
 
 - The AOD rate switch is available on every supported device. Non-Samsung devices show

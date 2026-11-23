@@ -121,6 +121,28 @@ então ela instala por cima da versão estável mantendo os ajustes. A próxima 
 `versionCode` maior, então instalar a estável por cima da beta devolve você ao canal
 estável.
 
+### O que mudou na 1.3.0?
+
+- Controles rápidos: pausa de uma hora, tile liga/desliga nas Configurações Rápidas,
+  notificação com estado e modo fixado opcional, além de atalhos do app. A pausa restaura
+  os valores do sistema e volta sozinha.
+- O Uso mostra tempo por taxa, AOD e sem controle hoje e nos últimos sete dias, além do
+  resumo de Sono/Doze e do histórico de sessões. O detalhe do Sono mantém um resumo
+  compacto e aponta para Uso.
+- Regras de ativação para bateria baixa, carregador e janela de horário; taxa fixa por app
+  e alvo "padrão do sistema". O schema 2 de perfis ainda lê o schema 1.
+- Picture-in-picture é detectado pela tarefa fixada, e a Samsung ganha uma agenda noturna
+  do AOD.
+- Alterações no sistema lista as chaves que o OneHZ pode gravar e restaura os valores
+  capturados.
+- Exporte um backup antes de fazer downgrade: versões antigas não leem os alvos schema 2.
+
+### O que mudou na 1.2.2-beta.2?
+
+- A exceção de economia de bateria por app agora aparece ao adicionar o app, não só ao
+  editar a atribuição. A linha do app mostra **Mantém o perfil** em vez de **Economia
+  ignorada**.
+
 ### O que mudou na 1.2.1?
 
 - O switch de taxa do AOD está disponível em todos os aparelhos suportados. Aparelhos que

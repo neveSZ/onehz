@@ -225,9 +225,13 @@ Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 
 - Ajustes → **Backup e restauração** grava um JSON versionado pelo seletor de arquivos do
   sistema, sem permissão de armazenamento;
-- o arquivo inclui todos os perfis, o perfil ativo, atribuições de apps, vídeo, AOD,
-  configurações do Sono, switch mestre e a lista global de apps forçados como vídeo;
-- a lista de exceções do Doze, as medições e o estado de pausa do Sono não entram;
+- o arquivo inclui todos os perfis, o perfil ativo, atribuições de apps e os alvos delas,
+  regras de ativação, vídeo, AOD, configurações do Sono, switch mestre e a lista global de
+  apps forçados como vídeo;
+- os alvos por app usam o schema 2 de perfis, que ainda lê arquivos schema 1, e o backup
+  mantém a mesma compatibilidade;
+- a lista de exceções do Doze, as medições e o estado de pausa do Sono, além da fixação da
+  notificação, são estado do sistema/transitório e não entram;
 - um backup criado antes de o Sono existir **não** altera as configurações atuais do Sono na importação;
 - tema, idioma, diagnóstico, cache de atualização e snapshots internos de restauração do
   sistema não entram;
@@ -244,11 +248,11 @@ Português (Brasil), inglês e espanhol. Veja o
 ## 16. Sono (Doze forçado)
 
 Opcional e desligado por padrão. O switch do Sono na tela inicial é o único master. Com o
-Sono desligado, o detalhe mantém as opções de comportamento, a lista de apps que acordam e
-as medições históricas visíveis e editáveis; apenas "Testar agora" e pausar/retomar exigem
-o Sono ligado. O detalhe mostra uma nota compacta quando o Sono está desligado, uma linha
-de status só para estados de ativo/pausado/falha e um aviso dispensável dentro do card
-"Como funciona".
+Sono desligado, o detalhe mantém as opções de comportamento e a lista de apps que acordam
+visíveis e editáveis, e mostra o resumo compacto das medições; apenas "Testar agora" e
+pausar/retomar exigem o Sono ligado. O detalhe mostra uma nota compacta quando o Sono está
+desligado, uma linha de status só para estados de ativo/pausado/falha e um aviso dispensável
+dentro do card "Como funciona".
 
 Ao apagar a tela, o OneHZ pede ao sistema para entrar em
 Doze na hora, em vez de esperar os temporizadores de inatividade. O primeiro enable pede
@@ -257,16 +261,19 @@ confirmação porque notificações e chamadas por internet podem atrasar:
 - Doze profundo (padrão) ou leve;
 - condições reavaliadas com a tela apagada: pausa de uma hora, janela de horário que pode
   cruzar a meia-noite, carregamento e reprodução de música;
+- um switch **Doze durante o carregamento** (ligado por padrão) que mantém o Doze na
+  tomada; desligue para pausar enquanto carrega;
 - um switch **Doze com música** (desligado por padrão) para manter o Doze durante o áudio;
 - `unforce` ao acender a tela, ao desligar o recurso e depois de crash ou reboot;
 - verificação pelo estado real de device-idle, com a mensagem explícita "a ROM não entrou
   em Doze" em vez de um falso sucesso;
 - lista de apps que podem acordar o aparelho, gravada nas exceções do Doze pelo Shizuku;
-- medições locais: tempo com a tela apagada e em Doze nas últimas 24h, último descanso
-  (30 min ou mais), nível de bateria e %/h por sessão.
+- medições locais: o detalhe mostra um resumo compacto (tela apagada, Doze e última
+  sessão); as linhas completas de 24h e o histórico de sessões ficam em Uso.
 
 Nenhum wake lock é mantido e nada é consultado por polling. As medições são locais e
-identificadas como medidas pelo OneHZ; incluem o tempo de AOD. Veja [SLEEP.md](SLEEP.md).
+identificadas como medidas pelo OneHZ; incluem o tempo de AOD. O detalhe aponta para Uso
+para o detalhamento completo. Veja [SLEEP.md](SLEEP.md).
 
 ## 17. Controles rápidos
 
@@ -282,6 +289,13 @@ Shizuku está indisponível.
 **Notificação.** A notificação do serviço em primeiro plano mostra o perfil ativo e a taxa
 atual, e oferece **Pausar por 1 hora** / **Retomar agora** e **Desativar**. Ela só é
 atualizada quando o estado muda.
+
+**Fixar notificação.** Ajustes → Avançado → **Fixar notificação** vem desligado. Quando
+está desligado, a notificação pode ser dispensada com o deslize e fica oculta até o OneHZ
+ser aberto de novo. Quando está ligado, uma confirmação explica que o Android 14 ou mais
+recente ainda permite o deslize e o OneHZ restaura a notificação na hora; isso não mantém
+o serviço vivo nem muda o consumo de bateria. A opção pode ser desligada no mesmo lugar a
+qualquer momento.
 
 **Atalhos do app.** Pressione e segure o ícone na tela inicial para **Pausar 1 h**,
 **Economia** e **Diagnóstico**.

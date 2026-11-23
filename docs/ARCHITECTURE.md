@@ -221,16 +221,20 @@ Default rules, stored per profile and editable in the profile editor:
 
 The forced-app list is global. The engine combines the active profile's rules with that
 list into `VideoConfig`, which is sent to the privileged service over the binder. Package
-names are validated and the list is capped at 64 entries. With no positive signal
-enabled, video is not detected except for forced apps.
+names are validated and the list is capped at 64 entries. The activity dump also reports
+the pinned task; `PipSignals` extracts its package and the engine keeps the video floor
+while that picture-in-picture window is visible. With no positive signal enabled, video is
+not detected except for forced apps.
 
 ## Backup
 
 `BackupManager` writes a versioned JSON file through the Storage Access Framework. The
-file contains profiles, app assignments, the master switch, AOD settings and the forced
-video list. It deliberately excludes internal system-restore snapshots, update caches,
-logs and diagnostics. On import, unsupported rates are adapted to the current panel and
-missing profile references fall back to Balanced.
+file contains profiles, app assignments and their targets, activation rules, Sleep
+settings, the master switch, AOD settings and the forced video list. App targets use
+profile schema 2, which still reads schema 1 files. The notification pin is deliberately
+excluded, along with internal system-restore snapshots, update caches, logs and
+diagnostics. On import, unsupported rates are adapted to the current panel and missing
+profile references fall back to Balanced.
 
 The result is cached for a short time in the UserService, keyed by package and config.
 When the configuration changes the engine re-probes immediately instead of waiting for
@@ -323,16 +327,24 @@ level increased.
 
 - `core/RateStats` accumulates applied-rate time from engine transitions in daily buckets
   and persists a small JSON blob on a debounced schedule.
+- `SleepLedger` is the single source for screen-off and Doze spans. Usage and the Sleep
+  detail read the same records, so the 24-hour rows, the session history and the compact
+  summary share one computation.
 - `core/ActivationRules` keeps the battery, charging and time-window rules, the hysteresis
   and the pure precedence evaluator used by `PolicyResolver`.
 - `core/AppTarget` is a sealed target on every app assignment: saved profile, fixed rate or
   system default. `ProfileCodec` schema 2 reads schema 1.
+- `core/PipSignals` parses the pinned task from the activity dump; the engine keeps the
+  video floor while that picture-in-picture window is visible.
 - `core/SystemChanges` reads the keys OneHZ may write, restores them and builds the panel
   report; `SessionArbiter.audit` marks external changes.
 - `ui/tile/OneHzTileService` and `engine/OneHzActionReceiver` reuse the same preference and
   engine actions as the app.
 - `OneHzKeepAliveService` builds the notification from diagnostics state transitions and
   removes it when the service stops.
+- `engine/NotificationPinPolicy` decides whether a dismissed foreground notification may be
+  posted again. When pinned, the service restores it; otherwise the dismissal is respected
+  until the app is opened again.
 
 ## Security notes
 

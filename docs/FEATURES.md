@@ -222,10 +222,13 @@ System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
 
 - Settings → **Backup and restore** writes a versioned JSON file through the system file
   picker, without storage permissions;
-- the file includes all profiles, the active profile, app assignments, video settings,
-  AOD settings, Sleep settings, the master switch, and the forced-video app list;
-- the system Doze exceptions, Sleep measurements, and the pause/forced state are
-  system/transient state and are not included;
+- the file includes all profiles, the active profile, app assignments and their targets,
+  activation rules, video settings, AOD settings, Sleep settings, the master switch, and
+  the forced-video app list;
+- app targets use profile schema 2, which still reads schema 1 files, and the backup keeps
+  the same compatibility;
+- the system Doze exceptions, Sleep measurements, the pause/forced state and the
+  notification pin are transient/system state and are not included;
 - theme, language, diagnostics, update cache, and internal system-restore snapshots are
   not included;
 - a backup created before Sleep settings existed does **not** change the current Sleep
@@ -243,10 +246,10 @@ Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS
 
 Optional and off by default. The first enable asks for confirmation because notifications
 and internet calls can be delayed. The Sleep switch on Home is the only master. With Sleep
-off, the detail keeps the behavior options, wake-up list and historical measurements
-visible and editable; only "Test now" and pause/resume require Sleep to be on. The detail
-shows a compact note when Sleep is off, a status line only for active, paused or failure
-states, and one dismissible warning inside the "How it works" card.
+off, the detail keeps the behavior options and wake-up list visible and editable, and
+shows the compact measurement summary; only "Test now" and pause/resume require Sleep to
+be on. The detail shows a compact note when Sleep is off, a status line only for active,
+paused or failure states, and one dismissible warning inside the "How it works" card.
 
 When the screen turns off, OneHZ asks the platform to
 enter Doze immediately instead of waiting for the inactivity timers:
@@ -261,11 +264,12 @@ enter Doze immediately instead of waiting for the inactivity timers:
 - verification through the real device-idle state, with an explicit "the ROM did not
   enter Doze" message instead of a false success;
 - a wake-up list that adds apps to the system Doze exception list through Shizuku;
-- local measurements: screen-off and Doze time in the last 24 hours, the last rest
-  period (30 minutes or more), battery level and percent per hour per session.
+- local measurements: the detail shows a compact summary (screen-off, Doze and last
+  session); the full 24-hour rows and the session history live in Usage.
 
 No wake lock is held and nothing is polled. The measurements are local and labelled as
-measured by OneHZ; they include the Always On Display time. See [SLEEP.md](SLEEP.md).
+measured by OneHZ; they include the Always On Display time. The detail links to Usage for
+the full breakdown. See [SLEEP.md](SLEEP.md).
 
 ## 17. Quick controls
 
@@ -281,6 +285,12 @@ unavailable.
 **Notification.** The foreground notification shows the active profile and the current
 rate, and exposes **Pause for 1 hour** / **Resume now** plus **Disable**. It updates only
 when the state changes.
+
+**Pin notification.** Settings → Advanced → **Pin notification** is off by default. When
+off, the notification can be swiped away and stays hidden until OneHZ is opened again.
+When on, a confirmation explains that Android 14 and later still allows the swipe and
+OneHZ restores the notification immediately; it does not keep the service alive or change
+battery use. Turn it off in the same place at any time.
 
 **App shortcuts.** Long-press the launcher icon for **Pause 1 h**, **Economy** and
 **Diagnostics**.
