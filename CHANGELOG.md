@@ -39,10 +39,13 @@ All notable changes to OneHZ are documented here. The format follows
   It updates from state transitions instead of showing a static message.
 - Activation rules, app targets and usage are included in Diagnostics or the existing
   settings flow without adding new permissions.
+- Baseline Profile regenerated for 1.3.0; cold start median is 195 ms on the tested POCO.
 
 ### Fixed
 
 - The foreground notification is removed when the service stops.
+- A late notification refresh can no longer re-post the foreground notification after OneHZ
+  is disabled.
 - Leaving a Doze maintenance window reapplies the AOD rate instead of waiting for another
   screen cycle.
 - App targets are applied when the app comes to the foreground.
