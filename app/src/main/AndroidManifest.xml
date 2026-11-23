@@ -29,6 +29,10 @@
 
         <profileable android:shell="true" />
 
+        <meta-data
+            android:name="android.app.shortcuts"
+            android:resource="@xml/shortcuts" />
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"

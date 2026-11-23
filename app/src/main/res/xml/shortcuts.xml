@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="pause"
+        android:enabled="true"
+        android:icon="@drawable/ic_pause"
+        android:shortcutShortLabel="@string/shortcut_pause_short"
+        android:shortcutLongLabel="@string/shortcut_pause_long">
+        <intent
+            android:action="io.github.nevesz.onehz.action.PAUSE"
+            android:targetClass="io.github.nevesz.onehz.ui.MainActivity"
+            android:targetPackage="io.github.nevesz.onehz" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="economy"
+        android:enabled="true"
+        android:icon="@drawable/ic_battery_saver"
+        android:shortcutShortLabel="@string/shortcut_economy_short"
+        android:shortcutLongLabel="@string/shortcut_economy_long">
+        <intent
+            android:action="io.github.nevesz.onehz.action.ECONOMY"
+            android:targetClass="io.github.nevesz.onehz.ui.MainActivity"
+            android:targetPackage="io.github.nevesz.onehz" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="diagnostics"
+        android:enabled="true"
+        android:icon="@drawable/ic_bug_report"
+        android:shortcutShortLabel="@string/shortcut_diagnostics_short"
+        android:shortcutLongLabel="@string/shortcut_diagnostics_long">
+        <intent
+            android:action="io.github.nevesz.onehz.action.DIAGNOSTICS"
+            android:targetClass="io.github.nevesz.onehz.ui.MainActivity"
+            android:targetPackage="io.github.nevesz.onehz" />
+    </shortcut>
+</shortcuts>

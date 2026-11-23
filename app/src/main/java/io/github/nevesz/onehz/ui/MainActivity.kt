@@ -1,5 +1,6 @@
 package io.github.nevesz.onehz.ui
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
@@ -54,6 +55,7 @@ import androidx.core.view.WindowCompat
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayRates
 import io.github.nevesz.onehz.core.LanguageManager
+import io.github.nevesz.onehz.core.MasterPause
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.backup.BackupManager
@@ -94,6 +96,34 @@ class MainActivity : AppCompatActivity() {
         UpdateCenter.maybeCheckOnOpen(this)
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleShortcut(intent)
+    }
+
+    private fun handleShortcut(intent: Intent?) {
+        when (intent?.action) {
+            ACTION_PAUSE -> {
+                val until = System.currentTimeMillis() + MasterPause.ONE_HOUR_MS
+                OneHzPreferences.setMasterPausedUntil(this, until)
+                OneHzEngine.pauseFor(MasterPause.ONE_HOUR_MS)
+                Toast.makeText(this, R.string.shortcut_pause_done, Toast.LENGTH_SHORT).show()
+            }
+
+            ACTION_ECONOMY -> {
+                val economy = ProfileStore.state(this).economyProfile()
+                if (economy != null) {
+                    ProfileStore.select(this, economy.id)
+                    OneHzEngine.reapply()
+                    Toast.makeText(this, R.string.shortcut_economy_done, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            ACTION_DIAGNOSTICS -> recreate()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         OneHzEngine.refreshSystemState()
@@ -106,6 +136,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         applyWindowColors(initialMode)
+        val openDiagnostics = intent?.action == ACTION_DIAGNOSTICS
+        if (!openDiagnostics) handleShortcut(intent)
 
         setContent {
             var themeMode by remember { mutableStateOf(initialMode) }
@@ -114,6 +146,7 @@ class MainActivity : AppCompatActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     OneHzShell(
                         themeMode = themeMode,
+                        openDiagnostics = openDiagnostics,
                         onThemeModeChange = { mode ->
                             OneHzPreferences.setThemeMode(this, mode)
                             applyNightMode(mode)
@@ -143,6 +176,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun applyWindowColors(mode: ThemeMode) {
         applyWindowAppearance(window, mode, systemDark())
+    }
+
+    companion object {
+        const val ACTION_PAUSE = "io.github.nevesz.onehz.action.PAUSE"
+        const val ACTION_ECONOMY = "io.github.nevesz.onehz.action.ECONOMY"
+        const val ACTION_DIAGNOSTICS = "io.github.nevesz.onehz.action.DIAGNOSTICS"
     }
 }
 
@@ -177,16 +216,19 @@ private fun editorProfileId(key: String?): String? =
 @Composable
 private fun OneHzShell(
     themeMode: ThemeMode,
+    openDiagnostics: Boolean,
     onThemeModeChange: (ThemeMode) -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var tab by rememberSaveable { mutableIntStateOf(0) }
+    var tab by rememberSaveable { mutableIntStateOf(if (openDiagnostics) 2 else 0) }
     var showLanguage by rememberSaveable { mutableStateOf(false) }
     var setupDone by remember { mutableStateOf(OneHzPreferences.setupCompleted(context)) }
     var showSetup by rememberSaveable { mutableStateOf(!setupDone) }
     var editorKey by rememberSaveable { mutableStateOf<String?>(null) }
-    var settingsPage by rememberSaveable { mutableStateOf<String?>(null) }
+    var settingsPage by rememberSaveable {
+        mutableStateOf<String?>(if (openDiagnostics) "diagnostics" else null)
+    }
     var showProfiles by rememberSaveable { mutableStateOf(false) }
     var returnToProfiles by rememberSaveable { mutableStateOf(false) }
     var homePage by rememberSaveable { mutableStateOf<String?>(null) }

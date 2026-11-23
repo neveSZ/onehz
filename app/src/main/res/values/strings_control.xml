@@ -12,4 +12,12 @@
     <string name="notification_active">%1$s · %2$d Hz</string>
     <string name="notification_paused">Paused until %1$s</string>
     <string name="notification_idle">No control</string>
+    <string name="shortcut_pause_short">Pause 1 h</string>
+    <string name="shortcut_pause_long">Pause OneHZ for one hour</string>
+    <string name="shortcut_economy_short">Economy</string>
+    <string name="shortcut_economy_long">Switch to the Economy profile</string>
+    <string name="shortcut_diagnostics_short">Diagnostics</string>
+    <string name="shortcut_diagnostics_long">Open the engine diagnostics</string>
+    <string name="shortcut_pause_done">Paused for one hour</string>
+    <string name="shortcut_economy_done">Economy profile selected</string>
 </resources>
