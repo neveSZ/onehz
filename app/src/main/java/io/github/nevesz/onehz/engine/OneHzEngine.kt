@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
 import android.os.SystemClock
+import io.github.nevesz.onehz.core.MasterPause
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.TierStep
 import io.github.nevesz.onehz.core.VideoSignals
@@ -76,8 +77,7 @@ object OneHzEngine {
     private var videoSettings = VideoSettings(enabled = false, minHz = 60)
     private var videoCheckInFlight = false
 
-    private val stepRunnable: Runnable = Runnable {
-        if (!started) {
+    private val stepRunnable: Runnable = Runnable {        if (!started) {
             timersPending = false
             return@Runnable
         }
@@ -102,6 +102,17 @@ object OneHzEngine {
             timersPending = false
         } else {
             scheduleNext(null)
+        }
+    }
+
+    /** Ends a time-boxed master pause; re-applies the current policy or reschedules. */
+    private val pauseResume: Runnable = Runnable {
+        if (!started) return@Runnable
+        val ctx = appContext ?: return@Runnable
+        if (OneHzPreferences.isPaused(ctx)) {
+            schedulePauseResume(ctx)
+        } else {
+            applyCurrent("pause-ended")
         }
     }
 
@@ -397,6 +408,29 @@ object OneHzEngine {
         if (started) applyCurrent("manual")
     }
 
+    /** Stops control for [durationMs] and releases the system values; resumes on its own. */
+    fun pauseFor(durationMs: Long) = handler.post {
+        val ctx = appContext ?: return@post
+        OneHzPreferences.setMasterPausedUntil(ctx, System.currentTimeMillis() + durationMs)
+        applyCurrent("pause")
+    }
+
+    /** Ends a pause immediately. */
+    fun resumeNow() = handler.post {
+        val ctx = appContext ?: return@post
+        OneHzPreferences.setMasterPausedUntil(ctx, 0L)
+        applyCurrent("resume-now")
+    }
+
+    private fun schedulePauseResume(context: Context) {
+        handler.removeCallbacks(pauseResume)
+        val remaining = MasterPause.remainingMs(
+            OneHzPreferences.masterPausedUntil(context),
+            System.currentTimeMillis()
+        )
+        handler.postDelayed(pauseResume, remaining.coerceAtLeast(1_000L))
+    }
+
     /** Video rules or the forced app list changed: probe again instead of waiting for a touch. */
     fun onVideoConfigChanged() = handler.post {
         val ctx = appContext ?: return@post
@@ -482,12 +516,16 @@ object OneHzEngine {
             goIdle(null)
             return
         }
+        handler.removeCallbacks(pauseResume)
         Diagnostics.log("engine", "apply reason=$reason")
         // Always trust the live system state over a cached broadcast.
         ecoActive = (ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
 
         when (val decision = PolicyResolver.resolve(ctx, screenOff, ecoActive, foregroundPackage, index)) {
-            is PolicyDecision.Idle -> goIdle(decision.reason)
+            is PolicyDecision.Idle -> {
+                goIdle(decision.reason)
+                if (decision.reason == IdleReason.PAUSED) schedulePauseResume(ctx)
+            }
             is PolicyDecision.Apply -> {
                 val policy = decision.policy
                 videoSettings = policy.video
@@ -589,6 +627,7 @@ object OneHzEngine {
         Diagnostics.observedHz.value = 0
         Diagnostics.activeTierKey.value = "OFF"
         Diagnostics.activeTier.value = when (reason) {
+            IdleReason.PAUSED -> "paused"
             IdleReason.AOD_DISABLED -> "no control: AOD disabled"
             IdleReason.PROFILE_DISABLED -> "no control: no active profile"
             IdleReason.PROFILE_EMPTY -> "no control: no tiers configured"

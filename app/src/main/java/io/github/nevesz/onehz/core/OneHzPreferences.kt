@@ -12,6 +12,7 @@ import io.github.nevesz.onehz.core.update.UpdateStatus
 /** Local configuration for OneHZ. All values are stored on-device only. */
 object OneHzPreferences {
     private const val KEY_ENABLED = "enabled"
+    private const val KEY_MASTER_PAUSED_UNTIL = "master_paused_until"
     internal const val KEY_PROFILE_NORMAL = "profile_normal"
     internal const val KEY_PROFILE_NORMAL_ENABLED = "profile_normal_enabled"
     internal const val KEY_PROFILE_ECO = "profile_eco"
@@ -53,7 +54,22 @@ object OneHzPreferences {
     fun prefs(context: Context) = PreferencesStore.get(context)
 
     fun isEnabled(context: Context) = prefs(context).getBoolean(KEY_ENABLED, false)
-    fun setEnabled(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_ENABLED, value) }
+    fun setEnabled(context: Context, value: Boolean) = prefs(context).edit {
+        putBoolean(KEY_ENABLED, value)
+        if (!value) remove(KEY_MASTER_PAUSED_UNTIL)
+    }
+
+    /** Wall-clock deadline for the time-boxed master pause; 0 means not paused. */
+    fun masterPausedUntil(context: Context) = prefs(context).getLong(KEY_MASTER_PAUSED_UNTIL, 0L)
+
+    fun setMasterPausedUntil(context: Context, value: Long) =
+        prefs(context).edit {
+            if (value <= 0L) remove(KEY_MASTER_PAUSED_UNTIL)
+            else putLong(KEY_MASTER_PAUSED_UNTIL, value)
+        }
+
+    fun isPaused(context: Context, now: Long = System.currentTimeMillis()): Boolean =
+        MasterPause.isPaused(masterPausedUntil(context), now)
 
     // ---------------------------------------------------------------- profiles
 

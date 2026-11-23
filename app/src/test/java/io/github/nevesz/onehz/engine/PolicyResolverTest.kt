@@ -45,7 +45,8 @@ class PolicyResolverTest {
         selectedProfile: DeviceProfile? = balanced,
         economyProfile: DeviceProfile? = economy,
         app: DeviceProfile? = null,
-        appIgnoreEco: Boolean = false
+        appIgnoreEco: Boolean = false,
+        paused: Boolean = false
     ) = PolicyInput(
         screenOff = screenOff,
         batterySaver = batterySaver,
@@ -57,8 +58,30 @@ class PolicyResolverTest {
         economyProfile = economyProfile,
         appProfile = app,
         appPackageName = app?.let { "com.example.app" },
-        appIgnoreEco = appIgnoreEco
+        appIgnoreEco = appIgnoreEco,
+        paused = paused
     )
+
+    @Test
+    fun `pause wins over every other policy`() {
+        val decision = PolicyResolver.decide(
+            input(
+                screenOff = true,
+                aodMasterEnabled = true,
+                aodRateEnabled = true,
+                app = appProfile,
+                paused = true
+            ),
+            0
+        )
+        assertEquals(PolicyDecision.Idle(IdleReason.PAUSED), decision)
+    }
+
+    @Test
+    fun `pause leaves the system alone while screen is on`() {
+        val decision = PolicyResolver.decide(input(paused = true), 0)
+        assertEquals(PolicyDecision.Idle(IdleReason.PAUSED), decision)
+    }
 
     @Test
     fun `screen off with AOD disabled leaves the system alone`() {

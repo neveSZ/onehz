@@ -10,6 +10,7 @@ import io.github.nevesz.onehz.core.profile.VideoSettings
 data class TierRequest(val hz: Int, val index: Int, val count: Int, val source: String)
 
 enum class IdleReason {
+    PAUSED,
     AOD_DISABLED,
     PROFILE_DISABLED,
     PROFILE_EMPTY
@@ -39,7 +40,8 @@ data class PolicyInput(
     val economyProfile: DeviceProfile?,
     val appProfile: DeviceProfile? = null,
     val appPackageName: String? = null,
-    val appIgnoreEco: Boolean = false
+    val appIgnoreEco: Boolean = false,
+    val paused: Boolean = false
 )
 
 sealed interface PolicyDecision {
@@ -49,6 +51,7 @@ sealed interface PolicyDecision {
 
 /**
  * Precedence:
+ * 0. paused -> no control;
  * 1. screen off -> AOD;
  * 2. battery saver + automatic economy -> Economy (unless the app ignores it);
  * 3. foreground app with an assignment -> the assigned profile;
@@ -78,13 +81,17 @@ object PolicyResolver {
                 economyProfile = state.economyProfile(),
                 appProfile = appProfile,
                 appPackageName = assignment?.packageName,
-                appIgnoreEco = assignment?.ignoreEco == true
+                appIgnoreEco = assignment?.ignoreEco == true,
+                paused = io.github.nevesz.onehz.core.OneHzPreferences.isPaused(context)
             ),
             index
         )
     }
 
     fun decide(input: PolicyInput, index: Int): PolicyDecision {
+        if (input.paused) {
+            return PolicyDecision.Idle(IdleReason.PAUSED)
+        }
         if (input.screenOff) {
             if (!input.aodMasterEnabled || !input.aodRateEnabled) {
                 return PolicyDecision.Idle(IdleReason.AOD_DISABLED)
