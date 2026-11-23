@@ -34,6 +34,9 @@ All notable changes to OneHZ are documented here. The format follows
   guard change.
 - The old pause-with-music preference and 1.2.x backups migrate to the positive Doze with
   music switch without changing the user's previous choice.
+- Diagnostics is always available from Settings. The hidden seven-tap unlock and the
+  one-way hide toggle were removed, so a fresh install can reach the engine report without
+  a gesture.
 
 ## [1.2.1] - 2026-11-22
 

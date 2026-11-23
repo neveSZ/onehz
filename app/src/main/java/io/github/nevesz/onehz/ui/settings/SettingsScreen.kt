@@ -47,7 +47,6 @@ import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
-import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.components.rememberFullHeightSheetState
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
@@ -63,8 +62,6 @@ import io.github.nevesz.onehz.ui.viewmodel.SettingsViewModel
 fun SettingsScreen(
     themeMode: ThemeMode,
     onThemeModeChange: (ThemeMode) -> Unit,
-    diagnosticsEnabled: Boolean,
-    onDiagnosticsEnabledChange: (Boolean) -> Unit,
     onOpenLanguage: () -> Unit,
     onOpenSetup: () -> Unit,
     onOpenAbout: () -> Unit,
@@ -151,34 +148,23 @@ fun SettingsScreen(
             )
         }
 
-        if (diagnosticsEnabled) {
-            item {
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.settings_advanced),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+        item {
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.settings_advanced),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+            )
+        }
+        item {
+            OneHzCard {
+                SettingRow(
+                    icon = AppIcons.bugReport(),
+                    title = stringResource(R.string.settings_diagnostics),
+                    subtitle = stringResource(R.string.settings_diagnostics_desc),
+                    onClick = onOpenDiagnostics
                 )
-            }
-            item {
-                OneHzCard {
-                    SettingRow(
-                        icon = AppIcons.bugReport(),
-                        title = stringResource(R.string.settings_diagnostics),
-                        subtitle = stringResource(R.string.settings_diagnostics_desc),
-                        onClick = onOpenDiagnostics
-                    )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    ToggleRow(
-                        title = stringResource(R.string.settings_diagnostics_visible),
-                        description = stringResource(R.string.settings_diagnostics_visible_desc),
-                        checked = true,
-                        onCheckedChange = { on ->
-                            if (!on) onDiagnosticsEnabledChange(false)
-                        }
-                    )
-                }
             }
         }
 

@@ -178,6 +178,11 @@ Nenhum dado pessoal é coletado. A verificação opcional de atualizações usa 
 somente depois que você ativa; não há analytics, anúncios nem telemetria. Veja
 [PRIVACIDADE](../PRIVACY.md).
 
+### Como abro o Diagnóstico?
+
+Abra **Ajustes → Diagnóstico**. O relatório é gerado localmente, pode ser pausado ou
+limpo nessa tela e só é compartilhado quando você copia.
+
 ### O brilho do AOD ficou preso depois de desinstalar. O que faço?
 
 Execute:
@@ -186,7 +191,7 @@ Execute:
 adb shell settings delete system debug_aod_brightness
 ```
 
-ou reinstale o OneHZ e use **Sobre/Diagnóstico → Restaurar brilho do sistema**.
+ou reinstale o OneHZ e use **Ajustes → Diagnóstico → Restaurar brilho do sistema**.
 
 ### Por que o perfil de economia se chama Economia?
 

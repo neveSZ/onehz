@@ -162,10 +162,7 @@
     <string name="settings_advanced">Avançado</string>
     <string name="settings_diagnostics">Diagnóstico</string>
     <string name="settings_diagnostics_desc">Estado do motor e registros</string>
-    <string name="settings_diagnostics_visible">Mostrar diagnóstico</string>
-    <string name="settings_diagnostics_visible_desc">Mantém a tela de diagnóstico disponível nos Ajustes</string>
     <string name="settings_about_desc">Versão, licença e créditos</string>
-    <string name="diagnostics_unlocked">Diagnóstico ativado</string>
     <string name="appearance_hint">Escolha como o OneHZ deve aparecer. O modo AMOLED usa preto puro para economizar bateria em telas OLED.</string>
     <string name="theme_system">Seguir o sistema</string>
     <string name="theme_system_desc">Claro ou escuro, conforme o aparelho</string>

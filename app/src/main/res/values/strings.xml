@@ -159,10 +159,7 @@
     <string name="settings_advanced">Advanced</string>
     <string name="settings_diagnostics">Diagnostics</string>
     <string name="settings_diagnostics_desc">Engine status and logs</string>
-    <string name="settings_diagnostics_visible">Show diagnostics</string>
-    <string name="settings_diagnostics_visible_desc">Keep the diagnostics screen available in Settings</string>
     <string name="settings_about_desc">Version, license, and credits</string>
-    <string name="diagnostics_unlocked">Diagnostics enabled</string>
     <string name="appearance_hint">Choose how OneHZ looks. AMOLED uses true black to save power on OLED panels.</string>
     <string name="theme_system">Follow system</string>
     <string name="theme_system_desc">Light or dark, following the device</string>

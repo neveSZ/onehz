@@ -190,12 +190,10 @@ private fun OneHzShell(
     var showProfiles by rememberSaveable { mutableStateOf(false) }
     var returnToProfiles by rememberSaveable { mutableStateOf(false) }
     var homePage by rememberSaveable { mutableStateOf<String?>(null) }
-    var diagnosticsEnabled by remember { mutableStateOf(OneHzPreferences.diagnosticsEnabled(context)) }
     var dataVersion by remember { mutableIntStateOf(0) }
     var pendingImport by remember { mutableStateOf<Uri?>(null) }
     var importResult by remember { mutableStateOf<ImportResult?>(null) }
     val rates = remember { DisplayRates.main(context).ifEmpty { ProfileDefaults.FALLBACK_RATES } }
-    val diagnosticsUnlockedMessage = stringResource(R.string.diagnostics_unlocked)
     val exportSuccessMessage = stringResource(R.string.backup_export_success)
     val exportFailedMessage = stringResource(R.string.backup_export_failed)
 
@@ -289,7 +287,6 @@ private fun OneHzShell(
                 SetupScreen(context) {
                     setupDone = true
                     showSetup = false
-                    diagnosticsEnabled = OneHzPreferences.diagnosticsEnabled(context)
                     dataVersion++
                 }
             }
@@ -414,18 +411,7 @@ private fun OneHzShell(
         ) { padding ->
             Surface(modifier = Modifier.padding(padding)) {
                 when (page) {
-                    "about" -> AboutScreen(
-                        diagnosticsEnabled = diagnosticsEnabled,
-                        onUnlockDiagnostics = {
-                            OneHzPreferences.setDiagnosticsEnabled(context, true)
-                            diagnosticsEnabled = true
-                            Toast.makeText(
-                                context,
-                                diagnosticsUnlockedMessage,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    )
+                    "about" -> AboutScreen()
                     "diagnostics" -> DiagnosticsScreen()
                     "backup" -> BackupScreen(
                         onExport = { exportLauncher.launch(backupFileName()) },
@@ -502,11 +488,6 @@ private fun OneHzShell(
                 else -> SettingsScreen(
                     themeMode = themeMode,
                     onThemeModeChange = onThemeModeChange,
-                    diagnosticsEnabled = diagnosticsEnabled,
-                    onDiagnosticsEnabledChange = { enabled ->
-                        OneHzPreferences.setDiagnosticsEnabled(context, enabled)
-                        diagnosticsEnabled = enabled
-                    },
                     onOpenLanguage = { showLanguage = true },
                     onOpenSetup = { showSetup = true },
                     onOpenAbout = { settingsPage = "about" },

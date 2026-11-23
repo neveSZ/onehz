@@ -1,6 +1,5 @@
 package io.github.nevesz.onehz.ui.about
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,12 +52,8 @@ private const val SPONSORS_URL = "https://github.com/sponsors/neveSZ"
 private const val LIVEPIX_URL = "https://livepix.gg/onehz"
 
 @Composable
-fun AboutScreen(
-    diagnosticsEnabled: Boolean,
-    onUnlockDiagnostics: () -> Unit
-) {
+fun AboutScreen() {
     val resources = LocalResources.current
-    var taps by remember { mutableIntStateOf(0) }
     var showLicenses by remember { mutableStateOf(false) }
 
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
@@ -84,14 +78,7 @@ fun AboutScreen(
                         Text(
                             text = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.clickable(enabled = !diagnosticsEnabled) {
-                                taps++
-                                if (taps >= 7) {
-                                    taps = 0
-                                    onUnlockDiagnostics()
-                                }
-                            }
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
