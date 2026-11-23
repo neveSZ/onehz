@@ -118,6 +118,42 @@ object ProfileStore {
         return profile
     }
 
+    /**
+     * Copies any saved profile into a new custom profile. The caller supplies the display
+     * name so the suffix can follow the UI language.
+     */
+    fun duplicateProfile(context: Context, profileId: String, name: String): DeviceProfile? =
+        createCustom(context, name, profileId)
+
+    /**
+     * Restores a profile removed through [deleteProfile], including the app assignments it
+     * had. Used by the undo action, which is intentionally short-lived.
+     */
+    fun restoreDeleted(
+        context: Context,
+        profile: DeviceProfile,
+        assignments: List<AppAssignment>,
+        activeWasDeleted: Boolean
+    ) {
+        val state = state(context)
+        val profiles = state.profiles.filterNot { it.id == profile.id } + profile
+        val packages = assignments.mapTo(mutableSetOf()) { it.packageName }
+        val others = state.assignments.filterNot { it.packageName in packages }
+        val active = if (activeWasDeleted || state.profile(state.activeProfileId) == null) {
+            profile.id
+        } else {
+            state.activeProfileId
+        }
+        save(
+            context,
+            state.copy(
+                profiles = profiles,
+                activeProfileId = active,
+                assignments = others + assignments
+            )
+        )
+    }
+
     fun deleteProfile(
         context: Context,
         profileId: String,

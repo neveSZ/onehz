@@ -30,6 +30,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -38,6 +42,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +67,7 @@ import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.icons.AppIcons
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,6 +87,8 @@ fun ProfilesScreen(
     var createError by remember { mutableStateOf(false) }
     var deleteTarget by remember { mutableStateOf<DeviceProfile?>(null) }
     var resetTarget by remember { mutableStateOf<DeviceProfile?>(null) }
+    val snackbar = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     var showMigration by remember {
         mutableStateOf(OneHzPreferences.profilesMigrationNoticePending(context))
     }
@@ -105,7 +113,8 @@ fun ProfilesScreen(
                     }
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbar) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxWidth().padding(padding),
@@ -143,6 +152,7 @@ fun ProfilesScreen(
                 }
             }
             items(state.profiles, key = { it.id }) { profile ->
+                val copyName = stringResource(R.string.profile_copy_name, profileLabel(profile))
                 ProfileRow(
                     profile = profile,
                     active = profile.id == state.activeProfileId,
@@ -155,6 +165,13 @@ fun ProfilesScreen(
                         }
                     },
                     onEdit = { onEdit(profile.id) },
+                    onDuplicate = {
+                        val copy = ProfileStore.duplicateProfile(context, profile.id, copyName)
+                        if (copy != null) {
+                            changed()
+                            onEdit(copy.id)
+                        }
+                    },
                     onReset = if (profile.isBuiltIn) {
                         { resetTarget = profile }
                     } else {
@@ -210,6 +227,9 @@ fun ProfilesScreen(
         val usage = state.appsUsing(profile.id).size
         val fallback = state.balancedProfile()
         val fallbackName = fallback?.let { profileLabel(it) } ?: stringResource(R.string.profile_balanced_title)
+        val deletedLabel = profileLabel(profile)
+        val deletedMessage = stringResource(R.string.profile_deleted, deletedLabel)
+        val undoLabel = stringResource(R.string.undo)
         val body = if (usage > 0) {
             pluralStringResource(R.plurals.profile_delete_body, usage, usage, fallbackName)
         } else {
@@ -225,10 +245,25 @@ fun ProfilesScreen(
             body = listOfNotNull(body, activeNote).joinToString(" "),
             confirmLabel = stringResource(R.string.profile_delete_confirm),
             onConfirm = {
-                ProfileStore.deleteProfile(context, profile.id, fallback?.id)
-                OneHzEngine.reapply()
-                changed()
-                deleteTarget = null
+                val affected = state.assignments.filter { it.profileId == profile.id }
+                val wasActive = state.activeProfileId == profile.id
+                if (ProfileStore.deleteProfile(context, profile.id, fallback?.id)) {
+                    OneHzEngine.reapply()
+                    changed()
+                    deleteTarget = null
+                    scope.launch {
+                        val result = snackbar.showSnackbar(
+                            message = deletedMessage,
+                            actionLabel = undoLabel,
+                            duration = SnackbarDuration.Short
+                        )
+                        if (result == SnackbarResult.ActionPerformed) {
+                            ProfileStore.restoreDeleted(context, profile, affected, wasActive)
+                            OneHzEngine.reapply()
+                            changed()
+                        }
+                    }
+                }
             },
             onDismiss = { deleteTarget = null }
         )
@@ -286,6 +321,7 @@ private fun ProfileRow(
     usageCount: Int,
     onSelect: () -> Unit,
     onEdit: () -> Unit,
+    onDuplicate: () -> Unit,
     onReset: (() -> Unit)?,
     onDelete: (() -> Unit)?
 ) {
@@ -359,6 +395,14 @@ private fun ProfileRow(
             TextButton(onClick = onEdit) {
                 Icon(AppIcons.tune(), contentDescription = null, modifier = Modifier.size(18.dp))
                 Text(stringResource(R.string.profile_edit), Modifier.padding(start = 6.dp))
+            }
+            TextButton(onClick = onDuplicate) {
+                Icon(
+                    AppIcons.contentCopy(),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(stringResource(R.string.profile_duplicate), Modifier.padding(start = 6.dp))
             }
             onReset?.let {
                 TextButton(onClick = it) {

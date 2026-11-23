@@ -370,6 +370,10 @@
     </plurals>
     <string name="profile_delete_body_unused">Este perfil será removido.</string>
     <string name="profile_delete_confirm">Excluir</string>
+    <string name="profile_duplicate">Duplicar</string>
+    <string name="profile_copy_name">%1$s (cópia)</string>
+    <string name="profile_deleted">%1$s excluído</string>
+    <string name="undo">Desfazer</string>
     <string name="profile_create_title">Novo perfil</string>
     <string name="profile_create_body">O novo perfil começa como uma cópia independente de %1$s. Você pode editá-lo depois.</string>
     <string name="profile_create_confirm">Criar</string>

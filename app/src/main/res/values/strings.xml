@@ -366,6 +366,10 @@
     </plurals>
     <string name="profile_delete_body_unused">This profile will be removed.</string>
     <string name="profile_delete_confirm">Delete</string>
+    <string name="profile_duplicate">Duplicate</string>
+    <string name="profile_copy_name">%1$s (copy)</string>
+    <string name="profile_deleted">%1$s deleted</string>
+    <string name="undo">Undo</string>
     <string name="profile_create_title">New profile</string>
     <string name="profile_create_body">The new profile starts as an independent copy of %1$s. You can edit it after creating.</string>
     <string name="profile_create_confirm">Create</string>
