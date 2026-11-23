@@ -4,11 +4,6 @@ OneHZ is a personal project. Items here are intentions, not commitments.
 
 ## Planned
 
-### PiP (picture-in-picture) video handling
-
-- Current video detection relies on the foreground app and its media/codec state.
-- PiP windows need a different signal; this is not implemented yet.
-
 ### Lighter foreground lookup
 
 - The task-stack listener currently runs one `dumpsys activity activities` per foreground

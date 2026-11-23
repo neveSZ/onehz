@@ -265,6 +265,13 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] SHA-256 file matches the APK.
 - [ ] APK size is reasonable (~3–4 MB).
 
+### Picture-in-picture
+
+- [ ] Play a video in YouTube or VLC, press Home and confirm the PiP window appears.
+- [ ] With video mode on, Home shows the video floor and the applied rate follows it.
+- [ ] Close the PiP window; the video floor is released on the next probe.
+- [ ] Repeat with the app in the foreground and no PiP; behavior is unchanged.
+
 ### Screen-off and Samsung gate (1.3.0)
 
 These checks require the user to unlock the device; they are not automated from ADB.
