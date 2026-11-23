@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usage_title">Usage</string>
+    <string name="usage_desc">Time OneHZ spent at each rate while it was running. Everything stays on this device.</string>
+    <string name="usage_today">Today</string>
+    <string name="usage_week">Last 7 days</string>
+    <string name="usage_rate">%1$d Hz</string>
+    <string name="usage_aod">Always On Display</string>
+    <string name="usage_uncontrolled">Uncontrolled</string>
+    <string name="usage_profile">%1$s</string>
+    <string name="usage_empty">No data yet. Use the device with OneHZ enabled.</string>
+    <string name="usage_duration">%1$d h %2$d min</string>
+    <string name="usage_duration_min">%1$d min</string>
+    <string name="usage_short">Time at each rate, local only</string>
+</resources>

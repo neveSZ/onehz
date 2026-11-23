@@ -67,6 +67,7 @@ fun SettingsScreen(
     onOpenAbout: () -> Unit,
     onOpenDiagnostics: () -> Unit,
     onOpenSystemChanges: () -> Unit,
+    onOpenUsage: () -> Unit,
     onOpenBackup: () -> Unit
 ) {
     val vm: SettingsViewModel = viewModel()
@@ -160,6 +161,13 @@ fun SettingsScreen(
         }
         item {
             OneHzCard {
+                SettingRow(
+                    icon = AppIcons.schedule(),
+                    title = stringResource(R.string.usage_title),
+                    subtitle = stringResource(R.string.usage_short),
+                    onClick = onOpenUsage
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
                     icon = AppIcons.code(),
                     title = stringResource(R.string.system_changes_title),

@@ -79,6 +79,7 @@ import io.github.nevesz.onehz.ui.profile.ProfilesScreen
 import io.github.nevesz.onehz.ui.settings.BackupScreen
 import io.github.nevesz.onehz.ui.settings.SettingsScreen
 import io.github.nevesz.onehz.ui.settings.SystemChangesScreen
+import io.github.nevesz.onehz.ui.settings.UsageScreen
 import io.github.nevesz.onehz.ui.setup.SetupScreen
 import io.github.nevesz.onehz.ui.theme.OneHZTheme
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
@@ -438,6 +439,7 @@ private fun OneHzShell(
                                 "about" -> stringResource(R.string.about_title)
                                 "backup" -> stringResource(R.string.settings_backup)
                                 "system" -> stringResource(R.string.system_changes_title)
+                                "usage" -> stringResource(R.string.usage_title)
                                 else -> stringResource(R.string.settings_diagnostics)
                             }
                         )
@@ -458,6 +460,11 @@ private fun OneHzShell(
                     "about" -> AboutScreen()
                     "diagnostics" -> DiagnosticsScreen()
                     "system" -> SystemChangesScreen(
+                        context = context,
+                        dataVersion = dataVersion,
+                        onBack = { settingsPage = null }
+                    )
+                    "usage" -> UsageScreen(
                         context = context,
                         dataVersion = dataVersion,
                         onBack = { settingsPage = null }
@@ -542,6 +549,7 @@ private fun OneHzShell(
                     onOpenAbout = { settingsPage = "about" },
                     onOpenDiagnostics = { settingsPage = "diagnostics" },
                     onOpenSystemChanges = { settingsPage = "system" },
+                    onOpenUsage = { settingsPage = "usage" },
                     onOpenBackup = { settingsPage = "backup" }
                 )
             }

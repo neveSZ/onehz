@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="usage_title">Uso</string>
+    <string name="usage_desc">Tempo que o OneHZ passou em cada taxa enquanto estava rodando. Tudo fica neste aparelho.</string>
+    <string name="usage_today">Hoje</string>
+    <string name="usage_week">Últimos 7 dias</string>
+    <string name="usage_rate">%1$d Hz</string>
+    <string name="usage_aod">Always On Display</string>
+    <string name="usage_uncontrolled">Sem controle</string>
+    <string name="usage_profile">%1$s</string>
+    <string name="usage_empty">Ainda não há dados. Use o aparelho com o OneHZ ligado.</string>
+    <string name="usage_duration">%1$d h %2$d min</string>
+    <string name="usage_duration_min">%1$d min</string>
+    <string name="usage_short">Tempo em cada taxa, só local</string>
+</resources>
