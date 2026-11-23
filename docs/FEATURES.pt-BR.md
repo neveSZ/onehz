@@ -285,3 +285,21 @@ atualizada quando o estado muda.
 **Economia** e **Diagnóstico**.
 
 Nenhum desses controles faz polling, mantém wake lock ou adiciona permissão nova.
+
+## 18. Alterações no sistema e relatório do painel
+
+**Alterações no sistema** lista as chaves que o OneHZ pode gravar pelo Shizuku, o valor
+atual e o valor original quando a sessão guardou um backup. Na Samsung aparecem as chaves
+de taxa, a chave de brilho do AOD e as chaves de economia de bateria; no HyperOS aparece a
+chave de taxa ativa. A tela também informa se o OneHZ está nas exceções do Doze.
+
+**Restaurar tudo** desliga a chave principal, para o motor e restaura os valores capturados
+de taxa, economia de bateria e brilho do AOD. Perfis, atribuições e configurações do Sono
+continuam salvos, então é seguro ligar o OneHZ de novo depois.
+
+**Alterações externas.** Se outro app reescrever uma chave, a auditoria da sessão reaplica
+os valores do OneHZ e registra o evento; a tela mostra um aviso até ser aberta novamente.
+
+**Relatório do painel** exporta um arquivo de texto com versão do app, aparelho, fabricante,
+taxas do painel, veredito da checagem, estado do Shizuku, exceção do Doze e as chaves
+acima. Não inclui lista de apps instalados nem dados pessoais.

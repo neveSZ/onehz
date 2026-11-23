@@ -283,3 +283,21 @@ when the state changes.
 **Diagnostics**.
 
 None of these entries polls, holds a wake lock or adds a new permission.
+
+## 18. System changes and panel report
+
+**System changes** lists the keys OneHZ may write through Shizuku, the current value and the
+original value when the session kept a backup. Samsung shows the rate keys, the AOD
+brightness key and the battery-saver keys; HyperOS shows the active rate key. The row also
+reports whether OneHZ is in the Doze exception list.
+
+**Restore everything** turns the master switch off, stops the engine and restores the
+captured rate, battery-saver and AOD brightness values. Profiles, app assignments and Sleep
+settings stay saved, so it is safe to enable OneHZ again later.
+
+**External changes.** If another app rewrites a key, the session audit reapplies the
+OneHZ values and records the event; the screen shows a warning until it is opened again.
+
+**Panel report** exports a plain-text file with the app version, device, vendor, panel
+rates, gate verdict, Shizuku state, Doze exception and the keys above. It contains no
+installed-app list or personal data.
