@@ -305,10 +305,14 @@ installed-app list or personal data.
 ## 19. Usage
 
 The Usage screen shows how long OneHZ spent at each rate today and in the last seven days,
-plus the Always On Display time, the uncontrolled time and the profile split. The data is
-recorded from engine transitions only, stored locally in daily buckets, and pruned after
-30 days. It is not uploaded and does not include per-app attribution, which would require
-polling the foreground app.
+plus the Always On Display time, the uncontrolled time and the profile split. It also
+contains the Sleep/Doze summary and the session history, so the quantitative data lives in
+one place. The Sleep detail keeps a compact summary and links here.
+
+Rate data is recorded from engine transitions only, stored locally in daily buckets, and
+pruned after 30 days. It is not uploaded and does not include per-app attribution, which
+would require polling the foreground app. The Doze numbers are the same local records the
+Sleep screen uses.
 
 ## 20. Activation rules
 

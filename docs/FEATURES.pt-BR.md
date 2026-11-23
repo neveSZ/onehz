@@ -307,10 +307,14 @@ acima. Não inclui lista de apps instalados nem dados pessoais.
 ## 19. Uso
 
 A tela Uso mostra quanto tempo o OneHZ passou em cada taxa hoje e nos últimos sete dias,
-além do tempo de Always On Display, do tempo sem controle e da divisão por perfil. Os dados
-vêm só de transições do motor, ficam locais em buckets diários e são apagados após 30 dias.
-Nada é enviado e não há atribuição por app, que exigiria consultar o app em primeiro plano
-o tempo todo.
+além do tempo de Always On Display, do tempo sem controle e da divisão por perfil. Ela
+também reúne o resumo de Sono/Doze e o histórico de sessões, para os dados quantitativos
+ficarem em um lugar só. O detalhe do Sono mantém um resumo compacto e aponta para cá.
+
+Os dados de taxa vêm só de transições do motor, ficam locais em buckets diários e são
+apagados após 30 dias. Nada é enviado e não há atribuição por app, que exigiria consultar
+o app em primeiro plano o tempo todo. Os números de Doze são os mesmos registros locais da
+tela Sono.
 
 ## 20. Regras de ativação
 
