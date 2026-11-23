@@ -47,6 +47,11 @@ object OneHzEngine {
     @Volatile
     private var foregroundPackage: String? = null
     @Volatile
+    private var hasAppAssignments = false
+    @Volatile
+    private var foregroundMonitoringActive = false
+    private var lastForegroundMonitorAttempt = 0L
+    @Volatile
     private var index = 0
     @Volatile
     private var steps: List<TierStep> = emptyList()
@@ -116,6 +121,24 @@ object OneHzEngine {
         }
     }
 
+    /**
+     * Fallback for platforms where the task-stack listener is unavailable. The app switch
+     * happens after the touch-down sample, so the probe runs after the finger lifts.
+     */
+    private val foregroundProbe: Runnable = Runnable {
+        if (!ForegroundRefreshPolicy.shouldProbe(
+                started,
+                screenOff,
+                hasAppAssignments,
+                foregroundMonitoringActive
+            )
+        ) {
+            return@Runnable
+        }
+        val pkg = ShizukuGateway.foregroundPackageFresh() ?: return@Runnable
+        updateForeground(pkg, "probe")
+    }
+
     /** Slow recheck only while a video is actually active. */
     private val videoRecheck: Runnable = Runnable {
         if (!started || screenOff || !videoActive) return@Runnable
@@ -136,6 +159,7 @@ object OneHzEngine {
         appContext = context.applicationContext
         if (started) return
         started = true
+        hasAppAssignments = ProfileStore.configuredPackages(context).isNotEmpty()
         val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
         ecoActive = pm?.isPowerSaveMode == true
         screenOff = pm?.isInteractive == false
@@ -153,13 +177,19 @@ object OneHzEngine {
         steps = emptyList()
         monitoringNeeded = false
         lastWakeAt = 0L
+        hasAppAssignments = false
+        foregroundMonitoringActive = false
+        lastForegroundMonitorAttempt = 0L
         videoActive = false
         videoPackage = null
         videoSource = VideoSignals.Source.NONE
         videoFailures = 0
         videoCheckInFlight = false
         SessionArbiter.release(appContext)
+        ShizukuGateway.stopForegroundMonitoring()
         ShizukuGateway.stopTouchMonitoring()
+        Diagnostics.foregroundPackage.value = null
+        Diagnostics.foregroundSource.value = "off"
         Diagnostics.videoSource.value = VideoSignals.Source.NONE
         Diagnostics.videoDetail.value = "—"
         Diagnostics.idleReason.value = null
@@ -201,21 +231,11 @@ object OneHzEngine {
         isDown = true
         lowRechecks = 0
         handler.removeCallbacks(stepRunnable)
+        handler.removeCallbacks(foregroundProbe)
         timersPending = false
         index = 0
         Diagnostics.log("touch", "touch -> tier 1")
         applyCurrent("touch-down", resetTo = 0)
-        // The rate is already applied; the slower foreground lookup only matters with
-        // app profiles configured.
-        val ctx = appContext
-        if (ctx != null && ProfileStore.configuredPackages(ctx).isNotEmpty()) {
-            val pkg = ShizukuGateway.foregroundPackage()
-            if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
-                foregroundPackage = pkg
-                SessionArbiter.bumpEpoch()
-                applyCurrent("foreground")
-            }
-        }
     }
 
     private fun handleTouchUp() {
@@ -237,6 +257,16 @@ object OneHzEngine {
             handler.removeCallbacks(videoProbe)
             handler.postDelayed(videoProbe, VIDEO_PROBE_MS)
         }
+        if (ForegroundRefreshPolicy.shouldProbe(
+                started,
+                screenOff,
+                hasAppAssignments,
+                foregroundMonitoringActive
+            )
+        ) {
+            handler.removeCallbacks(foregroundProbe)
+            handler.postDelayed(foregroundProbe, ForegroundRefreshPolicy.PROBE_DELAY_MS)
+        }
     }
 
     /** Refreshes the foreground package without polling; called on resume. */
@@ -249,15 +279,9 @@ object OneHzEngine {
                 applyCurrent("video-resume")
             }
         }
-        if (ProfileStore.configuredPackages(ctx).isEmpty()) return@post
-        val pkg = ShizukuGateway.foregroundPackage()
-        if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
-            foregroundPackage = pkg
-            if (started && !screenOff) {
-                SessionArbiter.bumpEpoch()
-                applyCurrent("foreground")
-            }
-        }
+        if (!hasAppAssignments) return@post
+        val pkg = ShizukuGateway.foregroundPackageFresh() ?: return@post
+        updateForeground(pkg, "resume")
     }
 
     /** Re-anchors the pending staircase when the profile changes while idle. */
@@ -307,6 +331,7 @@ object OneHzEngine {
                 Diagnostics.log("display", "SCREEN_OFF → AOD")
                 clearVideoState("screen-off")
                 handler.removeCallbacks(stepRunnable)
+                handler.removeCallbacks(foregroundProbe)
                 timersPending = false
                 isDown = false
                 lowRechecks = 0
@@ -350,13 +375,8 @@ object OneHzEngine {
     }
 
     fun setForegroundPackage(packageName: String?) = handler.post {
-        val changed = packageName != foregroundPackage
-        foregroundPackage = packageName
-        if (changed && videoActive && packageName != videoPackage) {
-            clearVideoState("foreground-event")
-        }
-        if (changed) SessionArbiter.bumpEpoch()
-        if (started && !screenOff) applyCurrent("foreground-event")
+        if (packageName.isNullOrBlank()) return@post
+        updateForeground(packageName, "listener")
     }
 
     fun setPowerSaveMode(active: Boolean) = handler.post {
@@ -371,7 +391,11 @@ object OneHzEngine {
         }
     }
 
-    fun reapply() = handler.post { if (started) applyCurrent("manual") }
+    fun reapply() = handler.post {
+        appContext?.let { hasAppAssignments = ProfileStore.configuredPackages(it).isNotEmpty() }
+        lastForegroundMonitorAttempt = 0L
+        if (started) applyCurrent("manual")
+    }
 
     /** Video rules or the forced app list changed: probe again instead of waiting for a touch. */
     fun onVideoConfigChanged() = handler.post {
@@ -384,6 +408,8 @@ object OneHzEngine {
     /** The privileged service was recreated: force a monitor check and a fresh apply. */
     fun onServiceAvailable() = handler.post {
         monitoringNeeded = false
+        foregroundMonitoringActive = false
+        lastForegroundMonitorAttempt = 0L
         videoFailures = 0
         if (started) applyCurrent("service-ready")
     }
@@ -518,7 +544,19 @@ object OneHzEngine {
                     "tier ${index + 1}/${policy.profile.steps.size} · $layer · ${hz} Hz"
                 }
                 syncTouchMonitoring(
-                    !screenOff && (policy.profile.steps.size > 1 || videoSettings.enabled)
+                    ForegroundRefreshPolicy.shouldMonitorTouch(
+                        screenOff = screenOff,
+                        hasAssignments = hasAppAssignments,
+                        stepCount = policy.profile.steps.size,
+                        videoEnabled = videoSettings.enabled
+                    )
+                )
+                syncForegroundMonitoring(
+                    ForegroundRefreshPolicy.shouldMonitorForeground(
+                        started = started,
+                        screenOff = screenOff,
+                        hasAssignments = hasAppAssignments
+                    )
                 )
                 SessionArbiter.apply(
                     ctx,
@@ -538,6 +576,7 @@ object OneHzEngine {
         timersPending = false
         videoSettings = VideoSettings(enabled = false, minHz = 60)
         handler.removeCallbacks(stepRunnable)
+        handler.removeCallbacks(foregroundProbe)
         clearVideoState("idle")
         SessionArbiter.release(appContext)
         Diagnostics.idleReason.value = reason
@@ -556,6 +595,7 @@ object OneHzEngine {
             null -> "OneHZ disabled"
         }
         syncTouchMonitoring(false)
+        syncForegroundMonitoring(needed = false)
     }
 
     private fun syncTouchMonitoring(needed: Boolean) {
@@ -567,6 +607,45 @@ object OneHzEngine {
             ShizukuGateway.stopTouchMonitoring()
         }
         Diagnostics.log("touch", if (needed) "monitor required" else "monitor released")
+    }
+
+    /**
+     * Prefers the event-driven task-stack listener. The touch probe remains the fallback
+     * when the platform rejects the hidden listener, so on-device behavior never regresses.
+     */
+    private fun syncForegroundMonitoring(needed: Boolean) {
+        if (needed && !foregroundMonitoringActive) {
+            val now = SystemClock.elapsedRealtime()
+            if (lastForegroundMonitorAttempt != 0L &&
+                now - lastForegroundMonitorAttempt < ForegroundRefreshPolicy.MONITOR_RETRY_MS
+            ) {
+                return
+            }
+            lastForegroundMonitorAttempt = now
+            foregroundMonitoringActive = ShizukuGateway.startForegroundMonitoring()
+        } else if (!needed && foregroundMonitoringActive) {
+            foregroundMonitoringActive = false
+            ShizukuGateway.stopForegroundMonitoring()
+        }
+        Diagnostics.foregroundSource.value = when {
+            foregroundMonitoringActive -> "listener"
+            hasAppAssignments -> "probe"
+            else -> "off"
+        }
+    }
+
+    private fun updateForeground(packageName: String, source: String) {
+        val changed = packageName != foregroundPackage
+        foregroundPackage = packageName
+        Diagnostics.foregroundPackage.value = packageName
+        if (!changed) return
+        if (videoActive && packageName != videoPackage) {
+            clearVideoState("foreground:$source")
+        }
+        SessionArbiter.bumpEpoch()
+        Diagnostics.log("engine", "foreground $source -> $packageName")
+        if (!started || screenOff) return
+        if (timersPending) onTimingsChanged() else applyCurrent("foreground:$source")
     }
 
     // --------------------------------------------------------------------- video
@@ -627,7 +706,10 @@ object OneHzEngine {
         videoFailures = 0
 
         val pkg = verdict.packageName
-        if (!pkg.isNullOrBlank()) foregroundPackage = pkg
+        if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
+            foregroundPackage = pkg
+            Diagnostics.foregroundPackage.value = pkg
+        }
         val active = verdict.source == VideoSignals.Source.PLAYING
         val wasActive = videoActive
         val changed = active != wasActive ||
