@@ -6,6 +6,7 @@ import io.github.nevesz.onehz.core.DisplayRates
 import io.github.nevesz.onehz.core.FrequencyProfile
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.VideoConfig
+import java.io.File
 import java.util.UUID
 
 /**
@@ -37,9 +38,23 @@ object ProfileStore {
 
     fun save(context: Context, state: ProfileState) {
         val normalized = normalize(state, rates(context))
+        backupLegacySchema(context)
         OneHzPreferences.prefs(context).edit {
             putString(KEY_STATE, ProfileCodec.encode(normalized))
         }
+    }
+
+    /**
+     * Keeps a one-time copy of a schema 1 blob before the first schema 2 write. A 1.2.x
+     * install cannot read schema 2, so this is the only local safety net for a downgrade.
+     */
+    private fun backupLegacySchema(context: Context) {
+        val raw = OneHzPreferences.prefs(context).getString(KEY_STATE, null) ?: return
+        if (!raw.contains("\"schemaVersion\":1")) return
+        val dir = context.getExternalFilesDir(null) ?: context.filesDir
+        val target = File(dir, "profiles-schema1.json")
+        if (target.exists()) return
+        runCatching { target.writeText(raw, Charsets.UTF_8) }
     }
 
     fun activeProfile(context: Context): DeviceProfile? =
