@@ -148,6 +148,11 @@ first confirmation, so the common deep-idle case no longer waits a fixed 1.2 s o
 ~23 KB state dump. The diagnostics log records the command duration and the time from
 screen-off to confirmed idle.
 
+On the tested SM-S936B, `cmd deviceidle force-idle` took about 20 ms and screen-off to
+confirmed deep idle was 0.8–0.9 s, dominated by the deliberate AOD settling delay. The
+first verification attempt normally succeeds; the later attempts cover slower vendor
+builds.
+
 ## Ordering and timing
 
 Screen-off is a chain: the AOD brightness key is written, the AOD rate is applied,
