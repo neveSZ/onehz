@@ -303,3 +303,11 @@ os valores do OneHZ e registra o evento; a tela mostra um aviso até ser aberta 
 **Relatório do painel** exporta um arquivo de texto com versão do app, aparelho, fabricante,
 taxas do painel, veredito da checagem, estado do Shizuku, exceção do Doze e as chaves
 acima. Não inclui lista de apps instalados nem dados pessoais.
+
+## 19. Uso
+
+A tela Uso mostra quanto tempo o OneHZ passou em cada taxa hoje e nos últimos sete dias,
+além do tempo de Always On Display, do tempo sem controle e da divisão por perfil. Os dados
+vêm só de transições do motor, ficam locais em buckets diários e são apagados após 30 dias.
+Nada é enviado e não há atribuição por app, que exigiria consultar o app em primeiro plano
+o tempo todo.

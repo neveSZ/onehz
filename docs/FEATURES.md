@@ -301,3 +301,11 @@ OneHZ values and records the event; the screen shows a warning until it is opene
 **Panel report** exports a plain-text file with the app version, device, vendor, panel
 rates, gate verdict, Shizuku state, Doze exception and the keys above. It contains no
 installed-app list or personal data.
+
+## 19. Usage
+
+The Usage screen shows how long OneHZ spent at each rate today and in the last seven days,
+plus the Always On Display time, the uncontrolled time and the profile split. The data is
+recorded from engine transitions only, stored locally in daily buckets, and pruned after
+30 days. It is not uploaded and does not include per-app attribution, which would require
+polling the foreground app.
