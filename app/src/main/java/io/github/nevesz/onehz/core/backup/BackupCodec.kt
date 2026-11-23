@@ -1,5 +1,7 @@
 package io.github.nevesz.onehz.core.backup
 
+import io.github.nevesz.onehz.core.ActivationRules
+import io.github.nevesz.onehz.core.ActivationRulesCodec
 import io.github.nevesz.onehz.core.SleepWindow
 import io.github.nevesz.onehz.core.profile.ProfileCodec
 import io.github.nevesz.onehz.core.profile.ProfileState
@@ -32,6 +34,8 @@ data class BackupData(
     val forcedVideoPackages: Set<String>,
     /** Null means the file was created before Sleep settings were part of the backup. */
     val sleep: SleepBackup? = null,
+    /** Null means the file was created before activation rules existed. */
+    val rules: ActivationRules? = null,
     val appVersion: String? = null,
     val deviceRates: List<Int> = emptyList()
 )
@@ -72,6 +76,7 @@ object BackupCodec {
                 put("windowEndMinute", sleep.windowEndMinute)
             })
         }
+        data.rules?.let { put("rules", JSONObject(ActivationRulesCodec.encode(it))) }
         put("profileState", JSONObject(ProfileCodec.encode(data.state)))
     }.toString(2)
 
@@ -146,6 +151,9 @@ object BackupCodec {
                 aodBrightnessMaxPct = settings.optInt("aodBrightnessMaxPct", 30).coerceIn(2, 100),
                 forcedVideoPackages = forced,
                 sleep = sleep,
+                rules = root.optJSONObject("rules")?.let {
+                    ActivationRulesCodec.decode(it.toString())
+                },
                 appVersion = root.optString("appVersion").takeIf { it.isNotBlank() },
                 deviceRates = deviceRates
             )

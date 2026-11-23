@@ -3,6 +3,7 @@ package io.github.nevesz.onehz.core.backup
 import android.content.Context
 import android.net.Uri
 import io.github.nevesz.onehz.BuildConfig
+import io.github.nevesz.onehz.core.ActivationRulesStore
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.profile.DeviceProfile
@@ -45,6 +46,7 @@ object BackupManager {
             aodBrightnessMinPct = OneHzPreferences.aodBrightnessMinPct(context),
             aodBrightnessMaxPct = OneHzPreferences.aodBrightnessMaxPct(context),
             forcedVideoPackages = OneHzPreferences.forcedVideoPackages(context),
+            rules = ActivationRulesStore.get(context),
             sleep = SleepBackup(
                 enabled = SleepPreferences.enabled(context),
                 deep = SleepPreferences.deep(context),
@@ -125,6 +127,17 @@ object BackupManager {
             autoEconomyOnBatterySaver = data.state.autoEconomyOnBatterySaver
         )
         ProfileStore.save(context, state)
+
+        data.rules?.let { rules ->
+            ActivationRulesStore.set(
+                context,
+                rules.copy(
+                    lowBatteryProfileId = rules.lowBatteryProfileId?.takeIf { it in validIds },
+                    chargingProfileId = rules.chargingProfileId?.takeIf { it in validIds },
+                    windowProfileId = rules.windowProfileId?.takeIf { it in validIds }
+                )
+            )
+        }
 
         OneHzPreferences.setEnabled(context, data.enabled)
         OneHzPreferences.setAodSettings(

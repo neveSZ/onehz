@@ -1,5 +1,6 @@
 package io.github.nevesz.onehz.core.backup
 
+import io.github.nevesz.onehz.core.ActivationRules
 import io.github.nevesz.onehz.core.profile.AppAssignment
 import io.github.nevesz.onehz.core.profile.ProfileDefaults
 import io.github.nevesz.onehz.core.profile.ProfileState
@@ -35,6 +36,17 @@ class BackupCodecTest {
             windowEnabled = true,
             windowStartMinute = 22 * 60,
             windowEndMinute = 6 * 60
+        ),
+        rules = ActivationRules(
+            lowBatteryEnabled = true,
+            lowBatteryPercent = 20,
+            lowBatteryProfileId = "economy",
+            chargingEnabled = true,
+            chargingProfileId = "performance",
+            windowEnabled = true,
+            windowStartMinute = 23 * 60,
+            windowEndMinute = 7 * 60,
+            windowProfileId = "balanced"
         ),
         appVersion = "1.2.0-beta.1",
         deviceRates = listOf(30, 60, 90, 120)
