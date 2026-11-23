@@ -7,6 +7,8 @@ import android.os.PowerManager
 import android.os.SystemClock
 import io.github.nevesz.onehz.core.MasterPause
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.RateMode
+import io.github.nevesz.onehz.core.RateStats
 import io.github.nevesz.onehz.core.TierStep
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.core.profile.ProfileStore
@@ -602,12 +604,19 @@ object OneHzEngine {
                     screenOff,
                     ecoActive
                 )
+                RateStats.note(
+                    ctx,
+                    hz,
+                    policy.profileId,
+                    if (screenOff) RateMode.AOD else RateMode.ON
+                )
                 if (videoApplied) scheduleVideoRecheck() else handler.removeCallbacks(videoRecheck)
             }
         }
     }
 
     private fun goIdle(reason: IdleReason?) {
+        appContext?.let { RateStats.note(it, 0, null, RateMode.OFF) }
         steps = emptyList()
         index = 0
         nextIndex = 0
