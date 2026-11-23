@@ -507,11 +507,18 @@ private fun MeasurementsCard(
                 label = stringResource(R.string.sleep_row_doze),
                 value = formatSleepDuration(usage.idleMs)
             )
-            MetricRow(
-                label = stringResource(R.string.sleep_row_last_session),
-                value = rest?.let { formatSleepDuration(it.durationMs) }
-                    ?: stringResource(R.string.sleep_rest_none)
-            )
+            if (rest != null) {
+                MetricRow(
+                    label = stringResource(R.string.sleep_row_last_session),
+                    value = formatSleepDuration(rest.durationMs)
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.sleep_rest_none),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
         Spacer(Modifier.height(6.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
