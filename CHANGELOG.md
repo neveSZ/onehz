@@ -11,6 +11,8 @@ All notable changes to OneHZ are documented here. The format follows
 - **Doze with music** switch in Sleep. When enabled, Doze ignores audio playback and
   stays active; when disabled, Doze pauses with music. The option is off by default and
   warns that audio may fail on some devices.
+- Diagnostics now report the foreground app, its source (task-stack listener or touch
+  probe), the active profile, the active layer and the app layer.
 
 ### Changed
 
@@ -37,6 +39,12 @@ All notable changes to OneHZ are documented here. The format follows
 - Diagnostics is always available from Settings. The hidden seven-tap unlock and the
   one-way hide toggle were removed, so a fresh install can reach the engine report without
   a gesture.
+- Per-app profiles are applied when an app comes to the foreground, even before the first
+  touch inside it. The privileged service follows task-stack changes; if the platform
+  rejects that listener, the engine falls back to one uncached foreground read after
+  touch-up.
+- The touch monitor stays active while app assignments exist, so a fixed single-step app
+  profile can be left without losing foreground detection.
 
 ## [1.2.1] - 2026-11-22
 

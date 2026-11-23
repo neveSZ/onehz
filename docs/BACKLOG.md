@@ -9,6 +9,13 @@ OneHZ is a personal project. Items here are intentions, not commitments.
 - Current video detection relies on the foreground app and its media/codec state.
 - PiP windows need a different signal; this is not implemented yet.
 
+### Lighter foreground lookup
+
+- The task-stack listener currently runs one `dumpsys activity activities` per foreground
+  change.
+- A future version can read the top task through the privileged task manager instead of
+  spawning a shell dump.
+
 ## Unlikely
 
 These are documented as known limitations rather than promises.

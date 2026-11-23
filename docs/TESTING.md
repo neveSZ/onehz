@@ -117,11 +117,19 @@ Test on the target device with a clean install of the signed release APK.
 ### Per-app profiles
 
 - [ ] Assign an existing profile to a test app.
-- [ ] Open the app; the assigned profile is applied on touch/resume.
+- [ ] Open the app from the launcher, recents, and a notification without touching inside
+      it; the assigned profile applies on the foreground change.
+- [ ] Switch to an app without an assignment; the selected profile returns.
+- [ ] With the task-stack listener active, confirm a physical touch does not run an extra
+      foreground lookup.
+- [ ] Force the listener to be unavailable (or use a platform that rejects it); open the
+      app and confirm the touch-up fallback applies the assigned profile.
+- [ ] Use a fixed single-step app profile with video disabled; switch away and confirm the
+      selected profile returns (the touch monitor stays active).
 - [ ] Edit the assigned profile; the app uses the updated staircase.
 - [ ] Create a custom profile from the app sheet and confirm it is assigned.
 - [ ] Remove the assignment; the active profile returns.
-- [ ] Confirm no foreground polling when no assignments exist.
+- [ ] Confirm no foreground listener or polling runs when no assignments exist.
 
 ### Backup and restore
 
