@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rules_title">Activation rules</string>
+    <string name="rules_desc">Temporarily switch to a saved profile based on the battery, the charger or the time of day. Rules never copy a profile.</string>
+    <string name="rules_short">Battery, charging and time window</string>
+    <string name="rules_low_battery_title">Low battery guard</string>
+    <string name="rules_low_battery_on">Uses the selected profile when the battery is at or below the threshold.</string>
+    <string name="rules_low_battery_off">Battery level does not change the profile.</string>
+    <string name="rules_threshold">Threshold</string>
+    <string name="rules_charging_title">While charging</string>
+    <string name="rules_charging_on">Uses the selected profile while the charger is connected.</string>
+    <string name="rules_charging_off">Charging does not change the profile.</string>
+    <string name="rules_window_title">Time window</string>
+    <string name="rules_window_on">Uses the selected profile inside the window, including across midnight.</string>
+    <string name="rules_window_off">The time of day does not change the profile.</string>
+    <string name="rules_profile">Profile</string>
+    <string name="rules_no_profile">None selected</string>
+    <string name="rules_pick_profile">Choose a profile</string>
+    <string name="rules_start">Start</string>
+    <string name="rules_end">End</string>
+</resources>

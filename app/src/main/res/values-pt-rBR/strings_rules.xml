@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rules_title">Regras de ativação</string>
+    <string name="rules_desc">Troca temporariamente para um perfil salvo conforme a bateria, o carregador ou o horário. As regras nunca copiam um perfil.</string>
+    <string name="rules_short">Bateria, carregador e janela de horário</string>
+    <string name="rules_low_battery_title">Proteção de bateria baixa</string>
+    <string name="rules_low_battery_on">Usa o perfil escolhido quando a bateria está no limite ou abaixo dele.</string>
+    <string name="rules_low_battery_off">O nível de bateria não muda o perfil.</string>
+    <string name="rules_threshold">Limite</string>
+    <string name="rules_charging_title">Enquanto carrega</string>
+    <string name="rules_charging_on">Usa o perfil escolhido enquanto o carregador está conectado.</string>
+    <string name="rules_charging_off">Carregar não muda o perfil.</string>
+    <string name="rules_window_title">Janela de horário</string>
+    <string name="rules_window_on">Usa o perfil escolhido dentro da janela, inclusive atravessando a meia-noite.</string>
+    <string name="rules_window_off">O horário não muda o perfil.</string>
+    <string name="rules_profile">Perfil</string>
+    <string name="rules_no_profile">Nenhum selecionado</string>
+    <string name="rules_pick_profile">Escolher um perfil</string>
+    <string name="rules_start">Início</string>
+    <string name="rules_end">Fim</string>
+</resources>
