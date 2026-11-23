@@ -34,15 +34,15 @@ CI runs unit tests and lint on every push/PR.
 Recorded before the 1.3 work on the POCO X7 Pro (release build, screen on, app enabled and
 connected to Shizuku). Use the same device and a release build for comparisons.
 
-| Metric | Baseline (1.2.2-beta.1) |
+| Metric | 1.2.2-beta.1 | 1.3.0-rc.1 |
 |---|---|---|
-| Cold start, median of 5 (`am start -W -S`) | 258 ms |
-| Idle CPU after 45 s (app processes) | 0% |
-| Wake locks held by the app | 0 |
-| Periodic alarms scheduled by the app | 0 |
-| Scroll: total frames / janky | 262 / 0% |
-| Scroll frame time p50 / p90 / p99 | 7 ms / 8 ms / 12 ms |
-| APK size | 3.81 MiB |
+| Cold start, median of 5 (`am start -W -S`) | 258 ms | 245 ms |
+| Idle CPU after 45 s (app processes) | 0% | 0% |
+| Wake locks held by the app | 0 | 0 |
+| Periodic alarms scheduled by the app | 0 | 0 |
+| Scroll: total frames / janky | 262 / 0% | 212 / 0.47% |
+| Scroll frame time p50 / p90 / p99 | 7 / 8 / 12 ms | 7 / 8 / 14 ms |
+| APK size | 3.81 MiB | 3.91 MiB |
 
 How to measure:
 
