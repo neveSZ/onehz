@@ -121,6 +121,8 @@ class OneHzKeepAliveService : Service() {
         DozeController.stop()
         OneHzEngine.stop()
         ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+        (getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)
+            ?.cancel(NOTIFICATION_ID)
         super.onDestroy()
     }
 
