@@ -29,6 +29,36 @@ Unit tests cover the pure logic:
 
 CI runs unit tests and lint on every push/PR.
 
+## Performance baseline
+
+Recorded before the 1.3 work on the POCO X7 Pro (release build, screen on, app enabled and
+connected to Shizuku). Use the same device and a release build for comparisons.
+
+| Metric | Baseline (1.2.2-beta.1) |
+|---|---|---|
+| Cold start, median of 5 (`am start -W -S`) | 258 ms |
+| Idle CPU after 45 s (app processes) | 0% |
+| Wake locks held by the app | 0 |
+| Periodic alarms scheduled by the app | 0 |
+| Scroll: total frames / janky | 262 / 0% |
+| Scroll frame time p50 / p90 / p99 | 7 ms / 8 ms / 12 ms |
+| APK size | 3.81 MiB |
+
+How to measure:
+
+```powershell
+adb shell am start -W -S -n io.github.nevesz.onehz/.ui.MainActivity   # repeat 5x, use median
+adb shell dumpsys cpuinfo | Select-String onehz
+adb shell dumpsys power | Select-String "Wake Locks|mWakefulness"
+adb shell dumpsys alarm | Select-String io.github.nevesz
+adb shell dumpsys gfxinfo io.github.nevesz.onehz reset
+adb shell input swipe 610 2000 610 900 220                      # repeat a few times
+adb shell dumpsys gfxinfo io.github.nevesz.onehz
+```
+
+Budget for changes: start-up +5% at most, no new wake lock, no new periodic alarm (except
+the pause expiry), and no polling that shows up in idle CPU.
+
 ## Manual test checklist (release)
 
 Test on the target device with a clean install of the signed release APK.
