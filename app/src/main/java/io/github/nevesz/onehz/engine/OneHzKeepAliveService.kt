@@ -93,6 +93,10 @@ class OneHzKeepAliveService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action != ACTION_STOP && !OneHzPreferences.isEnabled(this)) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         when (intent?.action) {
             ACTION_STOP -> {
                 OneHzPreferences.setEnabled(this, false)
@@ -183,6 +187,10 @@ class OneHzKeepAliveService : Service() {
 
     private fun refreshNotification() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (!OneHzPreferences.isEnabled(this)) {
+            manager.cancel(NOTIFICATION_ID)
+            return
+        }
         val pinned = OneHzPreferences.notificationPinned(this)
         if (!pinned && notificationPosted) {
             val active = manager.activeNotifications.any { it.id == NOTIFICATION_ID }
@@ -288,7 +296,7 @@ class OneHzKeepAliveService : Service() {
 
         /** Re-posts the notification after the user opens the app again. */
         fun refreshIfRunning(context: Context) {
-            if (!running) return
+            if (!running || !OneHzPreferences.isEnabled(context)) return
             runCatching {
                 context.startService(
                     Intent(context, OneHzKeepAliveService::class.java).setAction(ACTION_REFRESH)
@@ -298,7 +306,7 @@ class OneHzKeepAliveService : Service() {
 
         /** Applies a new pin state without starting a stopped service. */
         fun pinChanged(context: Context) {
-            if (!running) return
+            if (!running || !OneHzPreferences.isEnabled(context)) return
             runCatching {
                 context.startService(
                     Intent(context, OneHzKeepAliveService::class.java).setAction(ACTION_PIN_CHANGED)
