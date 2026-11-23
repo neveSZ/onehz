@@ -43,6 +43,7 @@ class OneHzKeepAliveService : Service() {
 
     private var receiver: ScreenStateReceiver? = null
     private var notificationDismissed = false
+    private var notificationPosted = false
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onCreate() {
@@ -50,6 +51,7 @@ class OneHzKeepAliveService : Service() {
         val eligible = DisplayGate.evaluate(this).eligible
         createChannel()
         startInForeground()
+        notificationPosted = true
         running = true
         if (!eligible) {
             running = false
@@ -116,6 +118,7 @@ class OneHzKeepAliveService : Service() {
 
             ACTION_DISMISS -> {
                 val pinned = OneHzPreferences.notificationPinned(this)
+                Diagnostics.log(TAG, "notification dismissed (pinned=$pinned)")
                 if (NotificationPinPolicy.restoresAfterDismiss(pinned)) {
                     scope.launch {
                         delay(RESTORE_DELAY_MS)
@@ -179,10 +182,18 @@ class OneHzKeepAliveService : Service() {
     }
 
     private fun refreshNotification() {
-        val pinned = OneHzPreferences.notificationPinned(this)
-        if (!NotificationPinPolicy.canPost(pinned, notificationDismissed)) return
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val pinned = OneHzPreferences.notificationPinned(this)
+        if (!pinned && notificationPosted) {
+            val active = manager.activeNotifications.any { it.id == NOTIFICATION_ID }
+            if (!active) notificationDismissed = true
+        }
+        if (!NotificationPinPolicy.canPost(pinned, notificationDismissed)) {
+            Diagnostics.log(TAG, "notification refresh suppressed")
+            return
+        }
         manager.notify(NOTIFICATION_ID, buildNotification())
+        notificationPosted = true
     }
 
     private fun buildNotification(): android.app.Notification {
@@ -261,6 +272,7 @@ class OneHzKeepAliveService : Service() {
     }
 
     companion object {
+        private const val TAG = "service"
         private const val CHANNEL_ID = "onehz_service"
         private const val NOTIFICATION_ID = 1001
         private const val RESTORE_DELAY_MS = 300L
