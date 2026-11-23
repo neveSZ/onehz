@@ -131,9 +131,11 @@
     <string name="search_apps">Buscar aplicativo</string>
     <string name="filter_all">Todos</string>
     <string name="filter_configured">Configurados</string>
+    <string name="filter_suggested">Sugeridos</string>
     <string name="filter_system">Do sistema</string>
     <string name="installed_count">Instalados (%1$d)</string>
     <string name="configured_count">Configurados (%1$d)</string>
+    <string name="suggested_count">Sugeridos (%1$d)</string>
     <string name="empty_apps">Nenhum aplicativo encontrado</string>
     <string name="empty_apps_body">Tente outra busca ou inclua aplicativos do sistema.</string>
     <string name="select_apps">Selecionar aplicativos</string>

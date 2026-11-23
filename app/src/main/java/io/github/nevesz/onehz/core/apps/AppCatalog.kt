@@ -14,7 +14,8 @@ import java.util.concurrent.ConcurrentHashMap
 data class InstalledApp(
     val packageName: String,
     val label: String,
-    val system: Boolean
+    val system: Boolean,
+    val category: Int = 0
 )
 
 /** Read-only catalog of installed apps for the per-app profile screen. */
@@ -32,7 +33,8 @@ object AppCatalog {
                     InstalledApp(
                         packageName = it.packageName,
                         label = it.loadLabel(pm).toString(),
-                        system = (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0
+                        system = (it.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
+                        category = it.category
                     )
                 }
                 .sortedBy { it.label.lowercase() }

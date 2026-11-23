@@ -42,6 +42,8 @@
     <string name="profile_assign">Asignar perfil</string>
     <string name="profile_switch_hint">Toca un perfil para usarlo.</string>
     <string name="empty_configured_title">Ninguna app configurada</string>
+    <string name="empty_suggested_title">Nada que sugerir</string>
+    <string name="empty_suggested_body">Los juegos, reproductores y apps de cámara aparecen aquí cuando no tienen asignación.</string>
     <string name="empty_configured_body">Abre la pestaña Todas y toca una app para asignar un perfil.</string>
     <string name="empty_system_title">No se encontraron apps del sistema</string>
     <string name="empty_system_body">Prueba otra búsqueda.</string>

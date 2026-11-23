@@ -42,6 +42,8 @@
     <string name="profile_assign">Atribuir perfil</string>
     <string name="profile_switch_hint">Toque em um perfil para usá-lo.</string>
     <string name="empty_configured_title">Nenhum app configurado</string>
+    <string name="empty_suggested_title">Nada para sugerir</string>
+    <string name="empty_suggested_body">Jogos, players e apps de câmera aparecem aqui quando não têm atribuição.</string>
     <string name="empty_configured_body">Abra a aba Todos e toque em um app para atribuir um perfil.</string>
     <string name="empty_system_title">Nenhum app do sistema encontrado</string>
     <string name="empty_system_body">Tente outra busca.</string>

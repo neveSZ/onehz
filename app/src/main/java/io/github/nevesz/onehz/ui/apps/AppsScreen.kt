@@ -77,7 +77,7 @@ import io.github.nevesz.onehz.ui.profile.profileSummary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private enum class AppFilter { ALL, CONFIGURED, SYSTEM }
+private enum class AppFilter { ALL, SUGGESTED, CONFIGURED, SYSTEM }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -112,6 +112,13 @@ fun AppsScreen(
             when (filter) {
                 AppFilter.SYSTEM -> AppCatalog.load(context, includeSystem = true).filter { it.system }
                 AppFilter.ALL -> AppCatalog.load(context, includeSystem = false)
+                AppFilter.SUGGESTED -> AppCatalog.load(context, includeSystem = false).filter {
+                    it.packageName !in configured && (
+                        it.category == android.content.pm.ApplicationInfo.CATEGORY_GAME ||
+                            it.category == android.content.pm.ApplicationInfo.CATEGORY_VIDEO ||
+                            it.category == android.content.pm.ApplicationInfo.CATEGORY_IMAGE
+                        )
+                }
                 AppFilter.CONFIGURED -> configured
                     .map { InstalledApp(it, AppCatalog.label(context, it), false) }
                     .sortedBy { it.label.lowercase() }
@@ -162,6 +169,11 @@ fun AppsScreen(
                     label = { Text(stringResource(R.string.filter_configured)) }
                 )
                 FilterChip(
+                    filter == AppFilter.SUGGESTED,
+                    { filterName = AppFilter.SUGGESTED.name },
+                    label = { Text(stringResource(R.string.filter_suggested)) }
+                )
+                FilterChip(
                     filter == AppFilter.SYSTEM,
                     { filterName = AppFilter.SYSTEM.name },
                     label = { Text(stringResource(R.string.filter_system)) }
@@ -199,6 +211,7 @@ fun AppsScreen(
                         text = stringResource(
                             when (filter) {
                                 AppFilter.CONFIGURED -> R.string.configured_count
+                                AppFilter.SUGGESTED -> R.string.suggested_count
                                 AppFilter.SYSTEM -> R.string.system_count
                                 AppFilter.ALL -> R.string.installed_count
                             },
@@ -227,6 +240,7 @@ fun AppsScreen(
                     title = stringResource(
                         when (filter) {
                             AppFilter.CONFIGURED -> R.string.empty_configured_title
+                            AppFilter.SUGGESTED -> R.string.empty_suggested_title
                             AppFilter.SYSTEM -> R.string.empty_system_title
                             AppFilter.ALL -> R.string.empty_apps
                         }
@@ -234,6 +248,7 @@ fun AppsScreen(
                     body = stringResource(
                         when (filter) {
                             AppFilter.CONFIGURED -> R.string.empty_configured_body
+                            AppFilter.SUGGESTED -> R.string.empty_suggested_body
                             AppFilter.SYSTEM -> R.string.empty_system_body
                             AppFilter.ALL -> R.string.empty_apps_body
                         }

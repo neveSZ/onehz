@@ -42,6 +42,8 @@
     <string name="profile_assign">Assign profile</string>
     <string name="profile_switch_hint">Tap a profile to use it.</string>
     <string name="empty_configured_title">No apps configured</string>
+    <string name="empty_suggested_title">Nothing to suggest</string>
+    <string name="empty_suggested_body">Games, players and camera apps appear here when they have no assignment.</string>
     <string name="empty_configured_body">Open the All tab and tap an app to assign a profile.</string>
     <string name="empty_system_title">No system apps found</string>
     <string name="empty_system_body">Try another search.</string>
