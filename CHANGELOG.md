@@ -10,17 +10,21 @@ All notable changes to OneHZ are documented here. The format follows
 
 - One-hour master pause next to the master switch, with a deadline, a resume action and
   automatic resume. Pausing restores the captured system values.
-- Quick Settings tile for enable, pause and resume, with a Shizuku-unavailable state.
+- Quick Settings tile for enable and disable, with a Shizuku-unavailable state. Pause and
+  resume stay in the notification, Home and the launcher shortcut.
 - Foreground notification with the active profile and rate, pause/resume and disable.
+- Optional pinned notification: when enabled, a swiped notification is restored right
+  away; off by default.
 - Launcher shortcuts for pause, Economy and diagnostics.
 - System changes screen with the keys OneHZ may write, current and original values,
   restore-all, an external-change warning and a sanitized panel report export.
 - Usage screen with time per rate, Always On Display and uncontrolled time, plus the
-  profile split, for today and the last seven days.
+  profile split, for today and the last seven days. It also hosts the Sleep/Doze summary
+  and session history; the Sleep detail keeps a compact summary and links to Usage.
 - Activation rules: low-battery guard with hysteresis, charging and a time window, each
   pointing at a saved profile.
 - Per-app fixed rates and a system-default target, with schema 2 profile and backup files
-  that still read schema 1.
+  that still read schema 1. Backups also include activation rules.
 - Suggested filter for unassigned games, players and camera apps.
 - Explicit automation broadcasts for pause, resume, profile selection and toggle.
 - Picture-in-picture detection from the pinned task; the video floor stays active while a
@@ -31,8 +35,8 @@ All notable changes to OneHZ are documented here. The format follows
 ### Changed
 
 - Profile duplication and a short undo for profile deletion, including app assignments.
-- The foreground notification updates from state transitions instead of showing a static
-  message.
+- The foreground notification is dismissible by default; the pin option keeps it visible.
+  It updates from state transitions instead of showing a static message.
 - Activation rules, app targets and usage are included in Diagnostics or the existing
   settings flow without adding new permissions.
 
@@ -164,34 +168,6 @@ options available while the feature is off.
 ### Changed
 
 - Backup includes the AOD master switch (`aodMasterEnabled`).
-
-## [Unreleased]
-
-Modernization pass preparing 1.3.0. No user-facing feature changes yet.
-
-### Added
-
-- Baseline Profile module, generator, and `profileinstaller` integration.
-- `scripts/validate-version.py` and `scripts/bump-version.py`, also used by CI.
-- Secret scanning (gitleaks) and dependency review in CI.
-- `scripts/generate-material-symbols.py` for the bundled icon set.
-
-### Changed
-
-- Preferences moved to DataStore behind a synchronous facade, with a one-time migration
-  from the legacy `onehz_prefs.xml`.
-- Screens collect state through small ViewModels with
-  `collectAsStateWithLifecycle`.
-- Edge-to-edge layout, predictive back, and theme-driven system bars.
-- Text fields use `TextFieldState`; sliders use `SliderState`/`RangeSliderState`.
-- Compiled against SDK 37.1 with AGP 9.5.2, Gradle 9.9.2, and Kotlin 2.4.21.
-- Package queries use the typed `ApplicationInfoFlags` APIs.
-- Bottom sheets use explicit `SheetState`s instead of the deprecated helper.
-
-### Removed
-
-- `compose-material-icons-extended`; the 57 used icons are bundled as vector drawables.
-
 
 ## [1.2.0] - 2026-11-22
 
@@ -382,6 +358,10 @@ First public stable release.
 - PiP video is not detected yet.
 - Other devices, brands, and WQHD+ are untested.
 
+[1.3.0]: https://github.com/neveSZ/onehz/releases/tag/v1.3.0
+[1.2.2-beta.2]: https://github.com/neveSZ/onehz/releases/tag/v1.2.2-beta.2
+[1.2.2-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.2.2-beta.1
+[1.2.1]: https://github.com/neveSZ/onehz/releases/tag/v1.2.1
 [1.2.1-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.2.1-beta.1
 [1.2.0]: https://github.com/neveSZ/onehz/releases/tag/v1.2.0
 [1.1.0-beta.1]: https://github.com/neveSZ/onehz/releases/tag/v1.1.0-beta.1

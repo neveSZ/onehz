@@ -92,6 +92,19 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Turn the master switch off; the system adaptive default returns.
 - [ ] Select Economy, Balanced, Performance and a custom profile; each applies.
 
+### Notification
+
+- [ ] With the pin off (default), swipe the OneHZ notification away; it disappears and does
+      not return on rate/profile changes, but returns after opening OneHZ.
+- [ ] Open Settings → Advanced → **Pin notification**; the warning explains the Android 14+
+      swipe and that the service and battery behavior do not change.
+- [ ] Confirm; the notification returns and the row says it stays visible.
+- [ ] Swipe it away; it returns within about two seconds. Pause/resume and Turn off still
+      work.
+- [ ] Turn the pin off; a swipe keeps it hidden until OneHZ is opened.
+- [ ] Repeat with “Clear all” and on the lock screen; record any OEM difference.
+- [ ] Confirm no new wake lock or periodic alarm appears in `dumpsys power`/`dumpsys alarm`.
+
 ### Profiles and battery saver
 
 - [ ] Edit a built-in profile; it is marked as modified.
@@ -191,7 +204,8 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Add an app to the forced list; the floor applies in that app even when paused.
 - [ ] Change the rules or the forced list while a video plays; the floor updates without
       a new touch.
-- [ ] Document that PiP is not detected.
+- [ ] Start PiP; the floor applies while the PiP window is visible and clears after it
+      closes.
 
 ### Wake, screen, and reboot
 
@@ -277,11 +291,31 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Close the PiP window; the video floor is released on the next probe.
 - [ ] Repeat with the app in the foreground and no PiP; behavior is unchanged.
 
-### Screen-off and Samsung gate (1.3.0)
+### 1.3.0 release gate
 
-These checks require the user to unlock the device; they are not automated from ADB.
+These checks require the user to lock and unlock the device; they are not automated from
+ADB. Run the non-interactive parts on both devices in parallel and batch the lock/unlock
+steps.
 
-POCO:
+Upgrade and feature checks:
+
+- [ ] Install 1.3.0 over 1.2.2-beta.2 on the Samsung; profiles, assignments, AOD, Sleep and
+      activation rules are kept, and Shizuku reconnects.
+- [ ] Add an app with battery saver on: the add sheet shows the exception switch, the app
+      keeps its profile, and the row badge reads **Keeps its profile**.
+- [ ] Notification pin off/on (see Notification).
+- [ ] Add the Quick Settings tile on the Samsung; the system prompt appears if it is not
+      already on the grid, and the tile turns OneHZ on and off.
+- [ ] PiP with YouTube on both devices; the video floor applies while the window is visible
+      and clears after it closes.
+- [ ] With the stable channel, the update checker reports the installed 1.3.0 as up to date;
+      with stable + pre-releases, 1.2.2-beta.2 is not offered as an update over 1.3.0.
+- [ ] Export a backup; the JSON contains `rules` and schema 2; import it and confirm the
+      configuration is restored.
+- [ ] Language and theme: the notification row and warning render in EN/PT/ES and in
+      light/dark/AMOLED.
+
+POCO (Android 16):
 
 - [ ] Enable OneHZ, turn the AOD rate on, lock and unlock; the AOD uses the panel minimum
       and the active profile returns after unlock.
@@ -291,9 +325,10 @@ POCO:
       confirm the guard enters and leaves with hysteresis; reset with
       `dumpsys battery reset`.
 - [ ] After a screen-off period, Usage counts AOD and uncontrolled time separately.
-- [ ] Sleep/Doze still enters and leaves correctly after the AOD reapply change.
+- [ ] Sleep/Doze enters and leaves correctly after the AOD reapply change.
+- [ ] Run the Doze maintenance gate below and confirm the AOD rate and the counters.
 
-Samsung:
+Samsung (Android 17):
 
 - [ ] AOD brightness on, base 10%, night schedule 22:00-07:00 at 15%.
 - [ ] Lock inside the window: the debug key uses the scheduled value inside the band.
@@ -301,6 +336,41 @@ Samsung:
 - [ ] Restore everything: the key is removed, the rate keys return to the system default
       and OneHZ turns off.
 - [ ] Re-enable and confirm the rate and AOD still work after the restore.
+- [ ] Run the Doze maintenance gate below and confirm the AOD rate keys.
+
+### Doze maintenance gate
+
+Run with Sleep on and the screen off. The commands are deterministic and do not replace
+the user's lock/unlock step. `dumpsys deviceidle step` is available on Android 16 and 17.
+
+POCO (deep idle):
+
+- [ ] Lock the screen; confirm `dumpsys deviceidle get deep` is `IDLE` and
+      `dumpsys deviceidle get force` is `true`. `dumpsys power` shows no app wake lock.
+- [ ] Run `dumpsys deviceidle step deep`; confirm `IDLE_MAINTENANCE` with `get deep`.
+- [ ] Run `dumpsys deviceidle step deep` again; confirm `IDLE` and `get force` still
+      `true`.
+- [ ] Repeat the cycle twice.
+- [ ] Confirm the Diagnostics log shows at most one reapply per cycle and no repeated
+      force/AOD writes.
+- [ ] Confirm the Sleep session remains one session, the screen-off/Doze totals include
+      the maintenance interval, and the maintenance count increments when the platform
+      exposes the transition.
+- [ ] Confirm the HyperOS AOD rate key (`miui_refresh_rate` or `user_refresh_rate`) is
+      still the panel minimum after the cycle.
+- [ ] Unlock; confirm `get force` is `false`, `get deep` is `ACTIVE`, the session closes
+      and the profile returns.
+
+Samsung (AOD rate):
+
+- [ ] While the AOD is active, record
+      `settings get system peak_refresh_rate`, `settings get system min_refresh_rate` and
+      `settings get secure refresh_rate_mode`.
+- [ ] Repeat the `IDLE → IDLE_MAINTENANCE → IDLE` cycle with Sleep on.
+- [ ] Confirm the rate keys return to the panel minimum after the cycle and the Diagnostics
+      log shows no write loop.
+- [ ] Turn Sleep off and the screen on; confirm the AOD rate is restored and no forced
+      state remains.
 
 ## Device matrix
 
