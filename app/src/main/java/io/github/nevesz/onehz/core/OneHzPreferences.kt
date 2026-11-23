@@ -34,7 +34,6 @@ object OneHzPreferences {
     private const val KEY_LOGS_PAUSED = "logs_paused"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_THEME_MODE = "theme_mode"
-    private const val KEY_DIAGNOSTICS_ENABLED = "diagnostics_enabled"
     private const val KEY_UPDATES_ENABLED = "updates_enabled"
     private const val KEY_UPDATE_INTERVAL_MINUTES = "update_interval_minutes"
     private const val KEY_UPDATE_CHANNEL = "update_channel"
@@ -329,15 +328,6 @@ object OneHzPreferences {
 
     fun setThemeMode(context: Context, mode: ThemeMode) =
         prefs(context).edit { putString(KEY_THEME_MODE, mode.stored) }
-
-    // ------------------------------------------------------------- diagnostics
-
-    /** Diagnostics are hidden until the user unlocks them from the About screen. */
-    fun diagnosticsEnabled(context: Context) =
-        prefs(context).getBoolean(KEY_DIAGNOSTICS_ENABLED, false)
-
-    fun setDiagnosticsEnabled(context: Context, value: Boolean) =
-        prefs(context).edit { putBoolean(KEY_DIAGNOSTICS_ENABLED, value) }
 
     // ---------------------------------------------------------------- updates
 
