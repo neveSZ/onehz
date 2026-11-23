@@ -81,7 +81,10 @@
     <string name="video_rules_title">Detection rules</string>
     <string name="video_detection_title">Video detection</string>
     <string name="video_rules_desc">Choose which signals OneHZ uses to decide that a video is playing.</string>
-    <string name="video_rules_summary">%1$d of %2$d rules active</string>
+    <plurals name="video_rules_summary">
+        <item quantity="one">%1$d of %2$d rule active</item>
+        <item quantity="other">%1$d of %2$d rules active</item>
+    </plurals>
     <string name="video_rule_session_title">Use MediaSession</string>
     <string name="video_rule_session_desc_on">Reads the playback state reported by the app\'s media session.</string>
     <string name="video_rule_session_desc_off">Ignores the app\'s media session.</string>
@@ -231,7 +234,6 @@
     <string name="unsupported_title">Device not supported</string>
     <string name="unsupported_body">OneHZ only works on Samsung or Xiaomi/Redmi/POCO devices with a display that exposes at least two refresh rates. Nothing was changed.</string>
 
-    <string name="notification_service_text">Keeping refresh-rate control active. Doze is not blocked.</string>
     <string name="notification_channel_name">OneHZ service</string>
     <string name="notification_channel_desc">Keeps the refresh-rate engine alive without wake locks.</string>
     <string name="notification_stop">Turn off</string>

@@ -43,12 +43,10 @@
     <string name="sleep_row_battery">Batería</string>
     <string name="sleep_value_rate">%1$s%%/h</string>
     <string name="sleep_value_battery">%1$d%% → %2$d%%</string>
-    <string name="sleep_usage_values">%1$s con la pantalla apagada · %2$s en Doze</string>
     <string name="sleep_rest_title">Última sesión de sueño (30 min+)</string>
     <string name="sleep_rest_rate">Consumo: %1$s%%/h</string>
     <string name="sleep_rest_battery">Batería: %1$d%% → %2$d%%</string>
     <string name="sleep_rest_none">Ninguna sesión de sueño de 30 min o más en las últimas 24 h.</string>
-    <string name="sleep_rest_hint">Una sesión de sueño cuenta a partir de 30 min con la pantalla apagada. Las pausas cortas solo cuentan en el total de 24 h.</string>
     <string name="sleep_details">Detalles</string>
     <string name="sleep_history_in_usage">Ver historial en Uso</string>
 

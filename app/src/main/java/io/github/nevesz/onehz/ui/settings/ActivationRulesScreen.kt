@@ -41,6 +41,7 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.profile.profileLabel
+import java.util.Locale
 
 @Composable
 fun ActivationRulesScreen(
@@ -277,7 +278,7 @@ private fun profileName(id: String?, profiles: List<DeviceProfile>): String {
 }
 
 private fun timeLabel(minuteOfDay: Int): String =
-    String.format("%02d:%02d", minuteOfDay / 60, minuteOfDay % 60)
+    String.format(Locale.ROOT, "%02d:%02d", minuteOfDay / 60, minuteOfDay % 60)
 
 private fun pickTime(context: Context, initial: Int, onPicked: (Int) -> Unit) {
     TimePickerDialog(

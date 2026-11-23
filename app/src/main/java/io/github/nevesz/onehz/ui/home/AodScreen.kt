@@ -58,6 +58,7 @@ import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.AodBrightnessController
 import io.github.nevesz.onehz.engine.OneHzEngine
+import java.util.Locale
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.icons.AppIcons
@@ -498,7 +499,7 @@ private fun ScheduleRow(title: String, minute: Int, onPick: (Int) -> Unit) {
     ) {
         Text(text = title, modifier = Modifier.weight(1f))
         Text(
-            text = String.format("%02d:%02d", minute / 60, minute % 60),
+            text = String.format(Locale.ROOT, "%02d:%02d", minute / 60, minute % 60),
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }

@@ -397,8 +397,9 @@ fun ProfileEditorScreen(
                         SettingRow(
                             icon = AppIcons.tune(),
                             title = stringResource(R.string.video_detection_title),
-                            subtitle = stringResource(
-                                R.string.video_rules_summary,
+                            subtitle = pluralStringResource(
+                                R.plurals.video_rules_summary,
+                                VideoConfig.RULE_COUNT,
                                 video.rules.activeRuleCount,
                                 VideoConfig.RULE_COUNT
                             ),

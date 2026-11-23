@@ -61,14 +61,12 @@
     <string name="sleep_how_body">Doze is Android\'s deep sleep state. Sleep enters it as soon as the screen turns off and leaves it when the screen turns on. Regular calls and alarms still wake the device. Internet calls and notifications may be delayed until Android opens a maintenance window.</string>
     <string name="sleep_options_title">Behavior</string>
     <string name="sleep_paused_note">The options below are paused; your choices are kept.</string>
-    <string name="sleep_measurements_title">Measurements</string>
     <string name="sleep_advanced_title">Advanced</string>
     <string name="sleep_test_running">Testing…</string>
     <string name="sleep_test_result_ok">Doze confirmed.</string>
     <string name="sleep_test_result_failed">Could not confirm Doze on this system.</string>
     <string name="sleep_usage_empty_enabled">No measurements yet. Leave the screen off for a while.</string>
     <string name="sleep_partial_badge">Partial data</string>
-    <string name="sleep_partial_hint">OneHZ was not active for the whole period.</string>
     <string name="sleep_measure_note">Measured by OneHZ. Includes Always On Display. Battery use varies with the device and usage.</string>
     <string name="sleep_whitelist_effect">This changes the system Doze exceptions and may increase battery use.</string>
     <string name="sleep_failure_hint">This can happen on some system builds. Check the diagnostics or try light Doze.</string>
@@ -95,9 +93,9 @@
     <!-- Backup detail. -->
     <string name="backup_intro">Export or import the OneHZ behavior configuration. The file is versioned JSON.</string>
     <string name="backup_includes_title">Includes</string>
-    <string name="backup_includes_body">Profiles, app assignments, video, AOD, Sleep settings and the master switch.</string>
+    <string name="backup_includes_body">Profiles, app assignments, video, AOD, Sleep settings, activation rules and the master switch.</string>
     <string name="backup_excludes_title">Does not include</string>
-    <string name="backup_excludes_body">Theme, language, diagnostics, cache, Sleep measurements, pause/forced state and the system Doze exceptions.</string>
+    <string name="backup_excludes_body">Theme, language, notification pin, diagnostics, cache, Sleep measurements, pause/forced state and the system Doze exceptions.</string>
     <string name="backup_export_hint">Export before changing your setup if you want a way back.</string>
     <string name="backup_import_hint">Import replaces the current behavior configuration.</string>
     <string name="backup_import_success_title">Import complete</string>

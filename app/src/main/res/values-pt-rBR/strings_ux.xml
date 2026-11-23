@@ -61,14 +61,12 @@
     <string name="sleep_how_body">Doze é o estado de repouso profundo do Android. O Sono entra nele assim que a tela apaga e sai quando a tela acende. Ligações normais e alarmes continuam acordando o aparelho. Chamadas por internet e notificações podem atrasar até o Android abrir uma janela de manutenção.</string>
     <string name="sleep_options_title">Comportamento</string>
     <string name="sleep_paused_note">As opções abaixo ficam pausadas; suas escolhas são mantidas.</string>
-    <string name="sleep_measurements_title">Medições</string>
     <string name="sleep_advanced_title">Avançado</string>
     <string name="sleep_test_running">Testando…</string>
     <string name="sleep_test_result_ok">Doze confirmado.</string>
     <string name="sleep_test_result_failed">Não foi possível confirmar o Doze neste sistema.</string>
     <string name="sleep_usage_empty_enabled">Ainda sem medições. Deixe a tela apagada por um tempo.</string>
     <string name="sleep_partial_badge">Dados parciais</string>
-    <string name="sleep_partial_hint">O OneHZ não estava ativo durante todo o período.</string>
     <string name="sleep_measure_note">Medido pelo OneHZ. Inclui o AOD. O consumo varia com o aparelho e o uso.</string>
     <string name="sleep_whitelist_effect">Isso altera as exceções do Doze do sistema e pode aumentar o consumo.</string>
     <string name="sleep_failure_hint">Isso pode acontecer em algumas versões do sistema. Veja o diagnóstico ou tente o Doze leve.</string>
@@ -95,9 +93,9 @@
     <!-- Backup: detalhe. -->
     <string name="backup_intro">Exporte ou importe a configuração de comportamento do OneHZ. O arquivo é um JSON versionado.</string>
     <string name="backup_includes_title">Inclui</string>
-    <string name="backup_includes_body">Perfis, atribuições de apps, vídeo, AOD, configurações do Sono e o switch mestre.</string>
+    <string name="backup_includes_body">Perfis, atribuições de apps, vídeo, AOD, configurações do Sono, regras de ativação e o switch mestre.</string>
     <string name="backup_excludes_title">Não inclui</string>
-    <string name="backup_excludes_body">Tema, idioma, diagnóstico, cache, medições do Sono, pausa/estado forçado e as exceções do Doze do sistema.</string>
+    <string name="backup_excludes_body">Tema, idioma, notificação fixa, diagnóstico, cache, medições do Sono, pausa/estado forçado e as exceções do Doze do sistema.</string>
     <string name="backup_export_hint">Exporte antes de mudar a configuração se quiser uma forma de voltar.</string>
     <string name="backup_import_hint">A importação substitui a configuração de comportamento atual.</string>
     <string name="backup_import_success_title">Importação concluída</string>

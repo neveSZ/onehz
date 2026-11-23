@@ -81,7 +81,11 @@
     <string name="video_rules_title">Regras de detecção</string>
     <string name="video_detection_title">Detecção de vídeo</string>
     <string name="video_rules_desc">Escolha quais sinais o OneHZ usa para decidir que um vídeo está tocando.</string>
-    <string name="video_rules_summary">%1$d de %2$d regras ativas</string>
+    <plurals name="video_rules_summary">
+        <item quantity="one">%1$d de %2$d regra ativa</item>
+        <item quantity="many">%1$d de %2$d regras ativas</item>
+        <item quantity="other">%1$d de %2$d regras ativas</item>
+    </plurals>
     <string name="video_rule_session_title">Usar MediaSession</string>
     <string name="video_rule_session_desc_on">Lê o estado de reprodução informado pela sessão de mídia do app.</string>
     <string name="video_rule_session_desc_off">Ignora a sessão de mídia do app.</string>
@@ -234,7 +238,6 @@
     <string name="unsupported_title">Aparelho incompatível</string>
     <string name="unsupported_body">O OneHZ só funciona em Samsung ou Xiaomi/Redmi/POCO com uma tela que exponha pelo menos duas taxas de atualização. Nada foi alterado.</string>
 
-    <string name="notification_service_text">Mantendo o controle de frequência ativo. O Doze não é bloqueado.</string>
     <string name="notification_channel_name">Serviço do OneHZ</string>
     <string name="notification_channel_desc">Mantém o controle ativo sem WakeLock.</string>
     <string name="notification_stop">Desativar</string>

@@ -61,14 +61,12 @@
     <string name="sleep_how_body">Doze es el estado de reposo profundo de Android. Sueño entra en él en cuanto se apaga la pantalla y sale cuando se enciende. Las llamadas normales y las alarmas siguen despertando el dispositivo. Las llamadas por internet y las notificaciones pueden retrasarse hasta que Android abra una ventana de mantenimiento.</string>
     <string name="sleep_options_title">Comportamiento</string>
     <string name="sleep_paused_note">Las opciones de abajo están en pausa; tus elecciones se mantienen.</string>
-    <string name="sleep_measurements_title">Mediciones</string>
     <string name="sleep_advanced_title">Avanzado</string>
     <string name="sleep_test_running">Probando…</string>
     <string name="sleep_test_result_ok">Doze confirmado.</string>
     <string name="sleep_test_result_failed">No se pudo confirmar Doze en este sistema.</string>
     <string name="sleep_usage_empty_enabled">Aún sin mediciones. Deja la pantalla apagada un rato.</string>
     <string name="sleep_partial_badge">Datos parciales</string>
-    <string name="sleep_partial_hint">OneHZ no estuvo activo durante todo el período.</string>
     <string name="sleep_measure_note">Medido por OneHZ. Incluye AOD. El consumo varía según el dispositivo y el uso.</string>
     <string name="sleep_whitelist_effect">Esto cambia las excepciones de Doze del sistema y puede aumentar el consumo.</string>
     <string name="sleep_failure_hint">Esto puede pasar en algunas versiones del sistema. Revisa el diagnóstico o prueba Doze ligero.</string>
@@ -95,9 +93,9 @@
     <!-- Copia de seguridad: detalle. -->
     <string name="backup_intro">Exporta o importa la configuración de comportamiento de OneHZ. El archivo es un JSON versionado.</string>
     <string name="backup_includes_title">Incluye</string>
-    <string name="backup_includes_body">Perfiles, asignaciones de apps, vídeo, AOD, ajustes de Sueño y el interruptor maestro.</string>
+    <string name="backup_includes_body">Perfiles, asignaciones de apps, vídeo, AOD, ajustes de Sueño, reglas de activación y el interruptor maestro.</string>
     <string name="backup_excludes_title">No incluye</string>
-    <string name="backup_excludes_body">Tema, idioma, diagnóstico, caché, mediciones de Sueño, pausa/estado forzado y las excepciones de Doze del sistema.</string>
+    <string name="backup_excludes_body">Tema, idioma, notificación fija, diagnóstico, caché, mediciones de Sueño, pausa/estado forzado y las excepciones de Doze del sistema.</string>
     <string name="backup_export_hint">Exporta antes de cambiar la configuración si quieres una forma de volver.</string>
     <string name="backup_import_hint">La importación reemplaza la configuración de comportamiento actual.</string>
     <string name="backup_import_success_title">Importación completada</string>
