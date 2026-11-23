@@ -36,7 +36,7 @@ connected to Shizuku). Use the same device and a release build for comparisons.
 
 | Metric | 1.2.2-beta.1 | 1.3.0-rc.1 |
 |---|---|---|
-| Cold start, median of 5 (`am start -W -S`) | 258 ms | 245 ms |
+| Cold start, median of 5 (`am start -W -S`) | 258 ms | 257 ms |
 | Idle CPU after 45 s (app processes) | 0% | 0% |
 | Wake locks held by the app | 0 | 0 |
 | Periodic alarms scheduled by the app | 0 | 0 |
