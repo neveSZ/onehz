@@ -34,6 +34,15 @@
     <string name="sleep_whitelist_desc">Mantiene estas apps fuera de Doze.</string>
 
     <string name="sleep_usage_title">Últimas 24 h</string>
+    <string name="sleep_doze_title">Sueño y Doze</string>
+    <string name="sleep_row_screen_off">Pantalla apagada</string>
+    <string name="sleep_row_doze">En Doze</string>
+    <string name="sleep_row_duration">Duración</string>
+    <string name="sleep_row_last_session">Última sesión</string>
+    <string name="sleep_row_consumption">Consumo</string>
+    <string name="sleep_row_battery">Batería</string>
+    <string name="sleep_value_rate">%1$s%%/h</string>
+    <string name="sleep_value_battery">%1$d%% → %2$d%%</string>
     <string name="sleep_usage_values">%1$s con la pantalla apagada · %2$s en Doze</string>
     <string name="sleep_rest_title">Última sesión de sueño (30 min+)</string>
     <string name="sleep_rest_rate">Consumo: %1$s%%/h</string>

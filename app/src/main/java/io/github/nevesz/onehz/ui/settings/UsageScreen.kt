@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -33,7 +34,10 @@ import io.github.nevesz.onehz.core.SleepLedger
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.SleepUsage
 import io.github.nevesz.onehz.core.profile.ProfileStore
+import io.github.nevesz.onehz.ui.components.MetricRow
 import io.github.nevesz.onehz.ui.components.OneHzCard
+import io.github.nevesz.onehz.ui.components.StatusBadge
+import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.home.SleepDetailsSheet
 import io.github.nevesz.onehz.ui.home.formatSleepDuration
 import io.github.nevesz.onehz.ui.home.formatSleepRate
@@ -102,69 +106,74 @@ private fun SleepUsageCard(
     onDetails: () -> Unit
 ) {
     OneHzCard {
-        Text(
-            text = stringResource(R.string.sleep_measurements_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-        Spacer(Modifier.height(6.dp))
-        if (usage.partial) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = stringResource(R.string.sleep_partial_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = stringResource(R.string.sleep_doze_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
             )
-            Spacer(Modifier.height(6.dp))
+            if (usage.partial) {
+                StatusBadge(
+                    text = stringResource(R.string.sleep_partial_badge),
+                    tone = StatusTone.WARN
+                )
+            }
         }
+        Spacer(Modifier.height(6.dp))
         Text(
             text = stringResource(R.string.sleep_usage_title),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Text(text = sleepUsageText(usage), style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(10.dp))
+        MetricRow(
+            label = stringResource(R.string.sleep_row_screen_off),
+            value = formatSleepDuration(usage.screenOffMs)
+        )
+        MetricRow(
+            label = stringResource(R.string.sleep_row_doze),
+            value = formatSleepDuration(usage.idleMs)
+        )
+        Spacer(Modifier.height(8.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Spacer(Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.sleep_rest_title),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Text(text = sleepRestText(rest), style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(4.dp))
-        Text(
-            text = stringResource(R.string.sleep_rest_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (rest == null) {
+            Text(
+                text = stringResource(R.string.sleep_rest_none),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            MetricRow(
+                label = stringResource(R.string.sleep_row_duration),
+                value = formatSleepDuration(rest.durationMs)
+            )
+            rest.perHour?.let {
+                MetricRow(
+                    label = stringResource(R.string.sleep_row_consumption),
+                    value = stringResource(R.string.sleep_value_rate, formatSleepRate(it))
+                )
+            }
+            if (rest.levelStart > 0 && rest.levelEnd >= 0) {
+                MetricRow(
+                    label = stringResource(R.string.sleep_row_battery),
+                    value = stringResource(
+                        R.string.sleep_value_battery,
+                        rest.levelStart,
+                        rest.levelEnd
+                    )
+                )
+            }
+        }
         TextButton(onClick = onDetails) {
             Text(stringResource(R.string.sleep_details))
         }
-        Text(
-            text = stringResource(R.string.sleep_measure_note),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
-}
-
-@Composable
-private fun sleepUsageText(usage: SleepUsage): String {
-    if (!usage.hasData) return stringResource(R.string.sleep_usage_empty_enabled)
-    return stringResource(
-        R.string.sleep_usage_values,
-        formatSleepDuration(usage.screenOffMs),
-        formatSleepDuration(usage.idleMs)
-    )
-}
-
-@Composable
-private fun sleepRestText(rest: RestSession?): String {
-    if (rest == null) return stringResource(R.string.sleep_rest_none)
-    val parts = mutableListOf(formatSleepDuration(rest.durationMs))
-    rest.perHour?.let { parts += stringResource(R.string.sleep_rest_rate, formatSleepRate(it)) }
-    if (rest.levelStart > 0 && rest.levelEnd >= 0) {
-        parts += stringResource(R.string.sleep_rest_battery, rest.levelStart, rest.levelEnd)
-    }
-    return parts.joinToString(" · ")
 }
 
 @Composable

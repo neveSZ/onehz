@@ -49,11 +49,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DozePhase
 import io.github.nevesz.onehz.core.DozeState
-import io.github.nevesz.onehz.core.RestSession
 import io.github.nevesz.onehz.core.SleepLedger
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.SleepRecord
-import io.github.nevesz.onehz.core.SleepUsage
 import io.github.nevesz.onehz.core.SleepWindow
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.DozeController
@@ -62,6 +60,7 @@ import io.github.nevesz.onehz.shizuku.ShizukuState
 import io.github.nevesz.onehz.ui.components.BannerTone
 import io.github.nevesz.onehz.ui.components.HowItWorksCard
 import io.github.nevesz.onehz.ui.components.InfoBanner
+import io.github.nevesz.onehz.ui.components.MetricRow
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.ToggleRow
@@ -479,46 +478,42 @@ private fun MeasurementsCard(
     val usage = SleepLedger.usage(ui.records, now)
     val rest = SleepLedger.lastRest(ui.records, now)
     OneHzCard {
-        Text(
-            text = stringResource(R.string.sleep_measurements_title),
-            style = MaterialTheme.typography.titleMedium
-        )
-        Spacer(Modifier.height(6.dp))
-        if (usage.partial) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.sleep_doze_title),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
+            if (usage.partial) {
                 io.github.nevesz.onehz.ui.components.StatusBadge(
                     text = stringResource(R.string.sleep_partial_badge),
                     tone = io.github.nevesz.onehz.ui.components.StatusTone.WARN,
                 )
             }
-            Spacer(Modifier.height(4.dp))
+        }
+        Spacer(Modifier.height(6.dp))
+        if (!usage.hasData) {
             Text(
-                text = stringResource(R.string.sleep_partial_hint),
-                style = MaterialTheme.typography.bodySmall,
+                text = stringResource(R.string.sleep_usage_empty_enabled),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(Modifier.height(6.dp))
+        } else {
+            MetricRow(
+                label = stringResource(R.string.sleep_row_screen_off),
+                value = formatSleepDuration(usage.screenOffMs)
+            )
+            MetricRow(
+                label = stringResource(R.string.sleep_row_doze),
+                value = formatSleepDuration(usage.idleMs)
+            )
+            MetricRow(
+                label = stringResource(R.string.sleep_row_last_session),
+                value = rest?.let { formatSleepDuration(it.durationMs) }
+                    ?: stringResource(R.string.sleep_rest_none)
+            )
         }
-        Text(
-            text = stringResource(R.string.sleep_usage_title),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(text = usageText(usage), style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(12.dp))
-        Text(
-            text = stringResource(R.string.sleep_rest_title),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(text = restText(rest), style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(6.dp))
-        Text(
-            text = stringResource(R.string.sleep_rest_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             TextButton(onClick = onOpenUsage) {
                 Text(stringResource(R.string.sleep_history_in_usage))
@@ -531,11 +526,6 @@ private fun MeasurementsCard(
                 }
             }
         }
-        Text(
-            text = stringResource(R.string.sleep_measure_note),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
@@ -564,27 +554,6 @@ private fun statusText(
         phase == DozePhase.OUTSIDE_WINDOW -> stringResource(R.string.sleep_state_outside_window)
         else -> stringResource(R.string.sleep_state_ready_desc)
     }
-}
-
-@Composable
-private fun usageText(usage: SleepUsage): String {
-    if (!usage.hasData) return stringResource(R.string.sleep_usage_empty_enabled)
-    return stringResource(
-        R.string.sleep_usage_values,
-        formatSleepDuration(usage.screenOffMs),
-        formatSleepDuration(usage.idleMs),
-    )
-}
-
-@Composable
-private fun restText(rest: RestSession?): String {
-    if (rest == null) return stringResource(R.string.sleep_rest_none)
-    val parts = mutableListOf(formatSleepDuration(rest.durationMs))
-    rest.perHour?.let { parts += stringResource(R.string.sleep_rest_rate, formatSleepRate(it)) }
-    if (rest.levelStart > 0 && rest.levelEnd >= 0) {
-        parts += stringResource(R.string.sleep_rest_battery, rest.levelStart, rest.levelEnd)
-    }
-    return parts.joinToString(" · ")
 }
 
 private fun showTimePicker(
