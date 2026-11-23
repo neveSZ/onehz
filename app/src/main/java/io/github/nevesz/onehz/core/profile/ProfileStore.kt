@@ -277,8 +277,12 @@ object ProfileStore {
                     }
 
                     is AppTarget.Fixed -> {
-                        if (target.hz > 0) assignment
-                        else assignment.copy(target = AppTarget.Profile(balancedId))
+                        if (target.hz > 0) {
+                            val nearest = ProfileDefaults.nearestRate(target.hz, panelRates)
+                            assignment.copy(target = AppTarget.Fixed(nearest))
+                        } else {
+                            assignment.copy(target = AppTarget.Profile(balancedId))
+                        }
                     }
 
                     AppTarget.Ignore -> assignment
