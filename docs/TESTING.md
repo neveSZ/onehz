@@ -70,7 +70,12 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Delete a custom profile used by an app; the app moves to Balanced.
 - [ ] Turn on system battery saver; Economy is applied and the card shows it.
 - [ ] Turn battery saver off; the selected profile returns.
-- [ ] Mark an app "Do not use Economy during battery saver"; its profile stays while battery saver is on.
+- [ ] Add an app, turn on "Keep this app's profile during battery saver" in the add sheet;
+      its profile stays while battery saver is on and the row shows "Keeps its profile".
+- [ ] Add an app with the switch off; battery saver on applies Economy.
+- [ ] Edit an assignment and toggle the switch; the row badge and the applied layer update.
+- [ ] Select Economy as the app profile; the switch is disabled in the add and edit sheets.
+- [ ] With Automatic Economy off, the hint is hidden and the app profile applies.
 - [ ] Confirm Samsung battery-saver settings are restored after turning OneHZ off.
 - [ ] On Xiaomi, confirm `secure/miui_refresh_rate` is restored after turning OneHZ off.
 
