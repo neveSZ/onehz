@@ -25,7 +25,7 @@ data class DozeInput(
     val windowEnabled: Boolean = false,
     val window: SleepWindow = SleepWindow.DEFAULT,
     val minuteOfDay: Int = 0,
-    val skipCharging: Boolean = true,
+    val dozeWhileCharging: Boolean = true,
     val charging: Boolean = false,
     val dozeWithMusic: Boolean = false,
     val musicActive: Boolean = false,
@@ -42,7 +42,7 @@ object DozeDecisionResolver {
         if (input.windowEnabled && !input.window.contains(input.minuteOfDay)) {
             return DozeDecision.Skip(DozeSkip.OUTSIDE_WINDOW)
         }
-        if (input.skipCharging && input.charging) return DozeDecision.Skip(DozeSkip.CHARGING)
+        if (!input.dozeWhileCharging && input.charging) return DozeDecision.Skip(DozeSkip.CHARGING)
         if (!input.dozeWithMusic && input.musicActive) return DozeDecision.Skip(DozeSkip.MUSIC)
         if (!input.serviceReady) return DozeDecision.Skip(DozeSkip.SERVICE)
         return DozeDecision.Force(input.deep)

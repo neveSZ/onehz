@@ -12,7 +12,7 @@ class DozeDecisionTest {
         pausedUntil = 0L,
         windowEnabled = false,
         minuteOfDay = 12 * 60,
-        skipCharging = false,
+        dozeWhileCharging = true,
         charging = false,
         dozeWithMusic = true,
         musicActive = false,
@@ -77,7 +77,7 @@ class DozeDecisionTest {
         )
         assertEquals(
             DozeDecision.Skip(DozeSkip.CHARGING),
-            DozeDecisionResolver.resolve(base.copy(skipCharging = true, charging = true)),
+            DozeDecisionResolver.resolve(base.copy(dozeWhileCharging = false, charging = true)),
         )
         assertEquals(
             DozeDecision.Skip(DozeSkip.MUSIC),
@@ -94,7 +94,7 @@ class DozeDecisionTest {
         assertEquals(
             DozeDecision.Skip(DozeSkip.CHARGING),
             DozeDecisionResolver.resolve(
-                base.copy(serviceReady = false, skipCharging = true, charging = true),
+                base.copy(serviceReady = false, dozeWhileCharging = false, charging = true),
             ),
         )
         assertEquals(

@@ -13,7 +13,7 @@ import org.json.JSONObject
 data class SleepBackup(
     val enabled: Boolean = false,
     val deep: Boolean = true,
-    val skipCharging: Boolean = true,
+    val dozeWhileCharging: Boolean = true,
     val dozeWithMusic: Boolean = false,
     val windowEnabled: Boolean = false,
     val windowStartMinute: Int = 23 * 60,
@@ -61,7 +61,9 @@ object BackupCodec {
             put("sleep", JSONObject().apply {
                 put("enabled", sleep.enabled)
                 put("deep", sleep.deep)
-                put("skipCharging", sleep.skipCharging)
+                put("dozeWhileCharging", sleep.dozeWhileCharging)
+                // Kept so a 1.2.x install can restore a backup made by this version.
+                put("skipCharging", !sleep.dozeWhileCharging)
                 put("dozeWithMusic", sleep.dozeWithMusic)
                 // Kept so a 1.2.x install can restore a backup made by this version.
                 put("skipMusic", !sleep.dozeWithMusic)
@@ -106,7 +108,14 @@ object BackupCodec {
                 SleepBackup(
                     enabled = it.optBoolean("enabled", false),
                     deep = it.optBoolean("deep", true),
-                    skipCharging = it.optBoolean("skipCharging", true),
+                    dozeWhileCharging = if (it.has("dozeWhileCharging")) {
+                        it.optBoolean("dozeWhileCharging", true)
+                    } else if (it.has("skipCharging")) {
+                        // Old backups stored the negative switch.
+                        !it.optBoolean("skipCharging", true)
+                    } else {
+                        true
+                    },
                     dozeWithMusic = if (it.has("dozeWithMusic")) {
                         it.optBoolean("dozeWithMusic", false)
                     } else {

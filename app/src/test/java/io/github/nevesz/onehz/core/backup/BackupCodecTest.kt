@@ -30,7 +30,7 @@ class BackupCodecTest {
         sleep = SleepBackup(
             enabled = true,
             deep = false,
-            skipCharging = false,
+            dozeWhileCharging = true,
             dozeWithMusic = true,
             windowEnabled = true,
             windowStartMinute = 22 * 60,
@@ -80,7 +80,7 @@ class BackupCodecTest {
             SleepBackup(
                 enabled = true,
                 deep = false,
-                skipCharging = false,
+                dozeWhileCharging = true,
                 dozeWithMusic = true,
                 windowEnabled = true,
                 windowStartMinute = 22 * 60,
@@ -100,6 +100,27 @@ class BackupCodecTest {
 
         sleep.put("skipMusic", true)
         assertEquals(false, BackupCodec.decode(root.toString())?.sleep?.dozeWithMusic)
+    }
+
+    @Test
+    fun `old backup derives doze while charging from the negative switch`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        val sleep = root.getJSONObject("sleep")
+        sleep.remove("dozeWhileCharging")
+        sleep.put("skipCharging", false)
+        assertEquals(true, BackupCodec.decode(root.toString())?.sleep?.dozeWhileCharging)
+
+        sleep.put("skipCharging", true)
+        assertEquals(false, BackupCodec.decode(root.toString())?.sleep?.dozeWhileCharging)
+
+        sleep.remove("skipCharging")
+        assertEquals(true, BackupCodec.decode(root.toString())?.sleep?.dozeWhileCharging)
+    }
+
+    @Test
+    fun `new backup keeps the legacy charging switch compatible`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        assertEquals(false, root.getJSONObject("sleep").optBoolean("skipCharging", true))
     }
 
     @Test

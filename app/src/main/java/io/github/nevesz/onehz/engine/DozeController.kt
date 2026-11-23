@@ -407,7 +407,7 @@ object DozeController {
                     calendar.get(Calendar.HOUR_OF_DAY),
                     calendar.get(Calendar.MINUTE),
                 ),
-                skipCharging = SleepPreferences.skipCharging(ctx),
+                dozeWhileCharging = SleepPreferences.dozeWhileCharging(ctx),
                 charging = charging,
                 dozeWithMusic = SleepPreferences.dozeWithMusic(ctx),
                 musicActive = musicActive,
