@@ -41,7 +41,9 @@ data class PolicyInput(
     val appProfile: DeviceProfile? = null,
     val appPackageName: String? = null,
     val appIgnoreEco: Boolean = false,
-    val paused: Boolean = false
+    val paused: Boolean = false,
+    val ruleProfile: DeviceProfile? = null,
+    val ruleLayer: String? = null
 )
 
 sealed interface PolicyDecision {
@@ -64,11 +66,16 @@ object PolicyResolver {
         screenOff: Boolean,
         ecoActive: Boolean,
         foregroundPackage: String?,
-        index: Int
+        index: Int,
+        ruleProfileId: String? = null,
+        ruleLayer: String? = null
     ): PolicyDecision {
         val state = ProfileStore.state(context)
         val assignment = state.assignment(foregroundPackage)
         val appProfile = assignment?.let { state.profile(it.profileId) }
+        val ruleProfile = state.profile(ruleProfileId)?.takeIf {
+            it.frequency.steps.isNotEmpty()
+        }
         return decide(
             PolicyInput(
                 screenOff = screenOff,
@@ -82,7 +89,9 @@ object PolicyResolver {
                 appProfile = appProfile,
                 appPackageName = assignment?.packageName,
                 appIgnoreEco = assignment?.ignoreEco == true,
-                paused = io.github.nevesz.onehz.core.OneHzPreferences.isPaused(context)
+                paused = io.github.nevesz.onehz.core.OneHzPreferences.isPaused(context),
+                ruleProfile = ruleProfile,
+                ruleLayer = ruleLayer
             ),
             index
         )
@@ -104,6 +113,10 @@ object PolicyResolver {
                     video = VideoSettings(enabled = false, minHz = input.aodHz)
                 )
             )
+        }
+
+        input.ruleProfile?.takeIf { it.frequency.steps.isNotEmpty() }?.let { rule ->
+            return applyProfile(rule, input.ruleLayer ?: "rule", index)
         }
 
         val app = input.appProfile?.takeIf { it.frequency.steps.isNotEmpty() }

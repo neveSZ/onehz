@@ -1,6 +1,7 @@
 package io.github.nevesz.onehz.engine
 
 import android.content.Context
+import android.os.BatteryManager
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
@@ -9,6 +10,10 @@ import io.github.nevesz.onehz.core.MasterPause
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.RateMode
 import io.github.nevesz.onehz.core.RateStats
+import io.github.nevesz.onehz.core.ActivationRulesLogic
+import io.github.nevesz.onehz.core.ActivationRulesStore
+import io.github.nevesz.onehz.core.BatteryGuard
+import java.util.Calendar
 import io.github.nevesz.onehz.core.TierStep
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.core.profile.ProfileStore
@@ -47,6 +52,8 @@ object OneHzEngine {
     private var screenOff = false
     @Volatile
     private var ecoActive = false
+    @Volatile
+    private var lowBatteryActive = false
     @Volatile
     private var foregroundPackage: String? = null
     @Volatile
@@ -188,6 +195,7 @@ object OneHzEngine {
         nextIndex = 0
         index = 0
         steps = emptyList()
+        lowBatteryActive = false
         monitoringNeeded = false
         lastWakeAt = 0L
         hasAppAssignments = false
@@ -521,9 +529,41 @@ object OneHzEngine {
         handler.removeCallbacks(pauseResume)
         Diagnostics.log("engine", "apply reason=$reason")
         // Always trust the live system state over a cached broadcast.
-        ecoActive = (ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
+        val power = ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        ecoActive = power?.isPowerSaveMode == true
+        val battery = ctx.getSystemService(Context.BATTERY_SERVICE) as? BatteryManager
+        val batteryLevel = battery?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY) ?: -1
+        val charging = battery?.isCharging == true
+        val rules = ActivationRulesStore.get(ctx)
+        if (batteryLevel in 0..100) {
+            lowBatteryActive = BatteryGuard.update(
+                batteryLevel,
+                rules.lowBatteryPercent,
+                lowBatteryActive
+            )
+        } else {
+            lowBatteryActive = false
+        }
+        val minuteOfDay = Calendar.getInstance().let {
+            it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE)
+        }
+        val activation = ActivationRulesLogic.evaluate(
+            rules = rules,
+            batteryLevel = batteryLevel,
+            charging = charging,
+            minuteOfDay = minuteOfDay,
+            lowBatteryActive = lowBatteryActive
+        )
 
-        when (val decision = PolicyResolver.resolve(ctx, screenOff, ecoActive, foregroundPackage, index)) {
+        when (val decision = PolicyResolver.resolve(
+            ctx,
+            screenOff,
+            ecoActive,
+            foregroundPackage,
+            index,
+            activation?.profileId,
+            activation?.layer
+        )) {
             is PolicyDecision.Idle -> {
                 goIdle(decision.reason)
                 if (decision.reason == IdleReason.PAUSED) schedulePauseResume(ctx)

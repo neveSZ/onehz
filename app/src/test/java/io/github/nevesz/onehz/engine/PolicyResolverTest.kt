@@ -46,7 +46,9 @@ class PolicyResolverTest {
         economyProfile: DeviceProfile? = economy,
         app: DeviceProfile? = null,
         appIgnoreEco: Boolean = false,
-        paused: Boolean = false
+        paused: Boolean = false,
+        ruleProfile: DeviceProfile? = null,
+        ruleLayer: String? = null
     ) = PolicyInput(
         screenOff = screenOff,
         batterySaver = batterySaver,
@@ -59,8 +61,31 @@ class PolicyResolverTest {
         appProfile = app,
         appPackageName = app?.let { "com.example.app" },
         appIgnoreEco = appIgnoreEco,
-        paused = paused
+        paused = paused,
+        ruleProfile = ruleProfile,
+        ruleLayer = ruleLayer
     )
+
+    @Test
+    fun `activation rule wins over the app and selected profile`() {
+        val decision = PolicyResolver.decide(
+            input(app = appProfile, ruleProfile = performance, ruleLayer = "rule:window"),
+            0
+        )
+        assertTrue(decision is PolicyDecision.Apply)
+        val policy = (decision as PolicyDecision.Apply).policy
+        assertEquals("performance", policy.profileId)
+        assertEquals("rule:window", policy.layer)
+    }
+
+    @Test
+    fun `pause wins over an activation rule`() {
+        val decision = PolicyResolver.decide(
+            input(paused = true, ruleProfile = performance, ruleLayer = "rule:charging"),
+            0
+        )
+        assertEquals(PolicyDecision.Idle(IdleReason.PAUSED), decision)
+    }
 
     @Test
     fun `pause wins over every other policy`() {
