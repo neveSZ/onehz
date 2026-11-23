@@ -311,3 +311,18 @@ além do tempo de Always On Display, do tempo sem controle e da divisão por per
 vêm só de transições do motor, ficam locais em buckets diários e são apagados após 30 dias.
 Nada é enviado e não há atribuição por app, que exigiria consultar o app em primeiro plano
 o tempo todo.
+
+## 20. Regras de ativação
+
+Regras opcionais podem trocar para um perfil salvo conforme o ambiente. As regras nunca
+copiam um perfil, então editar o perfil muda todas as regras e apps que apontam para ele.
+
+- **Proteção de bateria baixa.** Usa um perfil no limite configurável ou abaixo dele
+  (5-50%, passo 5). Uma histerese de 4 pontos evita oscilar em volta do limite.
+- **Enquanto carrega.** Usa um perfil enquanto o carregador está conectado.
+- **Janela de horário.** Usa um perfil dentro de uma janela que pode atravessar a
+  meia-noite.
+
+Precedência: pausa e AOD primeiro, depois a proteção de bateria, a janela, o carregador, a
+atribuição do app em primeiro plano e, por fim, o perfil selecionado. A camada ativa aparece
+no Diagnóstico e o tempo entra em Uso.

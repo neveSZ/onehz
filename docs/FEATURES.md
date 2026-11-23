@@ -309,3 +309,17 @@ plus the Always On Display time, the uncontrolled time and the profile split. Th
 recorded from engine transitions only, stored locally in daily buckets, and pruned after
 30 days. It is not uploaded and does not include per-app attribution, which would require
 polling the foreground app.
+
+## 20. Activation rules
+
+Optional rules can switch to a saved profile based on the environment. Rules never copy a
+profile, so editing it changes every rule and app that points at it.
+
+- **Low battery guard.** Uses a profile at or below a configurable threshold (5-50%, step
+  5). A 4-point hysteresis avoids oscillating around the limit.
+- **While charging.** Uses a profile while the charger is connected.
+- **Time window.** Uses a profile inside a window that may cross midnight.
+
+Precedence: pause and AOD first, then the low-battery guard, the time window, charging, the
+foreground-app assignment, and finally the selected profile. The active layer is shown in
+Diagnostics and the activity is counted in Usage.
