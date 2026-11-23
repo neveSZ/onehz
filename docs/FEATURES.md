@@ -261,3 +261,23 @@ enter Doze immediately instead of waiting for the inactivity timers:
 
 No wake lock is held and nothing is polled. The measurements are local and labelled as
 measured by OneHZ; they include the Always On Display time. See [SLEEP.md](SLEEP.md).
+
+## 17. Quick controls
+
+**Pause.** Next to the master switch, **Pause for 1 hour** stops control and restores the
+system values. The card shows the deadline and a **Resume now** action. The pause is
+time-boxed and survives a restart; the engine resumes on its own.
+
+**Quick Settings tile.** The OneHZ tile enables the app when it is off, pauses it for one
+hour while controlling, and resumes it while paused. The tile reports when Shizuku is
+unavailable. Turning the app off entirely stays in the app, so a stray tap cannot disable
+control.
+
+**Notification.** The foreground notification shows the active profile and the current
+rate, and exposes **Pause for 1 hour** / **Resume now** plus **Disable**. It updates only
+when the state changes.
+
+**App shortcuts.** Long-press the launcher icon for **Pause 1 h**, **Economy** and
+**Diagnostics**.
+
+None of these entries polls, holds a wake lock or adds a new permission.

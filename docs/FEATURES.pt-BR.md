@@ -263,3 +263,23 @@ confirmação porque notificações e chamadas por internet podem atrasar:
 
 Nenhum wake lock é mantido e nada é consultado por polling. As medições são locais e
 identificadas como medidas pelo OneHZ; incluem o tempo de AOD. Veja [SLEEP.md](SLEEP.md).
+
+## 17. Controles rápidos
+
+**Pausa.** Ao lado da chave principal, **Pausar por 1 hora** interrompe o controle e
+restaura os valores do sistema. O card mostra o horário de retorno e a ação **Retomar
+agora**. A pausa tem prazo, sobrevive a um reinício e o motor volta sozinho.
+
+**Tile nas Configurações Rápidas.** O tile do OneHZ liga o app quando ele está desligado,
+pausa por uma hora enquanto está controlando e retoma quando está pausado. O tile indica
+quando o Shizuku está indisponível. Desligar o app por completo continua sendo feito no
+app, para que um toque acidental não tire o controle.
+
+**Notificação.** A notificação do serviço em primeiro plano mostra o perfil ativo e a taxa
+atual, e oferece **Pausar por 1 hora** / **Retomar agora** e **Desativar**. Ela só é
+atualizada quando o estado muda.
+
+**Atalhos do app.** Pressione e segure o ícone na tela inicial para **Pausar 1 h**,
+**Economia** e **Diagnóstico**.
+
+Nenhum desses controles faz polling, mantém wake lock ou adiciona permissão nova.
