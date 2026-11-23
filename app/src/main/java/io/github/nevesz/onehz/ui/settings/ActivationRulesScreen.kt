@@ -2,7 +2,6 @@ package io.github.nevesz.onehz.ui.settings
 
 import android.app.TimePickerDialog
 import android.content.Context
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,15 +15,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,12 +42,10 @@ import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.profile.profileLabel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActivationRulesScreen(
     context: Context,
-    dataVersion: Int,
-    onBack: () -> Unit
+    dataVersion: Int
 ) {
     val profiles = remember(dataVersion) { ProfileStore.state(context).profiles }
     var rules by remember(dataVersion) { mutableStateOf(ActivationRulesStore.get(context)) }
@@ -63,27 +57,11 @@ fun ActivationRulesScreen(
         OneHzEngine.reapply()
     }
 
-    BackHandler(onBack = onBack)
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.rules_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            AppIcons.arrowBack(),
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
             item {
                 Text(
                     text = stringResource(R.string.rules_desc),
@@ -167,7 +145,6 @@ fun ActivationRulesScreen(
                     }
                 }
             }
-        }
     }
 
     picker?.let { target ->

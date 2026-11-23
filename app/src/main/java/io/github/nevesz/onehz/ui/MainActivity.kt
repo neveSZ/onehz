@@ -463,18 +463,15 @@ private fun OneHzShell(
                     "diagnostics" -> DiagnosticsScreen()
                     "system" -> SystemChangesScreen(
                         context = context,
-                        dataVersion = dataVersion,
-                        onBack = { settingsPage = null }
+                        dataVersion = dataVersion
                     )
                     "usage" -> UsageScreen(
                         context = context,
-                        dataVersion = dataVersion,
-                        onBack = { settingsPage = null }
+                        dataVersion = dataVersion
                     )
                     "rules" -> ActivationRulesScreen(
                         context = context,
-                        dataVersion = dataVersion,
-                        onBack = { settingsPage = null }
+                        dataVersion = dataVersion
                     )
                     "backup" -> BackupScreen(
                         onExport = { exportLauncher.launch(backupFileName()) },
