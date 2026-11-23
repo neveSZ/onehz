@@ -1,0 +1,1 @@
+Per-app profiles now apply as soon as an app opens. Diagnostics is always available in Settings. Sleep keeps Doze active while charging by default, with a new switch and your previous choice preserved.

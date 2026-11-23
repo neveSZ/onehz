@@ -1,0 +1,1 @@
+Los perfiles por app ahora se aplican en cuanto se abre la app. Diagnóstico siempre está disponible en Ajustes. Sleep mantiene Doze activo mientras carga por defecto, con un interruptor nuevo y tu elección anterior conservada.

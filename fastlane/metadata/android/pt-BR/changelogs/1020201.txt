@@ -1,0 +1,1 @@
+Os perfis por app agora aplicam assim que o app abre. O Diagnóstico fica sempre disponível nos Ajustes. O Sono mantém o Doze durante o carregamento por padrão, com um switch novo e sua escolha anterior preservada.
