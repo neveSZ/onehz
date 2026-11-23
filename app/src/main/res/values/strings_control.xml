@@ -24,4 +24,10 @@
     <string name="settings_add_tile_desc">Asks the system to place the OneHZ tile on the Quick Settings grid.</string>
     <string name="tile_add_requested">Tile request sent</string>
     <string name="tile_add_unsupported">Open Quick Settings, edit the tiles and add OneHZ.</string>
+    <string name="settings_pin_notification">Pin notification</string>
+    <string name="settings_pin_notification_desc_off">Can be swiped away. OneHZ keeps running.</string>
+    <string name="settings_pin_notification_desc_on">Stays visible and comes back if swiped away.</string>
+    <string name="settings_pin_notification_dialog_title">Pin the notification?</string>
+    <string name="settings_pin_notification_dialog_body">The notification stays in the shade while OneHZ is active. On Android 14 and later the system still allows a swipe; OneHZ restores it right away. This does not keep the service alive or change battery use. You can turn it off here at any time.</string>
+    <string name="settings_pin_notification_confirm">Pin</string>
 </resources>

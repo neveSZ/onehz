@@ -24,4 +24,10 @@
     <string name="settings_add_tile_desc">Pede ao sistema para colocar o tile do OneHZ na grade de Configurações Rápidas.</string>
     <string name="tile_add_requested">Pedido do tile enviado</string>
     <string name="tile_add_unsupported">Abra as Configurações Rápidas, edite os tiles e adicione o OneHZ.</string>
+    <string name="settings_pin_notification">Fixar notificação</string>
+    <string name="settings_pin_notification_desc_off">Pode ser dispensada. O OneHZ continua funcionando.</string>
+    <string name="settings_pin_notification_desc_on">Fica sempre visível e volta se for dispensada.</string>
+    <string name="settings_pin_notification_dialog_title">Fixar a notificação?</string>
+    <string name="settings_pin_notification_dialog_body">A notificação fica na gaveta enquanto o OneHZ estiver ativo. No Android 14 ou superior o sistema ainda permite o gesto; o OneHZ recoloca a notificação logo depois. Isso não mantém o serviço vivo nem muda o consumo de bateria. Você pode desligar aqui quando quiser.</string>
+    <string name="settings_pin_notification_confirm">Fixar</string>
 </resources>

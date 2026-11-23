@@ -29,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -41,6 +42,7 @@ import kotlinx.coroutines.launch
 class OneHzKeepAliveService : Service() {
 
     private var receiver: ScreenStateReceiver? = null
+    private var notificationDismissed = false
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onCreate() {
@@ -48,7 +50,9 @@ class OneHzKeepAliveService : Service() {
         val eligible = DisplayGate.evaluate(this).eligible
         createChannel()
         startInForeground()
+        running = true
         if (!eligible) {
+            running = false
             stopSelf()
             return
         }
@@ -109,11 +113,43 @@ class OneHzKeepAliveService : Service() {
                 OneHzEngine.resumeNow()
                 refreshNotification()
             }
+
+            ACTION_DISMISS -> {
+                val pinned = OneHzPreferences.notificationPinned(this)
+                if (NotificationPinPolicy.restoresAfterDismiss(pinned)) {
+                    scope.launch {
+                        delay(RESTORE_DELAY_MS)
+                        if (OneHzPreferences.notificationPinned(this@OneHzKeepAliveService)) {
+                            refreshNotification()
+                        }
+                    }
+                } else {
+                    notificationDismissed = true
+                }
+                return START_STICKY
+            }
+
+            ACTION_REFRESH -> {
+                notificationDismissed = false
+                refreshNotification()
+                return START_STICKY
+            }
+
+            ACTION_PIN_CHANGED -> {
+                if (OneHzPreferences.notificationPinned(this)) {
+                    notificationDismissed = false
+                    refreshNotification()
+                } else if (!notificationDismissed) {
+                    refreshNotification()
+                }
+                return START_STICKY
+            }
         }
         return START_STICKY
     }
 
     override fun onDestroy() {
+        running = false
         scope.cancel()
         receiver?.let { runCatching { unregisterReceiver(it) } }
         receiver = null
@@ -143,6 +179,8 @@ class OneHzKeepAliveService : Service() {
     }
 
     private fun refreshNotification() {
+        val pinned = OneHzPreferences.notificationPinned(this)
+        if (!NotificationPinPolicy.canPost(pinned, notificationDismissed)) return
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(NOTIFICATION_ID, buildNotification())
     }
@@ -162,6 +200,7 @@ class OneHzKeepAliveService : Service() {
         )
         val pausedUntil = OneHzPreferences.masterPausedUntil(this)
         val paused = OneHzPreferences.isPaused(this)
+        val pinned = OneHzPreferences.notificationPinned(this)
         val toggle = PendingIntent.getService(
             this,
             if (paused) 3 else 2,
@@ -187,7 +226,8 @@ class OneHzKeepAliveService : Service() {
             .setContentTitle(getString(R.string.app_name))
             .setContentText(text)
             .setContentIntent(open)
-            .setOngoing(true)
+            .setOngoing(pinned)
+            .setDeleteIntent(dismissIntent())
             .setOnlyAlertOnce(true)
             .setShowWhen(false)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -199,6 +239,13 @@ class OneHzKeepAliveService : Service() {
             .addAction(0, getString(R.string.notification_stop), stop)
             .build()
     }
+
+    private fun dismissIntent(): PendingIntent = PendingIntent.getService(
+        this,
+        4,
+        Intent(this, OneHzKeepAliveService::class.java).setAction(ACTION_DISMISS),
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
 
     private fun createChannel() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -216,9 +263,36 @@ class OneHzKeepAliveService : Service() {
     companion object {
         private const val CHANNEL_ID = "onehz_service"
         private const val NOTIFICATION_ID = 1001
+        private const val RESTORE_DELAY_MS = 300L
         const val ACTION_STOP = "io.github.nevesz.onehz.STOP"
         const val ACTION_PAUSE = "io.github.nevesz.onehz.PAUSE"
         const val ACTION_RESUME = "io.github.nevesz.onehz.RESUME"
+        const val ACTION_DISMISS = "io.github.nevesz.onehz.DISMISS"
+        const val ACTION_REFRESH = "io.github.nevesz.onehz.REFRESH"
+        const val ACTION_PIN_CHANGED = "io.github.nevesz.onehz.PIN_CHANGED"
+
+        @Volatile
+        private var running = false
+
+        /** Re-posts the notification after the user opens the app again. */
+        fun refreshIfRunning(context: Context) {
+            if (!running) return
+            runCatching {
+                context.startService(
+                    Intent(context, OneHzKeepAliveService::class.java).setAction(ACTION_REFRESH)
+                )
+            }
+        }
+
+        /** Applies a new pin state without starting a stopped service. */
+        fun pinChanged(context: Context) {
+            if (!running) return
+            runCatching {
+                context.startService(
+                    Intent(context, OneHzKeepAliveService::class.java).setAction(ACTION_PIN_CHANGED)
+                )
+            }
+        }
 
         fun start(context: Context) {
             runCatching {

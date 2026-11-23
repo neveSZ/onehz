@@ -66,6 +66,7 @@ import io.github.nevesz.onehz.core.profile.ProfileStore
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.engine.OneHzEngine
+import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.ui.about.AboutScreen
 import io.github.nevesz.onehz.ui.apps.AppsScreen
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
@@ -131,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         OneHzEngine.refreshSystemState()
         OneHzEngine.refreshForegroundPackage()
+        OneHzKeepAliveService.refreshIfRunning(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

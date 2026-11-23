@@ -37,6 +37,7 @@ object OneHzPreferences {
     private const val KEY_ECO_GLOBAL_BACKUP = "eco_global_backup"
     private const val KEY_RATE_BACKUP = "rate_backup"
     private const val KEY_LOGS_PAUSED = "logs_paused"
+    private const val KEY_NOTIFICATION_PINNED = "notification_pinned"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_THEME_MODE = "theme_mode"
     private const val KEY_UPDATES_ENABLED = "updates_enabled"
@@ -367,6 +368,16 @@ object OneHzPreferences {
 
     fun logsPaused(context: Context) = prefs(context).getBoolean(KEY_LOGS_PAUSED, false)
     fun setLogsPaused(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_LOGS_PAUSED, value) }
+
+    /**
+     * Keeps the foreground notification in the shade after a swipe. Off by default: the
+     * notification is dismissible and OneHZ only restores it when the app is opened.
+     */
+    fun notificationPinned(context: Context) =
+        prefs(context).getBoolean(KEY_NOTIFICATION_PINNED, false)
+
+    fun setNotificationPinned(context: Context, value: Boolean) =
+        prefs(context).edit { putBoolean(KEY_NOTIFICATION_PINNED, value) }
 
     fun setupCompleted(context: Context) = prefs(context).getBoolean(KEY_SETUP_COMPLETED, false)
     fun setSetupCompleted(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_SETUP_COMPLETED, value) }

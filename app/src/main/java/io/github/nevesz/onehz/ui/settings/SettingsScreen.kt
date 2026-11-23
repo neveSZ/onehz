@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -43,10 +44,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.LanguageManager
+import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.update.UpdateCenter
+import io.github.nevesz.onehz.engine.OneHzKeepAliveService
+import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
+import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.components.rememberFullHeightSheetState
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.tile.TileRequest
@@ -74,9 +79,13 @@ fun SettingsScreen(
 ) {
     val vm: SettingsViewModel = viewModel()
     var showAppearance by rememberSaveable { mutableStateOf(false) }
+    var showPinNotificationDialog by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberFullHeightSheetState()
     val context = LocalContext.current
     val updateState by vm.updateState.collectAsStateWithLifecycle()
+    var notificationPinned by remember {
+        mutableStateOf(OneHzPreferences.notificationPinned(context))
+    }
 
     LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
         item {
@@ -163,6 +172,23 @@ fun SettingsScreen(
         }
         item {
             OneHzCard {
+                ToggleRow(
+                    icon = AppIcons.notifications(),
+                    title = stringResource(R.string.settings_pin_notification),
+                    checked = notificationPinned,
+                    descriptionOn = stringResource(R.string.settings_pin_notification_desc_on),
+                    descriptionOff = stringResource(R.string.settings_pin_notification_desc_off),
+                    onCheckedChange = { enabled ->
+                        if (enabled) {
+                            showPinNotificationDialog = true
+                        } else {
+                            OneHzPreferences.setNotificationPinned(context, false)
+                            notificationPinned = false
+                            OneHzKeepAliveService.pinChanged(context)
+                        }
+                    }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
                     icon = AppIcons.add(),
                     title = stringResource(R.string.settings_add_tile),
@@ -248,6 +274,21 @@ fun SettingsScreen(
                 }
             )
         }
+    }
+
+    if (showPinNotificationDialog) {
+        ConfirmDialog(
+            title = stringResource(R.string.settings_pin_notification_dialog_title),
+            body = stringResource(R.string.settings_pin_notification_dialog_body),
+            confirmLabel = stringResource(R.string.settings_pin_notification_confirm),
+            onConfirm = {
+                OneHzPreferences.setNotificationPinned(context, true)
+                notificationPinned = true
+                OneHzKeepAliveService.pinChanged(context)
+            },
+            onDismiss = { showPinNotificationDialog = false },
+            destructive = false
+        )
     }
 }
 
