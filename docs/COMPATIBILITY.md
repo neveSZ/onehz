@@ -110,7 +110,8 @@ brightness there is no headroom to compensate upward, and dimming 60/120 Hz to m
   deep-idle figure.
 - Video detection depends on MediaSession, Codec2, and AudioService behavior; the rules
   and a forced app list can be tuned in the app, but the underlying signals must exist.
-- PiP video is not detected yet.
+- Picture-in-picture is detected from the pinned task and keeps the video floor while the
+  window is visible; detection depends on the platform exposing the pinned task.
 - If Android kills the app while a non-default rate is applied (for example, due to
   aggressive battery management), the last rate may remain until OneHZ starts again.
   Grant the optional battery exemption or reopen the app to restore the system default.

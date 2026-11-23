@@ -109,7 +109,8 @@ deixaria a tela inteira mais escura.
 - A detecção de vídeo depende do comportamento de MediaSession, Codec2 e AudioService; as
   regras e a lista de apps forçados podem ser ajustadas no app, mas os sinais de base
   precisam existir.
-- Vídeo em PiP ainda não é detectado.
+- Picture-in-picture é detectado pela tarefa fixada e mantém o piso de vídeo enquanto a
+  janela está visível; a detecção depende da plataforma expor a tarefa fixada.
 - Se o Android matar o app enquanto uma taxa não padrão estiver aplicada (por exemplo, por
   gerenciamento agressivo de bateria), a última taxa pode permanecer até o OneHZ abrir de
   novo. Conceda a isenção opcional de bateria ou reabra o app para restaurar o padrão.

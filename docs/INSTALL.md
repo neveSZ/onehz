@@ -51,8 +51,8 @@ existing Shizuku permission.
 ## Beta builds
 
 Beta builds are published as **pre-releases** on the same releases page and use the same
-package name and signing key. **1.2.1 is the current stable; 1.2.1-beta.1 was its only
-pre-release.**
+package name and signing key. **1.2.1 is the current stable. The 1.2.2 beta line (beta.1
+and beta.2) came before the next stable.**
 
 - Stable and beta cannot be installed side by side.
 - A beta `versionCode` is higher than the current stable, so you can install it over the

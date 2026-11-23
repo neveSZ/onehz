@@ -33,6 +33,8 @@ Examples:
 | 1.2.0 | 1,020,100 |
 | 1.2.1-beta.1 | 1,020,101 |
 | 1.2.1 | 1,020,200 |
+| 1.2.2-beta.1 | 1,020,201 |
+| 1.2.2-beta.2 | 1,020,202 |
 | 1.3.0 | 1,030,100 |
 
 `1.0.0` is the historical exception (published as `10000`). The jump to
@@ -79,20 +81,22 @@ Beta and stable cannot be installed side by side.
 1. Run `python scripts/bump-version.py <version>` and confirm `scripts/validate-version.py`.
 2. Update `CHANGELOG.md`, `docs/releases/<version>.md`, `docs/FEATURES*`, `docs/FAQ*`,
    `docs/INSTALL*`, `docs/SLEEP.md` and `docs/COMPATIBILITY*` for user-facing changes.
-3. Update the `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt` files.
-4. Refresh the store screenshots from the **final build** on a physical device:
+3. Update `README.md`, `README.pt-BR.md` and the `fastlane` full descriptions when
+   features change.
+4. Update the `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt` files.
+5. Refresh the store screenshots from the **final build** on a physical device:
    - five files per locale: `1` Home, `2` Profiles, `3` AOD, `4` Sleep, `5` Backup;
    - locales: `en-US`, `es-ES`, `pt-BR`;
    - normalize to 1170×2340 (aspect 2.0) so `validate-fastlane.py` accepts them;
    - the README uses `1`, `2` and `4` directly from `fastlane`, so do not keep a second
      screenshot set under `docs/assets/`.
-5. Regenerate the Baseline Profile after startup or main-screen changes
+6. Regenerate the Baseline Profile after startup or main-screen changes
    (`docs/BASELINE_PROFILE.md`).
-6. Run `scripts/validate-fastlane.py`, `testDebugUnitTest`, `lintDebug`,
+7. Run `scripts/validate-fastlane.py`, `testDebugUnitTest`, `lintDebug`,
    `assembleDebug` and `assembleRelease`.
-7. Test the signed release on the target devices; check the Shizu Store listing after the
+8. Test the signed release on the target devices; check the Shizu Store listing after the
    release is published.
-8. Merge, tag `v<version>` and let the release workflow publish the signed APK and
+9. Merge, tag `v<version>` and let the release workflow publish the signed APK and
    SHA-256. Verify the tag matches `versionName` and that the release is marked stable.
 
 ## In-app update checker
@@ -159,7 +163,8 @@ Paste the clipboard into the GitHub secret. Do not paste it into issues, chat, o
 - [ ] Screenshots updated if the UI changed.
 - [ ] `python3 scripts/validate-fastlane.py` passes.
 - [ ] `docs/releases/<version>.md` created (optional release notes).
-- [ ] README status, device table, and user docs updated if needed.
+- [ ] README/README.pt-BR status, device table, user docs and the `fastlane` full
+      descriptions updated if features changed.
 - [ ] Tests and lint pass locally.
 - [ ] `assembleRelease` produces a signed APK.
 - [ ] APK installed and tested on the device.

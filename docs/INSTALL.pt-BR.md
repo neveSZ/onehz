@@ -53,8 +53,8 @@ permissão do Shizuku que já existe.
 ## Builds beta
 
 Builds beta são publicadas como **pré-releases** na mesma página de releases e usam o
-mesmo nome de pacote e a mesma chave. **A 1.2.1 é a estável atual; a 1.2.1-beta.1 foi a
-única pré-release dela.**
+mesmo nome de pacote e a mesma chave. **A 1.2.1 é a estável atual. A linha beta 1.2.2
+(beta.1 e beta.2) veio antes da próxima estável.**
 
 - Estável e beta não podem ser instaladas lado a lado.
 - O `versionCode` da beta é maior que o da estável atual, então ela instala por cima da
