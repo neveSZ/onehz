@@ -277,6 +277,7 @@ fun AppsScreen(
             packageName = pkg,
             profiles = profileState.profiles,
             activeProfileId = profileState.activeProfileId,
+            autoEconomy = profileState.autoEconomyOnBatterySaver,
             onDismiss = { addPkg = null },
             onCustomize = { profileId ->
                 addPkg = null
@@ -296,6 +297,7 @@ fun AppsScreen(
             packageName = pkg,
             profiles = profileState.profiles,
             assignment = assignments[pkg],
+            autoEconomy = profileState.autoEconomyOnBatterySaver,
             onDismiss = { editPkg = null },
             onEditProfile = { profileId ->
                 editPkg = null
@@ -364,8 +366,8 @@ private fun AppRow(
         when {
             selectionMode && configured -> Checkbox(checked = checked, onCheckedChange = { onClick() })
             configured && ignoreEco -> StatusBadge(
-                text = stringResource(R.string.eco_ignored),
-                tone = StatusTone.WARN,
+                text = stringResource(R.string.eco_kept),
+                tone = StatusTone.OK,
                 icon = AppIcons.batterySaver()
             )
         }
@@ -387,12 +389,16 @@ private fun AddSheet(
     packageName: String,
     profiles: List<DeviceProfile>,
     activeProfileId: String,
+    autoEconomy: Boolean,
     onDismiss: () -> Unit,
     onCustomize: (String) -> Unit,
     onAdded: () -> Unit
 ) {
     var selectedId by remember { mutableStateOf(activeProfileId) }
+    var ignoreEco by remember { mutableStateOf(false) }
     val selectedProfile = profiles.firstOrNull { it.id == selectedId }
+    val canIgnoreEco = selectedProfile?.kind != ProfileKind.ECONOMY
+    val effectiveIgnore = ignoreEco && canIgnoreEco
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = rememberPartialSheetState()) {
         Column(
             Modifier
@@ -430,11 +436,26 @@ private fun AddSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            ToggleRow(
+                title = stringResource(R.string.ignore_eco_label),
+                descriptionOn = stringResource(R.string.ignore_eco_desc_on),
+                descriptionOff = stringResource(R.string.ignore_eco_desc_off),
+                checked = effectiveIgnore,
+                enabled = canIgnoreEco,
+                onCheckedChange = { ignoreEco = it }
+            )
+            if (autoEconomy && canIgnoreEco) {
+                Text(
+                    text = stringResource(R.string.app_economy_override_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Button(
                 onClick = {
                     ProfileStore.saveAssignment(
                         context,
-                        AppAssignment(packageName, selectedId)
+                        AppAssignment(packageName, selectedId, effectiveIgnore)
                     )
                     OneHzEngine.reapply()
                     onAdded()
@@ -454,7 +475,7 @@ private fun AddSheet(
                     if (created != null) {
                         ProfileStore.saveAssignment(
                             context,
-                            AppAssignment(packageName, created.id)
+                            AppAssignment(packageName, created.id, effectiveIgnore)
                         )
                         OneHzEngine.reapply()
                         onCustomize(created.id)
@@ -481,6 +502,7 @@ private fun EditSheet(
     packageName: String,
     profiles: List<DeviceProfile>,
     assignment: AppAssignment?,
+    autoEconomy: Boolean,
     onDismiss: () -> Unit,
     onEditProfile: (String) -> Unit,
     onChanged: () -> Unit,
@@ -560,6 +582,13 @@ private fun EditSheet(
                     save(ignore = it)
                 }
             )
+            if (autoEconomy && canIgnoreEco) {
+                Text(
+                    text = stringResource(R.string.app_economy_override_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { onEditProfile(selectedId) }) {
                     Text(stringResource(R.string.profile_edit))
