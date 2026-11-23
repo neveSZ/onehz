@@ -175,6 +175,11 @@ Releases and Obtainium keeps the project simple and transparent.
 No personal data is collected. The optional update checker uses the internet only after
 you enable it; there are no analytics, ads, or telemetry. See [PRIVACY](../PRIVACY.md).
 
+### How do I open Diagnostics?
+
+Open **Settings → Diagnostics**. The report is generated locally, can be paused or cleared
+from that screen, and is only shared when you copy it.
+
 ### The AOD brightness is stuck after uninstalling. What do I do?
 
 Run:
@@ -183,7 +188,7 @@ Run:
 adb shell settings delete system debug_aod_brightness
 ```
 
-or reinstall OneHZ and use **About/Diagnostics → Restore system brightness**.
+or reinstall OneHZ and use **Settings → Diagnostics → Restore system brightness**.
 
 ### Why is the battery-saver profile called Economy?
 
