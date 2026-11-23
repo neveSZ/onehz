@@ -51,6 +51,8 @@ want to understand, audit, or modify the app.
   setup, discovery, and monitor start/stop.
 - **Per-device `getevent` threads:** one monitor per accepted touchscreen, owned by the
   UserService.
+- **`OneHzForeground` thread:** task-stack foreground queries in the UserService, debounced
+  so an app transition produces one `dumpsys` instead of one per touch.
 
 ## UI state and preferences
 
@@ -71,7 +73,7 @@ want to understand, audit, or modify the app.
 `IOneHzService` is deliberately narrow and validated on the privileged side:
 
 - device listing and touch monitoring;
-- foreground package;
+- foreground package and task-stack foreground changes;
 - Doze exception list and device-idle commands (force, unforce, state);
 - refresh-rate settings (allowlisted keys);
 - display mode;
@@ -188,8 +190,15 @@ is kept for the next connection.
 - `ShizukuGateway` aggregates all devices and calls the engine only when the whole set
   transitions between “no finger” and “touching”.
 
-Monitoring starts only when the active profile has more than one tier or video mode is
-enabled. It stops on screen-off, idle, and service loss.
+Monitoring starts only when the active profile has more than one tier, video mode is
+enabled, or at least one app assignment exists. It stops on screen-off, idle, and service
+loss.
+
+Per-app assignments also need foreground updates while the screen is on. The UserService
+registers a task-stack listener and reports the top package when it changes; the engine
+re-evaluates the policy and re-anchors the staircase. When the platform rejects the hidden
+listener, the engine falls back to one uncached foreground read after touch-up. There is no
+periodic foreground polling.
 
 ## Video detection
 
@@ -303,6 +312,7 @@ level increased.
 - No vendor/display eligibility → no control.
 - Shizuku missing/dead → stop control, release settings, show a warning.
 - Touch discovery failure → retry with backoff while monitoring is still wanted.
+- Task-stack listener unavailable → fall back to the touch-up foreground probe.
 - Foreground/video dumps fail twice → clear the video minimum rather than getting stuck.
 - No positive video signal enabled → no video, except for packages in the forced list.
 - Settings write failures → keep the pending restore marker.

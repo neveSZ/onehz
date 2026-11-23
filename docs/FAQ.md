@@ -164,6 +164,14 @@ the profiles or restore the built-ins to their device defaults.
 Shizuku may need to be restarted after a reboot (wireless debugging/ADB). OneHZ
 reconnects when Shizuku becomes available and fails closed until then.
 
+### Why didn't the per-app profile apply right after opening the app?
+
+Older versions re-read the foreground app only on touch-down, so an app opened from the
+launcher, recents, or a notification could still be treated as the previous app until you
+touched inside it. OneHZ now follows task-stack changes while the screen is on and falls
+back to a touch-up read when the platform rejects that listener. If it still happens,
+touch once inside the app and send a diagnostics report.
+
 ### Why is OneHZ not on Google Play?
 
 It uses Shizuku, `QUERY_ALL_PACKAGES`, and a battery-optimization exemption, and it

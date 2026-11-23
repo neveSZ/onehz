@@ -166,6 +166,14 @@ volta, edite os perfis ou restaure os base para o padrão do aparelho.
 O Shizuku pode precisar ser reiniciado após um reboot (depuração sem fio/ADB). O OneHZ
 reconecta quando o Shizuku fica disponível e falha fechado até lá.
 
+### Por que o perfil do app não foi aplicado logo depois de abrir?
+
+Versões antigas reliam o app em primeiro plano só no toque para baixo, então um app aberto
+pela launcher, recentes ou notificação podia continuar sendo tratado como o app anterior
+até você tocar dentro dele. O OneHZ agora acompanha mudanças de task-stack com a tela
+ligada e, quando a plataforma rejeita esse listener, faz uma leitura no toque para cima.
+Se ainda acontecer, toque uma vez dentro do app e envie um relatório de diagnóstico.
+
 ### Por que o OneHZ não está no Google Play?
 
 Ele usa Shizuku, `QUERY_ALL_PACKAGES` e isenção de otimização de bateria, além de alterar
