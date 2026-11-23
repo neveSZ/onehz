@@ -1,0 +1,1 @@
+Ao adicionar um app, a exceção da economia de bateria agora aparece direto na folha de inclusão, não só depois da atribuição. A linha do app mostra "Mantém o perfil" em vez de "Economia ignorada". A política não muda: com a economia ligada, Economia ainda vence a menos que a exceção esteja ligada.

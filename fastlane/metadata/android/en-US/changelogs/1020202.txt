@@ -1,0 +1,1 @@
+Adding an app now shows the battery-saver exception directly in the add sheet, not only after the app is assigned. The app row reads "Keeps its profile" instead of "Economy ignored". No policy change: with battery saver on, Economy still wins unless the exception is on.

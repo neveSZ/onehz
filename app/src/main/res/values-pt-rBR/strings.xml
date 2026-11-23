@@ -135,10 +135,11 @@
     <string name="delete_selected_confirm_body">Os apps selecionados deixarão de ter um perfil. O OneHZ voltará a usar o perfil ativo para eles.</string>
     <string name="app_added">Aplicativo adicionado</string>
     <string name="app_removed">Aplicativo removido</string>
-    <string name="eco_ignored">Economia ignorada</string>
+    <string name="eco_kept">Mantém o perfil</string>
     <string name="ignore_eco_label">Manter o perfil deste app durante a economia de bateria</string>
     <string name="ignore_eco_desc_on">Mantém o perfil deste app mesmo com a economia de bateria ligada.</string>
     <string name="ignore_eco_desc_off">Segue a Economia automática enquanto a economia de bateria está ligada.</string>
+    <string name="app_economy_override_hint">Com a economia de bateria ligada, a Economia automática substitui este perfil, a menos que a opção acima esteja ligada.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d selecionado</item>
         <item quantity="other">%1$d selecionados</item>

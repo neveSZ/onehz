@@ -48,6 +48,14 @@ Economy even if another profile is selected. The Home card shows the selected pr
 the profile in use. Turn off **Automatic Economy** in **Manage profiles** to always use the
 selected profile.
 
+### Why does my app profile become Economy with battery saver on?
+
+When the system battery saver is on and **Automatic Economy** is enabled, Economy applies
+to every app unless the app keeps its own profile. Open **Apps → Configured**, tap the app
+and turn on **“Keep this app’s profile during battery saver”**. The same switch is offered
+when you add the app. The app row then shows **Keeps its profile** instead of the Economy
+badge.
+
 ### What happens on a panel with only two refresh rates?
 
 All three profiles use the same two bands and differ only by how long the maximum is held
