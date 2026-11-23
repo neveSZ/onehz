@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_status_paused">Pausado</string>
+    <string name="home_control_paused">Pausado</string>
+    <string name="home_paused_until">Pausado até %1$s. Os valores do sistema são restaurados nesse intervalo.</string>
+    <string name="home_pause_action">Pausar por 1 hora</string>
+    <string name="home_resume_action">Retomar agora</string>
+</resources>

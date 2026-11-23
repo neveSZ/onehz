@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.PowerManager
+import android.text.format.DateFormat
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -64,6 +65,7 @@ import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayGate
 import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.DisplayVendor
+import io.github.nevesz.onehz.core.MasterPause
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.VideoSignals
@@ -93,6 +95,7 @@ import io.github.nevesz.onehz.ui.profile.profileLabel
 import io.github.nevesz.onehz.ui.profile.profileSummary
 import io.github.nevesz.onehz.ui.update.UpdateBanner
 import io.github.nevesz.onehz.ui.viewmodel.HomeViewModel
+import java.util.Date
 import kotlin.math.roundToInt
 
 private data class HomeState(
@@ -106,7 +109,8 @@ private data class HomeState(
     val aodBrightnessMinPct: Int,
     val aodBrightnessMaxPct: Int,
     val sleepEnabled: Boolean,
-    val ecoActive: Boolean
+    val ecoActive: Boolean,
+    val pausedUntil: Long
 ) {
     val selectedProfile: DeviceProfile? get() = profileState.activeProfile()
     val activeProfile: DeviceProfile?
@@ -130,7 +134,8 @@ private fun loadState(context: Context, rates: List<Int>): HomeState {
         aodBrightnessMinPct = OneHzPreferences.aodBrightnessMinPct(context),
         aodBrightnessMaxPct = OneHzPreferences.aodBrightnessMaxPct(context),
         sleepEnabled = SleepPreferences.enabled(context),
-        ecoActive = (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true
+        ecoActive = (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode == true,
+        pausedUntil = OneHzPreferences.masterPausedUntil(context)
     )
 }
 
@@ -189,6 +194,12 @@ fun HomeScreen(
 
     val activeProfile = state.activeProfile
     val selectedProfile = state.selectedProfile
+    val paused = idleReason == IdleReason.PAUSED ||
+        MasterPause.isPaused(state.pausedUntil, System.currentTimeMillis())
+    val pausedUntilLabel = remember(state.pausedUntil) {
+        if (state.pausedUntil <= 0L) ""
+        else DateFormat.getTimeFormat(context).format(Date(state.pausedUntil))
+    }
     val fallbackHz = when {
         activeKey == "AOD" -> state.aodHz
         else -> activeProfile?.frequency?.steps
@@ -214,6 +225,7 @@ fun HomeScreen(
     val videoPlaying = videoSource == VideoSignals.Source.PLAYING
     val sourceText = when {
         !state.enabled -> stringResource(R.string.master_off_hint)
+        paused -> stringResource(R.string.home_paused_until, pausedUntilLabel)
         shizuku != ShizukuState.READY -> null
         idleReason == IdleReason.PROFILE_DISABLED -> stringResource(R.string.profile_idle_off)
         idleReason == IdleReason.PROFILE_EMPTY -> stringResource(R.string.profile_need_tiers)
@@ -295,6 +307,8 @@ fun HomeScreen(
                 idleReason = idleReason,
                 sourceText = sourceText,
                 lastAppText = lastAppText,
+                paused = paused,
+                pausedUntilLabel = pausedUntilLabel,
                 onToggle = { on ->
                     state = state.copy(enabled = on)
                     OneHzPreferences.setEnabled(context, on)
@@ -307,6 +321,17 @@ fun HomeScreen(
                         OneHzEngine.stop()
                         io.github.nevesz.onehz.engine.AodBrightnessController.onPrefsChanged()
                     }
+                },
+                onPause = {
+                    val until = System.currentTimeMillis() + MasterPause.ONE_HOUR_MS
+                    state = state.copy(pausedUntil = until)
+                    OneHzPreferences.setMasterPausedUntil(context, until)
+                    OneHzEngine.pauseFor(MasterPause.ONE_HOUR_MS)
+                },
+                onResume = {
+                    state = state.copy(pausedUntil = 0L)
+                    OneHzPreferences.setMasterPausedUntil(context, 0L)
+                    OneHzEngine.resumeNow()
                 }
             )
         }
@@ -724,27 +749,37 @@ private fun HeroCard(
     idleReason: IdleReason?,
     sourceText: String?,
     lastAppText: String?,
-    onToggle: (Boolean) -> Unit
+    paused: Boolean,
+    pausedUntilLabel: String,
+    onToggle: (Boolean) -> Unit,
+    onPause: () -> Unit,
+    onResume: () -> Unit
 ) {
     val control = when {
         !state.enabled -> null
+        paused -> stringResource(R.string.home_control_paused)
         shizuku != ShizukuState.READY || idleReason != null ->
             stringResource(R.string.home_control_none)
         else -> stringResource(R.string.home_control_on)
     }
     val tone = when {
         !state.enabled -> StatusTone.NEUTRAL
+        paused -> StatusTone.WARN
         shizuku != ShizukuState.READY || idleReason != null -> StatusTone.WARN
         else -> StatusTone.OK
     }
     OneHzCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            RateRing(hz = if (state.enabled) appliedHz else 0, max = maxHz)
+            RateRing(hz = if (state.enabled && !paused) appliedHz else 0, max = maxHz)
             Spacer(Modifier.size(16.dp))
             Column(Modifier.weight(1f)) {
                 Text(
                     text = stringResource(
-                        if (state.enabled) R.string.home_status_on else R.string.home_status_off
+                        when {
+                            paused -> R.string.home_status_paused
+                            state.enabled -> R.string.home_status_on
+                            else -> R.string.home_status_off
+                        }
                     ),
                     style = MaterialTheme.typography.titleLarge
                 )
@@ -794,6 +829,31 @@ private fun HeroCard(
             checked = state.enabled,
             onCheckedChange = onToggle
         )
+        if (state.enabled) {
+            Spacer(Modifier.height(4.dp))
+            if (paused) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onResume) {
+                        Icon(AppIcons.playArrow(), contentDescription = null)
+                        Text(
+                            text = stringResource(R.string.home_resume_action),
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                }
+            } else {
+                TextButton(onClick = onPause) {
+                    Icon(AppIcons.pause(), contentDescription = null)
+                    Text(
+                        text = stringResource(R.string.home_pause_action),
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
