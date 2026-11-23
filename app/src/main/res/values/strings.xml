@@ -57,6 +57,13 @@
     <string name="aod_brightness_hint">Applied on the next lock. While active, the AOD does not follow light changes.</string>
     <string name="aod_brightness_warning">High values increase battery use and burn-in risk.</string>
     <string name="aod_brightness_restore">Restore system brightness</string>
+    <string name="aod_schedule_title">Night schedule</string>
+    <string name="aod_schedule_on">Uses %1$d%% inside the window.</string>
+    <string name="aod_schedule_off">Uses the same brightness all night.</string>
+    <string name="aod_schedule_start">Start</string>
+    <string name="aod_schedule_end">End</string>
+    <string name="aod_schedule_pct">Night brightness</string>
+    <string name="aod_schedule_hint">The value is chosen when the screen turns off; changing the window applies on the next lock.</string>
 
     <string name="video_mode_title">Video mode</string>
     <string name="video_mode_desc_on">Applies the video rate when playback is detected.</string>

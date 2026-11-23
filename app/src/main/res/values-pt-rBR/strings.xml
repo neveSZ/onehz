@@ -57,6 +57,13 @@
     <string name="aod_brightness_hint">Aplicado no próximo bloqueio. Enquanto ativo, o AOD não acompanha mudanças de luz.</string>
     <string name="aod_brightness_warning">Valores altos aumentam o consumo e o risco de burn-in.</string>
     <string name="aod_brightness_restore">Restaurar brilho do sistema</string>
+    <string name="aod_schedule_title">Agenda noturna</string>
+    <string name="aod_schedule_on">Usa %1$d%% dentro da janela.</string>
+    <string name="aod_schedule_off">Usa o mesmo brilho a noite toda.</string>
+    <string name="aod_schedule_start">Início</string>
+    <string name="aod_schedule_end">Fim</string>
+    <string name="aod_schedule_pct">Brilho noturno</string>
+    <string name="aod_schedule_hint">O valor é escolhido quando a tela apaga; mudar a janela vale no próximo bloqueio.</string>
 
     <string name="video_mode_title">Modo vídeo</string>
     <string name="video_mode_desc_on">Aplica a taxa de vídeo ao detectar reprodução.</string>

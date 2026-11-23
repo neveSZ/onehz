@@ -1,11 +1,14 @@
 package io.github.nevesz.onehz.ui.home
 
 import android.content.Context
+import android.app.TimePickerDialog
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,6 +72,10 @@ private data class AodUi(
     val brightnessPct: Int,
     val minPct: Int,
     val maxPct: Int,
+    val scheduleEnabled: Boolean,
+    val scheduleStart: Int,
+    val scheduleEnd: Int,
+    val schedulePct: Int,
 )
 
 private fun loadAod(context: Context): AodUi = AodUi(
@@ -79,6 +86,10 @@ private fun loadAod(context: Context): AodUi = AodUi(
     brightnessPct = OneHzPreferences.aodBrightnessPct(context),
     minPct = OneHzPreferences.aodBrightnessMinPct(context),
     maxPct = OneHzPreferences.aodBrightnessMaxPct(context),
+    scheduleEnabled = OneHzPreferences.aodScheduleEnabled(context),
+    scheduleStart = OneHzPreferences.aodScheduleStart(context),
+    scheduleEnd = OneHzPreferences.aodScheduleEnd(context),
+    schedulePct = OneHzPreferences.aodSchedulePct(context),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -336,6 +347,97 @@ fun AodScreen(
                         }
                     }
                 }
+                item {
+                    OneHzCard {
+                        ToggleRow(
+                            icon = AppIcons.nightlight(),
+                            title = stringResource(R.string.aod_schedule_title),
+                            descriptionOn = stringResource(
+                                R.string.aod_schedule_on,
+                                state.schedulePct
+                            ),
+                            descriptionOff = stringResource(R.string.aod_schedule_off),
+                            checked = state.scheduleEnabled,
+                            enabled = oneHzEnabled,
+                            onCheckedChange = { on ->
+                                OneHzPreferences.setAodScheduleEnabled(context, on)
+                                state = state.copy(scheduleEnabled = on)
+                                AodBrightnessController.onPrefsChanged()
+                            }
+                        )
+                        if (state.scheduleEnabled) {
+                            ScheduleRow(
+                                title = stringResource(R.string.aod_schedule_start),
+                                minute = state.scheduleStart,
+                                onPick = { minute ->
+                                    OneHzPreferences.setAodScheduleWindow(
+                                        context,
+                                        minute,
+                                        state.scheduleEnd
+                                    )
+                                    state = state.copy(scheduleStart = minute)
+                                    AodBrightnessController.onPrefsChanged()
+                                }
+                            )
+                            ScheduleRow(
+                                title = stringResource(R.string.aod_schedule_end),
+                                minute = state.scheduleEnd,
+                                onPick = { minute ->
+                                    OneHzPreferences.setAodScheduleWindow(
+                                        context,
+                                        state.scheduleStart,
+                                        minute
+                                    )
+                                    state = state.copy(scheduleEnd = minute)
+                                    AodBrightnessController.onPrefsChanged()
+                                }
+                            )
+                            Spacer(Modifier.height(6.dp))
+                            val scheduleLabel = stringResource(
+                                R.string.aod_schedule_pct
+                            ) + " " + state.schedulePct + "%"
+                            Text(
+                                text = scheduleLabel,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            val scheduleSlider = remember {
+                                SliderState(
+                                    value = state.schedulePct.toFloat(),
+                                    steps = AodBrightnessMath.MAX_PCT -
+                                        AodBrightnessMath.MIN_PCT - 1,
+                                    trackRange = AodBrightnessMath.MIN_PCT.toFloat()..
+                                        AodBrightnessMath.MAX_PCT.toFloat(),
+                                )
+                            }
+                            LaunchedEffect(state.schedulePct) {
+                                scheduleSlider.value = state.schedulePct.toFloat()
+                            }
+                            Slider(
+                                modifier = Modifier.semantics {
+                                    stateDescription = scheduleLabel
+                                },
+                                state = scheduleSlider,
+                                onValueChange = { value ->
+                                    val pct = value.roundToInt().coerceIn(
+                                        AodBrightnessMath.MIN_PCT,
+                                        AodBrightnessMath.MAX_PCT
+                                    )
+                                    state = state.copy(schedulePct = pct)
+                                    OneHzPreferences.setAodSchedulePct(context, pct)
+                                },
+                                onValueChangeFinished = {
+                                    AodBrightnessController.onPrefsChanged()
+                                },
+                                enabled = oneHzEnabled
+                            )
+                            Text(
+                                text = stringResource(R.string.aod_schedule_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
             } else {
                 item {
                     OneHzCard {
@@ -372,6 +474,32 @@ fun AodScreen(
                     Text(stringResource(R.string.cancel))
                 }
             }
+        )
+    }
+}
+
+@Composable
+private fun ScheduleRow(title: String, minute: Int, onPick: (Int) -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                TimePickerDialog(
+                    context,
+                    { _, hour, selectedMinute -> onPick(hour * 60 + selectedMinute) },
+                    minute / 60,
+                    minute % 60,
+                    true
+                ).show()
+            }
+            .padding(vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = title, modifier = Modifier.weight(1f))
+        Text(
+            text = String.format("%02d:%02d", minute / 60, minute % 60),
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

@@ -25,6 +25,10 @@ object OneHzPreferences {
     private const val KEY_AOD_BRIGHTNESS_MIN_PCT = "aod_brightness_min_pct"
     private const val KEY_AOD_BRIGHTNESS_MAX_PCT = "aod_brightness_max_pct"
     private const val KEY_AOD_BRIGHTNESS_WRITTEN = "aod_brightness_written"
+    private const val KEY_AOD_SCHEDULE_ENABLED = "aod_schedule_enabled"
+    private const val KEY_AOD_SCHEDULE_START = "aod_schedule_start"
+    private const val KEY_AOD_SCHEDULE_END = "aod_schedule_end"
+    private const val KEY_AOD_SCHEDULE_PCT = "aod_schedule_pct"
     internal const val KEY_VIDEO_ENABLED = "video_enabled"
     internal const val KEY_VIDEO_MIN_HZ = "video_min_hz"
     internal const val KEY_VIDEO_CONFIG = "video_config"
@@ -285,6 +289,36 @@ object OneHzPreferences {
 
     fun setAodBrightnessWritten(context: Context, value: Boolean) =
         prefs(context).edit { putBoolean(KEY_AOD_BRIGHTNESS_WRITTEN, value) }
+
+    /** Samsung-only night schedule for the AOD brightness override. */
+    fun aodScheduleEnabled(context: Context) =
+        prefs(context).getBoolean(KEY_AOD_SCHEDULE_ENABLED, false)
+
+    fun setAodScheduleEnabled(context: Context, value: Boolean) =
+        prefs(context).edit { putBoolean(KEY_AOD_SCHEDULE_ENABLED, value) }
+
+    fun aodScheduleStart(context: Context) =
+        prefs(context).getInt(KEY_AOD_SCHEDULE_START, 22 * 60).coerceIn(0, 24 * 60 - 1)
+
+    fun aodScheduleEnd(context: Context) =
+        prefs(context).getInt(KEY_AOD_SCHEDULE_END, 7 * 60).coerceIn(0, 24 * 60 - 1)
+
+    fun setAodScheduleWindow(context: Context, startMinute: Int, endMinute: Int) =
+        prefs(context).edit {
+            putInt(KEY_AOD_SCHEDULE_START, startMinute.coerceIn(0, 24 * 60 - 1))
+            putInt(KEY_AOD_SCHEDULE_END, endMinute.coerceIn(0, 24 * 60 - 1))
+        }
+
+    fun aodSchedulePct(context: Context) = prefs(context).getInt(KEY_AOD_SCHEDULE_PCT, 15)
+        .coerceIn(AodBrightnessMath.MIN_PCT, AodBrightnessMath.MAX_PCT)
+
+    fun setAodSchedulePct(context: Context, value: Int) =
+        prefs(context).edit {
+            putInt(
+                KEY_AOD_SCHEDULE_PCT,
+                value.coerceIn(AodBrightnessMath.MIN_PCT, AodBrightnessMath.MAX_PCT)
+            )
+        }
 
     // --------------------------------------------------------------------- video
 

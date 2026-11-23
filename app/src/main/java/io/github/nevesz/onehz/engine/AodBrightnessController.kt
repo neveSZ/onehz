@@ -7,12 +7,14 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.PowerManager
 import android.provider.Settings
+import io.github.nevesz.onehz.core.ActivationRulesLogic
 import io.github.nevesz.onehz.core.AodBrightnessMath
 import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.diagnostic.AodBrightnessInfo
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
+import java.util.Calendar
 
 /**
  * Drives Samsung's `debug_aod_brightness` (Settings.System, 0..255) from the interactive
@@ -164,7 +166,14 @@ object AodBrightnessController {
         }
         lastScreenRaw = raw
 
-        val pct = OneHzPreferences.aodBrightnessPct(ctx)
+        val basePct = OneHzPreferences.aodBrightnessPct(ctx)
+        val scheduled = OneHzPreferences.aodScheduleEnabled(ctx) &&
+            ActivationRulesLogic.inWindow(
+                currentMinute(),
+                OneHzPreferences.aodScheduleStart(ctx),
+                OneHzPreferences.aodScheduleEnd(ctx)
+            )
+        val pct = if (scheduled) OneHzPreferences.aodSchedulePct(ctx) else basePct
         val min = OneHzPreferences.aodBrightnessMinPct(ctx)
         val max = OneHzPreferences.aodBrightnessMaxPct(ctx)
         val effectivePct = pct.coerceIn(min, max)
@@ -214,6 +223,10 @@ object AodBrightnessController {
 
     private fun isInteractive(context: Context): Boolean =
         (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isInteractive != false
+
+    private fun currentMinute(): Int = Calendar.getInstance().let {
+        it.get(Calendar.HOUR_OF_DAY) * 60 + it.get(Calendar.MINUTE)
+    }
 
     private fun clearKey(context: Context, reason: String, force: Boolean = false) {
         if (!force && !OneHzPreferences.aodBrightnessWritten(context)) {

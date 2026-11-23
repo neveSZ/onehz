@@ -216,6 +216,7 @@ object DozeController {
         open = if (idle) SleepLedger.enterIdle(open, now) else SleepLedger.leaveIdle(open, now)
         saveOpen(ctx)
         Diagnostics.log(TAG, if (idle) "idle entered" else "idle left (maintenance)")
+        if (!idle) OneHzEngine.reapply()
         refreshPhase(ctx, "idle")
     }
 
