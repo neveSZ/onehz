@@ -73,6 +73,18 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".engine.OneHzActionReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.nevesz.onehz.action.PAUSE_TIMED" />
+                <action android:name="io.github.nevesz.onehz.action.RESUME" />
+                <action android:name="io.github.nevesz.onehz.action.SET_PROFILE" />
+                <action android:name="io.github.nevesz.onehz.action.TOGGLE" />
+            </intent-filter>
+        </receiver>
+
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
