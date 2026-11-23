@@ -656,7 +656,10 @@ object OneHzEngine {
     }
 
     private fun goIdle(reason: IdleReason?) {
-        appContext?.let { RateStats.note(it, 0, null, RateMode.OFF) }
+        appContext?.let {
+            RateStats.note(it, 0, null, RateMode.OFF)
+            RateStats.saveNow(it)
+        }
         steps = emptyList()
         index = 0
         nextIndex = 0
