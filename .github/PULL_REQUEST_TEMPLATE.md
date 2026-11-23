@@ -24,4 +24,4 @@
 
 ## LLM disclosure
 
-<!-- If you used an LLM, say which tool/model and what you reviewed manually. -->
+<!-- If you used an LLM, describe what you reviewed and verified manually. -->
