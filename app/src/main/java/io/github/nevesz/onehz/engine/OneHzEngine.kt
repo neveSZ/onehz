@@ -686,8 +686,20 @@ object OneHzEngine {
             IdleReason.APP_IGNORED -> "no control: app ignored"
             null -> "OneHZ disabled"
         }
-        syncTouchMonitoring(false)
-        syncForegroundMonitoring(needed = false)
+        if (reason == IdleReason.APP_IGNORED && hasAppAssignments) {
+            // Keep watching so leaving the ignored app can restore control.
+            syncTouchMonitoring(!screenOff)
+            syncForegroundMonitoring(
+                ForegroundRefreshPolicy.shouldMonitorForeground(
+                    started = started,
+                    screenOff = screenOff,
+                    hasAssignments = hasAppAssignments
+                )
+            )
+        } else {
+            syncTouchMonitoring(false)
+            syncForegroundMonitoring(needed = false)
+        }
     }
 
     private fun syncTouchMonitoring(needed: Boolean) {
