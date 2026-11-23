@@ -20,4 +20,8 @@
     <string name="shortcut_diagnostics_long">Open the engine diagnostics</string>
     <string name="shortcut_pause_done">Paused for one hour</string>
     <string name="shortcut_economy_done">Economy profile selected</string>
+    <string name="settings_add_tile">Add Quick Settings tile</string>
+    <string name="settings_add_tile_desc">Asks the system to place the OneHZ tile on the Quick Settings grid.</string>
+    <string name="tile_add_requested">Tile request sent</string>
+    <string name="tile_add_unsupported">Open Quick Settings, edit the tiles and add OneHZ.</string>
 </resources>

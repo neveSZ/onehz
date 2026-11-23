@@ -49,6 +49,7 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.rememberFullHeightSheetState
 import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.tile.TileRequest
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
 import io.github.nevesz.onehz.ui.theme.OneHzBg
 import io.github.nevesz.onehz.ui.theme.OneHzDarkBg
@@ -162,6 +163,13 @@ fun SettingsScreen(
         }
         item {
             OneHzCard {
+                SettingRow(
+                    icon = AppIcons.add(),
+                    title = stringResource(R.string.settings_add_tile),
+                    subtitle = stringResource(R.string.settings_add_tile_desc),
+                    onClick = { TileRequest.add(context) }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 SettingRow(
                     icon = AppIcons.bolt(),
                     title = stringResource(R.string.rules_title),

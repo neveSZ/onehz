@@ -5,7 +5,6 @@ import android.graphics.drawable.Icon
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import io.github.nevesz.onehz.R
-import io.github.nevesz.onehz.core.MasterPause
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
@@ -13,9 +12,9 @@ import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
 
 /**
- * Quick Settings entry point. A click enables OneHZ when it is off, pauses it for one hour
- * while it is controlling, and resumes it while paused. Turning it off entirely stays in
- * the app so a stray tap cannot silently disable control.
+ * Quick Settings entry point. A click enables OneHZ when it is off and disables it when it
+ * is on. Pause and resume stay in the notification, Home and the launcher shortcut, so the
+ * tile has one predictable action.
  */
 class OneHzTileService : TileService() {
 
@@ -27,11 +26,7 @@ class OneHzTileService : TileService() {
     override fun onClick() {
         super.onClick()
         val context = applicationContext
-        when {
-            !OneHzPreferences.isEnabled(context) -> enable(context)
-            OneHzPreferences.isPaused(context) -> resume(context)
-            else -> pause(context)
-        }
+        if (OneHzPreferences.isEnabled(context)) disable(context) else enable(context)
         updateTile()
     }
 
@@ -42,15 +37,10 @@ class OneHzTileService : TileService() {
         OneHzEngine.reapply()
     }
 
-    private fun pause(context: Context) {
-        val until = System.currentTimeMillis() + MasterPause.ONE_HOUR_MS
-        OneHzPreferences.setMasterPausedUntil(context, until)
-        OneHzEngine.pauseFor(MasterPause.ONE_HOUR_MS)
-    }
-
-    private fun resume(context: Context) {
-        OneHzPreferences.setMasterPausedUntil(context, 0L)
-        OneHzEngine.resumeNow()
+    private fun disable(context: Context) {
+        OneHzPreferences.setEnabled(context, false)
+        OneHzKeepAliveService.stop(context)
+        OneHzEngine.stop()
     }
 
     private fun updateTile() {

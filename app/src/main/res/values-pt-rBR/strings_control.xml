@@ -20,4 +20,8 @@
     <string name="shortcut_diagnostics_long">Abrir o diagnóstico do motor</string>
     <string name="shortcut_pause_done">Pausado por uma hora</string>
     <string name="shortcut_economy_done">Perfil Economia selecionado</string>
+    <string name="settings_add_tile">Adicionar tile nas Configurações Rápidas</string>
+    <string name="settings_add_tile_desc">Pede ao sistema para colocar o tile do OneHZ na grade de Configurações Rápidas.</string>
+    <string name="tile_add_requested">Pedido do tile enviado</string>
+    <string name="tile_add_unsupported">Abra as Configurações Rápidas, edite os tiles e adicione o OneHZ.</string>
 </resources>
