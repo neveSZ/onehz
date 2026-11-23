@@ -1,0 +1,1 @@
+OneHZ 1.3.0 añade controles rápidos: pausa de una hora, tile de encendido/apagado, notificación con estado y atajos. También incluye restauración del sistema, Uso y Sueño/Doze locales, reglas de activación, tasa fija por app, detección de picture-in-picture y horario nocturno del AOD en Samsung.

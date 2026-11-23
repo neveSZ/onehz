@@ -1,1 +1,0 @@
-OneHZ 1.3.0 release candidate for local validation. Not a published release.

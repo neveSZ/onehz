@@ -6,8 +6,6 @@ All notable changes to OneHZ are documented here. The format follows
 
 ## [1.3.0] - 2026-11-23
 
-Local release candidate. The stable tag follows the screen-off and Samsung validation gate.
-
 ### Added
 
 - One-hour master pause next to the master switch, with a deadline, a resume action and
