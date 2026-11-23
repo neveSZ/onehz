@@ -5,4 +5,8 @@
     <string name="home_paused_until">En pausa hasta las %1$s. Los valores del sistema se restauran mientras tanto.</string>
     <string name="home_pause_action">Pausar 1 hora</string>
     <string name="home_resume_action">Reanudar ahora</string>
+    <string name="tile_on">Controlando</string>
+    <string name="tile_off">Desactivado</string>
+    <string name="tile_paused">En pausa</string>
+    <string name="tile_unavailable">Shizuku no disponible</string>
 </resources>

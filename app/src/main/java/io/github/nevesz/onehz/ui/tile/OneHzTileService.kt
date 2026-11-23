@@ -1,0 +1,79 @@
+package io.github.nevesz.onehz.ui.tile
+
+import android.content.Context
+import android.graphics.drawable.Icon
+import android.service.quicksettings.Tile
+import android.service.quicksettings.TileService
+import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.MasterPause
+import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.engine.OneHzEngine
+import io.github.nevesz.onehz.engine.OneHzKeepAliveService
+import io.github.nevesz.onehz.shizuku.ShizukuGateway
+import io.github.nevesz.onehz.shizuku.ShizukuState
+
+/**
+ * Quick Settings entry point. A click enables OneHZ when it is off, pauses it for one hour
+ * while it is controlling, and resumes it while paused. Turning it off entirely stays in
+ * the app so a stray tap cannot silently disable control.
+ */
+class OneHzTileService : TileService() {
+
+    override fun onStartListening() {
+        super.onStartListening()
+        updateTile()
+    }
+
+    override fun onClick() {
+        super.onClick()
+        val context = applicationContext
+        when {
+            !OneHzPreferences.isEnabled(context) -> enable(context)
+            OneHzPreferences.isPaused(context) -> resume(context)
+            else -> pause(context)
+        }
+        updateTile()
+    }
+
+    private fun enable(context: Context) {
+        OneHzPreferences.setEnabled(context, true)
+        OneHzKeepAliveService.start(context)
+        OneHzEngine.start(context)
+        OneHzEngine.reapply()
+    }
+
+    private fun pause(context: Context) {
+        val until = System.currentTimeMillis() + MasterPause.ONE_HOUR_MS
+        OneHzPreferences.setMasterPausedUntil(context, until)
+        OneHzEngine.pauseFor(MasterPause.ONE_HOUR_MS)
+    }
+
+    private fun resume(context: Context) {
+        OneHzPreferences.setMasterPausedUntil(context, 0L)
+        OneHzEngine.resumeNow()
+    }
+
+    private fun updateTile() {
+        val tile = qsTile ?: return
+        val context = applicationContext
+        val enabled = OneHzPreferences.isEnabled(context)
+        val paused = enabled && OneHzPreferences.isPaused(context)
+        val ready = ShizukuGateway.state.value == ShizukuState.READY
+
+        tile.icon = Icon.createWithResource(context, R.drawable.ic_stat_onehz)
+        tile.label = getString(R.string.app_name)
+        tile.state = when {
+            !enabled -> Tile.STATE_INACTIVE
+            paused -> Tile.STATE_INACTIVE
+            !ready -> Tile.STATE_UNAVAILABLE
+            else -> Tile.STATE_ACTIVE
+        }
+        tile.subtitle = when {
+            !enabled -> getString(R.string.tile_off)
+            paused -> getString(R.string.tile_paused)
+            !ready -> getString(R.string.tile_unavailable)
+            else -> getString(R.string.tile_on)
+        }
+        tile.updateTile()
+    }
+}
