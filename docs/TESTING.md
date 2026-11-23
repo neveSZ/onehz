@@ -93,7 +93,16 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Pause for 1 hour; the next screen-off does not force and the card shows the deadline.
 - [ ] Enable the time window with a range that crosses midnight; forcing only happens inside it.
 - [ ] Enable the charger guard and plug the device in while asleep; it leaves idle.
+- [ ] Unplug the charger while the screen is still off; Doze is forced again without a new
+      screen cycle.
 - [ ] Play background music, turn the screen off, and confirm the music guard skips forcing.
+- [ ] Turn on **Doze with music** while music is playing and the screen is off; Doze is
+      forced without waiting for another screen-off.
+- [ ] Stop the music with the option off; Doze is forced without touching the screen.
+- [ ] Start music while Doze is active and the option is off; the device leaves idle
+      (`mState=INACTIVE`, not just `mForceIdle=false`) and the card shows the music state.
+- [ ] Check the diagnostics timings: the idle command takes a few tens of milliseconds and
+      confirmation appears at the first retry on a responsive ROM.
 - [ ] Set light mode; confirm the state still becomes `IDLE` (or report the ROM result).
 - [ ] Add an app to **Apps that may wake the device**; confirm it appears in
       `adb shell dumpsys deviceidle whitelist`, then remove it and confirm it is gone.

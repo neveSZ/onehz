@@ -247,8 +247,9 @@ When the screen turns off, OneHZ asks the platform to
 enter Doze immediately instead of waiting for the inactivity timers:
 
 - deep idle (default) or light idle;
-- guards evaluated only at screen-off: pause for one hour, a time window that may cross
-  midnight, charging, and background music;
+- guards re-evaluated while the screen is off: pause for one hour, a time window that may
+  cross midnight, charging, and music playback;
+- a **Doze with music** switch (off by default) that keeps idle even during audio;
 - `unforce` on screen-on, when the feature is disabled, and after a crash or reboot;
 - verification through the real device-idle state, with an explicit "the ROM did not
   enter Doze" message instead of a false success;

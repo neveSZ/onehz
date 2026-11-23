@@ -13,7 +13,10 @@ object SleepPreferences {
     private const val KEY_ENABLED = "sleep_enabled"
     private const val KEY_DEEP = "sleep_deep"
     private const val KEY_SKIP_CHARGING = "sleep_skip_charging"
-    private const val KEY_SKIP_MUSIC = "sleep_skip_music"
+    private const val KEY_DOZE_WITH_MUSIC = "sleep_doze_with_music"
+
+    /** Written by 1.2.x before the music option became a positive "doze with music" switch. */
+    private const val LEGACY_KEY_SKIP_MUSIC = "sleep_skip_music"
     private const val KEY_WINDOW_ENABLED = "sleep_window_enabled"
     private const val KEY_WINDOW_START = "sleep_window_start"
     private const val KEY_WINDOW_END = "sleep_window_end"
@@ -41,10 +44,23 @@ object SleepPreferences {
     fun setSkipCharging(context: Context, value: Boolean) =
         prefs(context).edit { putBoolean(KEY_SKIP_CHARGING, value) }
 
-    fun skipMusic(context: Context) = prefs(context).getBoolean(KEY_SKIP_MUSIC, true)
+    /**
+     * Keeps Doze active even while music is playing.
+     *
+     * The old negative preference is read once per lookup instead of being rewritten, so a
+     * downgrade still sees the user's previous choice. An absent legacy value means the
+     * 1.2.x default: pause with music.
+     */
+    fun dozeWithMusic(context: Context): Boolean {
+        val p = prefs(context)
+        if (p.contains(KEY_DOZE_WITH_MUSIC)) {
+            return p.getBoolean(KEY_DOZE_WITH_MUSIC, false)
+        }
+        return !p.getBoolean(LEGACY_KEY_SKIP_MUSIC, true)
+    }
 
-    fun setSkipMusic(context: Context, value: Boolean) =
-        prefs(context).edit { putBoolean(KEY_SKIP_MUSIC, value) }
+    fun setDozeWithMusic(context: Context, value: Boolean) =
+        prefs(context).edit { putBoolean(KEY_DOZE_WITH_MUSIC, value) }
 
     fun windowEnabled(context: Context) = prefs(context).getBoolean(KEY_WINDOW_ENABLED, false)
 

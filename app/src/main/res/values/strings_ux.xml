@@ -23,7 +23,8 @@
     <string name="profile_in_use_auto">In use: %1$s (automatic)</string>
     <string name="profile_low_rate_home">30 Hz can make the screen dimmer on this device.</string>
     <string name="profile_auto_economy_title">Automatic Economy</string>
-    <string name="profile_auto_economy_desc">Use Economy while the system battery saver is on.</string>
+    <string name="profile_auto_economy_desc_on">Activates Economy when the system battery saver turns on.</string>
+    <string name="profile_auto_economy_desc_off">Keeps the selected profile when system battery saver turns on.</string>
     <string name="profile_auto_economy_footer">Apps can keep their own profile with the option below.</string>
     <string name="profile_reference_hint">This app uses profile %1$s. Editing it changes every app that uses it.</string>
     <string name="profile_video_link">Profile video: %1$d Hz minimum</string>

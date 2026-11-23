@@ -551,6 +551,8 @@ private fun EditSheet(
             }
             ToggleRow(
                 title = stringResource(R.string.ignore_eco_label),
+                descriptionOn = stringResource(R.string.ignore_eco_desc_on),
+                descriptionOff = stringResource(R.string.ignore_eco_desc_off),
                 checked = ignoreEco && canIgnoreEco,
                 enabled = canIgnoreEco,
                 onCheckedChange = {

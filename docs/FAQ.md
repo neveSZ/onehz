@@ -250,6 +250,14 @@ on a background connection may not arrive until the next maintenance window. Use
 for 1 hour**, the time window, or add the app to **Apps that may wake the device** when you
 need it in real time.
 
+### Does Sleep pause when music is playing?
+
+By default, yes: the music guard pauses Doze while audio is playing. Turn on **Doze with
+music** in the Sleep detail to keep idle even during playback. Some devices may interrupt
+streaming or background audio in deep idle, so the option is off by default. The guard is
+re-evaluated when playback starts or stops and when the charger is connected or removed;
+you do not need to turn the screen off again.
+
 ### How are the Sleep numbers measured?
 
 Everything is local. “Last 24 hours” is a rolling window: screen-off and Doze time are the

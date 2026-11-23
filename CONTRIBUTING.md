@@ -62,6 +62,8 @@ AI-generated and not reviewed by native speakers. See
 
 - Kotlin, 4-space indentation, trailing commas.
 - Comments explain *why*, not *what*. No ticket IDs, no third-party app names.
+- Switch descriptions explain the effect of the current state; see
+  [docs/UI_GUIDELINES.md](docs/UI_GUIDELINES.md).
 - Prefer small, testable functions and pure parsers for protocol/format logic.
 - Do not add network permissions without an explicit privacy review.
 

@@ -251,8 +251,9 @@ Doze na hora, em vez de esperar os temporizadores de inatividade. O primeiro ena
 confirmação porque notificações e chamadas por internet podem atrasar:
 
 - Doze profundo (padrão) ou leve;
-- condições avaliadas só no momento em que a tela apaga: pausa de uma hora, janela de
-  horário que pode cruzar a meia-noite, carregamento e música em segundo plano;
+- condições reavaliadas com a tela apagada: pausa de uma hora, janela de horário que pode
+  cruzar a meia-noite, carregamento e reprodução de música;
+- um switch **Doze com música** (desligado por padrão) para manter o Doze durante o áudio;
 - `unforce` ao acender a tela, ao desligar o recurso e depois de crash ou reboot;
 - verificação pelo estado real de device-idle, com a mensagem explícita "a ROM não entrou
   em Doze" em vez de um falso sucesso;

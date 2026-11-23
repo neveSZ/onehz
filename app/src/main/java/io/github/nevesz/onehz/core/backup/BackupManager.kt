@@ -49,7 +49,7 @@ object BackupManager {
                 enabled = SleepPreferences.enabled(context),
                 deep = SleepPreferences.deep(context),
                 skipCharging = SleepPreferences.skipCharging(context),
-                skipMusic = SleepPreferences.skipMusic(context),
+                dozeWithMusic = SleepPreferences.dozeWithMusic(context),
                 windowEnabled = SleepPreferences.windowEnabled(context),
                 windowStartMinute = sleepWindow.startMinute,
                 windowEndMinute = sleepWindow.endMinute
@@ -144,7 +144,7 @@ object BackupManager {
             SleepPreferences.setEnabled(context, sleep.enabled)
             SleepPreferences.setDeep(context, sleep.deep)
             SleepPreferences.setSkipCharging(context, sleep.skipCharging)
-            SleepPreferences.setSkipMusic(context, sleep.skipMusic)
+            SleepPreferences.setDozeWithMusic(context, sleep.dozeWithMusic)
             SleepPreferences.setWindowEnabled(context, sleep.windowEnabled)
             SleepPreferences.setWindow(
                 context,

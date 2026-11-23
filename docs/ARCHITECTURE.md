@@ -250,30 +250,42 @@ crash.
 
 ## Sleep (forced Doze)
 
-`DozeController` runs on its own handler thread. Every guard is evaluated once, at
-`SCREEN_OFF`, after the AOD brightness key and the AOD rate have been applied:
+`DozeController` runs on its own handler thread. `SCREEN_OFF` anchors the session after
+the AOD brightness key and the AOD rate have been applied; charging, audio, pause and
+preference events then re-evaluate the same decision while the screen stays off.
 
 ```text
-dumpsys deviceidle force-idle [light]     # deep when no argument is given
-dumpsys deviceidle unforce
+cmd deviceidle force-idle [light]         # deep when no argument is given
+cmd deviceidle unforce
+cmd deviceidle motion                     # returns to INACTIVE off-screen
+dumpsys deviceidle force-idle [light]     # fallback for builds without cmd
 dumpsys deviceidle                        # reads mState= and mLightState=
 ```
 
 The decision is pure (`DozeDecisionResolver`): master switch, feature switch, pause, time
-window, charging, music playback, and service availability. When the service is not
+window, charging, Doze with music, and service availability. When the service is not
 available, the controller waits and retries once the binder reconnects while the screen is
 still off.
 
-`dumpsys` exits with 0 even for an unknown subcommand, so success is confirmed through the
-printed `mState` and `mLightState` values (with `PowerManager.isDeviceIdleMode()` as a
-quick deep check). A failed confirmation shows “The ROM did not enter Doze” and is written
-to diagnostics.
+An `AudioManager.AudioPlaybackCallback` is registered on the controller thread and
+debounced for 200 ms. The plug state and audio state are cached from their events so a
+re-evaluation does not repeat binder or sticky-broadcast reads. A guard that starts
+blocking runs `unforce` followed by `motion`, because `unforce` alone can leave the state
+at IDLE while the screen is off. A guard that stops blocking forces idle without the
+screen-off settling delay.
+
+`cmd`/`dumpsys` exit with 0 even for an unknown subcommand, so success is confirmed through
+the printed `mState` and `mLightState` values (with `PowerManager.isDeviceIdleMode()` as a
+quick deep check). Verification runs at 0/400/1200 ms and stops at the first confirmation.
+A failed confirmation shows “The ROM did not enter Doze” and is written to diagnostics.
 
 Whitelist changes use `cmd deviceidle whitelist` and are confirmed by reading the list
 back; `dumpsys deviceidle sys-whitelist` exits without changing anything on some builds.
 
-Charging comes from the sticky battery broadcast (`EXTRA_PLUGGED`/`EXTRA_STATUS`),
-because `BatteryManager.isCharging()` is not updated on some vendor builds.
+The screen-off read uses the sticky battery broadcast
+(`EXTRA_PLUGGED`/`EXTRA_STATUS`), because `BatteryManager.isCharging()` is not updated on
+some vendor builds; while the screen is off, the plug state comes from the power
+connect/disconnect broadcasts and is cached.
 
 Screen-on dispatches `unforce` on the controller thread, so the wake pulse and the
 refresh-rate write are not delayed by the shell call. The forced flag is persisted:

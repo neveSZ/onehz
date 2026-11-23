@@ -3,8 +3,8 @@
     <string name="sleep_title">Sono</string>
     <string name="sleep_state_active">Em Doze há %1$s</string>
     <string name="sleep_state_paused_until">Pausado até %1$s</string>
-    <string name="sleep_state_charging">Pausado: carregando</string>
-    <string name="sleep_state_music">Pausado: música tocando</string>
+    <string name="sleep_state_charging">Doze pausado: carregando</string>
+    <string name="sleep_state_music">Doze pausado: música tocando</string>
     <string name="sleep_state_outside_window">Fora do horário permitido</string>
     <string name="sleep_state_waiting_service">Aguardando o Shizuku</string>
     <string name="sleep_state_failed">O aparelho não entrou em Doze</string>
@@ -12,13 +12,19 @@
     <string name="sleep_delay_warning">Notificações e chamadas por internet de apps como WhatsApp e Telegram podem atrasar. Ligações normais e alarmes continuam funcionando.</string>
 
     <string name="sleep_deep_title">Doze profundo</string>
-    <string name="sleep_deep_desc">Usa o estado de repouso mais profundo. Desligue se o AOD congelar.</string>
+    <string name="sleep_deep_desc_on">Usa o repouso mais profundo. Desligue se o AOD congelar.</string>
+    <string name="sleep_deep_desc_off">Usa o Doze leve, com janelas de manutenção mais frequentes.</string>
     <string name="sleep_skip_charging_title">Pausar ao carregar</string>
-    <string name="sleep_skip_charging_desc">Não força o Doze com o aparelho na tomada.</string>
-    <string name="sleep_skip_music_title">Pausar com música</string>
-    <string name="sleep_skip_music_desc">Não força o Doze com áudio tocando em segundo plano.</string>
+    <string name="sleep_skip_charging_desc_on">O Doze pausa enquanto o aparelho está na tomada.</string>
+    <string name="sleep_skip_charging_desc_off">O Doze continua mesmo com o aparelho na tomada.</string>
+    <string name="sleep_state_charging_hint">Desligue \"Pausar ao carregar\" para manter o Doze na tomada.</string>
+    <string name="sleep_state_music_hint">Ligue \"Doze com música\" para manter o Doze durante o áudio.</string>
+    <string name="sleep_doze_music_title">Doze com música</string>
+    <string name="sleep_doze_music_on">O Doze está ignorando se tem música tocando. O áudio pode falhar em alguns aparelhos.</string>
+    <string name="sleep_doze_music_off">O Doze pausa enquanto há música tocando.</string>
     <string name="sleep_window_title">Só dentro de um horário</string>
-    <string name="sleep_window_desc">Útil para rotina fixa. O intervalo pode cruzar a meia-noite.</string>
+    <string name="sleep_window_desc_on">O Doze só é usado entre %1$s e %2$s.</string>
+    <string name="sleep_window_desc_off">O Doze pode ser usado a qualquer hora.</string>
     <string name="sleep_window_start">Início</string>
     <string name="sleep_window_end">Fim</string>
 

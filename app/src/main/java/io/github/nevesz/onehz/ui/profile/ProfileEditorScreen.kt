@@ -373,7 +373,8 @@ fun ProfileEditorScreen(
                     ToggleRow(
                         icon = AppIcons.movie(),
                         title = stringResource(R.string.video_mode_title),
-                        description = stringResource(R.string.video_mode_desc),
+                        descriptionOn = stringResource(R.string.video_mode_desc_on),
+                        descriptionOff = stringResource(R.string.video_mode_desc_off),
                         checked = videoEnabled,
                         onCheckedChange = { videoEnabled = it }
                     )

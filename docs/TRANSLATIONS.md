@@ -33,6 +33,9 @@ English-only.
 
 - Keep the same keys in all three locales, across `strings.xml` and feature files such as
   `strings_sleep.xml`.
+- State-aware switch copy uses `_on` / `_off` suffixes (`sleep_doze_music_on`, or
+  `aod_hint_on` / `aod_hint_off`). Keep the title stable and describe the effect of the
+  current state; see [UI guidelines](UI_GUIDELINES.md).
 - Keep placeholders exactly as in the base string (`%1$s`, `%1$d`, `%%`).
 - Keep `plurals` quantities (`one`, `other`).
 - Do not translate:
@@ -76,6 +79,8 @@ English-only.
 | diagnostics | diagnóstico | diagnóstico |
 | wake pulse | pulso de despertar | pulso de despertar |
 | Sleep | Sono | Sueño |
+| Doze with music | Doze com música | Doze con música |
+| state-aware description | descrição por estado | descripción por estado |
 | rest period | descanso | descanso |
 | maintenance window | janela de manutenção | ventana de mantenimiento |
 

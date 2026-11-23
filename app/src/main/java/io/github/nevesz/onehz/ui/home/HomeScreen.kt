@@ -789,7 +789,8 @@ private fun HeroCard(
         ToggleRow(
             icon = AppIcons.speed(),
             title = stringResource(R.string.master_switch),
-            description = stringResource(R.string.master_switch_desc),
+            descriptionOn = stringResource(R.string.master_switch_desc_on),
+            descriptionOff = stringResource(R.string.master_switch_desc_off),
             checked = state.enabled,
             onCheckedChange = onToggle
         )

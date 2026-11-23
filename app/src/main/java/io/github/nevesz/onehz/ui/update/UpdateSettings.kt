@@ -88,7 +88,8 @@ fun UpdateSettingsCard(
         ToggleRow(
             icon = AppIcons.systemUpdate(),
             title = stringResource(R.string.update_check_title),
-            description = stringResource(R.string.update_check_desc),
+            descriptionOn = stringResource(R.string.update_check_desc_on),
+            descriptionOff = stringResource(R.string.update_check_desc_off),
             checked = state.enabled,
             onCheckedChange = { enabled ->
                 if (enabled) showConsent = true else onEnabledChange(false)

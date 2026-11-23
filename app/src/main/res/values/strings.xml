@@ -29,7 +29,8 @@
     <string name="allow_shizuku">Allow Shizuku</string>
 
     <string name="master_switch">Enable OneHZ</string>
-    <string name="master_switch_desc">Controls the screen refresh rate automatically while you use the device.</string>
+    <string name="master_switch_desc_on">Controls the screen refresh rate automatically while you use the device.</string>
+    <string name="master_switch_desc_off">Returns the screen refresh rate to the system default.</string>
     <string name="master_off_hint">Turn OneHZ on to apply frequencies.</string>
     <string name="home_status_off">Off</string>
     <string name="home_section_profiles">Profiles</string>
@@ -41,9 +42,11 @@
     <string name="step_of">Level %1$d of %2$d</string>
 
     <string name="aod_title">Always On Display (AOD)</string>
-    <string name="aod_hint">Applied only while the screen is off and AOD is active. If AOD is off, this has no effect.</string>
+    <string name="aod_hint_on">Keeps the panel minimum while the screen is off. Only applies while AOD is on.</string>
+    <string name="aod_hint_off">Uses the system\'s adaptive rate. Only applies while AOD is on.</string>
     <string name="aod_brightness_title">AOD brightness</string>
-    <string name="aod_brightness_desc">Uses a share of screen brightness when you lock the screen. While active, the AOD does not follow ambient light.</string>
+    <string name="aod_brightness_desc_on">Applies %1$d%% brightness to the AOD when locked. The AOD does not follow ambient light.</string>
+    <string name="aod_brightness_desc_off">The AOD follows the system brightness and ambient light.</string>
     <string name="aod_brightness_pct_label">AOD brightness: %1$d%% of screen brightness</string>
     <string name="aod_brightness_show_limits">Safety limits</string>
     <string name="aod_brightness_hide_limits">Hide safety limits</string>
@@ -56,7 +59,8 @@
     <string name="aod_brightness_restore">Restore system brightness</string>
 
     <string name="video_mode_title">Video mode</string>
-    <string name="video_mode_desc">Recognizes videos automatically using the detection rules.</string>
+    <string name="video_mode_desc_on">Applies the video rate when playback is detected.</string>
+    <string name="video_mode_desc_off">Video playback keeps the normal profile.</string>
     <string name="video_min_hz">Minimum rate during video</string>
     <string name="video_min_hint">Replaces the profile rate while the video is playing.</string>
     <string name="video_state_playing">playing</string>
@@ -71,13 +75,17 @@
     <string name="video_rules_desc">Choose which signals OneHZ uses to decide that a video is playing.</string>
     <string name="video_rules_summary">%1$d of %2$d rules active</string>
     <string name="video_rule_session_title">Use MediaSession</string>
-    <string name="video_rule_session_desc">Reads the playback state reported by the app\'s media session.</string>
+    <string name="video_rule_session_desc_on">Reads the playback state reported by the app\'s media session.</string>
+    <string name="video_rule_session_desc_off">Ignores the app\'s media session.</string>
     <string name="video_rule_paused_title">Paused session blocks video</string>
-    <string name="video_rule_paused_desc">A paused session is treated as not playing, even if a decoder is still held.</string>
+    <string name="video_rule_paused_desc_on">A paused session counts as not playing, even if a decoder is still held.</string>
+    <string name="video_rule_paused_desc_off">A paused session can still count as playing.</string>
     <string name="video_rule_codec_title">Require a video decoder</string>
-    <string name="video_rule_codec_desc">The foreground app must hold a video codec. Disable for apps that reuse decoders or report them late.</string>
+    <string name="video_rule_codec_desc_on">The foreground app must hold a video codec.</string>
+    <string name="video_rule_codec_desc_off">Video is accepted without an active codec, useful for apps that report decoders late.</string>
     <string name="video_rule_audio_title">Require playing media audio without a session</string>
-    <string name="video_rule_audio_desc">Without a session, a started USAGE_MEDIA player confirms playback. Disable to accept a decoder alone.</string>
+    <string name="video_rule_audio_desc_on">Without a session, a started media player confirms playback.</string>
+    <string name="video_rule_audio_desc_off">Without a session, only the decoder is required.</string>
     <string name="video_rules_none_warning">No detection rule is enabled. Video will not be detected unless the app is in the forced list.</string>
     <string name="video_forced_title">Apps always treated as video</string>
     <string name="video_forced_desc">The minimum video rate applies whenever one of these apps is in the foreground, even without a session, decoder, or audio.</string>
@@ -129,6 +137,8 @@
     <string name="app_removed">App removed</string>
     <string name="eco_ignored">Economy ignored</string>
     <string name="ignore_eco_label">Keep this app\'s profile during battery saver</string>
+    <string name="ignore_eco_desc_on">Keeps this app\'s profile even while system battery saver is on.</string>
+    <string name="ignore_eco_desc_off">Follows the automatic Economy setting while battery saver is on.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d selected</item>
         <item quantity="other">%1$d selected</item>
@@ -277,7 +287,8 @@
     <!-- Updates -->
     <string name="update_section_title">Updates</string>
     <string name="update_check_title">Check for updates</string>
-    <string name="update_check_desc">Checks GitHub only when you open OneHZ. Nothing runs in the background.</string>
+    <string name="update_check_desc_on">Checks GitHub when you open OneHZ. Nothing runs in the background.</string>
+    <string name="update_check_desc_off">No automatic GitHub checks. You can still check manually.</string>
     <string name="update_enable_dialog_title">Allow GitHub checks?</string>
     <string name="update_enable_dialog_body">OneHZ will contact the public GitHub API only when you open the app. Automatic checks happen at most once per chosen interval. No account, identifier, or telemetry is sent. GitHub receives your IP address and the app User-Agent, like any HTTPS request. Checks never run in the background. Android grants internet access at install time; this option controls only whether OneHZ uses it.\n\nYou can switch to pre-releases later, but they may be unstable.</string>
     <string name="update_enable_confirm">Enable checks</string>

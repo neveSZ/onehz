@@ -29,7 +29,8 @@
     <string name="allow_shizuku">Permitir Shizuku</string>
 
     <string name="master_switch">Activar OneHZ</string>
-    <string name="master_switch_desc">Controla la frecuencia de la pantalla automáticamente mientras usas el dispositivo.</string>
+    <string name="master_switch_desc_on">Controla la frecuencia de la pantalla automáticamente mientras usas el dispositivo.</string>
+    <string name="master_switch_desc_off">Devuelve la frecuencia de la pantalla al valor predeterminado del sistema.</string>
     <string name="master_off_hint">Activa OneHZ para aplicar las frecuencias.</string>
     <string name="home_status_off">Desactivado</string>
     <string name="home_section_profiles">Perfiles</string>
@@ -41,9 +42,11 @@
     <string name="step_of">Nivel %1$d de %2$d</string>
 
     <string name="aod_title">AOD (Always On Display)</string>
-    <string name="aod_hint">Se aplica solo con la pantalla apagada y el AOD activo. Si el AOD está desactivado, no tiene efecto.</string>
+    <string name="aod_hint_on">Mantiene la tasa mínima con la pantalla apagada. Solo se aplica con el AOD activo.</string>
+    <string name="aod_hint_off">Usa la tasa adaptativa del sistema. Solo se aplica con el AOD activo.</string>
     <string name="aod_brightness_title">Brillo del AOD</string>
-    <string name="aod_brightness_desc">Usa una parte del brillo de la pantalla al bloquear. Mientras está activo, el AOD no sigue la luz ambiente.</string>
+    <string name="aod_brightness_desc_on">Aplica un %1$d%% de brillo en el AOD al bloquear. El AOD no sigue la luz ambiente.</string>
+    <string name="aod_brightness_desc_off">El AOD sigue el brillo del sistema y la luz ambiente.</string>
     <string name="aod_brightness_pct_label">Brillo del AOD: %1$d%% del brillo de la pantalla</string>
     <string name="aod_brightness_show_limits">Límites de seguridad</string>
     <string name="aod_brightness_hide_limits">Ocultar límites de seguridad</string>
@@ -56,7 +59,8 @@
     <string name="aod_brightness_restore">Restaurar brillo del sistema</string>
 
     <string name="video_mode_title">Modo vídeo</string>
-    <string name="video_mode_desc">Reconoce vídeos automáticamente con las reglas de detección.</string>
+    <string name="video_mode_desc_on">Aplica la tasa de vídeo al detectar reproducción.</string>
+    <string name="video_mode_desc_off">La reproducción de vídeo mantiene el perfil normal.</string>
     <string name="video_min_hz">Tasa mínima en vídeo</string>
     <string name="video_min_hint">Sustituye la tasa del perfil mientras se reproduce el vídeo.</string>
     <string name="video_state_playing">reproduciendo</string>
@@ -71,13 +75,17 @@
     <string name="video_rules_desc">Elige qué señales usa OneHZ para decidir que un vídeo se está reproduciendo.</string>
     <string name="video_rules_summary">%1$d de %2$d reglas activas</string>
     <string name="video_rule_session_title">Usar MediaSession</string>
-    <string name="video_rule_session_desc">Lee el estado de reproducción informado por la sesión multimedia de la app.</string>
+    <string name="video_rule_session_desc_on">Lee el estado de reproducción informado por la sesión multimedia de la app.</string>
+    <string name="video_rule_session_desc_off">Ignora la sesión multimedia de la app.</string>
     <string name="video_rule_paused_title">Sesión pausada bloquea el vídeo</string>
-    <string name="video_rule_paused_desc">Una sesión pausada se trata como no reproduciendo, aunque un decodificador siga abierto.</string>
+    <string name="video_rule_paused_desc_on">Una sesión pausada cuenta como no reproduciendo, aunque un decodificador siga abierto.</string>
+    <string name="video_rule_paused_desc_off">Una sesión pausada aún puede contar como reproducción.</string>
     <string name="video_rule_codec_title">Exigir un decodificador de vídeo</string>
-    <string name="video_rule_codec_desc">La app en primer plano debe mantener un códec de vídeo. Desactívalo para apps que reutilizan decodificadores o los informan tarde.</string>
+    <string name="video_rule_codec_desc_on">La app en primer plano debe mantener un códec de vídeo.</string>
+    <string name="video_rule_codec_desc_off">Se acepta vídeo sin un códec activo, útil para apps que informan decodificadores tarde.</string>
     <string name="video_rule_audio_title">Sin sesión, exigir audio multimedia reproduciéndose</string>
-    <string name="video_rule_audio_desc">Sin sesión, un reproductor USAGE_MEDIA iniciado confirma la reproducción. Desactívalo para aceptar solo el decodificador.</string>
+    <string name="video_rule_audio_desc_on">Sin sesión, un reproductor multimedia iniciado confirma la reproducción.</string>
+    <string name="video_rule_audio_desc_off">Sin sesión, solo se exige el decodificador.</string>
     <string name="video_rules_none_warning">No hay ninguna regla de detección activa. El vídeo no se detectará salvo que la app esté en la lista forzada.</string>
     <string name="video_forced_title">Apps siempre tratadas como vídeo</string>
     <string name="video_forced_desc">La tasa mínima de vídeo se aplica mientras una de estas apps esté en primer plano, incluso sin sesión, decodificador o audio.</string>
@@ -129,6 +137,8 @@
     <string name="app_removed">Aplicación eliminada</string>
     <string name="eco_ignored">Economía ignorada</string>
     <string name="ignore_eco_label">Mantener el perfil de esta app durante el ahorro de batería</string>
+    <string name="ignore_eco_desc_on">Mantiene el perfil de esta app aunque el ahorro de batería esté activo.</string>
+    <string name="ignore_eco_desc_off">Sigue la Economía automática mientras el ahorro de batería está activo.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d seleccionada</item>
         <item quantity="other">%1$d seleccionadas</item>
@@ -280,7 +290,8 @@
     <!-- Actualizaciones -->
     <string name="update_section_title">Actualizaciones</string>
     <string name="update_check_title">Buscar actualizaciones</string>
-    <string name="update_check_desc">Consulta GitHub solo cuando abres OneHZ. Nada se ejecuta en segundo plano.</string>
+    <string name="update_check_desc_on">Consulta GitHub cuando abres OneHZ. Nada se ejecuta en segundo plano.</string>
+    <string name="update_check_desc_off">Sin consultas automáticas a GitHub. Aún puedes comprobar manualmente.</string>
     <string name="update_enable_dialog_title">¿Permitir consultas a GitHub?</string>
     <string name="update_enable_dialog_body">OneHZ contactará la API pública de GitHub solo cuando abras la app. La comprobación automática ocurre como máximo una vez por intervalo elegido. No se envía ninguna cuenta, identificador ni telemetría. GitHub recibe tu dirección IP y el User-Agent de la app, como en cualquier solicitud HTTPS. Las comprobaciones nunca se ejecutan en segundo plano. Android concede acceso a internet al instalar; esta opción solo controla si OneHZ lo usa.\n\nPuedes cambiar a versiones preliminares más adelante, pero pueden ser inestables.</string>
     <string name="update_enable_confirm">Activar comprobación</string>

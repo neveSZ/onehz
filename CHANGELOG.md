@@ -4,6 +4,37 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- **Doze with music** switch in Sleep. When enabled, Doze ignores audio playback and
+  stays active; when disabled, Doze pauses with music. The option is off by default and
+  warns that audio may fail on some devices.
+
+### Changed
+
+- Switch descriptions now explain the effect of the current state across Home, AOD, Sleep,
+  video, profiles, apps, and update settings. Titles stay stable.
+- Sleep idle commands prefer `cmd deviceidle` and fall back to `dumpsys`, cutting the
+  common command path in half.
+- Idle confirmation runs at 0/400/1200 ms, stops at the first success, and skips the large
+  state dump when the public deep-idle check already confirms it.
+
+### Fixed
+
+- Sleep re-evaluates charging, music, pause, and preference changes while the screen is
+  off. Music stopping or the charger being unplugged now forces Doze without another screen
+  cycle; music starting or the charger being plugged in leaves idle.
+- Music playback is observed through the platform callback instead of being read only at
+  screen-off, with a short debounce and no polling.
+- Leaving idle after a guard change now also sends `deviceidle motion`; `unforce` alone
+  could keep the device in IDLE while the screen stayed off.
+- A delayed idle verification can no longer overwrite the state after screen-on or after a
+  guard change.
+- The old pause-with-music preference and 1.2.x backups migrate to the positive Doze with
+  music switch without changing the user's previous choice.
+
 ## [1.2.1] - 2026-11-22
 
 First stable release of the 1.2.1 patch. Includes the AOD/Sleep fixes from 1.2.1-beta.1

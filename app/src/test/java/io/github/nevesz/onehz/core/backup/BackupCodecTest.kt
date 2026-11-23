@@ -31,7 +31,7 @@ class BackupCodecTest {
             enabled = true,
             deep = false,
             skipCharging = false,
-            skipMusic = false,
+            dozeWithMusic = true,
             windowEnabled = true,
             windowStartMinute = 22 * 60,
             windowEndMinute = 6 * 60
@@ -81,13 +81,31 @@ class BackupCodecTest {
                 enabled = true,
                 deep = false,
                 skipCharging = false,
-                skipMusic = false,
+                dozeWithMusic = true,
                 windowEnabled = true,
                 windowStartMinute = 22 * 60,
                 windowEndMinute = 6 * 60
             ),
             decoded?.sleep
         )
+    }
+
+    @Test
+    fun `old backup derives doze with music from the negative switch`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        val sleep = root.getJSONObject("sleep")
+        sleep.remove("dozeWithMusic")
+        sleep.put("skipMusic", false)
+        assertEquals(true, BackupCodec.decode(root.toString())?.sleep?.dozeWithMusic)
+
+        sleep.put("skipMusic", true)
+        assertEquals(false, BackupCodec.decode(root.toString())?.sleep?.dozeWithMusic)
+    }
+
+    @Test
+    fun `new backup keeps the legacy music switch compatible`() {
+        val root = JSONObject(BackupCodec.encode(data))
+        assertEquals(false, root.getJSONObject("sleep").optBoolean("skipMusic", true))
     }
 
     @Test
