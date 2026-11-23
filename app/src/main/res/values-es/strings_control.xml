@@ -9,4 +9,7 @@
     <string name="tile_off">Desactivado</string>
     <string name="tile_paused">En pausa</string>
     <string name="tile_unavailable">Shizuku no disponible</string>
+    <string name="notification_active">%1$s · %2$d Hz</string>
+    <string name="notification_paused">En pausa hasta las %1$s</string>
+    <string name="notification_idle">Sin control</string>
 </resources>
