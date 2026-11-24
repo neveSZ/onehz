@@ -76,6 +76,16 @@ com as notificações do OneHZ habilitadas; a linha **Notificações** na mesma 
 permissão ou abre a página do sistema. Mudanças de estado (pausa, AOD, inativo) atualizam
 na hora; mudanças de taxa são agrupadas em no máximo uma por segundo.
 
+### A notificação demora para atualizar. Por quê?
+
+O Android pode segurar um app que ainda está sujeito à otimização de bateria enquanto roda em
+segundo plano: o motor mantém a taxa correta, mas o texto da notificação atrasa. Nesse caso,
+Ajustes → Controles rápidos mostra **Otimização de bateria ativa**; **Permitir** abre o
+diálogo de isenção do sistema. No HyperOS, deixe também **Sem restrições** e ative a
+**inicialização automática**, porque o gerenciador de energia da fabricante mantém restrições
+próprias. A isenção é o que deixa as atualizações em segundo plano pontuais; o app funciona
+sem ela.
+
 ### Posso fazer backup das configurações?
 
 Sim. Ajustes → Dados → **Backup e restauração** exporta um JSON versionado pelo seletor de

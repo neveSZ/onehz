@@ -1,1 +1,1 @@
-Notificações podem ser ativadas nos Ajustes. Mostrar frequência pode deixar só o perfil. Sondagens de vídeo mais rápidas, perfis e painel em cache e leituras privilegiadas sem travar a tela.
+Notificações podem ser ativadas nos Ajustes e Mostrar frequência pode deixar só o perfil. Um aviso novo oferece a isenção de otimização de bateria quando as atualizações podem atrasar. Sondagens de vídeo mais rápidas, perfis e painel em cache e leituras privilegiadas sem travar a tela.

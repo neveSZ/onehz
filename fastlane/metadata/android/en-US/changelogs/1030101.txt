@@ -1,1 +1,1 @@
-Notification access can be enabled in Settings. Show refresh rate can keep only the profile. Faster video probes, cached profiles and panel data, and privileged reads no longer freeze the screen.
+Notification access can be enabled in Settings and Show refresh rate can keep only the profile. A new warning offers the battery optimization exemption when background updates may lag. Faster video probes, cached profiles and panel data, and privileged reads no longer freeze the screen.

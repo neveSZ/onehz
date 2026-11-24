@@ -314,6 +314,14 @@ mais recente ainda permite o deslize e o OneHZ restaura a notificação na hora;
 mantém o serviço vivo nem muda o consumo de bateria. A opção pode ser desligada no mesmo
 lugar a qualquer momento.
 
+**Otimização de bateria.** Com as notificações ligadas e o OneHZ ainda otimizado pelo
+sistema, Ajustes → Controles rápidos mostra um aviso de que as atualizações da notificação
+podem atrasar em segundo plano. **Permitir** abre o diálogo de isenção do sistema; a primeira
+visita também pergunta uma única vez com a mesma ação, e **Agora não** mantém só o aviso. O
+aviso desaparece assim que o app fica isento. No HyperOS, deixe também **Sem restrições** e
+ative a **inicialização automática**, porque o gerenciador de energia da fabricante não é
+coberto pela isenção padrão. A isenção é opcional: o OneHZ funciona sem ela.
+
 **Atalhos do app.** Pressione e segure o ícone na tela inicial para **Pausar 1 h**,
 **Economia** e **Diagnóstico**.
 

@@ -39,6 +39,7 @@ object OneHzPreferences {
     private const val KEY_LOGS_PAUSED = "logs_paused"
     private const val KEY_NOTIFICATION_PINNED = "notification_pinned"
     private const val KEY_NOTIFICATION_DETAILS = "notification_details"
+    private const val KEY_BATTERY_PROMPT_SHOWN = "battery_prompt_shown"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_TILE_ADDED = "tile_added"
     private const val KEY_THEME_MODE = "theme_mode"
@@ -391,6 +392,17 @@ object OneHzPreferences {
 
     fun setNotificationDetails(context: Context, value: Boolean) =
         prefs(context).edit { putBoolean(KEY_NOTIFICATION_DETAILS, value) }
+
+    /**
+     * Whether the one-time battery optimization prompt was already shown. The warning banner
+     * stays visible until the app is exempt; only the dialog is a one-off. Local only; it is
+     * not part of the backup.
+     */
+    fun batteryPromptShown(context: Context) =
+        prefs(context).getBoolean(KEY_BATTERY_PROMPT_SHOWN, false)
+
+    fun setBatteryPromptShown(context: Context, value: Boolean) =
+        prefs(context).edit { putBoolean(KEY_BATTERY_PROMPT_SHOWN, value) }
 
     fun setupCompleted(context: Context) = prefs(context).getBoolean(KEY_SETUP_COMPLETED, false)
     fun setSetupCompleted(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_SETUP_COMPLETED, value) }

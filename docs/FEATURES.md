@@ -310,6 +310,14 @@ When on, a confirmation explains that Android 14 and later still allows the swip
 OneHZ restores the notification immediately; it does not keep the service alive or change
 battery use. Turn it off in the same place at any time.
 
+**Battery optimization.** While notifications are on and OneHZ is still optimized by the
+system, Settings → Quick controls shows a warning that the notification updates may be
+delayed in the background. **Allow** opens the system exemption dialog; the first visit also
+asks once with the same action, and **Not now** keeps only the warning. The warning
+disappears as soon as the app is exempt. On HyperOS, also set the app to **No restrictions**
+and enable **Autostart**, because the vendor power manager is not covered by the standard
+exemption. The exemption is optional: OneHZ works without it.
+
 **App shortcuts.** Long-press the launcher icon for **Pause 1 h**, **Economy** and
 **Diagnostics**.
 

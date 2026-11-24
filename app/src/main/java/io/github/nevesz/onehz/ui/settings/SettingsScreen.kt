@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -51,12 +52,16 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.BatteryWarningPolicy
 import io.github.nevesz.onehz.core.LanguageManager
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
+import io.github.nevesz.onehz.ui.components.BannerTone
+import io.github.nevesz.onehz.ui.components.BatteryOptimizationAccess
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
+import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.NotificationAccess
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
@@ -102,6 +107,8 @@ fun SettingsScreen(
     var notificationDetails by remember {
         mutableStateOf(OneHzPreferences.notificationDetails(context))
     }
+    var batteryExempt by remember { mutableStateOf(BatteryOptimizationAccess.isExempt(context)) }
+    var showBatteryPrompt by remember { mutableStateOf(false) }
     val notificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -128,6 +135,18 @@ fun SettingsScreen(
                     OneHzKeepAliveService.pinChanged(context)
                 } else {
                     notificationPinned = pinned
+                }
+                val exempt = BatteryOptimizationAccess.isExempt(context)
+                batteryExempt = exempt
+                if (BatteryWarningPolicy.shouldPrompt(
+                        notificationsEnabled,
+                        exempt,
+                        OneHzPreferences.batteryPromptShown(context)
+                    )
+                ) {
+                    // Marked as seen when presented: dismissing it keeps only the banner.
+                    OneHzPreferences.setBatteryPromptShown(context, true)
+                    showBatteryPrompt = true
                 }
             }
         }
@@ -241,6 +260,25 @@ fun SettingsScreen(
                         OneHzPreferences.setNotificationDetails(context, enabled)
                         notificationDetails = enabled
                         OneHzKeepAliveService.contentChanged(context)
+                    }
+                )
+            }
+        }
+
+        if (BatteryWarningPolicy.shouldShowBanner(notificationsEnabled, batteryExempt)) {
+            item {
+                Spacer(Modifier.height(12.dp))
+                InfoBanner(
+                    title = stringResource(R.string.settings_battery_warning_title),
+                    body = stringResource(R.string.settings_battery_warning_body) + "\n\n" +
+                        stringResource(R.string.settings_battery_warning_hyperos),
+                    tone = BannerTone.WARN,
+                    action = {
+                        TextButton(
+                            onClick = { BatteryOptimizationAccess.request(context) }
+                        ) {
+                            Text(stringResource(R.string.settings_battery_warning_action))
+                        }
                     }
                 )
             }
@@ -377,6 +415,19 @@ fun SettingsScreen(
                 OneHzKeepAliveService.pinChanged(context)
             },
             onDismiss = { showPinNotificationDialog = false },
+            destructive = false
+        )
+    }
+
+    if (showBatteryPrompt) {
+        ConfirmDialog(
+            title = stringResource(R.string.settings_battery_dialog_title),
+            body = stringResource(R.string.settings_battery_warning_body) + "\n\n" +
+                stringResource(R.string.settings_battery_warning_hyperos),
+            confirmLabel = stringResource(R.string.settings_battery_warning_action),
+            onConfirm = { BatteryOptimizationAccess.request(context) },
+            onDismiss = { showBatteryPrompt = false },
+            dismissLabel = stringResource(R.string.settings_battery_warning_later),
             destructive = false
         )
     }
