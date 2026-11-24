@@ -296,8 +296,16 @@ ficam na notificação, na Home e no atalho do app. Ajustes → Controles rápid
 indica quando o Shizuku está indisponível.
 
 **Notificação.** A notificação do serviço em primeiro plano mostra o perfil ativo e a taxa
-atual, e oferece **Pausar por 1 hora** / **Retomar agora** e **Desativar**. Ela só é
-atualizada quando o estado muda.
+atual, e oferece **Pausar por 1 hora** / **Retomar agora** e **Desativar**. Em Ajustes →
+Controles rápidos, **Mostrar frequência** pode ocultar a taxa e deixar só o perfil. Com a
+taxa ligada, as atualizações são agrupadas em no máximo uma por segundo; mudanças de estado
+(pausa, AOD, inativo, perfil) são imediatas. Em AOD a notificação mostra **AOD** em vez de
+“Inativo”.
+
+**Acesso às notificações.** Ajustes → Controles rápidos → **Notificações** mostra se o OneHZ
+pode publicar a notificação e abre a permissão ou a página do sistema. **Fixar notificação**
+e **Mostrar frequência** só funcionam com as notificações habilitadas; ao desativá-las, o pin
+salvo é desligado. O serviço em primeiro plano continua rodando de qualquer forma.
 
 **Fixar notificação.** Ajustes → Controles rápidos → **Fixar notificação** vem desligado.
 Quando está desligado, a notificação pode ser dispensada com o deslize e fica oculta até o

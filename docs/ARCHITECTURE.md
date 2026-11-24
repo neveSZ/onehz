@@ -340,11 +340,16 @@ level increased.
   report; `SessionArbiter.audit` marks external changes.
 - `ui/tile/OneHzTileService` and `engine/OneHzActionReceiver` reuse the same preference and
   engine actions as the app.
-- `OneHzKeepAliveService` builds the notification from diagnostics state transitions and
-  removes it when the service stops.
+- `OneHzKeepAliveService` builds the notification from `engine/NotificationContent`, which
+  maps the diagnostics state to paused, inactive, AOD or active and resolves the profile
+  name only when it changes. Rate changes are coalesced to one post per second; state
+  transitions are immediate and identical content is not posted again. The service removes
+  the notification when it stops. `ui/components/NotificationAccess` is the single check for
+  the app notification state (app level plus the OneHZ channel) and is shared with the setup.
 - `engine/NotificationPinPolicy` decides whether a dismissed foreground notification may be
   posted again. When pinned, the service restores it; otherwise the dismissal is respected
-  until the app is opened again.
+  until the app is opened again. Both the pin and the optional rate are inactive while the
+  system blocks OneHZ notifications, and the stored pin is cleared in that case.
 
 ## Security notes
 

@@ -4,6 +4,25 @@ All notable changes to OneHZ are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.3.1-beta.1] - 2026-11-24
+
+### Added
+
+- Settings → Quick controls → **Notifications** enables or reviews the app notification
+  access without going back to the setup.
+- **Show refresh rate** in the notification: on shows the profile and the applied rate, off
+  keeps only the profile. Rate updates are coalesced to one per second; state changes are
+  immediate.
+
+### Changed
+
+- Pin notification and the refresh-rate option are only available while OneHZ notifications
+  are enabled; turning notifications off clears the stored pin.
+
+### Fixed
+
+- The notification shows **AOD** while the screen is off instead of "Inactive".
+
 ## [1.3.0] - 2026-11-23
 
 ### Added
