@@ -6,6 +6,7 @@ import android.os.HandlerThread
 import android.os.IBinder
 import android.os.Parcel
 import android.os.RemoteException
+import android.os.SystemClock
 import android.util.Log
 import io.github.nevesz.onehz.core.DozeState
 import io.github.nevesz.onehz.core.VideoConfig
@@ -91,7 +92,7 @@ class OneHzUserService : IOneHzService.Stub() {
     override fun foregroundPackageFresh(): String = queryForeground(force = true)
 
     private fun queryForeground(force: Boolean): String {
-        val now = System.currentTimeMillis()
+        val now = SystemClock.elapsedRealtime()
         if (!force) foregroundCache.get(now)?.let { return it }
         val pkg = parseForeground(
             exec(
@@ -247,7 +248,7 @@ class OneHzUserService : IOneHzService.Stub() {
             )
         }
 
-        val now = System.currentTimeMillis()
+        val now = SystemClock.elapsedRealtime()
         cachedVideoResult?.let { cached ->
             if (cachedVideoPackage == pkg && cachedVideoConfig == cfg.encode()) {
                 // A positive verdict is stable enough to reuse; a negative one must expire
@@ -347,7 +348,7 @@ class OneHzUserService : IOneHzService.Stub() {
         cachedVideoPackage = pkg
         cachedVideoResult = encoded
         cachedVideoConfig = config.encode()
-        cachedVideoAt = System.currentTimeMillis()
+        cachedVideoAt = SystemClock.elapsedRealtime()
         return encoded
     }
 
@@ -431,12 +432,7 @@ class OneHzUserService : IOneHzService.Stub() {
 
     private fun parseForeground(text: String): String? {
         if (text.isBlank()) return null
-        val patterns = listOf(
-            Regex("""(?:mResumedActivity|topResumedActivity)[^\n]*?([A-Za-z][A-Za-z0-9_]*\.[A-Za-z0-9_.]+)/"""),
-            Regex("""mCurrentFocus[^\n]*?([A-Za-z][A-Za-z0-9_]*\.[A-Za-z0-9_.]+)/"""),
-            Regex("""mFocusedApp[^\n]*?([A-Za-z][A-Za-z0-9_]*\.[A-Za-z0-9_.]+)/""")
-        )
-        for (pattern in patterns) {
+        for (pattern in FOREGROUND_PATTERNS) {
             val pkg = pattern.find(text)?.groupValues?.get(1) ?: continue
             if (pkg == "com.android.systemui" || pkg == "android") continue
             if (PACKAGE_NAME.matches(pkg)) return pkg
@@ -781,6 +777,11 @@ class OneHzUserService : IOneHzService.Stub() {
 
         val DEVICE_PATH = Regex("/dev/input/event[0-9]+")
         val PACKAGE_NAME = Regex("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z0-9_]+)+")
+        val FOREGROUND_PATTERNS = listOf(
+            Regex("""(?:mResumedActivity|topResumedActivity)[^\n]*?([A-Za-z][A-Za-z0-9_]*\.[A-Za-z0-9_.]+)/"""),
+            Regex("""mCurrentFocus[^\n]*?([A-Za-z][A-Za-z0-9_]*\.[A-Za-z0-9_.]+)/"""),
+            Regex("""mFocusedApp[^\n]*?([A-Za-z][A-Za-z0-9_]*\.[A-Za-z0-9_.]+)/""")
+        )
         val SECURE_KEYS = setOf("refresh_rate_mode", "refresh_rate_mode_cover")
         val RATE_KEYS = setOf("min_refresh_rate", "peak_refresh_rate")
         val SECURE_RATE_KEYS = setOf("miui_refresh_rate", "user_refresh_rate")

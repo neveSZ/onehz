@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import io.github.nevesz.onehz.BuildConfig
 import io.github.nevesz.onehz.core.PipSignals
 import io.github.nevesz.onehz.core.VideoConfig
@@ -368,7 +369,7 @@ object ShizukuGateway {
     }
 
     private fun bind() {
-        val now = System.currentTimeMillis()
+        val now = SystemClock.elapsedRealtime()
         if (destroyed || binding || service != null || now - lastBindAttempt < BIND_COOLDOWN_MS) return
         lastBindAttempt = now
         binding = true
