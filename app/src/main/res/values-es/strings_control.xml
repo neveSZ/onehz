@@ -41,4 +41,11 @@
     <string name="settings_notification_details_desc_off">Muestra solo el perfil, como Equilibrado.</string>
     <string name="settings_notification_details_desc_disabled">Activa las notificaciones de OneHZ para usar esta opción.</string>
     <string name="settings_pin_notification_desc_disabled">Activa las notificaciones de OneHZ para fijar.</string>
+    <!-- Battery optimization warning (F-02) -->
+    <string name="settings_battery_warning_title">La optimización de batería está activa</string>
+    <string name="settings_battery_warning_body">El sistema puede retrasar las actualizaciones de la notificación de OneHZ. Permite que la app funcione sin restricciones.</string>
+    <string name="settings_battery_warning_hyperos">En HyperOS, revisa también «Sin restricciones» e Inicio automático en los ajustes de la app.</string>
+    <string name="settings_battery_warning_action">Permitir</string>
+    <string name="settings_battery_warning_later">Ahora no</string>
+    <string name="settings_battery_dialog_title">¿Permitir que OneHZ funcione sin restricciones?</string>
 </resources>
