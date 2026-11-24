@@ -25,6 +25,8 @@ All notable changes to OneHZ are documented here. The format follows
 
 ### Fixed
 
+- The bottom-bar labels stay on one line at a 200% font scale instead of wrapping the
+  Settings label into two lines.
 - The notification shows **AOD** while the screen is off instead of "Inactive".
 - A notification hidden because OneHZ notifications were disabled is no longer mistaken for
   a dismissed one, so enabling access again restores it.
