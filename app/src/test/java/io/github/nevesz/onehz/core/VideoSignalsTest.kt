@@ -33,6 +33,38 @@ class VideoSignalsTest {
             state=PlaybackState {state=PLAYING(3), position=43445, buffered position=0, speed=1.0, updated=23786271, actions=2600887, custom actions=[], active item id=126, error=null}
     """.trimIndent()
 
+    /**
+     * Android 16 builds (for example HyperOS 3) list the sessions stack without the SUMMARY
+     * header; each session block starts with a bare `package=` line.
+     */
+    private val stackSessions = """
+        MEDIA SESSION SERVICE (dumpsys media_session)
+
+        9 sessions listeners.
+        Global priority session is com.android.server.telecom/HeadsetMediaButton/1 (userId=0)
+          HeadsetMediaButton com.android.server.telecom/HeadsetMediaButton/1 (userId=0)
+            ownerPid=1838, ownerUid=1000, userId=0
+            package=com.android.server.telecom
+            active=false
+            state=null
+        User Records:
+        Record for full_user=0, profile_user=999
+          Volume key long-press listener: null
+          Volume key long-press listener package: 
+          Media button session is com.google.android.youtube/YouTube playerlib/3 (userId=0)
+          Sessions Stack - have 2 sessions:
+            YouTube playerlib com.google.android.youtube/YouTube playerlib/3 (userId=0)
+              ownerPid=17273, ownerUid=10219, userId=0
+              package=com.google.android.youtube
+              active=true
+              state=PlaybackState {state=PAUSED(2), position=60977, buffered position=0, speed=1.0, updated=142780320, actions=8615, custom actions=[], active item id=-1, error=null}
+            YouTube playerlib com.google.android.apps.youtube.music/YouTube playerlib/4 (userId=0)
+              ownerPid=14486, ownerUid=10218, userId=0
+              package=com.google.android.apps.youtube.music
+              active=true
+              state=PlaybackState {state=STOPPED(1), position=0, buffered position=0, speed=1.0, updated=142748302, actions=241335, custom actions=[], active item id=-1, error=null}
+    """.trimIndent()
+
     private val processes = """
           Processes:
             Pid: 9822
@@ -115,6 +147,28 @@ class VideoSignalsTest {
             VideoSignals.sessionState(pausedSessions, "com.google.android.apps.youtube.music")
         )
         assertNull(VideoSignals.sessionState(sessions, "com.instagram.android"))
+    }
+
+    @Test
+    fun `session state also reads the stack format without the summary header`() {
+        assertEquals("PAUSED(2)", VideoSignals.sessionState(stackSessions, "com.google.android.youtube"))
+        assertEquals(
+            "STOPPED(1)",
+            VideoSignals.sessionState(stackSessions, "com.google.android.apps.youtube.music")
+        )
+        assertNull(VideoSignals.sessionState(stackSessions, "com.instagram.android"))
+    }
+
+    @Test
+    fun `a paused youtube in the stack format does not keep the floor`() {
+        val verdict = VideoSignals.decide(
+            packageName = "com.google.android.youtube",
+            sessionState = VideoSignals.sessionState(stackSessions, "com.google.android.youtube"),
+            pids = setOf(17273),
+            codecPids = mapOf(17273 to "c2.mtk.av1.decoder"),
+            audioStarted = true
+        )
+        assertEquals(VideoSignals.Source.NONE, verdict.source)
     }
 
     @Test

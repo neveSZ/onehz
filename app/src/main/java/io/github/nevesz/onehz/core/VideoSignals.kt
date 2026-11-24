@@ -49,6 +49,8 @@ object VideoSignals {
     }
 
     private val SUMMARY = Regex("""SUMMARY:\s*package=([^,\s]+)""")
+    /** Sessions-stack format used by some builds: a bare `package=` line starts a session. */
+    private val SESSION_PACKAGE = Regex("""^package=([A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)+)$""")
     private val STATE_NAMED = Regex("""state=PlaybackState \{state=([A-Z_]+)\((\d+)\)""")
     private val STATE_NUMERIC = Regex("""state=PlaybackState \{state=(\d+)\b""")
     private val RESOURCE_PID = Regex("""Pid:\s*(\d+)""")
@@ -87,6 +89,15 @@ object VideoSignals {
             if (summary != null) {
                 result()?.let { return it }
                 currentPackage = summary.groupValues[1]
+                currentState = null
+                continue
+            }
+            // Android 16 builds (for example HyperOS 3) list the sessions stack without the
+            // SUMMARY header; the package line itself starts a session block.
+            val block = SESSION_PACKAGE.find(line.trim())
+            if (block != null) {
+                result()?.let { return it }
+                currentPackage = block.groupValues[1]
                 currentState = null
                 continue
             }
