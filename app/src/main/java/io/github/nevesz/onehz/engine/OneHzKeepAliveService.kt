@@ -11,6 +11,7 @@ import android.content.IntentFilter
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
@@ -51,10 +52,13 @@ import kotlinx.coroutines.launch
 class OneHzKeepAliveService : Service() {
 
     private var receiver: ScreenStateReceiver? = null
-    private var notificationDismissed = false
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-    private val postHandler = Handler(Looper.getMainLooper())
+    @Volatile
+    private var notificationDismissed = false
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    private val notificationThread = HandlerThread("OneHzNotification").apply { start() }
+    private val postHandler = Handler(notificationThread.looper)
     private var lastPostAt = 0L
     private var lastSignature: String? = null
     private var lastKind: NotificationKind? = null
@@ -154,21 +158,23 @@ class OneHzKeepAliveService : Service() {
                         }
                     }
                 } else {
-                    notificationDismissed = true
+                    postHandler.post { notificationDismissed = true }
                 }
                 return START_STICKY
             }
 
             ACTION_REFRESH -> {
-                notificationDismissed = false
-                cachedProfileId = null
+                postHandler.post {
+                    notificationDismissed = false
+                    cachedProfileId = null
+                }
                 refreshNotification()
                 return START_STICKY
             }
 
             ACTION_PIN_CHANGED -> {
                 if (OneHzPreferences.notificationPinned(this)) {
-                    notificationDismissed = false
+                    postHandler.post { notificationDismissed = false }
                     refreshNotification()
                 } else if (!notificationDismissed) {
                     refreshNotification()
@@ -188,6 +194,7 @@ class OneHzKeepAliveService : Service() {
         running = false
         scope.cancel()
         postHandler.removeCallbacksAndMessages(null)
+        notificationThread.quitSafely()
         pendingPost = false
         receiver?.let { runCatching { unregisterReceiver(it) } }
         receiver = null
@@ -226,11 +233,15 @@ class OneHzKeepAliveService : Service() {
         requestPost(immediate = true)
     }
 
+    private fun requestPost(immediate: Boolean) {
+        postHandler.post { handlePostRequest(immediate) }
+    }
+
     /**
      * One post per window for rate changes inside the same state. A state change (pause,
      * idle, AOD, profile) is always immediate, so the user never sees a stale state.
      */
-    private fun requestPost(immediate: Boolean) {
+    private fun handlePostRequest(immediate: Boolean) {
         val kind = currentKind()
         if (immediate || kind != lastKind) {
             postHandler.removeCallbacks(postRunnable)
