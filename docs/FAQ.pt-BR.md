@@ -68,6 +68,14 @@ nesses painéis.
 A menor taxa exposta pela tela. Não existe mais seletor separado de frequência do AOD. Se
 o painel rejeitar uma taxa muito baixa no AOD, o motor cai para 30 Hz e registra a falha.
 
+### Posso esconder a taxa de atualização da notificação?
+
+Sim. Ajustes → Controles rápidos → **Mostrar frequência** desliga a taxa e a notificação
+mantém só o nome do perfil. A opção, assim como **Fixar notificação**, só fica disponível
+com as notificações do OneHZ habilitadas; a linha **Notificações** na mesma seção pede a
+permissão ou abre a página do sistema. Mudanças de estado (pausa, AOD, inativo) atualizam
+na hora; mudanças de taxa são agrupadas em no máximo uma por segundo.
+
 ### Posso fazer backup das configurações?
 
 Sim. Ajustes → Dados → **Backup e restauração** exporta um JSON versionado pelo seletor de

@@ -67,6 +67,14 @@ one adjustable hold on those panels.
 The lowest rate exposed by the panel. There is no separate AOD frequency picker. If the
 panel rejects a very low rate in AOD, the engine falls back to 30 Hz and logs the failure.
 
+### Can I hide the refresh rate from the notification?
+
+Yes. Settings → Quick controls → **Show refresh rate** turns it off and the notification
+keeps only the profile name. The option, like **Pin notification**, is only available while
+OneHZ notifications are enabled; the **Notifications** row in the same section can request
+the permission or open the system page. State changes (pause, AOD, idle) always update the
+notification immediately; rate changes are coalesced to at most one per second.
+
 ### Can I back up my settings?
 
 Yes. Settings → Data → **Backup and restore** exports a versioned JSON file through the
