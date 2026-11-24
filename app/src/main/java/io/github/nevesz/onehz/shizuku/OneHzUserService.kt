@@ -675,9 +675,9 @@ class OneHzUserService : IOneHzService.Stub() {
      */
     override fun writeAodBrightness(value: Int): Boolean {
         if (value !in 0..255) return false
-        val result = exec("/system/bin/settings", "put", "system", AOD_BRIGHTNESS_KEY, value.toString())
-        if (!result.success) return false
-        return exec("/system/bin/settings", "get", "system", AOD_BRIGHTNESS_KEY).output.trim() == value.toString()
+        // The caller deduplicates by target and keeps the key for cleanup. A read-back would
+        // double the process cost of every write on a hot path (auto brightness changes).
+        return exec("/system/bin/settings", "put", "system", AOD_BRIGHTNESS_KEY, value.toString()).success
     }
 
     override fun clearAodBrightness(): Boolean =

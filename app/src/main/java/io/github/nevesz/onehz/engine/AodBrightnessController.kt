@@ -27,7 +27,8 @@ import java.util.Calendar
  */
 object AodBrightnessController {
     private const val TAG = "aod"
-    private const val DEBOUNCE_MS = 400L
+    private const val DEBOUNCE_MS = 600L
+    private const val TARGET_DEADBAND = 2
 
     private val thread = HandlerThread("OneHzAodBrightness").apply { start() }
     private val handler = Handler(thread.looper)
@@ -181,6 +182,15 @@ object AodBrightnessController {
 
         if (target == lastTarget && OneHzPreferences.aodBrightnessWritten(ctx)) {
             publish(raw, target, pct, effectivePct, min, max, applied = true)
+            return
+        }
+
+        // Automatic brightness moves by a few raw units at a time. Rewriting for every unit
+        // would keep the shell and the AOD service busy without a visible difference.
+        if (lastTarget >= 0 && kotlin.math.abs(target - lastTarget) < TARGET_DEADBAND &&
+            OneHzPreferences.aodBrightnessWritten(ctx)
+        ) {
+            publish(raw, lastTarget, pct, effectivePct, min, max, applied = true)
             return
         }
 
