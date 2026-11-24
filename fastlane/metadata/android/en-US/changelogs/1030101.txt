@@ -1,0 +1,1 @@
+Notification access can be enabled in Settings. Show refresh rate can keep only the profile. Faster video probes, cached profiles and panel data, and privileged reads no longer freeze the screen.
