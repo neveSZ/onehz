@@ -74,13 +74,22 @@ object Diagnostics {
     val displayRoute = MutableStateFlow("-")
     val externalChange = MutableStateFlow(false)
 
-    private fun timeNow(): String = SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+    private val timeFormat = ThreadLocal.withInitial {
+        SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault())
+    }
+
+    private fun timeNow(): String = timeFormat.get()!!.format(Date())
 
     @Synchronized
     fun log(tag: String, message: String) {
         if (paused.value) return
         val entry = LogEntry(timeNow(), tag, message)
-        entries.value = (listOf(entry) + entries.value).take(MAX_ENTRIES)
+        val previous = entries.value
+        val keep = minOf(previous.size, MAX_ENTRIES - 1)
+        val next = ArrayList<LogEntry>(keep + 1)
+        next.add(entry)
+        next.addAll(previous.subList(0, keep))
+        entries.value = next
     }
 
     fun clear() {
