@@ -75,6 +75,15 @@ OneHZ notifications are enabled; the **Notifications** row in the same section c
 the permission or open the system page. State changes (pause, AOD, idle) always update the
 notification immediately; rate changes are coalesced to at most one per second.
 
+### The notification updates late. Why?
+
+Android may throttle an app that is still subject to battery optimization while it runs in
+the background, so the engine keeps the rate correct but the notification text lags. Settings
+→ Quick controls shows **Battery optimization is on** in that case; **Allow** opens the
+system exemption dialog. On HyperOS, also set the app to **No restrictions** and enable
+**Autostart**, because the vendor power manager keeps its own restrictions. Keeping OneHZ
+exempt is what makes the background updates prompt; the app still works without it.
+
 ### Can I back up my settings?
 
 Yes. Settings → Data → **Backup and restore** exports a versioned JSON file through the

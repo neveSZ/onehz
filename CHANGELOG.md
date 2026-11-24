@@ -13,6 +13,10 @@ All notable changes to OneHZ are documented here. The format follows
 - **Show refresh rate** in the notification: on shows the profile and the applied rate, off
   keeps only the profile. Rate updates are coalesced to one per second; state changes are
   immediate.
+- **Battery optimization warning**: while notifications are on and OneHZ is still optimized,
+  Settings → Quick controls shows a warning and **Allow** opens the system exemption dialog.
+  The first visit also asks once; **Not now** keeps only the warning. The warning disappears
+  when the app is exempt. On HyperOS, also set **No restrictions** and **Autostart**.
 
 ### Changed
 
@@ -24,6 +28,8 @@ All notable changes to OneHZ are documented here. The format follows
 - The notification shows **AOD** while the screen is off instead of "Inactive".
 - A notification hidden because OneHZ notifications were disabled is no longer mistaken for
   a dismissed one, so enabling access again restores it.
+- Video mode now follows the foreground app even without per-app assignments, so leaving a
+  video app for an audio app without touching the screen releases the video floor.
 
 ### Performance
 
