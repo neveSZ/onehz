@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -74,13 +75,17 @@ import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.viewmodel.DiagnosticsViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
     val vm: DiagnosticsViewModel = viewModel()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val profile = remember { DisplayProfileResolver.detect(context) }
     val supportsAodBrightness = profile.supportsAodBrightness
     val isXiaomi = profile.vendor == DisplayVendor.XIAOMI
@@ -106,7 +111,9 @@ fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
     val brightness by vm.screenBrightness.collectAsStateWithLifecycle()
     val batterySaver by vm.batterySaver.collectAsStateWithLifecycle()
     val route by vm.displayRoute.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { Diagnostics.refreshSystem(context) }
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) { Diagnostics.refreshSystem(context) }
+    }
 
     val queryState = rememberTextFieldState()
     val query = queryState.text.toString()
@@ -124,8 +131,8 @@ fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
         DozeController.testNow()
         delay(2_000)
         val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
-        dozeTestOk = pm?.isDeviceIdleMode == true ||
-            DozeState.isIdleEncoded(ShizukuGateway.idleState())
+        val encoded = withContext(Dispatchers.IO) { ShizukuGateway.idleState() }
+        dozeTestOk = pm?.isDeviceIdleMode == true || DozeState.isIdleEncoded(encoded)
         dozeTesting = false
     }
     val tierText = when {
@@ -280,9 +287,14 @@ fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
                             icon = AppIcons.shield(),
                             title = stringResource(R.string.verify_settings),
                             onClick = {
-                                val report = ShizukuGateway.verifySettings() + " · " + ShizukuGateway.serviceStats()
-                                Diagnostics.lastWrite.value = report
-                                Diagnostics.log("arbiter", "verification: $report")
+                                scope.launch {
+                                    val report = withContext(Dispatchers.IO) {
+                                        ShizukuGateway.verifySettings() + " · " +
+                                            ShizukuGateway.serviceStats()
+                                    }
+                                    Diagnostics.lastWrite.value = report
+                                    Diagnostics.log("arbiter", "verification: $report")
+                                }
                             }
                         )
                     }
@@ -457,9 +469,15 @@ fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
                         Spacer(Modifier.height(8.dp))
                         OutlinedButton(
                             onClick = {
-                                val verdict = ShizukuGateway.videoPlayback(OneHzPreferences.videoConfig(context))
-                                videoTest = verdict.encode()
-                                Diagnostics.log("video", "manual test: ${verdict.encode()}")
+                                scope.launch {
+                                    val verdict = withContext(Dispatchers.IO) {
+                                        ShizukuGateway.videoPlayback(
+                                            OneHzPreferences.videoConfig(context)
+                                        )
+                                    }
+                                    videoTest = verdict.encode()
+                                    Diagnostics.log("video", "manual test: ${verdict.encode()}")
+                                }
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {

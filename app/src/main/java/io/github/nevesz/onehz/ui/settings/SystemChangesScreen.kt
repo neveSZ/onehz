@@ -5,15 +5,18 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -23,8 +26,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -33,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.SystemChange
 import io.github.nevesz.onehz.core.SystemChanges
+import io.github.nevesz.onehz.core.SystemChangesSnapshot
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.ui.components.BannerTone
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
@@ -42,6 +49,9 @@ import io.github.nevesz.onehz.ui.icons.AppIcons
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun SystemChangesScreen(
@@ -49,7 +59,11 @@ fun SystemChangesScreen(
     dataVersion: Int
 ) {
     var refresh by remember { mutableIntStateOf(0) }
-    val snapshot = remember(dataVersion, refresh) { SystemChanges.read(context) }
+    val scope = rememberCoroutineScope()
+    val snapshotState by produceState<SystemChangesSnapshot?>(null, dataVersion, refresh) {
+        value = withContext(Dispatchers.IO) { SystemChanges.read(context) }
+    }
+    val snapshot = snapshotState
     var showRestore by remember { mutableStateOf(false) }
     val reportName = remember {
         "onehz-panel-" + SimpleDateFormat("yyyyMMdd", Locale.US).format(Date()) + ".txt"
@@ -58,17 +72,32 @@ fun SystemChangesScreen(
         ActivityResultContracts.CreateDocument("text/plain")
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
-        val ok = runCatching {
-            context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use {
-                it.write(SystemChanges.report(context))
-            } ?: error("no stream")
-        }.isSuccess
-        if (!ok) {
-            Toast.makeText(context, R.string.system_changes_export_failed, Toast.LENGTH_SHORT).show()
+        scope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching {
+                    context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use {
+                        it.write(SystemChanges.report(context))
+                    } ?: error("no stream")
+                }.isSuccess
+            }
+            if (!ok) {
+                Toast.makeText(
+                    context,
+                    R.string.system_changes_export_failed,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
     }
 
     LaunchedEffect(Unit) { Diagnostics.externalChange.value = false }
+
+    if (snapshot == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -159,14 +188,16 @@ fun SystemChangesScreen(
             body = stringResource(R.string.system_changes_restore_body),
             confirmLabel = stringResource(R.string.system_changes_restore_confirm),
             onConfirm = {
-                SystemChanges.restoreAll(context)
-                showRestore = false
-                refresh++
-                Toast.makeText(
-                    context,
-                    R.string.system_changes_restored,
-                    Toast.LENGTH_LONG
-                ).show()
+                scope.launch {
+                    withContext(Dispatchers.IO) { SystemChanges.restoreAll(context) }
+                    showRestore = false
+                    refresh++
+                    Toast.makeText(
+                        context,
+                        R.string.system_changes_restored,
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             },
             onDismiss = { showRestore = false }
         )
