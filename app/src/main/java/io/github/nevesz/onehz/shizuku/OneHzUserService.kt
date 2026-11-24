@@ -16,6 +16,7 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.reflect.Proxy
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.exitProcess
@@ -32,6 +33,11 @@ import kotlin.system.exitProcess
 class OneHzUserService : IOneHzService.Stub() {
 
     private val commandCount = AtomicInteger(0)
+
+    /** One shared thread for command deadlines and monitor restarts. */
+    private val watchdog = Executors.newSingleThreadScheduledExecutor { runnable ->
+        Thread(runnable, "OneHzWatchdog").apply { isDaemon = true }
+    }
 
     @Volatile
     private var clientBinder: IBinder? = null
@@ -568,17 +574,18 @@ class OneHzUserService : IOneHzService.Stub() {
             2 -> 10_000L
             else -> 30_000L
         }
-        Thread {
-            runCatching { Thread.sleep(delay) }
-            if (!stoppingAll && requestedPaths.contains(path) && !monitors.containsKey(path)) {
-                val monitor = Monitor(path)
-                if (monitors.putIfAbsent(path, monitor) == null) spawn(monitor)
-            }
-        }.apply {
-            isDaemon = true
-            name = "OneHzInputRestart"
-            start()
-        }
+        watchdog.schedule(
+            {
+                if (!stoppingAll && requestedPaths.contains(path) &&
+                    !monitors.containsKey(path)
+                ) {
+                    val monitor = Monitor(path)
+                    if (monitors.putIfAbsent(path, monitor) == null) spawn(monitor)
+                }
+            },
+            delay,
+            TimeUnit.MILLISECONDS
+        )
     }
 
     private fun handleInputLine(line: String, monitor: Monitor) {
@@ -723,20 +730,22 @@ class OneHzUserService : IOneHzService.Stub() {
      */
     private fun exec(vararg command: String, maxBytes: Int = 8_192, timeoutMs: Long = 3_000): CommandResult {
         var process: Process? = null
+        var timeoutTask: java.util.concurrent.ScheduledFuture<*>? = null
         val timedOut = java.util.concurrent.atomic.AtomicBoolean(false)
         return try {
             commandCount.incrementAndGet()
             val started = ProcessBuilder(*command).redirectErrorStream(true).start()
             process = started
-            Thread {
-                runCatching {
-                    Thread.sleep(timeoutMs)
+            timeoutTask = watchdog.schedule(
+                {
                     if (started.isAlive) {
                         timedOut.set(true)
                         started.destroyForcibly()
                     }
-                }
-            }.apply { isDaemon = true }.start()
+                },
+                timeoutMs,
+                TimeUnit.MILLISECONDS
+            )
 
             val output = java.io.ByteArrayOutputStream()
             val buffer = ByteArray(4_096)
@@ -756,6 +765,7 @@ class OneHzUserService : IOneHzService.Stub() {
         } catch (t: Throwable) {
             CommandResult(false, "")
         } finally {
+            timeoutTask?.cancel(false)
             process?.destroySafely()
         }
     }
