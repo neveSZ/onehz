@@ -24,7 +24,9 @@ measure them.
    The pin/active check ignores posts from the last three seconds so our own update is never
    mistaken for a dismissal.
 5. **UI lists.** App icons live in a 96-entry LRU; the diagnostics log reuses one formatter
-   per thread and copies the list once.
+   per thread, copies the list once and remembers the filtered result. Privileged reads for
+   the System changes screen and the diagnostics actions run on `Dispatchers.IO`, with a
+   loading state instead of a frozen frame.
 
 ## Caches and invalidation
 
@@ -47,8 +49,22 @@ editing a profile, importing a backup or restoring defaults is visible immediate
 - **P-09**: the Samsung peak/min pair is written with two `settings` processes; wrapping both
   in a shell would add a third process, so the pair is left as is. The arbiter lock is kept
   because `release`/`restorePending` can run from another thread while an apply is in flight.
-- **P-12/P-15**: move the Usage computations and the first profile decode off the main
-  thread.
+
+Reviewed and intentionally left as is:
+
+- **P-12/P-29**: Usage and Home summaries operate on at most 20 sleep records and a few rate
+  buckets; the 30 s refresh is a UX requirement. The per-row profile lookup is O(1) since
+  the profile cache.
+- **P-14**: the one-time DataStore read is part of the 216 ms cold start; moving it would add
+  a loading gate to every synchronous preference read.
+- **P-15**: the profile and display caches make the first decode on a screen the only one.
+- **P-17/P-21/P-27/P-30**: binder reads at screen transitions, the touch parser (already
+  edge-only), DataStore writes at human rates and the remaining correctness nits have no
+  measurable impact this release.
+- **P-23**: grouping the engine flows is a UI refactor with no measurable cost in the current
+  screens.
+- **P-26**: no native or Java leak was found; the two-process footprint is the Shizuku
+  design plus Compose.
 
 ## Measuring
 

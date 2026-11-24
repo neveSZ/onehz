@@ -41,7 +41,12 @@ All notable changes to OneHZ are documented here. The format follows
   and ignores the dismissal fallback for three seconds after its own post.
 - The privileged service no longer compiles regexes per call or per `ps` line and uses the
   monotonic clock for its TTLs.
-- App icons use a 96-entry LRU; the diagnostics log reuses one time formatter per thread.
+- App icons use a 96-entry LRU; the diagnostics log reuses one time formatter per thread and
+  remembers its filter.
+- Privileged reads for System changes and the diagnostics actions run off the main thread;
+  the screen shows a loading indicator instead of freezing.
+- The privileged service uses one watchdog thread for command deadlines and monitor
+  restarts, and decodes command output without an extra copy.
 - `docs/PERFORMANCE.md` records the hot paths, the caches and the measurement protocol.
 
 ## [1.3.0] - 2026-11-23

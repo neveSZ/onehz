@@ -49,6 +49,8 @@ want to understand, audit, or modify the app.
 - **`OneHzDoze` thread:** sleep decisions, forced-idle commands, verification, ledger.
 - **Shizuku executor:** a single-thread executor in `ShizukuGateway` serializes binder
   setup, discovery, and monitor start/stop.
+- **OneHz watchdog:** one daemon scheduler in the privileged service owns command deadlines
+  and input-monitor restart delays, instead of one transient thread per command.
 - **Per-device `getevent` threads:** one monitor per accepted touchscreen, owned by the
   UserService.
 - **`OneHzForeground` thread:** task-stack foreground queries in the UserService, debounced
