@@ -458,11 +458,14 @@ fun ToggleRow(
     description: String? = null,
     descriptionOn: String? = null,
     descriptionOff: String? = null,
+    disabledDescription: String? = null,
     enabled: Boolean = true,
     icon: ImageVector? = null,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    val supporting = if (checked) {
+    val supporting = if (!enabled && disabledDescription != null) {
+        disabledDescription
+    } else if (checked) {
         descriptionOn ?: description
     } else {
         descriptionOff ?: description

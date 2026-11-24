@@ -12,6 +12,9 @@
     <string name="notification_active">%1$s · %2$d Hz</string>
     <string name="notification_paused">Paused until %1$s</string>
     <string name="notification_idle">Inactive</string>
+    <string name="notification_active_simple">Active</string>
+    <string name="notification_aod">AOD · %1$d Hz</string>
+    <string name="notification_aod_simple">AOD</string>
     <string name="shortcut_pause_short">Pause 1 h</string>
     <string name="shortcut_pause_long">Pause OneHZ for one hour</string>
     <string name="shortcut_economy_short">Economy</string>
@@ -30,4 +33,12 @@
     <string name="settings_pin_notification_dialog_title">Pin the notification?</string>
     <string name="settings_pin_notification_dialog_body">The notification stays in the shade while OneHZ is active. On Android 14 and later the system still allows a swipe; OneHZ restores it right away. This does not keep the service alive or change battery use. You can turn it off here at any time.</string>
     <string name="settings_pin_notification_confirm">Pin</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_desc_on">On. Tap to review them in the system settings.</string>
+    <string name="settings_notifications_desc_off">Off. Tap to allow them.</string>
+    <string name="settings_notification_details">Show refresh rate</string>
+    <string name="settings_notification_details_desc_on">Shows the applied refresh rate next to the profile, like Balanced · 60 Hz.</string>
+    <string name="settings_notification_details_desc_off">Shows only the profile, like Balanced.</string>
+    <string name="settings_notification_details_desc_disabled">Turn on OneHZ notifications to use this option.</string>
+    <string name="settings_pin_notification_desc_disabled">Turn on OneHZ notifications to pin.</string>
 </resources>

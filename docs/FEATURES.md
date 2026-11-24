@@ -293,8 +293,16 @@ Quick Settings tile** action that asks the system to place it. The tile reports 
 Shizuku is unavailable.
 
 **Notification.** The foreground notification shows the active profile and the current
-rate, and exposes **Pause for 1 hour** / **Resume now** plus **Disable**. It updates only
-when the state changes.
+rate, and exposes **Pause for 1 hour** / **Resume now** plus **Disable**. Settings → Quick
+controls → **Show refresh rate** can hide the rate and keep only the profile. With the rate
+on, updates are coalesced to at most one per second; state changes (pause, AOD, idle,
+profile) are immediate. While a video keeps a floor, the shown rate is the applied one; in
+AOD the notification reads **AOD** instead of “Inactive”.
+
+**Notifications access.** Settings → Quick controls → **Notifications** shows whether OneHZ
+can post its notification and opens the permission or the system page. **Pin notification**
+and **Show refresh rate** only work while notifications are enabled; disabling them turns
+the stored pin off. The foreground service keeps running either way.
 
 **Pin notification.** Settings → Quick controls → **Pin notification** is off by default.
 When off, the notification can be swiped away and stays hidden until OneHZ is opened again.

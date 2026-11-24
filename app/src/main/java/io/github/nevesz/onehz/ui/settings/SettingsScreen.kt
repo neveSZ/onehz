@@ -1,5 +1,8 @@
 package io.github.nevesz.onehz.ui.settings
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,6 +57,7 @@ import io.github.nevesz.onehz.core.ThemeMode
 import io.github.nevesz.onehz.core.update.UpdateCenter
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
+import io.github.nevesz.onehz.ui.components.NotificationAccess
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.StatusBadge
@@ -94,6 +98,17 @@ fun SettingsScreen(
     var notificationPinned by remember {
         mutableStateOf(OneHzPreferences.notificationPinned(context))
     }
+    var notificationsEnabled by remember { mutableStateOf(NotificationAccess.isEnabled(context)) }
+    var notificationDetails by remember {
+        mutableStateOf(OneHzPreferences.notificationDetails(context))
+    }
+    val notificationPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        notificationsEnabled = NotificationAccess.isEnabled(context)
+        if (notificationsEnabled) OneHzKeepAliveService.contentChanged(context)
+        if (!granted) NotificationAccess.openSettings(context)
+    }
     var tileAdded by remember { mutableStateOf(OneHzPreferences.tileAdded(context)) }
     val liveTileAdded by TileStatus.added.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) { TileStatus.refresh(context) }
@@ -104,6 +119,16 @@ fun SettingsScreen(
             if (event == Lifecycle.Event.ON_RESUME) {
                 tileAdded = OneHzPreferences.tileAdded(context)
                 TileStatus.refresh(context)
+                notificationsEnabled = NotificationAccess.isEnabled(context)
+                notificationDetails = OneHzPreferences.notificationDetails(context)
+                val pinned = OneHzPreferences.notificationPinned(context)
+                if (!notificationsEnabled && pinned) {
+                    OneHzPreferences.setNotificationPinned(context, false)
+                    notificationPinned = false
+                    OneHzKeepAliveService.pinChanged(context)
+                } else {
+                    notificationPinned = pinned
+                }
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
@@ -145,6 +170,23 @@ fun SettingsScreen(
         }
         item {
             OneHzCard {
+                SettingRow(
+                    icon = AppIcons.notifications(),
+                    title = stringResource(R.string.settings_notifications),
+                    subtitle = stringResource(
+                        if (notificationsEnabled) {
+                            R.string.settings_notifications_desc_on
+                        } else {
+                            R.string.settings_notifications_desc_off
+                        }
+                    ),
+                    onClick = {
+                        NotificationAccess.request(context) {
+                            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        }
+                    }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 if (tileAddedNow) {
                     SettingRow(
                         icon = AppIcons.checkCircle(),
@@ -164,8 +206,12 @@ fun SettingsScreen(
                     icon = AppIcons.notifications(),
                     title = stringResource(R.string.settings_pin_notification),
                     checked = notificationPinned,
+                    enabled = notificationsEnabled,
                     descriptionOn = stringResource(R.string.settings_pin_notification_desc_on),
                     descriptionOff = stringResource(R.string.settings_pin_notification_desc_off),
+                    disabledDescription = stringResource(
+                        R.string.settings_pin_notification_desc_disabled
+                    ),
                     onCheckedChange = { enabled ->
                         if (enabled) {
                             showPinNotificationDialog = true
@@ -174,6 +220,27 @@ fun SettingsScreen(
                             notificationPinned = false
                             OneHzKeepAliveService.pinChanged(context)
                         }
+                    }
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                ToggleRow(
+                    icon = AppIcons.speed(),
+                    title = stringResource(R.string.settings_notification_details),
+                    checked = notificationDetails,
+                    enabled = notificationsEnabled,
+                    descriptionOn = stringResource(
+                        R.string.settings_notification_details_desc_on
+                    ),
+                    descriptionOff = stringResource(
+                        R.string.settings_notification_details_desc_off
+                    ),
+                    disabledDescription = stringResource(
+                        R.string.settings_notification_details_desc_disabled
+                    ),
+                    onCheckedChange = { enabled ->
+                        OneHzPreferences.setNotificationDetails(context, enabled)
+                        notificationDetails = enabled
+                        OneHzKeepAliveService.contentChanged(context)
                     }
                 )
             }

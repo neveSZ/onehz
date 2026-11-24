@@ -12,6 +12,9 @@
     <string name="notification_active">%1$s · %2$d Hz</string>
     <string name="notification_paused">Pausado até %1$s</string>
     <string name="notification_idle">Inativo</string>
+    <string name="notification_active_simple">Ativo</string>
+    <string name="notification_aod">AOD · %1$d Hz</string>
+    <string name="notification_aod_simple">AOD</string>
     <string name="shortcut_pause_short">Pausar 1 h</string>
     <string name="shortcut_pause_long">Pausar o OneHZ por uma hora</string>
     <string name="shortcut_economy_short">Economia</string>
@@ -30,4 +33,12 @@
     <string name="settings_pin_notification_dialog_title">Fixar a notificação?</string>
     <string name="settings_pin_notification_dialog_body">A notificação fica na gaveta enquanto o OneHZ estiver ativo. No Android 14 ou superior o sistema ainda permite o gesto; o OneHZ recoloca a notificação logo depois. Isso não mantém o serviço vivo nem muda o consumo de bateria. Você pode desligar aqui quando quiser.</string>
     <string name="settings_pin_notification_confirm">Fixar</string>
+    <string name="settings_notifications">Notificações</string>
+    <string name="settings_notifications_desc_on">Ativadas. Toque para revisar nas configurações do sistema.</string>
+    <string name="settings_notifications_desc_off">Desativadas. Toque para permitir.</string>
+    <string name="settings_notification_details">Mostrar frequência</string>
+    <string name="settings_notification_details_desc_on">Além do perfil, mostra a frequência aplicada, como Equilibrado · 60 Hz.</string>
+    <string name="settings_notification_details_desc_off">Mostra só o perfil, como Equilibrado.</string>
+    <string name="settings_notification_details_desc_disabled">Ative as notificações do OneHZ para usar esta opção.</string>
+    <string name="settings_pin_notification_desc_disabled">Ative as notificações do OneHZ para fixar.</string>
 </resources>
