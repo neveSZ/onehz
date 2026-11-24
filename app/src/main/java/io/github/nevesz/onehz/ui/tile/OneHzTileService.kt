@@ -18,8 +18,21 @@ import io.github.nevesz.onehz.shizuku.ShizukuState
  */
 class OneHzTileService : TileService() {
 
+    override fun onTileAdded() {
+        super.onTileAdded()
+        TileStatus.set(applicationContext, true)
+    }
+
+    override fun onTileRemoved() {
+        super.onTileRemoved()
+        TileStatus.set(applicationContext, false)
+    }
+
     override fun onStartListening() {
         super.onStartListening()
+        // Fallback for a tile that was already on the grid before this version: the panel
+        // binding is the first signal the app gets.
+        TileStatus.set(applicationContext, true)
         updateTile()
     }
 

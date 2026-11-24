@@ -39,6 +39,7 @@ object OneHzPreferences {
     private const val KEY_LOGS_PAUSED = "logs_paused"
     private const val KEY_NOTIFICATION_PINNED = "notification_pinned"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
+    private const val KEY_TILE_ADDED = "tile_added"
     private const val KEY_THEME_MODE = "theme_mode"
     private const val KEY_UPDATES_ENABLED = "updates_enabled"
     private const val KEY_UPDATE_INTERVAL_MINUTES = "update_interval_minutes"
@@ -381,6 +382,15 @@ object OneHzPreferences {
 
     fun setupCompleted(context: Context) = prefs(context).getBoolean(KEY_SETUP_COMPLETED, false)
     fun setSetupCompleted(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_SETUP_COMPLETED, value) }
+
+    /**
+     * Best-effort mirror of whether the Quick Settings tile is on the user's grid. Android
+     * has no public query for this, so the tile reports its own lifecycle. A tile added
+     * before this version is only detected once the Quick Settings panel opens the first
+     * time. Local only; it is not part of the backup.
+     */
+    fun tileAdded(context: Context) = prefs(context).getBoolean(KEY_TILE_ADDED, false)
+    fun setTileAdded(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_TILE_ADDED, value) }
 
     // -------------------------------------------------------------- appearance
 
