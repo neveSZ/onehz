@@ -33,6 +33,8 @@ All notable changes to OneHZ are documented here. The format follows
 - Pausing a video releases the floor on builds whose media-session dump lists the sessions
   stack without the summary header (seen on Android 16 / HyperOS 3); a paused player no
   longer counts as video until playback resumes.
+- A paused picture-in-picture window releases the video floor; only a window that is playing
+  keeps it.
 
 ### Performance
 

@@ -154,7 +154,9 @@ Os padrões ligam MediaSession, o veto de sessão pausada e a regra de decodific
 regra de áudio de mídia fica desligada. Cada regra pode ser alterada por perfil em uma
 sheet de detecção dedicada; o card mostra a contagem de regras ativas e avisa quando
 nenhum sinal positivo está ativo. A lista de apps forçados é global e abre na mesma
-sheet. Uma janela picture-in-picture é detectada pela tarefa fixada e mantém o piso de vídeo enquanto estiver visível.
+sheet. Uma janela picture-in-picture é detectada pela tarefa fixada e mantém o piso de vídeo
+enquanto estiver visível e tocando; uma janela pausada libera o piso como um player pausado
+em tela cheia.
 
 ## 8. Pulso de despertar
 

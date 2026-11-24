@@ -279,6 +279,36 @@ class OneHzUserService : IOneHzService.Stub() {
             )
         }
 
+        // The session dump is needed by more than one branch; keep one call per probe.
+        var sessionsDump: String? = null
+        fun sessions(): String {
+            sessionsDump?.let { return it }
+            val dump = exec(
+                "/system/bin/dumpsys",
+                "media_session",
+                maxBytes = 131_072,
+                timeoutMs = 2_500
+            ).output
+            sessionsDump = dump
+            return dump
+        }
+
+        // A PiP window owned by another app is the video signal. Read its own session so a
+        // paused window releases the floor; a playing one falls through to the PiP verdict.
+        val pipPackage = PipSignals.packageName(activity)
+        if (pipPackage != null && pipPackage != pkg && cfg.useMediaSession &&
+            cfg.pausedSessionBlocks
+        ) {
+            val pipSession = VideoSignals.sessionState(sessions(), pipPackage)
+            if (pipSession != null && !VideoSignals.isActive(pipSession)) {
+                return cacheVideo(
+                    pkg,
+                    cfg,
+                    VideoSignals.Verdict(VideoSignals.Source.NONE, pipPackage, "pip:$pipSession")
+                )
+            }
+        }
+
         val now = SystemClock.elapsedRealtime()
         cachedVideoResult?.let { cached ->
             if (cachedVideoPackage == pkg && cachedVideoConfig == cfg.encode()) {
@@ -290,27 +320,19 @@ class OneHzUserService : IOneHzService.Stub() {
             }
         }
 
-        val sessions = if (cfg.useMediaSession) {
-            exec(
-                "/system/bin/dumpsys",
-                "media_session",
-                maxBytes = 131_072,
-                timeoutMs = 2_500
-            ).output
-        } else {
-            ""
-        }
+        val sessions = if (cfg.useMediaSession) sessions() else ""
         val session = if (cfg.useMediaSession) VideoSignals.sessionState(sessions, pkg) else null
 
-        // A session that exists but is not playing is authoritative when the rule is on.
+        // A session that exists but is not playing is authoritative when the rule is on. A
+        // paused PiP window falls under the same rule: a paused player is not consuming
+        // frames, and resuming it in the window is a touch that probes again.
         if (cfg.useMediaSession && cfg.pausedSessionBlocks &&
             session != null && !VideoSignals.isActive(session)
         ) {
             return cacheVideo(
                 pkg,
                 cfg,
-                pipVerdict(activity)
-                    ?: VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "session:$session")
+                VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "session:$session")
             )
         }
 
