@@ -149,6 +149,7 @@ object OneHzEngine {
                 started,
                 screenOff,
                 hasAppAssignments,
+                videoEligible(),
                 foregroundMonitoringActive
             )
         ) {
@@ -278,6 +279,7 @@ object OneHzEngine {
                 started,
                 screenOff,
                 hasAppAssignments,
+                videoEligible(),
                 foregroundMonitoringActive
             )
         ) {
@@ -643,7 +645,8 @@ object OneHzEngine {
                     ForegroundRefreshPolicy.shouldMonitorForeground(
                         started = started,
                         screenOff = screenOff,
-                        hasAssignments = hasAppAssignments
+                        hasAssignments = hasAppAssignments,
+                        videoEnabled = videoSettings.enabled
                     )
                 )
                 SessionArbiter.apply(
@@ -701,7 +704,8 @@ object OneHzEngine {
                 ForegroundRefreshPolicy.shouldMonitorForeground(
                     started = started,
                     screenOff = screenOff,
-                    hasAssignments = hasAppAssignments
+                    hasAssignments = hasAppAssignments,
+                    videoEnabled = videoSettings.enabled
                 )
             )
         } else {
