@@ -86,7 +86,8 @@ object OneHzEngine {
     private var videoFailures = 0
     @Volatile
     private var videoSettings = VideoSettings(enabled = false, minHz = 60)
-    private var videoCheckInFlight = false
+
+    private var videoToken = 0
 
     private val stepRunnable: Runnable = Runnable {        if (!started) {
             timersPending = false
@@ -136,11 +137,7 @@ object OneHzEngine {
         if (!started || screenOff) return@Runnable
         val ctx = appContext ?: return@Runnable
         if (!videoEligible()) return@Runnable
-        val changed = updateVideoState(ctx, "probe")
-        if (changed) {
-            SessionArbiter.bumpEpoch()
-            applyCurrent("video-probe")
-        }
+        requestVideoCheck(ctx, "probe")
     }
 
     /**
@@ -169,12 +166,10 @@ object OneHzEngine {
             scheduleVideoRecheck()
             return@Runnable
         }
-        val changed = updateVideoState(ctx, "recheck")
-        if (changed) {
-            SessionArbiter.bumpEpoch()
-            applyCurrent("video-recheck")
-        }
-        if (videoActive) scheduleVideoRecheck()
+        requestVideoCheck(ctx, "recheck")
+        // Keep the loop while the verdict says a video is active; the result removes it
+        // when playback ends.
+        scheduleVideoRecheck()
     }
 
     fun start(context: Context) {
@@ -182,6 +177,7 @@ object OneHzEngine {
         if (started) return
         started = true
         lastResumeAt = 0L
+        videoToken++
         hasAppAssignments = ProfileStore.configuredPackages(context).isNotEmpty()
         val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
         ecoActive = pm?.isPowerSaveMode == true
@@ -209,7 +205,7 @@ object OneHzEngine {
         videoPackage = null
         videoSource = VideoSignals.Source.NONE
         videoFailures = 0
-        videoCheckInFlight = false
+        videoToken++
         SessionArbiter.release(appContext)
         ShizukuGateway.stopForegroundMonitoring()
         ShizukuGateway.stopTouchMonitoring()
@@ -296,11 +292,7 @@ object OneHzEngine {
     private fun refreshForegroundNow() {
         val ctx = appContext ?: return
         if (started && !screenOff && videoEligible()) {
-            val changed = updateVideoState(ctx, "resume")
-            if (changed) {
-                SessionArbiter.bumpEpoch()
-                applyCurrent("video-resume")
-            }
+            requestVideoCheck(ctx, "resume")
         }
         if (!hasAppAssignments) return
         val pkg = ShizukuGateway.foregroundPackageFresh() ?: return
@@ -447,7 +439,7 @@ object OneHzEngine {
     fun onVideoConfigChanged() = handler.post {
         val ctx = appContext ?: return@post
         if (!started) return@post
-        if (!screenOff && videoEligible()) updateVideoState(ctx, "video-config")
+        if (!screenOff && videoEligible()) requestVideoCheck(ctx, "video-config")
         applyCurrent("video-config")
     }
 
@@ -606,7 +598,7 @@ object OneHzEngine {
                 if (!screenOff && !videoActive && index >= policy.profile.lastIndex &&
                     videoSettings.enabled
                 ) {
-                    updateVideoState(ctx, "rest")
+                    requestVideoCheck(ctx, "rest")
                 }
 
                 val baseHz = policy.profile.hzAt(index) ?: run {
@@ -781,6 +773,7 @@ object OneHzEngine {
 
     private fun clearVideoState(reason: String) {
         val was = videoActive
+        videoToken++
         videoActive = false
         videoPackage = null
         videoSource = VideoSignals.Source.NONE
@@ -793,71 +786,87 @@ object OneHzEngine {
     }
 
     /**
-     * Updates the video state and returns true when it changed.
-     *
-     * The caller decides whether to reapply, so [applyCurrent] can consume the new state
-     * without re-entering itself. Only one privileged check runs at a time.
+     * Hands the privileged check to [VideoDetector]. The verdict is posted back to the engine
+     * thread; the token and the expected foreground discard results that are no longer
+     * current.
      */
-    private fun updateVideoState(ctx: Context, reason: String): Boolean {
-        if (videoCheckInFlight) return false
+    private fun requestVideoCheck(ctx: Context, reason: String) {
+        if (!started || screenOff) return
         if (!videoEligible()) {
-            val was = videoActive
-            if (was) clearVideoState("feature-off")
-            return was
+            if (videoActive) clearVideoState("feature-off")
+            return
         }
-        videoCheckInFlight = true
-        val verdict = try {
-            ShizukuGateway.videoPlayback(
-                videoSettings.rules.toVideoConfig(OneHzPreferences.forcedVideoPackages(ctx))
-            )
-        } finally {
-            videoCheckInFlight = false
+        val token = ++videoToken
+        val config = videoSettings.rules.toVideoConfig(
+            OneHzPreferences.forcedVideoPackages(ctx)
+        )
+        val expected = foregroundPackage
+        VideoDetector.request(
+            VideoDetector.Request(config, reason, token, expected) { verdict, request ->
+                handler.post { applyVideoVerdict(verdict, request) }
+            }
+        )
+    }
+
+    private fun applyVideoVerdict(verdict: VideoSignals.Verdict, request: VideoDetector.Request) {
+        if (!started || screenOff) return
+        if (request.token != videoToken) return
+        if (request.expectedPackage != null && foregroundPackage != request.expectedPackage) {
+            // The user changed apps while the probe was running; a newer request covers it.
+            return
         }
 
-        // The privileged service already resolves a pinned/PiP task from the same activity
-        // dump it used for the foreground, so no extra probe is needed here.
-        val effectiveVerdict = verdict
-
-        if (effectiveVerdict.source == VideoSignals.Source.UNKNOWN) {
+        if (verdict.source == VideoSignals.Source.UNKNOWN) {
             videoFailures++
-            Diagnostics.log("video", "check unavailable ($reason) $videoFailures/$VIDEO_UNKNOWN_LIMIT")
+            Diagnostics.log(
+                "video",
+                "check unavailable (${request.reason}) $videoFailures/$VIDEO_UNKNOWN_LIMIT"
+            )
             if (videoActive && videoFailures >= VIDEO_UNKNOWN_LIMIT) {
                 clearVideoState("unknown")
-                return true
+                SessionArbiter.bumpEpoch()
+                applyCurrent("video:unknown")
             }
-            return false
+            return
         }
         videoFailures = 0
 
-        val pkg = effectiveVerdict.packageName
+        val pkg = verdict.packageName
         if (!pkg.isNullOrBlank() && pkg != foregroundPackage) {
             foregroundPackage = pkg
             Diagnostics.foregroundPackage.value = pkg
         }
-        val active = effectiveVerdict.source == VideoSignals.Source.PLAYING ||
-            effectiveVerdict.source == VideoSignals.Source.PIP
+        val active = verdict.source == VideoSignals.Source.PLAYING ||
+            verdict.source == VideoSignals.Source.PIP
         val wasActive = videoActive
         val changed = active != wasActive ||
-            (active && (pkg != videoPackage || effectiveVerdict.source != videoSource))
+            (active && (pkg != videoPackage || verdict.source != videoSource))
 
         videoActive = active
         videoPackage = if (active) pkg else null
-        videoSource = if (active) effectiveVerdict.source else VideoSignals.Source.NONE
+        videoSource = if (active) verdict.source else VideoSignals.Source.NONE
         Diagnostics.videoSource.value = videoSource
         Diagnostics.videoDetail.value = buildString {
             if (!pkg.isNullOrBlank()) append(pkg)
-            effectiveVerdict.detail?.let {
+            verdict.detail?.let {
                 if (isNotEmpty()) append(" · ")
                 append(it)
             }
         }.ifBlank { "-" }
         if (active) {
             if (changed) {
-                Diagnostics.log("video", "active (${effectiveVerdict.source.name.lowercase()}) in $pkg ($reason)")
+                Diagnostics.log(
+                    "video",
+                    "active (${verdict.source.name.lowercase()}) in $pkg (${request.reason})"
+                )
             }
         } else if (wasActive) {
-            Diagnostics.log("video", "inactive ($reason) in ${pkg ?: "?"}")
+            Diagnostics.log("video", "inactive (${request.reason}) in ${pkg ?: "?"}")
         }
-        return changed
+        if (changed) {
+            SessionArbiter.bumpEpoch()
+            applyCurrent("video:${request.reason}")
+        }
+        if (videoActive) scheduleVideoRecheck() else handler.removeCallbacks(videoRecheck)
     }
 }
