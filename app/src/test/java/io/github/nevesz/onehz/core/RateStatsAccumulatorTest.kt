@@ -26,6 +26,21 @@ class RateStatsAccumulatorTest {
     }
 
     @Test
+    fun `lists rates from the lowest to the highest`() {
+        val accumulator = RateStatsAccumulator()
+        val start = at(23, 9, 0)
+        // The 30 Hz span is the longest, so ordering by duration would give 30/120/60.
+        accumulator.note(start, RateSample(RateMode.ON, 120, "balanced"))
+        accumulator.note(start + 1 * 60_000, RateSample(RateMode.ON, 60, "balanced"))
+        accumulator.note(start + 2 * 60_000, RateSample(RateMode.ON, 30, "balanced"))
+        accumulator.note(start + 20 * 60_000, RateSample(RateMode.OFF, 0, null))
+
+        val rates = accumulator.summary(start + 20 * 60_000, 1).rates
+        assertEquals(listOf(30, 60, 120), rates.map { it.hz })
+        assertEquals(18 * 60_000L, rates.first { it.hz == 30 }.durationMs)
+    }
+
+    @Test
     fun `keeps aod separate from screen-on time`() {
         val accumulator = RateStatsAccumulator()
         val start = at(23, 22, 0)

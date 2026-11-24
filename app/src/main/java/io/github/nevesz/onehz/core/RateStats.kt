@@ -76,7 +76,7 @@ class RateStatsAccumulator {
         }
         return RateStatsSummary(
             rates = rates.entries.map { RateBucket(it.key, it.value) }
-                .sortedByDescending { it.durationMs },
+                .sortedBy { it.hz },
             profiles = profiles.map { ProfileBucket(it.key, it.value) }
                 .sortedByDescending { it.durationMs },
             aodMs = aod.values.sum(),

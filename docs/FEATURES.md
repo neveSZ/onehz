@@ -350,8 +350,10 @@ installed-app list or personal data.
 Usage is the fourth bottom-bar tab (Home, Apps, Usage, Settings), so the quantitative data
 is one tap away. The screen shows how long OneHZ spent at each rate today and in the last
 seven days, plus the Always On Display time, the uncontrolled time and the profile split.
-It also contains the Sleep/Doze summary and the session history, so the quantitative data
-lives in one place. The Sleep detail keeps a compact summary and links here.
+The rates are listed from the lowest to the highest, so the layout is stable regardless of
+which tier was used the most. It also contains the Sleep/Doze summary and the session
+history, so the quantitative data lives in one place. The Sleep detail keeps a compact
+summary and links here.
 
 The tab refreshes when you return to it, every 30 seconds while it is visible, and through
 the refresh button. With no data it shows a single empty state; when OneHZ is off, that

@@ -22,6 +22,8 @@ All notable changes to OneHZ are documented here. The format follows
 
 - Pin notification and the refresh-rate option are only available while OneHZ notifications
   are enabled; turning notifications off clears the stored pin.
+- Usage lists the refresh rates from the lowest to the highest instead of by time used, so
+  the order no longer changes between visits.
 
 ### Fixed
 

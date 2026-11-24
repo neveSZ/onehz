@@ -354,9 +354,10 @@ acima. Não inclui lista de apps instalados nem dados pessoais.
 O Uso é a quarta aba da barra inferior (Início, Apps, Uso, Ajustes), então os dados
 quantitativos ficam a um toque. A tela mostra quanto tempo o OneHZ passou em cada taxa hoje
 e nos últimos sete dias, além do tempo de Always On Display, do tempo sem controle e da
-divisão por perfil. Ela também reúne o resumo de Sono/Doze e o histórico de sessões, para
-os dados quantitativos ficarem em um lugar só. O detalhe do Sono mantém um resumo compacto
-e aponta para cá.
+divisão por perfil. As taxas aparecem da menor para a maior, então o layout não muda
+conforme a etapa mais usada. Ela também reúne o resumo de Sono/Doze e o histórico de sessões,
+para os dados quantitativos ficarem em um lugar só. O detalhe do Sono mantém um resumo
+compacto e aponta para cá.
 
 A aba atualiza ao voltar para ela, a cada 30 segundos enquanto está visível e pelo botão de
 atualizar. Sem dados, mostra um único estado vazio; quando o OneHZ está desligado, esse
