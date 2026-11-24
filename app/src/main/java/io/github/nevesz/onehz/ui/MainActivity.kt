@@ -32,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -519,25 +520,25 @@ private fun OneHzShell(
                     selected = tab == 0,
                     onClick = { tab = 0 },
                     icon = { Icon(AppIcons.home(), contentDescription = null) },
-                    label = { Text(stringResource(R.string.tab_home)) }
+                    label = { NavBarLabel(stringResource(R.string.tab_home)) }
                 )
                 NavigationBarItem(
                     selected = tab == 1,
                     onClick = { tab = 1 },
                     icon = { Icon(AppIcons.list(), contentDescription = null) },
-                    label = { Text(stringResource(R.string.tab_apps)) }
+                    label = { NavBarLabel(stringResource(R.string.tab_apps)) }
                 )
                 NavigationBarItem(
                     selected = tab == 2,
                     onClick = { tab = 2 },
                     icon = { Icon(AppIcons.schedule(), contentDescription = null) },
-                    label = { Text(stringResource(R.string.usage_title)) }
+                    label = { NavBarLabel(stringResource(R.string.usage_title)) }
                 )
                 NavigationBarItem(
                     selected = tab == 3,
                     onClick = { tab = 3 },
                     icon = { Icon(AppIcons.settings(), contentDescription = null) },
-                    label = { Text(stringResource(R.string.tab_settings)) }
+                    label = { NavBarLabel(stringResource(R.string.tab_settings)) }
                 )
             }
         }
@@ -632,6 +633,20 @@ private fun importResultMessage(context: android.content.Context, result: Import
 private fun backupFileName(): String {
     val stamp = SimpleDateFormat("yyyyMMdd-HHmm", Locale.US).format(Date())
     return "onehz-backup-$stamp.json"
+}
+
+/**
+ * Bottom-bar label that stays on one line. At large font scales (200%) "Settings" used to
+ * wrap into "Setting" + "s" and overlap the content next to it.
+ */
+@Composable
+private fun NavBarLabel(text: String) {
+    Text(
+        text = text,
+        maxLines = 1,
+        softWrap = false,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 @Composable
