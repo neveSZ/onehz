@@ -18,7 +18,7 @@
     <string name="cancel">Cancel</string>
     <string name="remove">Remove</string>
     <string name="not_available">—</string>
-    <string name="no_control">No control</string>
+    <string name="no_control">Inactive</string>
 
     <string name="status_permission">Permission required</string>
     <string name="status_not_running">Shizuku not running</string>
@@ -39,7 +39,7 @@
     <string name="home_shizuku_pending_not_running">Open Shizuku and start its service.</string>
     <string name="home_shizuku_pending_unavailable">The Shizuku service is unavailable. Open the Shizuku app and try again.</string>
     <string name="layer_aod">Always On Display</string>
-    <string name="step_of">Level %1$d of %2$d</string>
+    <string name="step_of">Step %1$d of %2$d</string>
 
     <string name="aod_title">Always On Display (AOD)</string>
     <string name="aod_hint_on">Keeps the panel minimum while the screen is off. Only applies while AOD is on.</string>
@@ -58,8 +58,8 @@
     <string name="aod_brightness_warning">High values increase battery use and burn-in risk.</string>
     <string name="aod_brightness_restore">Restore system brightness</string>
     <string name="aod_schedule_title">Night schedule</string>
-    <string name="aod_schedule_on">Uses %1$d%% inside the window.</string>
-    <string name="aod_schedule_off">Uses the same brightness all night.</string>
+    <string name="aod_schedule_on">Uses %1$d%% inside the defined window.</string>
+    <string name="aod_schedule_off">No night window; uses the base brightness.</string>
     <string name="aod_schedule_start">Start</string>
     <string name="aod_schedule_end">End</string>
     <string name="aod_schedule_pct">Night brightness</string>
@@ -72,7 +72,7 @@
     <string name="video_min_hint">Replaces the profile rate while the video is playing.</string>
     <string name="video_state_playing">playing</string>
     <string name="video_state_pip">picture-in-picture</string>
-    <string name="video_state_idle">idle</string>
+    <string name="video_state_idle">Idle</string>
     <string name="video_diag_title">Video detection</string>
     <string name="video_diag_state">State</string>
     <string name="video_diag_test">Test detection</string>
@@ -106,25 +106,25 @@
     <string name="video_forced_limit">Up to 64 apps</string>
 
     <string name="profile_edit">Edit</string>
-    <string name="profile_need_tiers">Add at least one level to use this profile.</string>
+    <string name="profile_need_tiers">Add at least one step to use this profile.</string>
     <string name="profile_fixed">Fixed at %1$d Hz</string>
-    <string name="profile_empty">No levels</string>
-    <string name="profile_empty_warning">This profile cannot be used until you add a level.</string>
+    <string name="profile_empty">No steps</string>
+    <string name="profile_empty_warning">This profile cannot be used until you add a step.</string>
     <string name="profile_rest_total">Resting after %1$s</string>
     <string name="profile_rate">Frequency</string>
     <string name="profile_hold_label">Drops after</string>
     <string name="profile_rest">Resting (no time limit)</string>
-    <string name="profile_remove_step">Remove level</string>
-    <string name="profile_add_step">Add level</string>
+    <string name="profile_remove_step">Remove step</string>
+    <string name="profile_add_step">Add step</string>
     <string name="profile_restore_default">Restore default</string>
     <string name="profile_save">Save profile</string>
-    <string name="profile_step_number">Level %1$d</string>
+    <string name="profile_step_number">Step %1$d</string>
     <string name="profile_how_title">How it works</string>
-    <string name="profile_how_body">When you touch the screen, the rate goes to the first level. After the set time it drops to the next level. The last level rests with no time limit.</string>
+    <string name="profile_how_body">When you touch the screen, the rate goes to the first step. After the set time it drops to the next step. The last step rests with no time limit.</string>
     <string name="profile_low_rate_warning_title">30 Hz brightness</string>
     <string name="profile_low_rate_warning_body">On this device, 30 Hz can reduce the panel brightness. It is a hardware limitation; OneHZ cannot compensate for it.</string>
-    <string name="profile_issue_too_many">Maximum of 5 levels.</string>
-    <string name="profile_issue_not_descending">Levels must decrease (for example, 120 to 60).</string>
+    <string name="profile_issue_too_many">Maximum of 5 steps.</string>
+    <string name="profile_issue_not_descending">Steps must decrease (for example, 120 to 60).</string>
     <string name="profile_issue_unsupported">One of the frequencies is not supported by this device.</string>
     <string name="profile_issue_hold">The wait must be between %1$.1f s and %2$.1f s.</string>
     <string name="profile_discard_title">Discard changes?</string>
@@ -152,7 +152,7 @@
     <string name="ignore_eco_label">Keep this app\'s profile during battery saver</string>
     <string name="ignore_eco_desc_on">Keeps this app\'s profile even while system battery saver is on.</string>
     <string name="ignore_eco_desc_off">Follows the automatic Economy setting while battery saver is on.</string>
-    <string name="app_economy_override_hint">While battery saver is on, the automatic Economy setting replaces this profile unless the switch above is on.</string>
+    <string name="app_economy_override_hint">While battery saver is on, Automatic Economy replaces this profile unless the switch above is on.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d selected</item>
         <item quantity="other">%1$d selected</item>
@@ -165,14 +165,11 @@
         <item quantity="one">%1$d app</item>
         <item quantity="other">%1$d apps</item>
     </plurals>
-
-    <string name="settings_preferences">Preferences</string>
     <string name="settings_appearance">Appearance</string>
     <string name="settings_setup">Initial setup</string>
     <string name="settings_setup_desc">Permissions and Shizuku connection</string>
-    <string name="settings_advanced">Advanced</string>
     <string name="settings_diagnostics">Diagnostics</string>
-    <string name="settings_diagnostics_desc">Engine status and logs</string>
+    <string name="settings_diagnostics_desc">Control status and logs</string>
     <string name="settings_about_desc">Version, license, and credits</string>
     <string name="appearance_hint">Choose how OneHZ looks. AMOLED uses true black to save power on OLED panels.</string>
     <string name="theme_system">Follow system</string>
@@ -184,7 +181,7 @@
     <string name="theme_amoled">AMOLED</string>
     <string name="theme_amoled_desc">True black, ideal for OLED panels</string>
 
-    <string name="about_title">About</string>
+    <string name="about_title">About OneHZ</string>
     <string name="about_version">Version %1$s</string>
     <string name="about_description">OneHZ keeps the screen refresh rate under control: smoother when you touch it, quieter when you rest, and lighter when the screen is off.</string>
     <string name="about_links">Links</string>
@@ -223,8 +220,8 @@
     <string name="setup_doze_desc">Adds only OneHZ to the system Doze exceptions. This is not the Sleep feature.</string>
     <string name="setup_doze_button">Add to exceptions</string>
     <string name="setup_doze_remove">Remove from exceptions</string>
-    <string name="setup_notif_title">Persistent notification</string>
-    <string name="setup_notif_desc">Keeps the service alive without blocking Doze.</string>
+    <string name="setup_notif_title">Notifications</string>
+    <string name="setup_notif_desc">Shows the OneHZ status and controls.</string>
     <string name="setup_notif_button">Allow notifications</string>
     <string name="setup_open_settings">Open settings</string>
     <string name="setup_finish">Finish and enable</string>
@@ -235,7 +232,7 @@
     <string name="unsupported_body">OneHZ only works on Samsung or Xiaomi/Redmi/POCO devices with a display that exposes at least two refresh rates. Nothing was changed.</string>
 
     <string name="notification_channel_name">OneHZ service</string>
-    <string name="notification_channel_desc">Keeps the refresh-rate engine alive without wake locks.</string>
+    <string name="notification_channel_desc">Keeps refresh-rate control active without wake locks.</string>
     <string name="notification_stop">Turn off</string>
 
     <string name="summary_tab">Summary</string>
@@ -248,8 +245,7 @@
     <string name="report_copied">Diagnostics copied</string>
     <string name="diag_shizuku">Shizuku service</string>
     <string name="diag_ltpo">Multi-rate display</string>
-    <string name="diag_tier">Current level</string>
-    <string name="diag_observed">Observed frequency: %1$d Hz</string>
+    <string name="diag_tier">Current step</string>
     <string name="diag_last_write">Last change</string>
     <string name="diag_control_method">Display control method</string>
     <string name="diag_aod_brightness">AOD brightness</string>
@@ -267,15 +263,15 @@
     <string name="log_tag_screen">Screen</string>
     <string name="log_tag_display">Display</string>
     <string name="log_tag_timer">Timers</string>
-    <string name="log_tag_engine">Engine</string>
+    <string name="log_tag_engine">Control</string>
     <string name="log_tag_wake">Wake</string>
     <string name="log_tag_arbiter">Apply</string>
     <string name="log_tag_eco">Economy</string>
     <string name="log_tag_aod">AOD brightness</string>
     <string name="log_tag_video">Video</string>
     <string name="logs_paused">Log paused. OneHZ keeps working.</string>
-    <string name="test_low">Test resting level (3 s)</string>
-    <string name="test_max">Test first level (2 s)</string>
+    <string name="test_low">Test resting step (3 s)</string>
+    <string name="test_max">Test first step (2 s)</string>
     <string name="test_cycle">Test full cycle</string>
     <string name="input_monitor">Touch monitor</string>
     <string name="restart_input">Restart touch monitor</string>
@@ -292,7 +288,7 @@
     <string name="verify_settings">Verify display control</string>
     <string name="step_decrease">Decrease</string>
     <string name="step_increase">Increase</string>
-    <string name="idle_aod_off">AOD is off: frequency is not controlled while the screen is off.</string>
+    <string name="idle_aod_off">AOD off: the rate is not controlled while the screen is off.</string>
 
     <!-- Updates -->
     <string name="update_section_title">Updates</string>
@@ -413,4 +409,34 @@
     <string name="backup_import_adapted">Profiles adapted to this screen: %1$d.</string>
     <string name="backup_import_missing">App assignments moved to Balanced: %1$d.</string>
     <string name="backup_import_sleep">Sleep settings restored.</string>
+    <string name="settings_section_general">General</string>
+    <string name="settings_section_quick_controls">Quick controls</string>
+    <string name="settings_section_automation">Automation</string>
+    <string name="settings_section_data">Data</string>
+    <string name="settings_section_system">System</string>
+    <string name="setup_optional">Optional</string>
+    <string name="setup_optional_note">The tile starts off until you tap Finish and enable. Rules and Diagnostics are in Settings.</string>
+    <string name="diag_doze_test_title">Doze test</string>
+    <string name="diag_doze_test_button">Test Doze now</string>
+    <string name="diag_doze_test_hint">Puts the device into Doze for 10 seconds and leaves it again. The screen stays on.</string>
+    <string name="diag_doze_test_running">Testing…</string>
+    <string name="diag_doze_test_ok">Doze confirmed.</string>
+    <string name="diag_doze_test_failed">Could not confirm Doze on this system.</string>
+    <string name="diag_doze_test_requires_sleep">Turn on Sleep first to test Doze.</string>
+    <string name="setup_tile_added">Added</string>
+    <string name="settings_tile_added">Tile added</string>
+    <string name="settings_tile_added_desc">To remove it, edit the Quick Settings panel.</string>
+    <string name="settings_section_about">About</string>
+    <string name="home_automate_profile">Automate this profile</string>
+    <string name="diag_tests_card_title">Tests</string>
+    <string name="diag_open_sleep">Open Sleep</string>
+    <string name="diag_section_status">Status</string>
+    <string name="diag_section_screen">Display</string>
+    <string name="diag_section_input">Input</string>
+    <string name="diag_section_video">Video</string>
+    <string name="diag_section_report">Report</string>
+    <string name="diag_test_actions">Screen tests</string>
+    <string name="diag_observed_label">Frequency</string>
+    <string name="diag_hz">%1$d Hz</string>
+    <string name="diag_details">Details</string>
 </resources>

@@ -68,6 +68,8 @@ import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.icons.AppIcons
+import io.github.nevesz.onehz.ui.tile.TileRequest
+import io.github.nevesz.onehz.ui.tile.TileStatus
 import io.github.nevesz.onehz.ui.viewmodel.SetupViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -75,7 +77,10 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SetupScreen(context: Context, onDone: () -> Unit) {
+fun SetupScreen(
+    context: Context,
+    onDone: () -> Unit
+) {
     val vm: SetupViewModel = viewModel()
     val lifecycleOwner = LocalLifecycleOwner.current
     val uriHandler = LocalUriHandler.current
@@ -85,6 +90,14 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
 
     var refresh by remember { mutableIntStateOf(0) }
     var dozeWhitelisted by remember { mutableStateOf(false) }
+
+    fun completeSetup() {
+        OneHzPreferences.setEnabled(context, true)
+        OneHzPreferences.setSetupCompleted(context, true)
+        OneHzEngine.start(context)
+        OneHzEngine.reapply()
+        OneHzKeepAliveService.start(context)
+    }
 
     val notificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -107,6 +120,11 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
     val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
     val batteryExempt = pm?.isIgnoringBatteryOptimizations(context.packageName) == true
     val notifications = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val liveTileAdded by TileStatus.added.collectAsStateWithLifecycle()
+    val storedTileAdded = remember(refresh) { OneHzPreferences.tileAdded(context) }
+    val tileAdded = liveTileAdded ?: storedTileAdded
+
+    LaunchedEffect(Unit) { TileStatus.refresh(context) }
 
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
@@ -272,14 +290,42 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
                 }
             }
 
+            if (shizuku == ShizukuState.READY) {
+                item {
+                    OneHzCard {
+                        StepHeader(title = stringResource(R.string.setup_optional))
+                        Spacer(Modifier.height(10.dp))
+                        SetupCheckItem(
+                            icon = AppIcons.add(),
+                            title = stringResource(R.string.settings_add_tile),
+                            description = stringResource(R.string.settings_add_tile_desc),
+                            statusText = if (tileAdded) {
+                                stringResource(R.string.setup_tile_added)
+                            } else {
+                                stringResource(R.string.setup_optional)
+                            },
+                            tone = if (tileAdded) StatusTone.OK else StatusTone.NEUTRAL
+                        ) {
+                            if (!tileAdded) {
+                                OutlinedButton(onClick = { TileRequest.add(context) }) {
+                                    Text(stringResource(R.string.settings_add_tile))
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            stringResource(R.string.setup_optional_note),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
             item {
                 Button(
                     onClick = {
-                        OneHzPreferences.setEnabled(context, true)
-                        OneHzPreferences.setSetupCompleted(context, true)
-                        OneHzEngine.start(context)
-                        OneHzEngine.reapply()
-                        OneHzKeepAliveService.start(context)
+                        completeSetup()
                         onDone()
                     },
                     enabled = shizuku == ShizukuState.READY,
@@ -307,21 +353,23 @@ fun SetupScreen(context: Context, onDone: () -> Unit) {
 }
 
 @Composable
-private fun StepHeader(number: Int, title: String) {
+private fun StepHeader(number: Int? = null, title: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
-            Box(Modifier.size(30.dp), contentAlignment = Alignment.Center) {
-                Text(
-                    text = "$number",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+        if (number != null) {
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
+                Box(Modifier.size(30.dp), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "$number",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(start = 10.dp)
+            modifier = Modifier.padding(start = if (number != null) 10.dp else 0.dp)
         )
     }
 }

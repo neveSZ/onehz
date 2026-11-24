@@ -3,13 +3,17 @@ package io.github.nevesz.onehz.ui.diagnostics
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.os.PowerManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,13 +24,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,7 +42,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -46,24 +55,30 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DisplayProfileResolver
 import io.github.nevesz.onehz.core.DisplayVendor
+import io.github.nevesz.onehz.core.DozeState
 import io.github.nevesz.onehz.core.OneHzPreferences
+import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.diagnostic.InputMonitorState
 import io.github.nevesz.onehz.engine.AodBrightnessController
+import io.github.nevesz.onehz.engine.DozeController
 import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.ui.components.MetricBox
+import io.github.nevesz.onehz.ui.components.MetricRow
 import io.github.nevesz.onehz.ui.components.OneHzCard
+import io.github.nevesz.onehz.ui.components.SettingRow
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.viewmodel.DiagnosticsViewModel
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DiagnosticsScreen() {
+fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
     val vm: DiagnosticsViewModel = viewModel()
     val context = LocalContext.current
     val profile = remember { DisplayProfileResolver.detect(context) }
@@ -97,7 +112,22 @@ fun DiagnosticsScreen() {
     val query = queryState.text.toString()
     var tag by rememberSaveable { mutableStateOf("all") }
     var videoTest by remember { mutableStateOf<String?>(null) }
+    var dozeTesting by rememberSaveable { mutableStateOf(false) }
+    var dozeTestOk by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    var showInputDetails by rememberSaveable { mutableStateOf(false) }
+    val sleepReady = remember {
+        OneHzPreferences.isEnabled(context) && SleepPreferences.enabled(context)
+    }
     val tags = listOf("all", "touch", "screen", "display", "timer", "engine", "wake", "arbiter", "eco", "aod", "video")
+    LaunchedEffect(dozeTesting) {
+        if (!dozeTesting) return@LaunchedEffect
+        DozeController.testNow()
+        delay(2_000)
+        val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        dozeTestOk = pm?.isDeviceIdleMode == true ||
+            DozeState.isIdleEncoded(ShizukuGateway.idleState())
+        dozeTesting = false
+    }
     val tierText = when {
         tierKey == "AOD" -> stringResource(R.string.layer_aod)
         tierKey == "OFF" -> stringResource(R.string.no_control)
@@ -109,81 +139,206 @@ fun DiagnosticsScreen() {
             (query.isBlank() || entry.message.contains(query, true) || entry.tag.contains(query, true))
     }
 
-    Column(
-        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
+    Column(Modifier.fillMaxWidth()) {
         PrimaryTabRow(selectedTabIndex = tab) {
             Tab(selected = tab == 0, onClick = { tab = 0 }, text = { Text(stringResource(R.string.summary_tab)) })
             Tab(selected = tab == 1, onClick = { tab = 1 }, text = { Text(stringResource(R.string.log_tab)) })
         }
 
         if (tab == 0) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item { DiagSectionTitle(stringResource(R.string.diag_section_status)) }
                 item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        MetricBox(AppIcons.bolt(), stringResource(R.string.diag_shizuku), shizuku, Modifier.weight(1f))
-                        MetricBox(
-                            AppIcons.shield(),
-                            stringResource(R.string.diag_ltpo),
-                            if (displayEligible) stringResource(R.string.status_ok) else stringResource(R.string.status_error),
-                            Modifier.weight(1f),
-                            accent = if (displayEligible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
-                        )
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            modifier = Modifier.height(IntrinsicSize.Min),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MetricBox(
+                                AppIcons.bolt(),
+                                stringResource(R.string.diag_shizuku),
+                                shizuku,
+                                Modifier.weight(1f).fillMaxHeight()
+                            )
+                            MetricBox(
+                                AppIcons.shield(),
+                                stringResource(R.string.diag_ltpo),
+                                if (displayEligible) stringResource(R.string.status_ok) else stringResource(R.string.status_error),
+                                Modifier.weight(1f).fillMaxHeight(),
+                                accent = if (displayEligible) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.height(IntrinsicSize.Min),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            MetricBox(
+                                AppIcons.list(),
+                                stringResource(R.string.diag_tier),
+                                tierText,
+                                Modifier.weight(1f).fillMaxHeight()
+                            )
+                            MetricBox(
+                                AppIcons.speed(),
+                                stringResource(R.string.diag_observed_label),
+                                if (observedHz > 0) {
+                                    stringResource(R.string.diag_hz, observedHz)
+                                } else {
+                                    "—"
+                                },
+                                Modifier.weight(1f).fillMaxHeight()
+                            )
+                        }
                     }
                 }
-                item {
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        MetricBox(AppIcons.speed(), stringResource(R.string.diag_tier), tierText, Modifier.weight(1f))
-                        MetricBox(AppIcons.bugReport(), stringResource(R.string.diag_last_write), last, Modifier.weight(1f))
-                    }
-                }
-                if (observedHz > 0) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.diag_observed, observedHz),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                    }
-                }
+                item { DiagSectionTitle(stringResource(R.string.diag_tests_card_title)) }
                 item {
                     OneHzCard {
-                        Text(stringResource(R.string.diag_ltpo), style = MaterialTheme.typography.titleSmall)
-                        Spacer(Modifier.height(4.dp))
-                        Text(display, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                item {
-                    OneHzCard {
                         Text(
-                            stringResource(R.string.diag_control_method),
+                            text = stringResource(R.string.diag_doze_test_title),
                             style = MaterialTheme.typography.titleSmall
                         )
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(6.dp))
                         Text(
-                            text = controlMethod,
+                            text = stringResource(R.string.diag_doze_test_hint),
                             style = MaterialTheme.typography.bodySmall,
-                            fontFamily = FontFamily.Monospace
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                dozeTestOk = null
+                                dozeTesting = true
+                            },
+                            enabled = !dozeTesting && sleepReady,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                stringResource(
+                                    if (dozeTesting) R.string.diag_doze_test_running
+                                    else R.string.diag_doze_test_button
+                                )
+                            )
+                        }
+                        dozeTestOk?.let { ok ->
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = stringResource(
+                                    if (ok) R.string.diag_doze_test_ok
+                                    else R.string.diag_doze_test_failed
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (ok) MaterialTheme.colorScheme.primary
+                                else MaterialTheme.colorScheme.error
+                            )
+                        }
+                        if (!sleepReady) {
+                            Spacer(Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(R.string.diag_doze_test_requires_sleep),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                TextButton(onClick = onOpenSleep) {
+                                    Text(stringResource(R.string.diag_open_sleep))
+                                }
+                            }
+                        }
+                        Spacer(Modifier.height(12.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = stringResource(R.string.diag_test_actions),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        SettingRow(
+                            icon = AppIcons.playArrow(),
+                            title = stringResource(R.string.test_max),
+                            onClick = { OneHzEngine.testMax() }
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        SettingRow(
+                            icon = AppIcons.pause(),
+                            title = stringResource(R.string.test_low),
+                            onClick = { OneHzEngine.testLow() }
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        SettingRow(
+                            icon = AppIcons.refresh(),
+                            title = stringResource(R.string.test_cycle),
+                            onClick = { OneHzEngine.testCycle() }
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        SettingRow(
+                            icon = AppIcons.shield(),
+                            title = stringResource(R.string.verify_settings),
+                            onClick = {
+                                val report = ShizukuGateway.verifySettings() + " · " + ShizukuGateway.serviceStats()
+                                Diagnostics.lastWrite.value = report
+                                Diagnostics.log("arbiter", "verification: $report")
+                            }
+                        )
+                    }
+                }
+                item { DiagSectionTitle(stringResource(R.string.diag_section_screen)) }
+                item {
+                    OneHzCard {
+                        DiagCardHeader(AppIcons.speed(), stringResource(R.string.diag_ltpo))
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = display,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
                 item {
                     OneHzCard {
-                        Text(
-                            stringResource(R.string.diag_system_state),
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text("${stringResource(R.string.diag_brightness)}: $brightness")
-                        Text(
-                            "${stringResource(R.string.diag_battery_saver)}: " +
-                                stringResource(if (batterySaver) R.string.diag_state_on else R.string.diag_state_off)
-                        )
-                        Text("${stringResource(R.string.diag_route)}: $route")
-                        if (isXiaomi) {
+                        DiagCardHeader(AppIcons.settings(), stringResource(R.string.diag_control_method))
+                        Spacer(Modifier.height(8.dp))
+                        DiagRawBlock(controlMethod)
+                        if (route.isNotBlank() && route != controlMethod) {
+                            Spacer(Modifier.height(12.dp))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Spacer(Modifier.height(12.dp))
+                            Text(
+                                text = stringResource(R.string.diag_route),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                             Spacer(Modifier.height(6.dp))
+                            DiagRawBlock(route)
+                        }
+                        Spacer(Modifier.height(12.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = stringResource(R.string.diag_last_write),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        DiagRawBlock(last)
+                    }
+                }
+                item {
+                    OneHzCard {
+                        DiagCardHeader(AppIcons.brightnessMedium(), stringResource(R.string.diag_system_state))
+                        Spacer(Modifier.height(8.dp))
+                        MetricRow(stringResource(R.string.diag_brightness), brightness)
+                        MetricRow(
+                            label = stringResource(R.string.diag_battery_saver),
+                            value = stringResource(if (batterySaver) R.string.diag_state_on else R.string.diag_state_off)
+                        )
+                        if (isXiaomi) {
+                            Spacer(Modifier.height(8.dp))
                             Text(
                                 text = stringResource(R.string.diag_low_rate_note),
                                 style = MaterialTheme.typography.bodySmall,
@@ -192,105 +347,98 @@ fun DiagnosticsScreen() {
                         }
                     }
                 }
+                if (supportsAodBrightness) {
+                    item {
+                        OneHzCard {
+                            DiagCardHeader(AppIcons.brightnessMedium(), stringResource(R.string.diag_aod_brightness))
+                            Spacer(Modifier.height(8.dp))
+                            val info = aodInfo
+                            if (info == null) {
+                                Text(
+                                    text = stringResource(R.string.diag_not_available),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            } else {
+                                Text(
+                                    text = stringResource(
+                                        R.string.aod_brightness_now,
+                                        info.target,
+                                        info.screenRaw,
+                                        info.effectivePct
+                                    ),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                                val pctText = if (info.pct != info.effectivePct) {
+                                    stringResource(R.string.aod_brightness_clamped, info.pct, info.effectivePct)
+                                } else {
+                                    stringResource(R.string.aod_brightness_effective, info.effectivePct)
+                                }
+                                val statusText = if (info.applied) {
+                                    stringResource(R.string.status_ok)
+                                } else {
+                                    stringResource(R.string.diag_not_available)
+                                }
+                                Spacer(Modifier.height(6.dp))
+                                Text(
+                                    text = "$pctText · ${info.minPct}% – ${info.maxPct}% · $statusText",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Spacer(Modifier.height(8.dp))
+                            OutlinedButton(
+                                onClick = { AodBrightnessController.restoreSystem(context) },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(stringResource(R.string.aod_brightness_restore))
+                            }
+                        }
+                    }
+                }
+                item { DiagSectionTitle(stringResource(R.string.diag_section_input)) }
                 item {
                     OneHzCard {
-                        Text(stringResource(R.string.input_monitor), style = MaterialTheme.typography.titleSmall)
-                        Spacer(Modifier.height(6.dp))
-                        Text("${stringResource(R.string.input_status)}: ${inputStateLabel(inputState)}")
-                        Text("${stringResource(R.string.input_device)}: $inputDevice")
-                        Text("${stringResource(R.string.last_touch)}: $lastTouch")
+                        DiagCardHeader(AppIcons.smartphone(), stringResource(R.string.input_monitor))
+                        Spacer(Modifier.height(8.dp))
+                        MetricRow(stringResource(R.string.input_status), inputStateLabel(inputState))
+                        MetricRow(stringResource(R.string.input_device), inputDevice)
+                        MetricRow(stringResource(R.string.last_touch), lastTouch)
                         if (inputCandidates.isNotEmpty()) {
-                            Spacer(Modifier.height(6.dp))
-                            Text(
-                                text = inputCandidates.joinToString("\n"),
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            Spacer(Modifier.height(4.dp))
+                            TextButton(
+                                onClick = { showInputDetails = !showInputDetails },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(stringResource(R.string.diag_details))
+                                Icon(
+                                    if (showInputDetails) AppIcons.expandLess() else AppIcons.expandMore(),
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(start = 4.dp)
+                                )
+                            }
+                            if (showInputDetails) {
+                                DiagRawBlock(inputCandidates.joinToString("\n"))
+                            }
                         }
                         Spacer(Modifier.height(8.dp))
-                        OutlinedButton(onClick = { ShizukuGateway.restartInputMonitoring() }) {
+                        OutlinedButton(
+                            onClick = { ShizukuGateway.restartInputMonitoring() },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(stringResource(R.string.restart_input))
                         }
                     }
                 }
-                if (supportsAodBrightness) {
+                item { DiagSectionTitle(stringResource(R.string.diag_section_video)) }
                 item {
                     OneHzCard {
-                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Icon(
-                                AppIcons.brightnessMedium(),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(stringResource(R.string.diag_aod_brightness), style = MaterialTheme.typography.titleSmall)
-                        }
-                        Spacer(Modifier.height(6.dp))
-                        val info = aodInfo
-                        if (info == null) {
-                            Text(
-                                stringResource(R.string.diag_not_available),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        } else {
-                            Text(
-                                stringResource(
-                                    R.string.aod_brightness_now,
-                                    info.target,
-                                    info.screenRaw,
-                                    info.effectivePct
-                                ),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            val pctText = if (info.pct != info.effectivePct) {
-                                stringResource(R.string.aod_brightness_clamped, info.pct, info.effectivePct)
-                            } else {
-                                stringResource(R.string.aod_brightness_effective, info.effectivePct)
-                            }
-                            val statusText = if (info.applied) {
-                                stringResource(R.string.status_ok)
-                            } else {
-                                stringResource(R.string.diag_not_available)
-                            }
-                            Text(
-                                "$pctText · ${info.minPct}% – ${info.maxPct}% · $statusText",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        DiagCardHeader(AppIcons.ondemandVideo(), stringResource(R.string.video_diag_title))
                         Spacer(Modifier.height(8.dp))
-                        OutlinedButton(onClick = { AodBrightnessController.restoreSystem(context) }) {
-                            Text(stringResource(R.string.aod_brightness_restore))
-                        }
-                    }
-                }
-                }
-                item {
-                    OneHzCard {
-                        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                            Icon(
-                                AppIcons.ondemandVideo(),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(stringResource(R.string.video_diag_title), style = MaterialTheme.typography.titleSmall)
-                        }
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text = "${stringResource(R.string.video_diag_state)}: ${videoSourceLabel(videoSource)}",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        Text(
-                            text = videoDetail,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontFamily = FontFamily.Monospace,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        MetricRow(stringResource(R.string.video_diag_state), videoSourceLabel(videoSource))
+                        Spacer(Modifier.height(8.dp))
+                        DiagRawBlock(videoDetail)
+                        Spacer(Modifier.height(8.dp))
                         val videoConfig = OneHzPreferences.videoConfig(context)
                         Text(
                             text = stringResource(
@@ -307,22 +455,21 @@ fun DiagnosticsScreen() {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(8.dp))
-                        OutlinedButton(onClick = {
-                            val verdict = ShizukuGateway.videoPlayback(OneHzPreferences.videoConfig(context))
-                            videoTest = verdict.encode()
-                            Diagnostics.log("video", "manual test: ${verdict.encode()}")
-                        }) {
+                        OutlinedButton(
+                            onClick = {
+                                val verdict = ShizukuGateway.videoPlayback(OneHzPreferences.videoConfig(context))
+                                videoTest = verdict.encode()
+                                Diagnostics.log("video", "manual test: ${verdict.encode()}")
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(stringResource(R.string.video_diag_test))
                         }
                         videoTest?.let { result ->
-                            Spacer(Modifier.height(6.dp))
-                            Text(
-                                text = result,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontFamily = FontFamily.Monospace
-                            )
+                            Spacer(Modifier.height(8.dp))
+                            DiagRawBlock(result)
                         }
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             text = stringResource(R.string.video_diag_hint),
                             style = MaterialTheme.typography.bodySmall,
@@ -330,37 +477,42 @@ fun DiagnosticsScreen() {
                         )
                     }
                 }
+                item { DiagSectionTitle(stringResource(R.string.diag_section_report)) }
                 item {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Button(onClick = { copyReport(context) }) {
-                            Icon(AppIcons.contentCopy(), contentDescription = null)
-                            Text(stringResource(R.string.copy_report), Modifier.padding(start = 8.dp))
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = { copyReport(context) },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                AppIcons.contentCopy(),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.copy_report))
                         }
-                        OutlinedButton(onClick = { OneHzEngine.refreshSystemState() }) {
-                            Icon(AppIcons.refresh(), contentDescription = null)
-                            Text(stringResource(R.string.update_info), Modifier.padding(start = 6.dp))
-                        }
-                        OutlinedButton(onClick = { OneHzEngine.testMax() }) {
-                            Text(stringResource(R.string.test_max))
-                        }
-                        OutlinedButton(onClick = { OneHzEngine.testLow() }) {
-                            Text(stringResource(R.string.test_low))
-                        }
-                        OutlinedButton(onClick = { OneHzEngine.testCycle() }) {
-                            Text(stringResource(R.string.test_cycle))
-                        }
-                        OutlinedButton(onClick = {
-                            val report = ShizukuGateway.verifySettings() + " · " + ShizukuGateway.serviceStats()
-                            Diagnostics.lastWrite.value = report
-                            Diagnostics.log("arbiter", "verification: $report")
-                        }) {
-                            Text(stringResource(R.string.verify_settings))
+                        OutlinedButton(
+                            onClick = { OneHzEngine.refreshSystemState() },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                AppIcons.refresh(),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.update_info))
                         }
                     }
                 }
             }
         } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 item {
                     OutlinedTextField(
                         state = queryState,
@@ -426,6 +578,47 @@ fun DiagnosticsScreen() {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun DiagSectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 4.dp, top = 12.dp)
+    )
+}
+
+@Composable
+private fun DiagCardHeader(icon: ImageVector, title: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(
+            icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
+    }
+}
+
+@Composable
+private fun DiagRawBlock(text: String) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            fontFamily = FontFamily.Monospace,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(12.dp)
+        )
     }
 }
 

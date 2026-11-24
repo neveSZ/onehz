@@ -148,7 +148,8 @@ fun HomeScreen(
     onEditProfile: (String) -> Unit,
     onManageProfiles: () -> Unit,
     onOpenAod: () -> Unit,
-    onOpenSleep: () -> Unit
+    onOpenSleep: () -> Unit,
+    onOpenRules: () -> Unit
 ) {
     val vm: HomeViewModel = viewModel()
     val shizuku by vm.shizuku.collectAsStateWithLifecycle()
@@ -267,7 +268,7 @@ fun HomeScreen(
     }
 
     if (!gate.eligible) {
-        LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
+        LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)) {
             item {
                 OneHzCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -392,7 +393,8 @@ fun HomeScreen(
                 active = activeProfile,
                 onOpenSwitcher = { showProfileSwitcher = true },
                 onManageProfiles = onManageProfiles,
-                onEditProfile = onEditProfile
+                onEditProfile = onEditProfile,
+                onOpenRules = onOpenRules
             )
         }
 
@@ -548,7 +550,8 @@ private fun ProfileCard(
     active: DeviceProfile?,
     onOpenSwitcher: () -> Unit,
     onManageProfiles: () -> Unit,
-    onEditProfile: (String) -> Unit
+    onEditProfile: (String) -> Unit,
+    onOpenRules: () -> Unit
 ) {
     val isXiaomi = remember { DisplayProfileResolver.detect(context).vendor == DisplayVendor.XIAOMI }
     val lowRate = selected?.frequency?.steps?.any { it.hz <= 30 } == true
@@ -644,6 +647,9 @@ private fun ProfileCard(
         ) {
             OutlinedButton(onClick = onOpenSwitcher) {
                 Text(stringResource(R.string.profile_select))
+            }
+            TextButton(onClick = onOpenRules) {
+                Text(stringResource(R.string.home_automate_profile))
             }
             TextButton(onClick = onManageProfiles) {
                 Text(stringResource(R.string.profile_manage))

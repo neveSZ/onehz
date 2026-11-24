@@ -3,7 +3,7 @@
     <!-- Home status and screen-off summary (1.2.0 UX pass). -->
     <string name="home_status_on">On</string>
     <string name="home_control_on">Controlling</string>
-    <string name="home_control_none">No control</string>
+    <string name="home_control_none">Inactive</string>
     <string name="home_source_profile">Profile: %1$s</string>
     <string name="home_source_app">App: %1$s · %2$s</string>
     <string name="home_last_app">Last assignment: %1$s · %2$s</string>
@@ -61,13 +61,9 @@
     <string name="sleep_how_body">Doze is Android\'s deep sleep state. Sleep enters it as soon as the screen turns off and leaves it when the screen turns on. Regular calls and alarms still wake the device. Internet calls and notifications may be delayed until Android opens a maintenance window.</string>
     <string name="sleep_options_title">Behavior</string>
     <string name="sleep_paused_note">The options below are paused; your choices are kept.</string>
-    <string name="sleep_advanced_title">Advanced</string>
-    <string name="sleep_test_running">Testing…</string>
-    <string name="sleep_test_result_ok">Doze confirmed.</string>
-    <string name="sleep_test_result_failed">Could not confirm Doze on this system.</string>
     <string name="sleep_usage_empty_enabled">No measurements yet. Leave the screen off for a while.</string>
     <string name="sleep_partial_badge">Partial data</string>
-    <string name="sleep_measure_note">Measured by OneHZ. Includes Always On Display. Battery use varies with the device and usage.</string>
+    <string name="sleep_measure_note">Measured by OneHZ. Includes Always On Display. Consumption varies with the device and usage.</string>
     <string name="sleep_whitelist_effect">This changes the system Doze exceptions and may increase battery use.</string>
     <string name="sleep_failure_hint">This can happen on some system builds. Check the diagnostics or try light Doze.</string>
     <string name="sleep_details_hint">Last 5 sleep sessions. Short sessions are also listed.</string>

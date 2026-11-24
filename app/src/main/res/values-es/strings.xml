@@ -18,7 +18,7 @@
     <string name="cancel">Cancelar</string>
     <string name="remove">Quitar</string>
     <string name="not_available">—</string>
-    <string name="no_control">Sin control</string>
+    <string name="no_control">Inactivo</string>
 
     <string name="status_permission">Permiso necesario</string>
     <string name="status_not_running">Shizuku detenido</string>
@@ -39,7 +39,7 @@
     <string name="home_shizuku_pending_not_running">Abre Shizuku e inicia su servicio.</string>
     <string name="home_shizuku_pending_unavailable">El servicio de Shizuku no está disponible. Abre la app Shizuku e inténtalo de nuevo.</string>
     <string name="layer_aod">Always On Display</string>
-    <string name="step_of">Nivel %1$d de %2$d</string>
+    <string name="step_of">Paso %1$d de %2$d</string>
 
     <string name="aod_title">AOD (Always On Display)</string>
     <string name="aod_hint_on">Mantiene la tasa mínima con la pantalla apagada. Solo se aplica con el AOD activo.</string>
@@ -58,8 +58,8 @@
     <string name="aod_brightness_warning">Los valores altos aumentan el consumo y el riesgo de burn-in.</string>
     <string name="aod_brightness_restore">Restaurar brillo del sistema</string>
     <string name="aod_schedule_title">Horario nocturno</string>
-    <string name="aod_schedule_on">Usa %1$d%% dentro de la franja.</string>
-    <string name="aod_schedule_off">Usa el mismo brillo toda la noche.</string>
+    <string name="aod_schedule_on">Usa %1$d%% dentro del horario definido.</string>
+    <string name="aod_schedule_off">Sin ventana nocturna; usa el brillo base.</string>
     <string name="aod_schedule_start">Inicio</string>
     <string name="aod_schedule_end">Fin</string>
     <string name="aod_schedule_pct">Brillo nocturno</string>
@@ -72,7 +72,7 @@
     <string name="video_min_hint">Sustituye la tasa del perfil mientras se reproduce el vídeo.</string>
     <string name="video_state_playing">reproduciendo</string>
     <string name="video_state_pip">picture-in-picture</string>
-    <string name="video_state_idle">inactivo</string>
+    <string name="video_state_idle">Inactivo</string>
     <string name="video_diag_title">Detección de vídeo</string>
     <string name="video_diag_state">Estado</string>
     <string name="video_diag_test">Probar detección</string>
@@ -107,25 +107,25 @@
     <string name="video_forced_limit">Hasta 64 apps</string>
 
     <string name="profile_edit">Editar</string>
-    <string name="profile_need_tiers">Añade al menos un nivel para usar este perfil.</string>
+    <string name="profile_need_tiers">Añade al menos un paso para usar este perfil.</string>
     <string name="profile_fixed">Fijo en %1$d Hz</string>
-    <string name="profile_empty">Ningún nivel</string>
-    <string name="profile_empty_warning">Este perfil no se puede usar hasta que añadas un nivel.</string>
+    <string name="profile_empty">Sin pasos</string>
+    <string name="profile_empty_warning">Este perfil no se puede usar hasta que añadas un paso.</string>
     <string name="profile_rest_total">Reposo tras %1$s</string>
     <string name="profile_rate">Frecuencia</string>
     <string name="profile_hold_label">Baja tras</string>
     <string name="profile_rest">Reposo (sin límite de tiempo)</string>
-    <string name="profile_remove_step">Quitar nivel</string>
-    <string name="profile_add_step">Añadir nivel</string>
+    <string name="profile_remove_step">Quitar paso</string>
+    <string name="profile_add_step">Añadir paso</string>
     <string name="profile_restore_default">Restaurar valores predeterminados</string>
     <string name="profile_save">Guardar perfil</string>
-    <string name="profile_step_number">Nivel %1$d</string>
+    <string name="profile_step_number">Paso %1$d</string>
     <string name="profile_how_title">Cómo funciona</string>
-    <string name="profile_how_body">Al tocar la pantalla, la frecuencia pasa al primer nivel. Tras el tiempo definido, baja al siguiente. El último nivel queda en reposo, sin límite de tiempo.</string>
+    <string name="profile_how_body">Al tocar la pantalla, la tasa pasa al primer paso. Después del tiempo definido baja al siguiente. El último paso queda en reposo sin límite de tiempo.</string>
     <string name="profile_low_rate_warning_title">Brillo a 30 Hz</string>
     <string name="profile_low_rate_warning_body">En este dispositivo, 30 Hz puede reducir el brillo del panel. Es una limitación de hardware; OneHZ no puede compensarlo.</string>
-    <string name="profile_issue_too_many">Máximo de 5 niveles.</string>
-    <string name="profile_issue_not_descending">Los niveles deben ser decrecientes (por ejemplo, 120 a 60).</string>
+    <string name="profile_issue_too_many">Máximo de 5 pasos.</string>
+    <string name="profile_issue_not_descending">Los pasos deben disminuir (por ejemplo, 120 a 60).</string>
     <string name="profile_issue_unsupported">Una de las frecuencias no es compatible con este dispositivo.</string>
     <string name="profile_issue_hold">La espera debe estar entre %1$.1f s y %2$.1f s.</string>
     <string name="profile_discard_title">¿Descartar cambios?</string>
@@ -153,7 +153,7 @@
     <string name="ignore_eco_label">Mantener el perfil de esta app durante el ahorro de batería</string>
     <string name="ignore_eco_desc_on">Mantiene el perfil de esta app aunque el ahorro de batería esté activo.</string>
     <string name="ignore_eco_desc_off">Sigue la Economía automática mientras el ahorro de batería está activo.</string>
-    <string name="app_economy_override_hint">Con el ahorro de batería activo, la Economía automática sustituye este perfil salvo que la opción de arriba esté activada.</string>
+    <string name="app_economy_override_hint">Con el ahorro de batería activo, Economía automática sustituye este perfil salvo que la opción de arriba esté activada.</string>
     <plurals name="selected_count">
         <item quantity="one">%1$d seleccionada</item>
         <item quantity="other">%1$d seleccionadas</item>
@@ -169,14 +169,11 @@
         <item quantity="other">%1$d apps</item>
         <item quantity="many">%1$d apps</item>
     </plurals>
-
-    <string name="settings_preferences">Preferencias</string>
     <string name="settings_appearance">Apariencia</string>
     <string name="settings_setup">Configuración inicial</string>
     <string name="settings_setup_desc">Permisos y conexión con Shizuku</string>
-    <string name="settings_advanced">Avanzado</string>
     <string name="settings_diagnostics">Diagnóstico</string>
-    <string name="settings_diagnostics_desc">Estado del motor y registros</string>
+    <string name="settings_diagnostics_desc">Estado del control y registros</string>
     <string name="settings_about_desc">Versión, licencia y créditos</string>
     <string name="appearance_hint">Elige cómo se ve OneHZ. El modo AMOLED usa negro puro para ahorrar batería en pantallas OLED.</string>
     <string name="theme_system">Seguir el sistema</string>
@@ -188,7 +185,7 @@
     <string name="theme_amoled">AMOLED</string>
     <string name="theme_amoled_desc">Negro puro, ideal para pantallas OLED</string>
 
-    <string name="about_title">Acerca de</string>
+    <string name="about_title">Acerca de OneHZ</string>
     <string name="about_version">Versión %1$s</string>
     <string name="about_description">OneHZ mantiene controlada la frecuencia de actualización: más fluida al tocar, más tranquila en reposo y más eficiente con la pantalla apagada.</string>
     <string name="about_links">Enlaces</string>
@@ -227,8 +224,8 @@
     <string name="setup_doze_desc">Añade solo OneHZ a las excepciones de Doze del sistema. No es la función Sueño.</string>
     <string name="setup_doze_button">Añadir a excepciones</string>
     <string name="setup_doze_remove">Quitar de excepciones</string>
-    <string name="setup_notif_title">Notificación persistente</string>
-    <string name="setup_notif_desc">Mantiene el servicio activo sin bloquear Doze.</string>
+    <string name="setup_notif_title">Notificaciones</string>
+    <string name="setup_notif_desc">Muestra el estado y los controles de OneHZ.</string>
     <string name="setup_notif_button">Permitir notificaciones</string>
     <string name="setup_open_settings">Abrir ajustes</string>
     <string name="setup_finish">Terminar y activar</string>
@@ -239,7 +236,7 @@
     <string name="unsupported_body">OneHZ solo funciona en dispositivos Samsung o Xiaomi/Redmi/POCO con una pantalla que exponga al menos dos tasas de actualización. No se cambió nada.</string>
 
     <string name="notification_channel_name">Servicio OneHZ</string>
-    <string name="notification_channel_desc">Mantiene el control activo sin WakeLock.</string>
+    <string name="notification_channel_desc">Mantiene el control de frecuencia activo sin wake locks.</string>
     <string name="notification_stop">Desactivar</string>
 
     <string name="summary_tab">Resumen</string>
@@ -252,8 +249,7 @@
     <string name="report_copied">Diagnóstico copiado</string>
     <string name="diag_shizuku">Servicio Shizuku</string>
     <string name="diag_ltpo">Pantalla multi-tasa</string>
-    <string name="diag_tier">Nivel actual</string>
-    <string name="diag_observed">Frecuencia observada: %1$d Hz</string>
+    <string name="diag_tier">Paso actual</string>
     <string name="diag_last_write">Último cambio</string>
     <string name="diag_control_method">Método de control de pantalla</string>
     <string name="diag_aod_brightness">Brillo del AOD</string>
@@ -271,15 +267,15 @@
     <string name="log_tag_screen">Pantalla</string>
     <string name="log_tag_display">Visualización</string>
     <string name="log_tag_timer">Tiempos</string>
-    <string name="log_tag_engine">Motor</string>
+    <string name="log_tag_engine">Control</string>
     <string name="log_tag_wake">Despertar</string>
     <string name="log_tag_arbiter">Aplicar</string>
     <string name="log_tag_eco">Economía</string>
     <string name="log_tag_aod">Brillo AOD</string>
     <string name="log_tag_video">Vídeo</string>
     <string name="logs_paused">Registro pausado. OneHZ sigue funcionando.</string>
-    <string name="test_low">Probar nivel de reposo (3 s)</string>
-    <string name="test_max">Probar primer nivel (2 s)</string>
+    <string name="test_low">Probar paso de reposo (3 s)</string>
+    <string name="test_max">Probar primer paso (2 s)</string>
     <string name="test_cycle">Probar el ciclo completo</string>
     <string name="input_monitor">Monitor de toque</string>
     <string name="restart_input">Reiniciar monitor de toque</string>
@@ -296,7 +292,7 @@
     <string name="verify_settings">Verificar control de pantalla</string>
     <string name="step_decrease">Disminuir</string>
     <string name="step_increase">Aumentar</string>
-    <string name="idle_aod_off">AOD desactivado: frecuencia sin control con la pantalla apagada.</string>
+    <string name="idle_aod_off">AOD desactivado: la tasa no se controla con la pantalla apagada.</string>
 
     <!-- Actualizaciones -->
     <string name="update_section_title">Actualizaciones</string>
@@ -418,4 +414,34 @@
     <string name="backup_import_adapted">Perfiles adaptados a esta pantalla: %1$d.</string>
     <string name="backup_import_missing">Asignaciones movidas a Equilibrado: %1$d.</string>
     <string name="backup_import_sleep">Ajustes de Sueño restaurados.</string>
+    <string name="settings_section_general">General</string>
+    <string name="settings_section_quick_controls">Controles rápidos</string>
+    <string name="settings_section_automation">Automatización</string>
+    <string name="settings_section_data">Datos</string>
+    <string name="settings_section_system">Sistema</string>
+    <string name="setup_optional">Opcional</string>
+    <string name="setup_optional_note">El tile empieza desactivado hasta que toques Concluir y activar. Reglas y Diagnóstico están en Ajustes.</string>
+    <string name="diag_doze_test_title">Prueba de Doze</string>
+    <string name="diag_doze_test_button">Probar Doze ahora</string>
+    <string name="diag_doze_test_hint">Pone el dispositivo en Doze durante 10 segundos y sale. La pantalla permanece activa.</string>
+    <string name="diag_doze_test_running">Probando…</string>
+    <string name="diag_doze_test_ok">Doze confirmado.</string>
+    <string name="diag_doze_test_failed">No se pudo confirmar Doze en este sistema.</string>
+    <string name="diag_doze_test_requires_sleep">Activa Sueño primero para probar Doze.</string>
+    <string name="setup_tile_added">Añadido</string>
+    <string name="settings_tile_added">Tile añadido</string>
+    <string name="settings_tile_added_desc">Para quitarlo, edita el panel de Ajustes rápidos.</string>
+    <string name="settings_section_about">Acerca de</string>
+    <string name="home_automate_profile">Automatizar este perfil</string>
+    <string name="diag_tests_card_title">Pruebas</string>
+    <string name="diag_open_sleep">Abrir Sueño</string>
+    <string name="diag_section_status">Estado</string>
+    <string name="diag_section_screen">Pantalla</string>
+    <string name="diag_section_input">Entrada</string>
+    <string name="diag_section_video">Vídeo</string>
+    <string name="diag_section_report">Informe</string>
+    <string name="diag_test_actions">Pruebas de pantalla</string>
+    <string name="diag_observed_label">Frecuencia</string>
+    <string name="diag_hz">%1$d Hz</string>
+    <string name="diag_details">Detalles</string>
 </resources>

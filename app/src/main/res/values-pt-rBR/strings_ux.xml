@@ -3,7 +3,7 @@
     <!-- Home: status e resumo de tela desligada. -->
     <string name="home_status_on">Ligado</string>
     <string name="home_control_on">Controlando</string>
-    <string name="home_control_none">Sem controle</string>
+    <string name="home_control_none">Inativo</string>
     <string name="home_source_profile">Perfil: %1$s</string>
     <string name="home_source_app">App: %1$s · %2$s</string>
     <string name="home_last_app">Última atribuição: %1$s · %2$s</string>
@@ -61,13 +61,9 @@
     <string name="sleep_how_body">Doze é o estado de repouso profundo do Android. O Sono entra nele assim que a tela apaga e sai quando a tela acende. Ligações normais e alarmes continuam acordando o aparelho. Chamadas por internet e notificações podem atrasar até o Android abrir uma janela de manutenção.</string>
     <string name="sleep_options_title">Comportamento</string>
     <string name="sleep_paused_note">As opções abaixo ficam pausadas; suas escolhas são mantidas.</string>
-    <string name="sleep_advanced_title">Avançado</string>
-    <string name="sleep_test_running">Testando…</string>
-    <string name="sleep_test_result_ok">Doze confirmado.</string>
-    <string name="sleep_test_result_failed">Não foi possível confirmar o Doze neste sistema.</string>
     <string name="sleep_usage_empty_enabled">Ainda sem medições. Deixe a tela apagada por um tempo.</string>
     <string name="sleep_partial_badge">Dados parciais</string>
-    <string name="sleep_measure_note">Medido pelo OneHZ. Inclui o AOD. O consumo varia com o aparelho e o uso.</string>
+    <string name="sleep_measure_note">Medido pelo OneHZ. Inclui o Always On Display. O consumo varia com o aparelho e o uso.</string>
     <string name="sleep_whitelist_effect">Isso altera as exceções do Doze do sistema e pode aumentar o consumo.</string>
     <string name="sleep_failure_hint">Isso pode acontecer em algumas versões do sistema. Veja o diagnóstico ou tente o Doze leve.</string>
     <string name="sleep_details_hint">Últimas 5 sessões de sono. Sessões curtas também aparecem.</string>

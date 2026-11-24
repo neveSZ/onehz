@@ -2,7 +2,6 @@ package io.github.nevesz.onehz.ui.settings
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,11 +9,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +30,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import io.github.nevesz.onehz.R
+import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.RateStats
 import io.github.nevesz.onehz.core.RateStatsSummary
 import io.github.nevesz.onehz.core.RestSession
@@ -41,34 +50,98 @@ import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.home.SleepDetailsSheet
 import io.github.nevesz.onehz.ui.home.formatSleepDuration
 import io.github.nevesz.onehz.ui.home.formatSleepRate
+import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.profile.profileLabel
+import kotlinx.coroutines.delay
 
 @Composable
 fun UsageScreen(
     context: Context,
-    dataVersion: Int
+    dataVersion: Int,
+    onActivate: () -> Unit
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
     var refresh by remember { mutableIntStateOf(0) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) refresh++
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (true) {
+                delay(30_000L)
+                refresh++
+            }
+        }
+    }
+
+    val now = remember(dataVersion, refresh) { System.currentTimeMillis() }
     val today = remember(dataVersion, refresh) { RateStats.summary(context, 1) }
     val week = remember(dataVersion, refresh) { RateStats.summary(context, 7) }
-    var showSleepDetails by remember { mutableStateOf(false) }
-    val now = System.currentTimeMillis()
     val records = remember(dataVersion, refresh) { SleepPreferences.records(context) }
     val sleepUsage = remember(records, now) { SleepLedger.usage(records, now) }
     val lastRest = remember(records, now) { SleepLedger.lastRest(records, now) }
+    val enabled = remember(dataVersion, refresh) { OneHzPreferences.isEnabled(context) }
+    var showSleepDetails by remember { mutableStateOf(false) }
+    // Compare against the displayed minute, not raw milliseconds: a few seconds of samples
+    // would otherwise render a screen full of "0 min" instead of the empty state. Time the
+    // app did not control does not count as data on its own.
+    val recordedMs = week.controlledMs + week.aodMs +
+        sleepUsage.screenOffMs + sleepUsage.idleMs
+    val empty = recordedMs < 60_000L
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-            item {
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.usage_desc),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.weight(1f)
                 )
+                IconButton(onClick = { refresh++ }) {
+                    Icon(
+                        AppIcons.refresh(),
+                        contentDescription = stringResource(R.string.usage_refresh)
+                    )
+                }
             }
+        }
+        if (empty) {
+            item {
+                OneHzCard {
+                    Text(
+                        text = stringResource(R.string.usage_empty_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        text = stringResource(R.string.usage_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (!enabled) {
+                        Spacer(Modifier.height(8.dp))
+                        Button(onClick = {
+                            onActivate()
+                            refresh++
+                        }) {
+                            Text(stringResource(R.string.usage_empty_activate))
+                        }
+                    }
+                }
+            }
+        } else {
             item {
                 UsageSection(
                     title = stringResource(R.string.usage_today),
@@ -88,6 +161,7 @@ fun UsageScreen(
                     onDetails = { showSleepDetails = true }
                 )
             }
+        }
     }
 
     if (showSleepDetails) {
@@ -119,6 +193,14 @@ private fun SleepUsageCard(
                     tone = StatusTone.WARN
                 )
             }
+        }
+        if (usage.partial) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.sleep_partial_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         Spacer(Modifier.height(6.dp))
         Text(
@@ -233,25 +315,17 @@ private fun UsageSection(title: String, summary: RateStatsSummary) {
 
 @Composable
 private fun UsageRow(label: String, durationMs: Long) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        Text(
-            text = durationLabel(durationMs),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
+    MetricRow(label = label, value = durationLabel(durationMs))
 }
 
 @Composable
 private fun durationLabel(durationMs: Long): String {
     val minutes = (durationMs / 60_000L).coerceAtLeast(0L)
-    return if (minutes >= 60) {
-        stringResource(R.string.usage_duration, minutes / 60, minutes % 60)
-    } else {
-        stringResource(R.string.usage_duration_min, minutes)
+    val hours = minutes / 60
+    val rest = minutes % 60
+    return when {
+        hours > 0 && rest == 0L -> stringResource(R.string.usage_duration_h, hours)
+        hours > 0 -> stringResource(R.string.usage_duration, hours, rest)
+        else -> stringResource(R.string.usage_duration_min, minutes)
     }
 }

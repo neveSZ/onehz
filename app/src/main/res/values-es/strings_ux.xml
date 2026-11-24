@@ -3,7 +3,7 @@
     <!-- Inicio: estado y resumen de pantalla apagada. -->
     <string name="home_status_on">Activado</string>
     <string name="home_control_on">Controlando</string>
-    <string name="home_control_none">Sin control</string>
+    <string name="home_control_none">Inactivo</string>
     <string name="home_source_profile">Perfil: %1$s</string>
     <string name="home_source_app">App: %1$s · %2$s</string>
     <string name="home_last_app">Última asignación: %1$s · %2$s</string>
@@ -61,13 +61,9 @@
     <string name="sleep_how_body">Doze es el estado de reposo profundo de Android. Sueño entra en él en cuanto se apaga la pantalla y sale cuando se enciende. Las llamadas normales y las alarmas siguen despertando el dispositivo. Las llamadas por internet y las notificaciones pueden retrasarse hasta que Android abra una ventana de mantenimiento.</string>
     <string name="sleep_options_title">Comportamiento</string>
     <string name="sleep_paused_note">Las opciones de abajo están en pausa; tus elecciones se mantienen.</string>
-    <string name="sleep_advanced_title">Avanzado</string>
-    <string name="sleep_test_running">Probando…</string>
-    <string name="sleep_test_result_ok">Doze confirmado.</string>
-    <string name="sleep_test_result_failed">No se pudo confirmar Doze en este sistema.</string>
     <string name="sleep_usage_empty_enabled">Aún sin mediciones. Deja la pantalla apagada un rato.</string>
     <string name="sleep_partial_badge">Datos parciales</string>
-    <string name="sleep_measure_note">Medido por OneHZ. Incluye AOD. El consumo varía según el dispositivo y el uso.</string>
+    <string name="sleep_measure_note">Medido por OneHZ. Incluye Always On Display. El consumo varía según el dispositivo y el uso.</string>
     <string name="sleep_whitelist_effect">Esto cambia las excepciones de Doze del sistema y puede aumentar el consumo.</string>
     <string name="sleep_failure_hint">Esto puede pasar en algunas versiones del sistema. Revisa el diagnóstico o prueba Doze ligero.</string>
     <string name="sleep_details_hint">Últimas 5 sesiones de sueño. Las sesiones cortas también aparecen.</string>

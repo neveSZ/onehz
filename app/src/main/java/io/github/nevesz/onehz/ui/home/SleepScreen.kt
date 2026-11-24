@@ -2,7 +2,6 @@ package io.github.nevesz.onehz.ui.home
 
 import android.app.TimePickerDialog
 import android.content.Context
-import android.os.PowerManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -48,14 +45,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
 import io.github.nevesz.onehz.core.DozePhase
-import io.github.nevesz.onehz.core.DozeState
 import io.github.nevesz.onehz.core.SleepLedger
 import io.github.nevesz.onehz.core.SleepPreferences
 import io.github.nevesz.onehz.core.SleepRecord
 import io.github.nevesz.onehz.core.SleepWindow
-import io.github.nevesz.onehz.diagnostic.Diagnostics
 import io.github.nevesz.onehz.engine.DozeController
-import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
 import io.github.nevesz.onehz.ui.components.BannerTone
 import io.github.nevesz.onehz.ui.components.HowItWorksCard
@@ -63,10 +57,11 @@ import io.github.nevesz.onehz.ui.components.InfoBanner
 import io.github.nevesz.onehz.ui.components.MetricRow
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
+import io.github.nevesz.onehz.ui.components.StatusBadge
+import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.viewmodel.SleepViewModel
-import kotlinx.coroutines.delay
 
 private data class SleepUi(
     val enabled: Boolean,
@@ -98,6 +93,7 @@ fun SleepScreen(
     dataVersion: Int,
     onBack: () -> Unit,
     onOpenUsage: () -> Unit,
+    onOpenDiagnostics: () -> Unit,
 ) {
     val vm: SleepViewModel = viewModel()
     val phase by vm.phase.collectAsStateWithLifecycle()
@@ -122,8 +118,6 @@ fun SleepScreen(
     }
     var pickStart by rememberSaveable { mutableStateOf(false) }
     var pickEnd by rememberSaveable { mutableStateOf(false) }
-    var testing by rememberSaveable { mutableStateOf(false) }
-    var testOk by rememberSaveable { mutableStateOf<Boolean?>(null) }
 
     val window = ui.window
     LaunchedEffect(pickStart) {
@@ -142,16 +136,6 @@ fun SleepScreen(
             DozeController.onPrefsChanged()
         }.also { it.setOnDismissListener { pickEnd = false } }.show()
     }
-    LaunchedEffect(testing) {
-        if (!testing) return@LaunchedEffect
-        DozeController.testNow()
-        delay(2_000)
-        val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
-        testOk = pm?.isDeviceIdleMode == true ||
-            DozeState.isIdleEncoded(ShizukuGateway.idleState())
-        testing = false
-    }
-
     BackHandler(onBack = onBack)
 
     Scaffold(
@@ -414,49 +398,14 @@ fun SleepScreen(
                 )
             }
 
-            if (ui.enabled) {
-                item {
-                    OneHzCard {
-                        Text(
-                            text = stringResource(R.string.sleep_advanced_title),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        OutlinedButton(
-                            onClick = {
-                                testOk = null
-                                testing = true
-                            },
-                            enabled = !testing && shizuku == ShizukuState.READY,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Icon(AppIcons.playArrow(), contentDescription = null)
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                stringResource(
-                                    if (testing) R.string.sleep_test_running else R.string.sleep_test
-                                )
-                            )
-                        }
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(R.string.sleep_test_hint),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        testOk?.let { ok ->
-                            Spacer(Modifier.height(6.dp))
-                            Text(
-                                text = stringResource(
-                                    if (ok) R.string.sleep_test_result_ok
-                                    else R.string.sleep_test_result_failed
-                                ),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = if (ok) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.error
-                            )
-                        }
-                    }
+            item {
+                OneHzCard {
+                    SettingRow(
+                        icon = AppIcons.bugReport(),
+                        title = stringResource(R.string.sleep_diagnostics_title),
+                        subtitle = stringResource(R.string.sleep_diagnostics_desc),
+                        onClick = onOpenDiagnostics
+                    )
                 }
             }
         }
@@ -478,18 +427,22 @@ private fun MeasurementsCard(
     val usage = SleepLedger.usage(ui.records, now)
     val rest = SleepLedger.lastRest(ui.records, now)
     OneHzCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.sleep_doze_title),
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f)
+        Text(
+            text = stringResource(R.string.sleep_doze_title),
+            style = MaterialTheme.typography.titleMedium
+        )
+        if (usage.partial) {
+            Spacer(Modifier.height(4.dp))
+            StatusBadge(
+                text = stringResource(R.string.sleep_partial_badge),
+                tone = StatusTone.WARN,
             )
-            if (usage.partial) {
-                io.github.nevesz.onehz.ui.components.StatusBadge(
-                    text = stringResource(R.string.sleep_partial_badge),
-                    tone = io.github.nevesz.onehz.ui.components.StatusTone.WARN,
-                )
-            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.sleep_partial_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
         Spacer(Modifier.height(6.dp))
         if (!usage.hasData) {

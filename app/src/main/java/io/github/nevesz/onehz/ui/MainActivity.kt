@@ -226,7 +226,7 @@ private fun OneHzShell(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var tab by rememberSaveable { mutableIntStateOf(if (openDiagnostics) 2 else 0) }
+    var tab by rememberSaveable { mutableIntStateOf(if (openDiagnostics) 3 else 0) }
     var showLanguage by rememberSaveable { mutableStateOf(false) }
     var setupDone by remember { mutableStateOf(OneHzPreferences.setupCompleted(context)) }
     var showSetup by rememberSaveable { mutableStateOf(!setupDone) }
@@ -331,11 +331,14 @@ private fun OneHzShell(
             }
         ) { padding ->
             Surface(modifier = Modifier.padding(padding)) {
-                SetupScreen(context) {
-                    setupDone = true
-                    showSetup = false
-                    dataVersion++
-                }
+                SetupScreen(
+                    context = context,
+                    onDone = {
+                        setupDone = true
+                        showSetup = false
+                        dataVersion++
+                    }
+                )
             }
         }
         return
@@ -428,7 +431,11 @@ private fun OneHzShell(
                 onOpenUsage = {
                     homePage = null
                     tab = 2
-                    settingsPage = "usage"
+                },
+                onOpenDiagnostics = {
+                    homePage = null
+                    tab = 3
+                    settingsPage = "diagnostics"
                 }
             )
             return
@@ -467,12 +474,10 @@ private fun OneHzShell(
             Surface(modifier = Modifier.padding(padding)) {
                 when (page) {
                     "about" -> AboutScreen()
-                    "diagnostics" -> DiagnosticsScreen()
-                    "system" -> SystemChangesScreen(
-                        context = context,
-                        dataVersion = dataVersion
+                    "diagnostics" -> DiagnosticsScreen(
+                        onOpenSleep = { homePage = "sleep" }
                     )
-                    "usage" -> UsageScreen(
+                    "system" -> SystemChangesScreen(
                         context = context,
                         dataVersion = dataVersion
                     )
@@ -494,6 +499,8 @@ private fun OneHzShell(
         return
     }
 
+    BackHandler(enabled = tab != 0) { tab = 0 }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -501,6 +508,7 @@ private fun OneHzShell(
                     when (tab) {
                         0 -> BrandTitle()
                         1 -> Text(stringResource(R.string.tab_apps))
+                        2 -> Text(stringResource(R.string.usage_title))
                         else -> Text(stringResource(R.string.tab_settings))
                     }
                 }
@@ -523,6 +531,12 @@ private fun OneHzShell(
                 NavigationBarItem(
                     selected = tab == 2,
                     onClick = { tab = 2 },
+                    icon = { Icon(AppIcons.schedule(), contentDescription = null) },
+                    label = { Text(stringResource(R.string.usage_title)) }
+                )
+                NavigationBarItem(
+                    selected = tab == 3,
+                    onClick = { tab = 3 },
                     icon = { Icon(AppIcons.settings(), contentDescription = null) },
                     label = { Text(stringResource(R.string.tab_settings)) }
                 )
@@ -541,7 +555,11 @@ private fun OneHzShell(
                     },
                     onManageProfiles = { showProfiles = true },
                     onOpenAod = { homePage = "aod" },
-                    onOpenSleep = { homePage = "sleep" }
+                    onOpenSleep = { homePage = "sleep" },
+                    onOpenRules = {
+                        tab = 3
+                        settingsPage = "rules"
+                    }
                 )
                 1 -> AppsScreen(
                     context = context,
@@ -552,6 +570,17 @@ private fun OneHzShell(
                         editorKey = "profile:$profileId"
                     }
                 )
+                2 -> UsageScreen(
+                    context = context,
+                    dataVersion = dataVersion,
+                    onActivate = {
+                        OneHzPreferences.setEnabled(context, true)
+                        OneHzKeepAliveService.start(context)
+                        OneHzEngine.start(context)
+                        OneHzEngine.reapply()
+                        dataVersion++
+                    }
+                )
                 else -> SettingsScreen(
                     themeMode = themeMode,
                     onThemeModeChange = onThemeModeChange,
@@ -560,7 +589,6 @@ private fun OneHzShell(
                     onOpenAbout = { settingsPage = "about" },
                     onOpenDiagnostics = { settingsPage = "diagnostics" },
                     onOpenSystemChanges = { settingsPage = "system" },
-                    onOpenUsage = { settingsPage = "usage" },
                     onOpenRules = { settingsPage = "rules" },
                     onOpenBackup = { settingsPage = "backup" }
                 )

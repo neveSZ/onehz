@@ -20,11 +20,11 @@
     <string name="sleep_state_charging_hint">Ligue \"Doze durante o carregamento\" para manter o Doze na tomada.</string>
     <string name="sleep_state_music_hint">Ligue \"Doze com música\" para manter o Doze durante o áudio.</string>
     <string name="sleep_doze_music_title">Doze com música</string>
-    <string name="sleep_doze_music_on">O Doze está ignorando se tem música tocando. O áudio pode falhar em alguns aparelhos.</string>
+    <string name="sleep_doze_music_on">O Doze continua com música tocando. O áudio pode falhar em alguns aparelhos.</string>
     <string name="sleep_doze_music_off">O Doze pausa enquanto há música tocando.</string>
-    <string name="sleep_window_title">Só dentro de um horário</string>
+    <string name="sleep_window_title">Janela de horário</string>
     <string name="sleep_window_desc_on">O Doze só é usado entre %1$s e %2$s.</string>
-    <string name="sleep_window_desc_off">O Doze pode ser usado a qualquer hora.</string>
+    <string name="sleep_window_desc_off">Sem janela: o Doze fica ativo a qualquer hora.</string>
     <string name="sleep_window_start">Início</string>
     <string name="sleep_window_end">Fim</string>
 
@@ -43,17 +43,15 @@
     <string name="sleep_row_battery">Bateria</string>
     <string name="sleep_value_rate">%1$s%%/h</string>
     <string name="sleep_value_battery">%1$d%% → %2$d%%</string>
-    <string name="sleep_rest_title">Última sessão de sono (30 min+)</string>
+    <string name="sleep_rest_title">Última sessão (30 min+)</string>
     <string name="sleep_rest_rate">Consumo: %1$s%%/h</string>
     <string name="sleep_rest_battery">Bateria: %1$d%% → %2$d%%</string>
-    <string name="sleep_rest_none">Nenhuma sessão de sono de 30 min ou mais nas últimas 24h.</string>
+    <string name="sleep_rest_none">Nenhuma sessão de 30 min ou mais nas últimas 24 horas.</string>
     <string name="sleep_details">Detalhes</string>
     <string name="sleep_history_in_usage">Ver histórico em Uso</string>
 
     <string name="sleep_details_title">Sessões de sono</string>
     <string name="sleep_details_empty">Nenhuma sessão registrada ainda.</string>
-    <string name="sleep_test">Testar agora</string>
-    <string name="sleep_test_hint">Força o Doze por 10 segundos e sai em seguida. A tela permanece ligada; o resultado aparece aqui.</string>
     <string name="sleep_whitelist_search">Buscar apps</string>
     <string name="sleep_whitelist_empty">Nenhum app encontrado.</string>
     <string name="sleep_whitelist_waiting">Aguardando o Shizuku…</string>
@@ -66,4 +64,7 @@
     </plurals>
     <string name="sleep_session_light">leve</string>
     <string name="sleep_session_deep">profundo</string>
+    <string name="sleep_diagnostics_title">Problemas com Doze?</string>
+    <string name="sleep_diagnostics_desc">Abrir o diagnóstico e testar o Doze.</string>
+    <string name="sleep_partial_hint">O OneHZ não ficou ativo o período inteiro.</string>
 </resources>

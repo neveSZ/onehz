@@ -27,6 +27,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +42,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.nevesz.onehz.R
@@ -51,10 +56,13 @@ import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.ui.components.ConfirmDialog
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.SettingRow
+import io.github.nevesz.onehz.ui.components.StatusBadge
+import io.github.nevesz.onehz.ui.components.StatusTone
 import io.github.nevesz.onehz.ui.components.ToggleRow
 import io.github.nevesz.onehz.ui.components.rememberFullHeightSheetState
 import io.github.nevesz.onehz.ui.icons.AppIcons
 import io.github.nevesz.onehz.ui.tile.TileRequest
+import io.github.nevesz.onehz.ui.tile.TileStatus
 import io.github.nevesz.onehz.ui.theme.OneHzAmoledBlack
 import io.github.nevesz.onehz.ui.theme.OneHzBg
 import io.github.nevesz.onehz.ui.theme.OneHzDarkBg
@@ -73,7 +81,6 @@ fun SettingsScreen(
     onOpenAbout: () -> Unit,
     onOpenDiagnostics: () -> Unit,
     onOpenSystemChanges: () -> Unit,
-    onOpenUsage: () -> Unit,
     onOpenRules: () -> Unit,
     onOpenBackup: () -> Unit
 ) {
@@ -82,19 +89,30 @@ fun SettingsScreen(
     var showPinNotificationDialog by rememberSaveable { mutableStateOf(false) }
     val sheetState = rememberFullHeightSheetState()
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val updateState by vm.updateState.collectAsStateWithLifecycle()
     var notificationPinned by remember {
         mutableStateOf(OneHzPreferences.notificationPinned(context))
     }
+    var tileAdded by remember { mutableStateOf(OneHzPreferences.tileAdded(context)) }
+    val liveTileAdded by TileStatus.added.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) { TileStatus.refresh(context) }
+    val tileAddedNow = liveTileAdded ?: tileAdded
 
-    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                tileAdded = OneHzPreferences.tileAdded(context)
+                TileStatus.refresh(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    LazyColumn(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp)) {
         item {
-            Text(
-                text = stringResource(R.string.settings_preferences),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-            )
+            SettingsSectionTitle(stringResource(R.string.settings_section_general))
         }
         item {
             OneHzCard {
@@ -122,56 +140,26 @@ fun SettingsScreen(
         }
 
         item {
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.settings_backup),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-            )
+            Spacer(Modifier.height(24.dp))
+            SettingsSectionTitle(stringResource(R.string.settings_section_quick_controls))
         }
         item {
             OneHzCard {
-                SettingRow(
-                    icon = AppIcons.backup(),
-                    title = stringResource(R.string.settings_backup),
-                    subtitle = stringResource(R.string.settings_backup_desc),
-                    onClick = onOpenBackup
-                )
-            }
-        }
-
-        item {
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.update_section_title),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-            )
-        }
-        item {
-            UpdateSettingsCard(
-                state = updateState,
-                onEnabledChange = { UpdateCenter.setEnabled(context, it) },
-                onIntervalChange = { UpdateCenter.setInterval(context, it) },
-                onChannelChange = { UpdateCenter.setChannel(context, it) },
-                onCheckNow = { UpdateCenter.checkNow(context) },
-                onDismiss = { UpdateCenter.dismiss(context, it) }
-            )
-        }
-
-        item {
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.settings_advanced),
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-            )
-        }
-        item {
-            OneHzCard {
+                if (tileAddedNow) {
+                    SettingRow(
+                        icon = AppIcons.checkCircle(),
+                        title = stringResource(R.string.settings_tile_added),
+                        subtitle = stringResource(R.string.settings_tile_added_desc)
+                    )
+                } else {
+                    SettingRow(
+                        icon = AppIcons.add(),
+                        title = stringResource(R.string.settings_add_tile),
+                        subtitle = stringResource(R.string.settings_add_tile_desc),
+                        onClick = { TileRequest.add(context) }
+                    )
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 ToggleRow(
                     icon = AppIcons.notifications(),
                     title = stringResource(R.string.settings_pin_notification),
@@ -188,28 +176,45 @@ fun SettingsScreen(
                         }
                     }
                 )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                SettingRow(
-                    icon = AppIcons.add(),
-                    title = stringResource(R.string.settings_add_tile),
-                    subtitle = stringResource(R.string.settings_add_tile_desc),
-                    onClick = { TileRequest.add(context) }
-                )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            }
+        }
+
+        item {
+            Spacer(Modifier.height(24.dp))
+            SettingsSectionTitle(stringResource(R.string.settings_section_automation))
+        }
+        item {
+            OneHzCard {
                 SettingRow(
                     icon = AppIcons.bolt(),
                     title = stringResource(R.string.rules_title),
                     subtitle = stringResource(R.string.rules_short),
                     onClick = onOpenRules
                 )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            }
+        }
+
+        item {
+            Spacer(Modifier.height(24.dp))
+            SettingsSectionTitle(stringResource(R.string.settings_section_data))
+        }
+        item {
+            OneHzCard {
                 SettingRow(
-                    icon = AppIcons.schedule(),
-                    title = stringResource(R.string.usage_title),
-                    subtitle = stringResource(R.string.usage_short),
-                    onClick = onOpenUsage
+                    icon = AppIcons.backup(),
+                    title = stringResource(R.string.settings_backup),
+                    subtitle = stringResource(R.string.settings_backup_desc),
+                    onClick = onOpenBackup
                 )
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            }
+        }
+
+        item {
+            Spacer(Modifier.height(24.dp))
+            SettingsSectionTitle(stringResource(R.string.settings_section_system))
+        }
+        item {
+            OneHzCard {
                 SettingRow(
                     icon = AppIcons.code(),
                     title = stringResource(R.string.system_changes_title),
@@ -227,7 +232,25 @@ fun SettingsScreen(
         }
 
         item {
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(24.dp))
+            SettingsSectionTitle(stringResource(R.string.update_section_title))
+        }
+        item {
+            UpdateSettingsCard(
+                state = updateState,
+                onEnabledChange = { UpdateCenter.setEnabled(context, it) },
+                onIntervalChange = { UpdateCenter.setInterval(context, it) },
+                onChannelChange = { UpdateCenter.setChannel(context, it) },
+                onCheckNow = { UpdateCenter.checkNow(context) },
+                onDismiss = { UpdateCenter.dismiss(context, it) }
+            )
+        }
+
+        item {
+            Spacer(Modifier.height(24.dp))
+            SettingsSectionTitle(stringResource(R.string.settings_section_about))
+        }
+        item {
             OneHzCard {
                 SettingRow(
                     icon = AppIcons.info(),
@@ -239,7 +262,7 @@ fun SettingsScreen(
         }
 
         item {
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(24.dp))
             Row(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
                 horizontalArrangement = Arrangement.Center,
@@ -290,6 +313,16 @@ fun SettingsScreen(
             destructive = false
         )
     }
+}
+
+@Composable
+private fun SettingsSectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
+    )
 }
 
 @Composable

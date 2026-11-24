@@ -62,7 +62,12 @@ internal fun formatSleepDuration(ms: Long): String {
     val minutes = (ms / 60_000L).coerceAtLeast(0L)
     val hours = minutes / 60
     val rest = minutes % 60
-    return if (hours > 0) "${hours}h${rest.toString().padStart(2, '0')}" else "${minutes}min"
+    // Matches usage_duration / usage_duration_min so both screens read the same.
+    return when {
+        hours > 0 && rest == 0L -> "$hours h"
+        hours > 0 -> "$hours h $rest min"
+        else -> "$minutes min"
+    }
 }
 
 internal fun formatSleepRate(value: Double): String =

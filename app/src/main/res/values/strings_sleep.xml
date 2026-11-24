@@ -20,11 +20,11 @@
     <string name="sleep_state_charging_hint">Turn on \"Doze while charging\" to keep Doze plugged in.</string>
     <string name="sleep_state_music_hint">Turn on \"Doze with music\" to keep Doze during audio.</string>
     <string name="sleep_doze_music_title">Doze with music</string>
-    <string name="sleep_doze_music_on">Doze is ignoring music playback. Audio may stutter on some devices.</string>
+    <string name="sleep_doze_music_on">Doze continues while music is playing. Audio may stutter on some devices.</string>
     <string name="sleep_doze_music_off">Doze pauses while music is playing.</string>
-    <string name="sleep_window_title">Only within a time window</string>
+    <string name="sleep_window_title">Time window</string>
     <string name="sleep_window_desc_on">Doze is only used between %1$s and %2$s.</string>
-    <string name="sleep_window_desc_off">Doze can be used at any time.</string>
+    <string name="sleep_window_desc_off">No window: Doze stays active at any time.</string>
     <string name="sleep_window_start">Start</string>
     <string name="sleep_window_end">End</string>
 
@@ -43,17 +43,15 @@
     <string name="sleep_row_battery">Battery</string>
     <string name="sleep_value_rate">%1$s%%/h</string>
     <string name="sleep_value_battery">%1$d%% → %2$d%%</string>
-    <string name="sleep_rest_title">Last sleep session (30 min+)</string>
-    <string name="sleep_rest_rate">Battery use: %1$s%%/h</string>
+    <string name="sleep_rest_title">Last session (30 min+)</string>
+    <string name="sleep_rest_rate">Consumption: %1$s%%/h</string>
     <string name="sleep_rest_battery">Battery: %1$d%% → %2$d%%</string>
-    <string name="sleep_rest_none">No sleep session of 30 min or more in the last 24 hours.</string>
+    <string name="sleep_rest_none">No session of 30 min or more in the last 24 hours.</string>
     <string name="sleep_details">Details</string>
     <string name="sleep_history_in_usage">View history in Usage</string>
 
     <string name="sleep_details_title">Sleep sessions</string>
     <string name="sleep_details_empty">No sessions recorded yet.</string>
-    <string name="sleep_test">Test now</string>
-    <string name="sleep_test_hint">Forces Doze for 10 seconds and leaves it again. The screen stays on; the result appears here.</string>
     <string name="sleep_whitelist_search">Search apps</string>
     <string name="sleep_whitelist_empty">No app found.</string>
     <string name="sleep_whitelist_waiting">Waiting for Shizuku…</string>
@@ -64,4 +62,7 @@
         <item quantity="other">%1$d maintenance windows</item>
     </plurals>    <string name="sleep_session_light">light</string>
     <string name="sleep_session_deep">deep</string>
+    <string name="sleep_diagnostics_title">Doze not working?</string>
+    <string name="sleep_diagnostics_desc">Open diagnostics and test Doze.</string>
+    <string name="sleep_partial_hint">OneHZ was not active for the whole period.</string>
 </resources>
