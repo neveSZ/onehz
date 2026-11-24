@@ -4,8 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -49,8 +47,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -64,6 +60,7 @@ import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
+import io.github.nevesz.onehz.ui.components.NotificationAccess
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
 import io.github.nevesz.onehz.ui.components.StatusTone
@@ -101,7 +98,10 @@ fun SetupScreen(
 
     val notificationPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) { refresh++ }
+    ) { granted ->
+        refresh++
+        if (!granted) NotificationAccess.openSettings(context)
+    }
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -119,7 +119,7 @@ fun SetupScreen(
 
     val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
     val batteryExempt = pm?.isIgnoringBatteryOptimizations(context.packageName) == true
-    val notifications = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val notifications = NotificationAccess.isEnabled(context)
     val liveTileAdded by TileStatus.added.collectAsStateWithLifecycle()
     val storedTileAdded = remember(refresh) { OneHzPreferences.tileAdded(context) }
     val tileAdded = liveTileAdded ?: storedTileAdded
@@ -269,15 +269,8 @@ fun SetupScreen(
                         actionLabel = stringResource(R.string.setup_notif_button),
                         showAction = !notifications,
                         onAction = {
-                            if (Build.VERSION.SDK_INT >= 33 &&
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.POST_NOTIFICATIONS
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
+                            NotificationAccess.request(context) {
                                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            } else {
-                                openNotificationSettings(context)
                             }
                         },
                         secondaryLabel = if (!notifications) {
@@ -285,7 +278,7 @@ fun SetupScreen(
                         } else {
                             null
                         },
-                        onSecondary = { openNotificationSettings(context) }
+                        onSecondary = { NotificationAccess.openSettings(context) }
                     )
                 }
             }
@@ -470,15 +463,6 @@ private fun requestBatteryExemption(context: Context) {
                 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
                 "package:${context.packageName}".toUri()
             )
-        )
-    }
-}
-
-private fun openNotificationSettings(context: Context) {
-    runCatching {
-        context.startActivity(
-            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                .putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
         )
     }
 }

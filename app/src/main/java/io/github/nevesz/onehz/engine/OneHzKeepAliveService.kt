@@ -281,7 +281,7 @@ class OneHzKeepAliveService : Service() {
 
     companion object {
         private const val TAG = "service"
-        private const val CHANNEL_ID = "onehz_service"
+        internal const val CHANNEL_ID = "onehz_service"
         private const val NOTIFICATION_ID = 1001
         private const val RESTORE_DELAY_MS = 300L
         const val ACTION_STOP = "io.github.nevesz.onehz.STOP"
