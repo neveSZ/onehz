@@ -249,8 +249,12 @@ class OneHzUserService : IOneHzService.Stub() {
 
         val now = System.currentTimeMillis()
         cachedVideoResult?.let { cached ->
-            if (cachedVideoPackage == pkg && cachedVideoConfig == cfg.encode() && now - cachedVideoAt < 800L) {
-                return cached
+            if (cachedVideoPackage == pkg && cachedVideoConfig == cfg.encode()) {
+                // A positive verdict is stable enough to reuse; a negative one must expire
+                // quickly so the touch-up probe can catch a video that just started.
+                val positive = cached.startsWith("playing") || cached.startsWith("pip")
+                val ttl = if (positive) VIDEO_CACHE_MS else VIDEO_CACHE_NEGATIVE_MS
+                if (now - cachedVideoAt < ttl) return cached
             }
         }
 
@@ -771,6 +775,8 @@ class OneHzUserService : IOneHzService.Stub() {
 
         const val FOREGROUND_CACHE_MS = 250L
         const val FOREGROUND_DEBOUNCE_MS = 250L
+        const val VIDEO_CACHE_MS = 10_000L
+        const val VIDEO_CACHE_NEGATIVE_MS = 800L
         const val TASK_STACK_CHANGED_TRANSACTION = 1
 
         val DEVICE_PATH = Regex("/dev/input/event[0-9]+")
