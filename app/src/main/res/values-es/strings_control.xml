@@ -33,4 +33,12 @@
     <string name="settings_pin_notification_dialog_title">¿Fijar la notificación?</string>
     <string name="settings_pin_notification_dialog_body">La notificación permanece en el panel mientras OneHZ está activo. En Android 14 o posterior el sistema todavía permite el gesto; OneHZ la restaura enseguida. Esto no mantiene el servicio activo ni cambia el consumo de batería. Puedes desactivarlo aquí cuando quieras.</string>
     <string name="settings_pin_notification_confirm">Fijar</string>
+    <string name="settings_notifications">Notificaciones</string>
+    <string name="settings_notifications_desc_on">Activadas. Toca para revisarlas en los ajustes del sistema.</string>
+    <string name="settings_notifications_desc_off">Desactivadas. Toca para permitirlas.</string>
+    <string name="settings_notification_details">Mostrar frecuencia</string>
+    <string name="settings_notification_details_desc_on">Muestra la frecuencia aplicada junto al perfil, como Equilibrado · 60 Hz.</string>
+    <string name="settings_notification_details_desc_off">Muestra solo el perfil, como Equilibrado.</string>
+    <string name="settings_notification_details_desc_disabled">Activa las notificaciones de OneHZ para usar esta opción.</string>
+    <string name="settings_pin_notification_desc_disabled">Activa las notificaciones de OneHZ para fijar.</string>
 </resources>
