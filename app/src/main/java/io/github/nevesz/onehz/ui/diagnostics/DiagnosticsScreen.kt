@@ -141,9 +141,12 @@ fun DiagnosticsScreen(onOpenSleep: () -> Unit = {}) {
         activeStepCount > 0 -> stringResource(R.string.step_of, activeStep, activeStepCount)
         else -> stringResource(R.string.not_available)
     }
-    val filtered = entries.filter { entry ->
-        (tag == "all" || entry.tag == tag) &&
-            (query.isBlank() || entry.message.contains(query, true) || entry.tag.contains(query, true))
+    val filtered = remember(entries, tag, query) {
+        entries.filter { entry ->
+            (tag == "all" || entry.tag == tag) &&
+                (query.isBlank() || entry.message.contains(query, true) ||
+                    entry.tag.contains(query, true))
+        }
     }
 
     Column(Modifier.fillMaxWidth()) {
