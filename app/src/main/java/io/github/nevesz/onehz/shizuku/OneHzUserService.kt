@@ -9,6 +9,7 @@ import android.os.RemoteException
 import android.os.SystemClock
 import android.util.Log
 import io.github.nevesz.onehz.core.DozeState
+import io.github.nevesz.onehz.core.PipSignals
 import io.github.nevesz.onehz.core.VideoConfig
 import io.github.nevesz.onehz.core.VideoSignals
 import java.io.BufferedReader
@@ -70,9 +71,38 @@ class OneHzUserService : IOneHzService.Stub() {
         timeoutMs = 5_000
     ).output
 
-    private val foregroundCache = ForegroundCache(FOREGROUND_CACHE_MS)
     private val foregroundThread = HandlerThread("OneHzForeground").apply { start() }
     private val foregroundHandler = Handler(foregroundThread.looper)
+
+    @Volatile
+    private var cachedActivityDump: String? = null
+
+    @Volatile
+    private var cachedActivityAt = 0L
+
+    /**
+     * One activity dump serves both the foreground package and the pinned/PiP task. The
+     * output is parsed in-process, which avoids the two extra shell/grep processes the
+     * previous implementation paid for every probe.
+     */
+    private fun activityDump(force: Boolean = false): String {
+        val now = SystemClock.elapsedRealtime()
+        if (!force) {
+            cachedActivityDump?.let { cached ->
+                if (now - cachedActivityAt < FOREGROUND_CACHE_MS) return cached
+            }
+        }
+        val dump = exec(
+            "/system/bin/dumpsys",
+            "activity",
+            "activities",
+            maxBytes = 262_144,
+            timeoutMs = 2_500
+        ).output
+        cachedActivityDump = dump
+        cachedActivityAt = now
+        return dump
+    }
 
     @Volatile
     private var foregroundCallback: IForegroundCallback? = null
@@ -92,19 +122,7 @@ class OneHzUserService : IOneHzService.Stub() {
     override fun foregroundPackageFresh(): String = queryForeground(force = true)
 
     private fun queryForeground(force: Boolean): String {
-        val now = SystemClock.elapsedRealtime()
-        if (!force) foregroundCache.get(now)?.let { return it }
-        val pkg = parseForeground(
-            exec(
-                "/system/bin/sh",
-                "-c",
-                "dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity|mCurrentFocus|mFocusedApp'",
-                maxBytes = 32_768,
-                timeoutMs = 2_500
-            ).output
-        ) ?: ""
-        foregroundCache.put(now, pkg)
-        return pkg
+        return parseForeground(activityDump(force)) ?: ""
     }
 
     /**
@@ -229,9 +247,15 @@ class OneHzUserService : IOneHzService.Stub() {
      */
     override fun videoPlaybackWithConfig(config: String?): String {
         val cfg = VideoConfig.decode(config)
-        val pkg = foregroundPackage()
+        val activity = activityDump()
+        val pkg = parseForeground(activity) ?: ""
         if (pkg.isBlank()) {
-            return VideoSignals.Verdict(VideoSignals.Source.NONE, null, "no-foreground").encode()
+            return cacheVideo(
+                pkg,
+                cfg,
+                pipVerdict(activity)
+                    ?: VideoSignals.Verdict(VideoSignals.Source.NONE, null, "no-foreground")
+            )
         }
         if (pkg in cfg.forcedPackages) {
             return cacheVideo(
@@ -244,7 +268,8 @@ class OneHzUserService : IOneHzService.Stub() {
             return cacheVideo(
                 pkg,
                 cfg,
-                VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "no-signal")
+                pipVerdict(activity)
+                    ?: VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "no-signal")
             )
         }
 
@@ -278,7 +303,8 @@ class OneHzUserService : IOneHzService.Stub() {
             return cacheVideo(
                 pkg,
                 cfg,
-                VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "session:$session")
+                pipVerdict(activity)
+                    ?: VideoSignals.Verdict(VideoSignals.Source.NONE, pkg, "session:$session")
             )
         }
 
@@ -301,10 +327,9 @@ class OneHzUserService : IOneHzService.Stub() {
         val codecs = if (cfg.requireVideoCodec) {
             VideoSignals.videoCodecPids(
                 exec(
-                    "/system/bin/sh",
-                    "-c",
-                    "dumpsys media.resource_manager | sed -n '/Processes:/,/Process Pid override:/p'",
-                    maxBytes = 32_768,
+                    "/system/bin/dumpsys",
+                    "media.resource_manager",
+                    maxBytes = 131_072,
                     timeoutMs = 2_500
                 ).output
             )
@@ -317,10 +342,9 @@ class OneHzUserService : IOneHzService.Stub() {
         val audioStarted = if (cfg.requireStartedAudio && !sessionPlaying) {
             VideoSignals.mediaAudioStarted(
                 exec(
-                    "/system/bin/sh",
-                    "-c",
-                    "dumpsys audio | grep AudioPlaybackConfiguration",
-                    maxBytes = 32_768,
+                    "/system/bin/dumpsys",
+                    "audio",
+                    maxBytes = 131_072,
                     timeoutMs = 2_500
                 ).output,
                 pids
@@ -329,12 +353,20 @@ class OneHzUserService : IOneHzService.Stub() {
             false
         }
 
-        return cacheVideo(
-            pkg,
-            cfg,
-            VideoSignals.decide(cfg, pkg, session, pids, codecs, audioStarted)
-        )
+        val decision = VideoSignals.decide(cfg, pkg, session, pids, codecs, audioStarted)
+        val effective = if (decision.source == VideoSignals.Source.PLAYING) {
+            decision
+        } else {
+            pipVerdict(activity) ?: decision
+        }
+        return cacheVideo(pkg, cfg, effective)
     }
+
+    /** A pinned/PiP task comes from the same activity dump as the foreground lookup. */
+    private fun pipVerdict(activity: String): VideoSignals.Verdict? =
+        PipSignals.packageName(activity)?.let { pip ->
+            VideoSignals.Verdict(VideoSignals.Source.PIP, pip, "pip")
+        }
 
     /** Kept for an app process started by a previous version: defaults apply. */
     override fun videoPlayback(): String = videoPlaybackWithConfig(null)
@@ -422,13 +454,7 @@ class OneHzUserService : IOneHzService.Stub() {
         return DozeState.encode(dump)
     }
 
-    override fun pipPackage(): String = exec(
-        "/system/bin/sh",
-        "-c",
-        "dumpsys activity activities | grep 'mode=pinned'",
-        maxBytes = 32_768,
-        timeoutMs = 2_500
-    ).output
+    override fun pipPackage(): String = activityDump()
 
     private fun parseForeground(text: String): String? {
         if (text.isBlank()) return null

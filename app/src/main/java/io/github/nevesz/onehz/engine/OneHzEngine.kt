@@ -814,13 +814,9 @@ object OneHzEngine {
             videoCheckInFlight = false
         }
 
-        val effectiveVerdict = if (verdict.source == VideoSignals.Source.PLAYING) {
-            verdict
-        } else {
-            ShizukuGateway.pipPackage()?.let { pip ->
-                VideoSignals.Verdict(VideoSignals.Source.PIP, pip, "pip")
-            } ?: verdict
-        }
+        // The privileged service already resolves a pinned/PiP task from the same activity
+        // dump it used for the foreground, so no extra probe is needed here.
+        val effectiveVerdict = verdict
 
         if (effectiveVerdict.source == VideoSignals.Source.UNKNOWN) {
             videoFailures++
