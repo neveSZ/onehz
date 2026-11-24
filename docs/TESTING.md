@@ -60,6 +60,24 @@ adb shell dumpsys gfxinfo io.github.nevesz.onehz
 Budget for changes: start-up +5% at most, no new wake lock, no new periodic alarm (except
 the pause expiry), and no polling that shows up in idle CPU.
 
+### 1.3.1 local pre-release
+
+The caches, probe layout and notification cadence are described in `docs/PERFORMANCE.md`.
+For this pre-release, compare:
+
+- a video probe spawns at most five processes (it was about eleven, plus the engine's PiP
+  check);
+- reopening the app within five seconds does not repeat the state/foreground work;
+- the notification changes at most once per second while the rate moves and immediately on
+  pause, AOD, idle or profile changes; it shows the profile alone when the rate option is
+  off;
+- System changes opens without a main-thread freeze;
+- `onehz_core` has one `OneHzWatchdog` thread and no per-command threads;
+- the profile cache is refreshed immediately after an edit, an import or a profile switch.
+
+Use the same release/minified build and device for the final numbers; record the median of
+five runs.
+
 ## Manual test checklist (release)
 
 Test on the target device with a clean install of the signed release APK.
