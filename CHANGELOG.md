@@ -20,7 +20,11 @@ All notable changes to OneHZ are documented here. The format follows
   restore-all, an external-change warning and a sanitized panel report export.
 - Usage screen with time per rate, Always On Display and uncontrolled time, plus the
   profile split, for today and the last seven days. It also hosts the Sleep/Doze summary
-  and session history; the Sleep detail keeps a compact summary and links to Usage.
+  and session history; the Sleep detail keeps a compact summary and links to Usage. Usage
+  has its own tab in the bottom bar and refreshes when it opens and every 30 seconds while
+  visible, with a manual refresh action and a single empty state that can enable OneHZ.
+- Setup offers the Quick Settings tile as an optional step that shows whether the tile was
+  already added. No optional step completes the setup.
 - Activation rules: low-battery guard with hysteresis, charging and a time window, each
   pointing at a saved profile.
 - Per-app fixed rates and a system-default target, with schema 2 profile and backup files
@@ -39,7 +43,14 @@ All notable changes to OneHZ are documented here. The format follows
   It updates from state transitions instead of showing a static message.
 - Activation rules, app targets and usage are included in Diagnostics or the existing
   settings flow without adding new permissions.
-- Baseline Profile regenerated for 1.3.0; cold start median is 195 ms on the tested POCO.
+- Settings is grouped into General, Quick controls, Automation, Data, System, Updates and
+  About. The catch-all "Advanced" section is gone, and the tile action lives in Quick
+  controls with an added/not-added state.
+- Diagnostics shows the tests first, including the Doze test, and offers a shortcut to
+  Sleep when it is off. The Sleep screen links to Diagnostics instead of embedding a test.
+- The active profile card on Home links to activation rules with an "Automate this
+  profile" action.
+- Baseline Profile regenerated for 1.3.0; cold start median is 216 ms on the tested POCO.
 
 ### Fixed
 
