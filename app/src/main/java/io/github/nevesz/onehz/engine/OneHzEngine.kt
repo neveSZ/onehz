@@ -34,7 +34,6 @@ object OneHzEngine {
     private const val VIDEO_RECHECK_MS = 12_000L
     private const val VIDEO_PROBE_MS = 1_800L
     private const val VIDEO_UNKNOWN_LIMIT = 2
-
     private val thread = HandlerThread("OneHzEngine").apply { start() }
     private val handler = Handler(thread.looper)
 
@@ -243,12 +242,8 @@ object OneHzEngine {
             screenOff = false
             Diagnostics.log("touch", "screen flag corrected on DOWN")
         }
-        // While a video is active, a touch is also the moment the app may have changed.
-        val videoCtx = appContext
-        if (videoCtx != null && videoActive) {
-            val changed = updateVideoState(videoCtx, "touch-down")
-            if (changed) SessionArbiter.bumpEpoch()
-        }
+        // The touch-up probe below is the moment the app may have changed; a probe on DOWN
+        // would duplicate it and add a full privileged check to the touch path.
         isDown = true
         lowRechecks = 0
         handler.removeCallbacks(stepRunnable)
