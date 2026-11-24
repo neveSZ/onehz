@@ -151,9 +151,10 @@ object VideoSignals {
         for (raw in psDump.lineSequence()) {
             val line = raw.trim()
             if (line.isEmpty() || line.startsWith("PID")) continue
-            val parts = line.split(Regex("\\s+"), limit = 2)
-            val pid = parts.getOrNull(0)?.toIntOrNull() ?: continue
-            val name = parts.getOrNull(1) ?: continue
+            val space = line.indexOfFirst { it.isWhitespace() }
+            if (space <= 0) continue
+            val pid = line.substring(0, space).toIntOrNull() ?: continue
+            val name = line.substring(space).trimStart()
             if (name == packageName || name.startsWith("$packageName:")) result += pid
         }
         return result
