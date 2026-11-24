@@ -12,6 +12,9 @@
     <string name="notification_active">%1$s · %2$d Hz</string>
     <string name="notification_paused">Paused until %1$s</string>
     <string name="notification_idle">Inactive</string>
+    <string name="notification_active_simple">Active</string>
+    <string name="notification_aod">AOD · %1$d Hz</string>
+    <string name="notification_aod_simple">AOD</string>
     <string name="shortcut_pause_short">Pause 1 h</string>
     <string name="shortcut_pause_long">Pause OneHZ for one hour</string>
     <string name="shortcut_economy_short">Economy</string>
