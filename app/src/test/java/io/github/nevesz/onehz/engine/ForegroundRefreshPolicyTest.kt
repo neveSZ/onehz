@@ -68,21 +68,32 @@ class ForegroundRefreshPolicyTest {
             ForegroundRefreshPolicy.shouldMonitorForeground(
                 started = true,
                 screenOff = false,
-                hasAssignments = true
+                hasAssignments = true,
+                videoEnabled = false
             )
         )
         assertFalse(
             ForegroundRefreshPolicy.shouldMonitorForeground(
                 started = true,
                 screenOff = true,
-                hasAssignments = true
+                hasAssignments = true,
+                videoEnabled = false
             )
         )
         assertFalse(
             ForegroundRefreshPolicy.shouldMonitorForeground(
                 started = true,
                 screenOff = false,
-                hasAssignments = false
+                hasAssignments = false,
+                videoEnabled = false
+            )
+        )
+        assertTrue(
+            ForegroundRefreshPolicy.shouldMonitorForeground(
+                started = true,
+                screenOff = false,
+                hasAssignments = false,
+                videoEnabled = true
             )
         )
     }
@@ -94,6 +105,7 @@ class ForegroundRefreshPolicyTest {
                 started = true,
                 screenOff = false,
                 hasAssignments = true,
+                videoEnabled = false,
                 listenerActive = false
             )
         )
@@ -102,6 +114,7 @@ class ForegroundRefreshPolicyTest {
                 started = true,
                 screenOff = false,
                 hasAssignments = true,
+                videoEnabled = false,
                 listenerActive = true
             )
         )
@@ -110,6 +123,16 @@ class ForegroundRefreshPolicyTest {
                 started = true,
                 screenOff = false,
                 hasAssignments = false,
+                videoEnabled = false,
+                listenerActive = false
+            )
+        )
+        assertTrue(
+            ForegroundRefreshPolicy.shouldProbe(
+                started = true,
+                screenOff = false,
+                hasAssignments = false,
+                videoEnabled = true,
                 listenerActive = false
             )
         )

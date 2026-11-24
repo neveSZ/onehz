@@ -25,13 +25,16 @@ object ForegroundRefreshPolicy {
     fun shouldMonitorForeground(
         started: Boolean,
         screenOff: Boolean,
-        hasAssignments: Boolean
-    ): Boolean = started && !screenOff && hasAssignments
+        hasAssignments: Boolean,
+        videoEnabled: Boolean
+    ): Boolean = started && !screenOff && (hasAssignments || videoEnabled)
 
     fun shouldProbe(
         started: Boolean,
         screenOff: Boolean,
         hasAssignments: Boolean,
+        videoEnabled: Boolean,
         listenerActive: Boolean
-    ): Boolean = started && !screenOff && hasAssignments && !listenerActive
+    ): Boolean =
+        started && !screenOff && (hasAssignments || videoEnabled) && !listenerActive
 }
