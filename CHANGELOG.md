@@ -22,6 +22,23 @@ All notable changes to OneHZ are documented here. The format follows
 ### Fixed
 
 - The notification shows **AOD** while the screen is off instead of "Inactive".
+- A notification hidden because OneHZ notifications were disabled is no longer mistaken for
+  a dismissed one, so enabling access again restores it.
+
+### Performance
+
+- The profile JSON, activation rules and the vendor/rate detection are cached and only
+  rebuilt when their source changes. The caches are cleared on a configuration change.
+- Reopening the app reconciles the system state and refreshes the foreground/video at most
+  once every five seconds; the session audit runs at most every fifteen seconds.
+- Video: the touch-down probe was removed, a positive verdict is reused for ten seconds and
+  a negative one for 800 ms.
+- The notification coalesces rate changes to one post per second, skips identical content
+  and ignores the dismissal fallback for three seconds after its own post.
+- The privileged service no longer compiles regexes per call or per `ps` line and uses the
+  monotonic clock for its TTLs.
+- App icons use a 96-entry LRU; the diagnostics log reuses one time formatter per thread.
+- `docs/PERFORMANCE.md` records the hot paths, the caches and the measurement protocol.
 
 ## [1.3.0] - 2026-11-23
 

@@ -55,7 +55,6 @@ want to understand, audit, or modify the app.
   so an app transition produces one `dumpsys` instead of one per touch.
 
 ## UI state and preferences
-
 - **Preferences:** `OneHzPreferences` and `SleepPreferences` keep their synchronous
   `SharedPreferences`-style API, backed by `PreferencesStore`. DataStore is the source of
   truth; an in-memory snapshot serves the engine and the UI. On first start the old
@@ -66,7 +65,28 @@ want to understand, audit, or modify the app.
   `collectAsStateWithLifecycle`, so collection stops when the screen is not visible.
 - **Icons:** Material Symbols Outlined are bundled as vector drawables and exposed by
   `AppIcons` (`scripts/generate-material-symbols.py`), so the app no longer depends on
-  `compose-material-icons-extended`.
+  `compose-material-icons-extended`. Loaded app icons are kept in a 96-entry LRU.
+
+## Caches and hot paths
+
+The policy path is called on every touch edge, tier change and app switch, so the static
+inputs are cached:
+
+- `ProfileStore` keeps the decoded and normalized state keyed by the stored JSON blob and
+  the panel rates. Every `save` refreshes it, so edits, imports and resets are immediate.
+- `ActivationRulesStore` caches its small JSON the same way.
+- `DisplayProfileResolver` caches the vendor route and `DisplayRates` caches the rate list.
+  Both are invalidated from `OneHzApp.onConfigurationChanged` (folding/unfolding or a panel
+  mode change). An unsupported detection is not cached so a transient boot read can recover.
+- `SessionArbiter.audit` runs at most once every 15 seconds; the engine reconciles the
+  activity resume (state + foreground/video) at most once every 5 seconds. Screen-on keeps
+  the immediate path.
+- Video verdicts are cached in the privileged service: 10 seconds for a positive result,
+  800 ms for a negative one, so repeated checks reuse a confirmed playback without hiding a
+  video that just started. The touch-down probe was removed; the touch-up probe covers the
+  app change.
+
+See `docs/PERFORMANCE.md` for the baseline, the remaining work and the measurement protocol.
 
 ## AIDL boundary
 
