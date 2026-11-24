@@ -38,6 +38,7 @@ object OneHzPreferences {
     private const val KEY_RATE_BACKUP = "rate_backup"
     private const val KEY_LOGS_PAUSED = "logs_paused"
     private const val KEY_NOTIFICATION_PINNED = "notification_pinned"
+    private const val KEY_NOTIFICATION_DETAILS = "notification_details"
     private const val KEY_SETUP_COMPLETED = "setup_completed"
     private const val KEY_TILE_ADDED = "tile_added"
     private const val KEY_THEME_MODE = "theme_mode"
@@ -379,6 +380,17 @@ object OneHzPreferences {
 
     fun setNotificationPinned(context: Context, value: Boolean) =
         prefs(context).edit { putBoolean(KEY_NOTIFICATION_PINNED, value) }
+
+    /**
+     * Shows the applied rate next to the profile in the foreground notification. On by
+     * default, which keeps the 1.3.0 text; turning it off leaves only the profile name.
+     * Like the pin, this is a presentation preference and is not part of the backup.
+     */
+    fun notificationDetails(context: Context) =
+        prefs(context).getBoolean(KEY_NOTIFICATION_DETAILS, true)
+
+    fun setNotificationDetails(context: Context, value: Boolean) =
+        prefs(context).edit { putBoolean(KEY_NOTIFICATION_DETAILS, value) }
 
     fun setupCompleted(context: Context) = prefs(context).getBoolean(KEY_SETUP_COMPLETED, false)
     fun setSetupCompleted(context: Context, value: Boolean) = prefs(context).edit { putBoolean(KEY_SETUP_COMPLETED, value) }
