@@ -2,6 +2,7 @@ package io.github.nevesz.onehz.engine
 
 import android.content.Context
 import android.hardware.display.DisplayManager
+import android.os.SystemClock
 import android.view.Display
 import io.github.nevesz.onehz.core.DisplayProfile
 import io.github.nevesz.onehz.core.DisplayProfileResolver
@@ -25,6 +26,7 @@ object SessionArbiter {
     private const val KEY_PEAK = "peak_refresh_rate"
     private const val KEY_MIN = "min_refresh_rate"
     private const val MODE_ADAPTIVE = 2
+    private const val AUDIT_WINDOW_MS = 15_000L
 
     private var sessionOpen = false
     private var ecoKeysWritten = false
@@ -35,6 +37,7 @@ object SessionArbiter {
     private var appliedPeak: Float? = null
     private var appliedMin: Float? = null
     private var appliedCap: Int? = null
+    private var lastAuditAt = 0L
 
     /** Drops the cache so the next apply rewrites everything after a real state change. */
     @Synchronized
@@ -149,6 +152,7 @@ object SessionArbiter {
     fun invalidate() {
         sessionOpen = false
         ecoKeysWritten = false
+        lastAuditAt = 0L
         bumpEpoch()
     }
 
@@ -159,6 +163,7 @@ object SessionArbiter {
             // Cannot restore now; keep the pending values for the next connection.
             sessionOpen = false
             ecoKeysWritten = false
+            lastAuditAt = 0L
             bumpEpoch()
             return
         }
@@ -175,6 +180,7 @@ object SessionArbiter {
         }
         sessionOpen = false
         ecoKeysWritten = false
+        lastAuditAt = 0L
         context?.let {
             OneHzPreferences.clearSessionPending(it)
             OneHzPreferences.setRateBackup(it, emptyMap())
@@ -222,6 +228,9 @@ object SessionArbiter {
     @Synchronized
     fun audit() {
         if (!sessionOpen || ShizukuGateway.service == null) return
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastAuditAt < AUDIT_WINDOW_MS) return
+        lastAuditAt = now
         val activeProfile = profile ?: return
         if (!activeProfile.supported) return
         val mismatch = when (activeProfile.vendor) {

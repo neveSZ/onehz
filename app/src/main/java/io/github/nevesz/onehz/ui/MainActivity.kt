@@ -130,8 +130,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        OneHzEngine.refreshSystemState()
-        OneHzEngine.refreshForegroundPackage()
+        OneHzEngine.onActivityResume()
         OneHzKeepAliveService.refreshIfRunning(this)
     }
 

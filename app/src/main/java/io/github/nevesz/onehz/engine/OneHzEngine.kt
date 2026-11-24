@@ -31,6 +31,7 @@ object OneHzEngine {
     private const val RECHECK_MS = 100L
     private const val MAX_RECHECKS = 20
     private const val WAKE_DEBOUNCE_MS = 1_200L
+    private const val RESUME_WINDOW_MS = 5_000L
     private const val VIDEO_RECHECK_MS = 12_000L
     private const val VIDEO_PROBE_MS = 1_800L
     private const val VIDEO_UNKNOWN_LIMIT = 2
@@ -72,6 +73,8 @@ object OneHzEngine {
     private var monitoringNeeded = false
     @Volatile
     private var lastWakeAt = 0L
+
+    private var lastResumeAt = 0L
 
     @Volatile
     private var videoActive = false
@@ -178,6 +181,7 @@ object OneHzEngine {
         appContext = context.applicationContext
         if (started) return
         started = true
+        lastResumeAt = 0L
         hasAppAssignments = ProfileStore.configuredPackages(context).isNotEmpty()
         val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
         ecoActive = pm?.isPowerSaveMode == true
@@ -197,6 +201,7 @@ object OneHzEngine {
         lowBatteryActive = false
         monitoringNeeded = false
         lastWakeAt = 0L
+        lastResumeAt = 0L
         hasAppAssignments = false
         foregroundMonitoringActive = false
         lastForegroundMonitorAttempt = 0L
@@ -286,8 +291,10 @@ object OneHzEngine {
     }
 
     /** Refreshes the foreground package without polling; called on resume. */
-    fun refreshForegroundPackage() = handler.post {
-        val ctx = appContext ?: return@post
+    fun refreshForegroundPackage() = handler.post { refreshForegroundNow() }
+
+    private fun refreshForegroundNow() {
+        val ctx = appContext ?: return
         if (started && !screenOff && videoEligible()) {
             val changed = updateVideoState(ctx, "resume")
             if (changed) {
@@ -295,8 +302,8 @@ object OneHzEngine {
                 applyCurrent("video-resume")
             }
         }
-        if (!hasAppAssignments) return@post
-        val pkg = ShizukuGateway.foregroundPackageFresh() ?: return@post
+        if (!hasAppAssignments) return
+        val pkg = ShizukuGateway.foregroundPackageFresh() ?: return
         updateForeground(pkg, "resume")
     }
 
@@ -454,12 +461,14 @@ object OneHzEngine {
     }
 
     /** Re-reads screen/power-save state after a broadcast may have been missed. */
-    fun refreshSystemState() = handler.post {
-        val ctx = appContext ?: return@post
+    fun refreshSystemState() = handler.post { refreshSystemStateNow() }
+
+    private fun refreshSystemStateNow() {
+        val ctx = appContext ?: return
         val pm = ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager
         val newOff = pm?.isInteractive == false
         ecoActive = pm?.isPowerSaveMode == true
-        if (!started) return@post
+        if (!started) return
         if (newOff != screenOff) {
             applyScreenState(newOff, fromBroadcast = false)
         } else if (timersPending) {
@@ -467,6 +476,18 @@ object OneHzEngine {
         } else {
             wake("resume")
         }
+    }
+
+    /**
+     * Activity resume: reconcile the system state and refresh the foreground/video once per
+     * window. Screen transitions keep using the dedicated calls above, which are immediate.
+     */
+    fun onActivityResume() = handler.post {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastResumeAt < RESUME_WINDOW_MS) return@post
+        lastResumeAt = now
+        refreshSystemStateNow()
+        refreshForegroundNow()
     }
 
     /** Forces the first step for two seconds. */
