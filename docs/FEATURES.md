@@ -152,7 +152,9 @@ while a video is playing.
 The defaults enable MediaSession, the paused-session veto, and the decoder rule; the
 media-audio rule is off. Every rule can be changed per profile in a focused detection
 sheet; the card shows the active rule count and warns when no positive signal is enabled.
-The forced-app list is global and opens from the same sheet. A picture-in-picture window is detected from the pinned task and keeps the video floor while it is visible.
+The forced-app list is global and opens from the same sheet. A picture-in-picture window is
+detected from the pinned task and keeps the video floor while it is visible and playing; a
+paused window releases the floor like a paused full-screen player.
 
 ## 8. Wake pulse
 
