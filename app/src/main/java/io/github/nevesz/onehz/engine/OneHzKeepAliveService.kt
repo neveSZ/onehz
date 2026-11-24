@@ -71,7 +71,7 @@ class OneHzKeepAliveService : Service() {
         val eligible = DisplayGate.evaluate(this).eligible
         createChannel()
         startInForeground()
-        notificationPosted = true
+        notificationPosted = NotificationAccess.isEnabled(this)
         running = true
         if (!eligible) {
             running = false
@@ -267,6 +267,9 @@ class OneHzKeepAliveService : Service() {
         }
         if (!NotificationAccess.isEnabled(this)) {
             // The foreground service keeps running, but there is nothing to show or restore.
+            // A hidden notification must not be mistaken for a dismissed one when the user
+            // enables notifications again.
+            notificationPosted = false
             if (OneHzPreferences.notificationPinned(this)) {
                 OneHzPreferences.setNotificationPinned(this, false)
             }

@@ -106,6 +106,7 @@ fun SettingsScreen(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         notificationsEnabled = NotificationAccess.isEnabled(context)
+        if (notificationsEnabled) OneHzKeepAliveService.contentChanged(context)
         if (!granted) NotificationAccess.openSettings(context)
     }
     var tileAdded by remember { mutableStateOf(OneHzPreferences.tileAdded(context)) }
