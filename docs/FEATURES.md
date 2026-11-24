@@ -37,6 +37,7 @@ except the last one, a hold time.
   - **Balanced** — the default profile, using the highest rate above 60 Hz when available;
   - **Performance** — preserves a 60 Hz-or-higher resting floor;
 - the active profile is selected by the user on Home; the card shows the **selected** profile and, when they differ, the profile **in use**;
+- the Home profile card has an **Automate this profile** shortcut that opens the activation rules;
 - built-in profiles can be edited and restored to the device defaults;
 - custom profiles can be created, renamed, edited, duplicated and deleted;
 - a deleted profile can be restored with the short **Undo** action, including the app
@@ -189,10 +190,15 @@ the new 30/60/60 defaults.
 
 - vendor/display compatibility check;
 - Shizuku status and permission request;
-- optional battery-optimization exemption;
-- optional Doze exception list (through Shizuku);
+- battery-optimization exemption;
+- Doze exception list (through Shizuku);
 - notification permission;
-- persistent foreground-service notification.
+- persistent foreground-service notification;
+- an optional Quick Settings tile, shown as **Optional** or **Added**.
+
+The optional step offers only the tile. Usage has its own bottom-bar tab, and activation
+rules and Diagnostics live in Settings. No optional action completes setup; only **Finish
+and enable** does.
 
 ## 11. No wake locks
 
@@ -202,11 +208,14 @@ polling.
 
 ## 12. Diagnostics
 
+Settings → System → **Diagnostics**.
+
 - in-memory log (up to 500 entries), not uploaded and not persisted;
 - filters by tag and text;
 - engine state, applied/observed Hz, last write, video detail, touch monitor state,
   screen brightness/mode, battery-saver state, and the active rate route;
-- test buttons for the first/resting tier and a full cycle;
+- a **Tests** card at the top of the summary runs the first/resting tier and full-cycle
+  display tests, plus the Doze test; with Sleep off, the Doze test offers **Open Sleep**;
 - “Verify display control” and “Restore system brightness” safety actions;
 - diagnostic report can be copied manually for a bug report.
 
@@ -220,8 +229,8 @@ System, light, dark, and AMOLED themes. AMOLED uses true black on OLED panels.
 
 **How it works:**
 
-- Settings → **Backup and restore** writes a versioned JSON file through the system file
-  picker, without storage permissions;
+- Settings → Data → **Backup and restore** writes a versioned JSON file through the
+  system file picker, without storage permissions;
 - the file includes all profiles, the active profile, app assignments and their targets,
   activation rules, video settings, AOD settings, Sleep settings, the master switch, and
   the forced-video app list;
@@ -247,9 +256,10 @@ Portuguese (Brazil), English, and Spanish. See [translation status](TRANSLATIONS
 Optional and off by default. The first enable asks for confirmation because notifications
 and internet calls can be delayed. The Sleep switch on Home is the only master. With Sleep
 off, the detail keeps the behavior options and wake-up list visible and editable, and
-shows the compact measurement summary; only "Test now" and pause/resume require Sleep to
-be on. The detail shows a compact note when Sleep is off, a status line only for active,
-paused or failure states, and one dismissible warning inside the "How it works" card.
+shows the compact measurement summary; only pause/resume requires Sleep to be on. The
+Doze test lives in Diagnostics, not on this screen. The detail shows a compact note when
+Sleep is off, a status line only for active, paused or failure states, and one dismissible
+warning inside the "How it works" card.
 
 When the screen turns off, OneHZ asks the platform to
 enter Doze immediately instead of waiting for the inactivity timers:
@@ -265,11 +275,11 @@ enter Doze immediately instead of waiting for the inactivity timers:
   enter Doze" message instead of a false success;
 - a wake-up list that adds apps to the system Doze exception list through Shizuku;
 - local measurements: the detail shows a compact summary (screen-off, Doze and last
-  session); the full 24-hour rows and the session history live in Usage.
+  session); the full 24-hour rows and the session history live in the Usage tab.
 
 No wake lock is held and nothing is polled. The measurements are local and labelled as
-measured by OneHZ; they include the Always On Display time. The detail links to Usage for
-the full breakdown. See [SLEEP.md](SLEEP.md).
+measured by OneHZ; they include the Always On Display time. The detail links to the Usage
+tab for the full breakdown. See [SLEEP.md](SLEEP.md).
 
 ## 17. Quick controls
 
@@ -278,16 +288,16 @@ system values. The card shows the deadline and a **Resume now** action. The paus
 time-boxed and survives a restart; the engine resumes on its own.
 
 **Quick Settings tile.** The OneHZ tile turns the app on and off; pause and resume stay in
-the notification, Home and the launcher shortcut. Settings has an **Add Quick Settings
-tile** action that asks the system to place it. The tile reports when Shizuku is
-unavailable.
+the notification, Home and the launcher shortcut. Settings → Quick controls has an **Add
+Quick Settings tile** action that asks the system to place it. The tile reports when
+Shizuku is unavailable.
 
 **Notification.** The foreground notification shows the active profile and the current
 rate, and exposes **Pause for 1 hour** / **Resume now** plus **Disable**. It updates only
 when the state changes.
 
-**Pin notification.** Settings → Advanced → **Pin notification** is off by default. When
-off, the notification can be swiped away and stays hidden until OneHZ is opened again.
+**Pin notification.** Settings → Quick controls → **Pin notification** is off by default.
+When off, the notification can be swiped away and stays hidden until OneHZ is opened again.
 When on, a confirmation explains that Android 14 and later still allows the swipe and
 OneHZ restores the notification immediately; it does not keep the service alive or change
 battery use. Turn it off in the same place at any time.
@@ -298,6 +308,8 @@ battery use. Turn it off in the same place at any time.
 None of these entries polls, holds a wake lock or adds a new permission.
 
 ## 18. System changes and panel report
+
+Settings → System.
 
 **System changes** lists the keys OneHZ may write through Shizuku, the current value and the
 original value when the session kept a backup. Samsung shows the rate keys, the AOD
@@ -317,10 +329,15 @@ installed-app list or personal data.
 
 ## 19. Usage
 
-The Usage screen shows how long OneHZ spent at each rate today and in the last seven days,
-plus the Always On Display time, the uncontrolled time and the profile split. It also
-contains the Sleep/Doze summary and the session history, so the quantitative data lives in
-one place. The Sleep detail keeps a compact summary and links here.
+Usage is the fourth bottom-bar tab (Home, Apps, Usage, Settings), so the quantitative data
+is one tap away. The screen shows how long OneHZ spent at each rate today and in the last
+seven days, plus the Always On Display time, the uncontrolled time and the profile split.
+It also contains the Sleep/Doze summary and the session history, so the quantitative data
+lives in one place. The Sleep detail keeps a compact summary and links here.
+
+The tab refreshes when you return to it, every 30 seconds while it is visible, and through
+the refresh button. With no data it shows a single empty state; when OneHZ is off, that
+state offers **Enable OneHZ**.
 
 Rate data is recorded from engine transitions only, stored locally in daily buckets, and
 pruned after 30 days. It is not uploaded and does not include per-app attribution, which
@@ -329,8 +346,10 @@ Sleep screen uses.
 
 ## 20. Activation rules
 
-Optional rules can switch to a saved profile based on the environment. Rules never copy a
-profile, so editing it changes every rule and app that points at it.
+Settings → Automation → **Activation rules**. The Home profile card opens the same screen
+through **Automate this profile**. Optional rules can switch to a saved profile based on
+the environment. Rules never copy a profile, so editing it changes every rule and app that
+points at it.
 
 - **Low battery guard.** Uses a profile at or below a configurable threshold (5-50%, step
   5). A 4-point hysteresis avoids oscillating around the limit.

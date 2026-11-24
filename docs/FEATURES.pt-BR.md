@@ -37,6 +37,7 @@ exceto a última, um tempo de espera.
   - **Equilibrado** — o perfil padrão, usando a maior taxa acima de 60 Hz quando existe;
   - **Desempenho** — mantém um repouso de 60 Hz ou mais;
 - o perfil ativo é escolhido na Home; o card mostra o perfil **selecionado** e, quando forem diferentes, o perfil **em uso**;
+- o card do perfil na Home tem o atalho **Automatizar este perfil**, que abre as regras de ativação;
 - os perfis base podem ser editados e restaurados para o padrão do aparelho;
 - perfis customizados podem ser criados, renomeados, editados, duplicados e excluídos;
 - um perfil excluído pode ser restaurado pela ação curta **Desfazer**, incluindo as
@@ -191,10 +192,15 @@ segue os novos padrões 30/60/60.
 
 - verificação de compatibilidade do fabricante/tela;
 - status do Shizuku e pedido de permissão;
-- isenção opcional de otimização de bateria;
-- lista de permissão opcional do Doze (pelo Shizuku);
+- isenção de otimização de bateria;
+- lista de permissão do Doze (pelo Shizuku);
 - permissão de notificação;
-- notificação persistente do serviço em primeiro plano.
+- notificação persistente do serviço em primeiro plano;
+- tile opcional nas Configurações Rápidas, mostrado como **Opcional** ou **Adicionado**.
+
+A etapa opcional oferece apenas o tile. O Uso tem aba própria na barra inferior, e as
+regras de ativação e o Diagnóstico ficam em Ajustes. Nenhuma ação opcional conclui a
+configuração; somente **Concluir e ativar** faz isso.
 
 ## 11. Sem wake locks
 
@@ -204,12 +210,15 @@ broadcasts do sistema, não por polling.
 
 ## 12. Diagnóstico
 
+Ajustes → Sistema → **Diagnóstico**.
+
 - log em memória (até 500 entradas), não enviado e não persistido;
 - filtros por tag e texto;
 - estado do motor, Hz aplicado/observado, última escrita, detalhe de vídeo, estado do
   monitor de toque, brilho/modo da tela, estado da economia de bateria e a rota de taxa
   ativa;
-- botões de teste para a primeira faixa/repouso e um ciclo completo;
+- um card **Testes** no topo do resumo executa os testes de primeira faixa/repouso e ciclo
+  completo, além do teste de Doze; com o Sono desligado, o teste oferece **Abrir Sono**;
 - ações de segurança “Verificar controle da tela” e “Restaurar brilho do sistema”;
 - relatório de diagnóstico pode ser copiado manualmente para um relato de bug.
 
@@ -223,8 +232,8 @@ Temas sistema, claro, escuro e AMOLED. O AMOLED usa preto puro em painéis OLED.
 
 **Como funciona:**
 
-- Ajustes → **Backup e restauração** grava um JSON versionado pelo seletor de arquivos do
-  sistema, sem permissão de armazenamento;
+- Ajustes → Dados → **Backup e restauração** grava um JSON versionado pelo seletor de
+  arquivos do sistema, sem permissão de armazenamento;
 - o arquivo inclui todos os perfis, o perfil ativo, atribuições de apps e os alvos delas,
   regras de ativação, vídeo, AOD, configurações do Sono, switch mestre e a lista global de
   apps forçados como vídeo;
@@ -249,10 +258,10 @@ Português (Brasil), inglês e espanhol. Veja o
 
 Opcional e desligado por padrão. O switch do Sono na tela inicial é o único master. Com o
 Sono desligado, o detalhe mantém as opções de comportamento e a lista de apps que acordam
-visíveis e editáveis, e mostra o resumo compacto das medições; apenas "Testar agora" e
-pausar/retomar exigem o Sono ligado. O detalhe mostra uma nota compacta quando o Sono está
-desligado, uma linha de status só para estados de ativo/pausado/falha e um aviso dispensável
-dentro do card "Como funciona".
+visíveis e editáveis, e mostra o resumo compacto das medições; apenas pausar/retomar exige
+o Sono ligado. O teste de Doze fica no Diagnóstico, não nesta tela. O detalhe mostra uma
+nota compacta quando o Sono está desligado, uma linha de status só para estados de
+ativo/pausado/falha e um aviso dispensável dentro do card "Como funciona".
 
 Ao apagar a tela, o OneHZ pede ao sistema para entrar em
 Doze na hora, em vez de esperar os temporizadores de inatividade. O primeiro enable pede
@@ -269,11 +278,11 @@ confirmação porque notificações e chamadas por internet podem atrasar:
   em Doze" em vez de um falso sucesso;
 - lista de apps que podem acordar o aparelho, gravada nas exceções do Doze pelo Shizuku;
 - medições locais: o detalhe mostra um resumo compacto (tela apagada, Doze e última
-  sessão); as linhas completas de 24h e o histórico de sessões ficam em Uso.
+  sessão); as linhas completas de 24h e o histórico de sessões ficam na aba Uso.
 
 Nenhum wake lock é mantido e nada é consultado por polling. As medições são locais e
-identificadas como medidas pelo OneHZ; incluem o tempo de AOD. O detalhe aponta para Uso
-para o detalhamento completo. Veja [SLEEP.md](SLEEP.md).
+identificadas como medidas pelo OneHZ; incluem o tempo de AOD. O detalhe aponta para a aba
+Uso para o detalhamento completo. Veja [SLEEP.md](SLEEP.md).
 
 ## 17. Controles rápidos
 
@@ -282,20 +291,20 @@ restaura os valores do sistema. O card mostra o horário de retorno e a ação *
 agora**. A pausa tem prazo, sobrevive a um reinício e o motor volta sozinho.
 
 **Tile nas Configurações Rápidas.** O tile do OneHZ liga e desliga o app; pausar e retomar
-ficam na notificação, na Home e no atalho do app. Ajustes tem a ação **Adicionar tile nas
-Configurações Rápidas**, que pede ao sistema para colocá-lo. O tile indica quando o
-Shizuku está indisponível.
+ficam na notificação, na Home e no atalho do app. Ajustes → Controles rápidos tem a ação
+**Adicionar tile nas Configurações Rápidas**, que pede ao sistema para colocá-lo. O tile
+indica quando o Shizuku está indisponível.
 
 **Notificação.** A notificação do serviço em primeiro plano mostra o perfil ativo e a taxa
 atual, e oferece **Pausar por 1 hora** / **Retomar agora** e **Desativar**. Ela só é
 atualizada quando o estado muda.
 
-**Fixar notificação.** Ajustes → Avançado → **Fixar notificação** vem desligado. Quando
-está desligado, a notificação pode ser dispensada com o deslize e fica oculta até o OneHZ
-ser aberto de novo. Quando está ligado, uma confirmação explica que o Android 14 ou mais
-recente ainda permite o deslize e o OneHZ restaura a notificação na hora; isso não mantém
-o serviço vivo nem muda o consumo de bateria. A opção pode ser desligada no mesmo lugar a
-qualquer momento.
+**Fixar notificação.** Ajustes → Controles rápidos → **Fixar notificação** vem desligado.
+Quando está desligado, a notificação pode ser dispensada com o deslize e fica oculta até o
+OneHZ ser aberto de novo. Quando está ligado, uma confirmação explica que o Android 14 ou
+mais recente ainda permite o deslize e o OneHZ restaura a notificação na hora; isso não
+mantém o serviço vivo nem muda o consumo de bateria. A opção pode ser desligada no mesmo
+lugar a qualquer momento.
 
 **Atalhos do app.** Pressione e segure o ícone na tela inicial para **Pausar 1 h**,
 **Economia** e **Diagnóstico**.
@@ -303,6 +312,8 @@ qualquer momento.
 Nenhum desses controles faz polling, mantém wake lock ou adiciona permissão nova.
 
 ## 18. Alterações no sistema e relatório do painel
+
+Ajustes → Sistema.
 
 **Alterações no sistema** lista as chaves que o OneHZ pode gravar pelo Shizuku, o valor
 atual e o valor original quando a sessão guardou um backup. Na Samsung aparecem as chaves
@@ -322,10 +333,16 @@ acima. Não inclui lista de apps instalados nem dados pessoais.
 
 ## 19. Uso
 
-A tela Uso mostra quanto tempo o OneHZ passou em cada taxa hoje e nos últimos sete dias,
-além do tempo de Always On Display, do tempo sem controle e da divisão por perfil. Ela
-também reúne o resumo de Sono/Doze e o histórico de sessões, para os dados quantitativos
-ficarem em um lugar só. O detalhe do Sono mantém um resumo compacto e aponta para cá.
+O Uso é a quarta aba da barra inferior (Início, Apps, Uso, Ajustes), então os dados
+quantitativos ficam a um toque. A tela mostra quanto tempo o OneHZ passou em cada taxa hoje
+e nos últimos sete dias, além do tempo de Always On Display, do tempo sem controle e da
+divisão por perfil. Ela também reúne o resumo de Sono/Doze e o histórico de sessões, para
+os dados quantitativos ficarem em um lugar só. O detalhe do Sono mantém um resumo compacto
+e aponta para cá.
+
+A aba atualiza ao voltar para ela, a cada 30 segundos enquanto está visível e pelo botão de
+atualizar. Sem dados, mostra um único estado vazio; quando o OneHZ está desligado, esse
+estado oferece **Ativar OneHZ**.
 
 Os dados de taxa vêm só de transições do motor, ficam locais em buckets diários e são
 apagados após 30 dias. Nada é enviado e não há atribuição por app, que exigiria consultar
@@ -334,8 +351,10 @@ tela Sono.
 
 ## 20. Regras de ativação
 
-Regras opcionais podem trocar para um perfil salvo conforme o ambiente. As regras nunca
-copiam um perfil, então editar o perfil muda todas as regras e apps que apontam para ele.
+Ajustes → Automação → **Regras de ativação**. O card do perfil na Home abre a mesma tela
+por **Automatizar este perfil**. Regras opcionais podem trocar para um perfil salvo conforme
+o ambiente. As regras nunca copiam um perfil, então editar o perfil muda todas as regras e
+apps que apontam para ele.
 
 - **Proteção de bateria baixa.** Usa um perfil no limite configurável ou abaixo dele
   (5-50%, passo 5). Uma histerese de 4 pontos evita oscilar em volta do limite.

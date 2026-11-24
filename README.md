@@ -87,7 +87,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **Quick controls** | One-hour pause, Quick Settings tile, state-aware notification (optionally pinned) and launcher shortcuts. |
 | **Activation rules** | Low-battery guard, charging and a time window, each pointing at a saved profile. |
 | **Per-app targets** | Follow a profile, pin a fixed rate or hand control back to the system. |
-| **Usage** | Time per rate, AOD and uncontrolled time, plus the profile split, all local. |
+| **Usage** | Fourth bottom-bar tab. Time per rate, AOD and uncontrolled time, plus the profile split, all local. |
 | **System changes** | Lists the keys OneHZ may write, shows original values, restores everything and exports a panel report. |
 | **Automation** | Explicit pause, resume, profile and toggle broadcasts for automation tools. |
 | **AOD night schedule** | Samsung-only brightness window inside the safety band. |
@@ -103,7 +103,7 @@ Updates, uninstall, beta channel, APK verification, and recovery commands:
 | **Backup and restore** | Versioned JSON export/import of profiles, app assignments, activation rules, video, AOD, Sleep settings and the master switch. Sleep measurements, the notification pin and the system Doze exceptions are not included. |
 | **Wake pulse** | Applies the first tier on screen-on/unlock for about one second. |
 | **Device-aware defaults** | Sensible profiles on a fresh install. |
-| **Guided setup** | Display compatibility, Shizuku, battery/Doze, and notifications. |
+| **Guided setup** | Display compatibility, Shizuku, battery/Doze, notifications, and an optional Quick Settings tile. |
 | **No wake locks** | The optional foreground service does not keep the phone awake. |
 | **Diagnostics** | In-memory log, filters, test actions, and a copyable report. |
 | **Appearance** | System, light, dark, and AMOLED themes. |

@@ -70,7 +70,7 @@ o painel rejeitar uma taxa muito baixa no AOD, o motor cai para 30 Hz e registra
 
 ### Posso fazer backup das configurações?
 
-Sim. Ajustes → **Backup e restauração** exporta um JSON versionado pelo seletor de
+Sim. Ajustes → Dados → **Backup e restauração** exporta um JSON versionado pelo seletor de
 arquivos do sistema. Ele inclui todos os perfis, atribuições de apps, vídeo, AOD,
 configurações do Sono e o switch mestre. Tema, idioma, diagnóstico, medições do Sono e
 exceções do Doze do sistema não entram. A importação substitui a configuração de
@@ -126,11 +126,19 @@ estável.
 - Controles rápidos: pausa de uma hora, tile liga/desliga nas Configurações Rápidas,
   notificação com estado e modo fixado opcional, além de atalhos do app. A pausa restaura
   os valores do sistema e volta sozinha.
-- O Uso mostra tempo por taxa, AOD e sem controle hoje e nos últimos sete dias, além do
-  resumo de Sono/Doze e do histórico de sessões. O detalhe do Sono mantém um resumo
-  compacto e aponta para Uso.
+- O Uso é a quarta aba da barra inferior (Início, Apps, Uso, Ajustes). Ele atualiza ao
+  voltar e a cada 30 segundos enquanto está visível, e mostra tempo por taxa, AOD e sem
+  controle hoje e nos últimos sete dias, além do resumo de Sono/Doze e do histórico de
+  sessões. O detalhe do Sono mantém um resumo compacto e aponta para a aba Uso. Com o OneHZ
+  desligado e sem dados, a aba oferece **Ativar OneHZ**.
 - Regras de ativação para bateria baixa, carregador e janela de horário; taxa fixa por app
   e alvo "padrão do sistema". O schema 2 de perfis ainda lê o schema 1.
+- Ajustes está organizado em Geral, Controles rápidos, Automação, Dados, Sistema,
+  Atualizações e Sobre; não existe seção Avançado. A etapa opcional da configuração é
+  somente o tile das Configurações Rápidas, e só **Concluir e ativar** encerra o setup.
+- O teste de Doze saiu da tela Sono para o card **Testes** do Diagnóstico; com o Sono
+  desligado ele oferece **Abrir Sono**. O card do perfil na Home tem **Automatizar este
+  perfil**, que abre as regras de ativação.
 - Picture-in-picture é detectado pela tarefa fixada, e a Samsung ganha uma agenda noturna
   do AOD.
 - Alterações no sistema lista as chaves que o OneHZ pode gravar e restaura os valores
@@ -218,8 +226,8 @@ somente depois que você ativa; não há analytics, anúncios nem telemetria. Ve
 
 ### Como abro o Diagnóstico?
 
-Abra **Ajustes → Diagnóstico**. O relatório é gerado localmente, pode ser pausado ou
-limpo nessa tela e só é compartilhado quando você copia.
+Abra **Ajustes → Sistema → Diagnóstico**. O relatório é gerado localmente, pode ser pausado
+ou limpo nessa tela e só é compartilhado quando você copia.
 
 ### O brilho do AOD ficou preso depois de desinstalar. O que faço?
 
@@ -229,7 +237,7 @@ Execute:
 adb shell settings delete system debug_aod_brightness
 ```
 
-ou reinstale o OneHZ e use **Ajustes → Diagnóstico → Restaurar brilho do sistema**.
+ou reinstale o OneHZ e use **Ajustes → Sistema → Diagnóstico → Restaurar brilho do sistema**.
 
 ### Por que o perfil de economia se chama Economia?
 
@@ -333,8 +341,8 @@ Rápidas ou no atalho do app. A pausa restaura os valores do sistema e volta soz
 ### O que as regras de ativação fazem?
 
 Elas escolhem temporariamente um perfil salvo conforme bateria baixa, carregador ou janela
-de horário. A proteção de bateria tem histerese, o motivo ativo aparece no Diagnóstico e o
-tempo entra em Uso.
+de horário. Ficam em **Ajustes → Automação → Regras de ativação**. A proteção de bateria
+tem histerese, o motivo ativo aparece no Diagnóstico e o tempo entra em Uso.
 
 ### Um app pode usar uma taxa fixa em vez de um perfil?
 
@@ -344,9 +352,9 @@ primeiro plano.
 
 ### O que a tela Alterações no sistema mostra?
 
-As chaves que o OneHZ pode gravar, o valor atual e o original capturado. **Restaurar
-tudo** desliga o controle primeiro e restaura taxa, economia de bateria e brilho do AOD.
-O relatório do painel não inclui lista de apps nem dados pessoais.
+As chaves que o OneHZ pode gravar, o valor atual e o original capturado. Fica em **Ajustes
+→ Sistema**. **Restaurar tudo** desliga o controle primeiro e restaura taxa, economia de
+bateria e brilho do AOD. O relatório do painel não inclui lista de apps nem dados pessoais.
 
 ### O Uso coleta dados por app?
 

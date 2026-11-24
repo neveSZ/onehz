@@ -33,10 +33,11 @@ may be delayed; regular calls and alarms still work.
 
 - The Sleep switch on **Home** is the only master. The detail screen does not duplicate it.
 - The behavior options and wake-up list stay visible and editable while Sleep is off; only
-  "Test now" and pause/resume require Sleep to be on. The compact summary (screen-off,
-  Doze and the last session) also stays visible.
-- The full 24-hour rows and the session history live in **Usage**; the Sleep card links
-  there instead of repeating them.
+  pause/resume requires Sleep to be on, and the Doze test lives in Diagnostics, in the
+  Tests card at the top of the summary. The compact summary (screen-off, Doze and the last
+  session) also stays visible.
+- The full 24-hour rows and the session history live in the **Usage** tab; the Sleep card
+  links there instead of repeating them.
 - When Sleep is off, the detail shows a compact note. A status line appears only for
   active, paused, charging, music, outside-window or failure states.
 - The delay warning lives inside the "How it works" card and can be dismissed with
@@ -202,7 +203,7 @@ Segments are recorded only while the feature is enabled:
 From those segments:
 
 - **Sleep card**: screen-off, Doze and the last session of at least 30 minutes. The full
-  rows below live in **Usage**.
+  rows below live in the **Usage** tab.
 - **Last 24 hours**: rolling window, no midnight or charging reset. Screen-off time is the
   sum of `SCREEN_OFF` segments clipped to `[now - 24h, now]`; Doze time is the same
   clipping applied to `IDLE` segments. A rolling window keeps the metric neutral for any

@@ -85,7 +85,7 @@ Beta and stable cannot be installed side by side.
    features change.
 4. Update the `fastlane/metadata/android/<locale>/changelogs/<versionCode>.txt` files.
 5. Refresh the store screenshots from the **final build** on a physical device:
-   - five files per locale: `1` Home, `2` Profiles, `3` AOD, `4` Sleep, `5` Backup;
+   - five files per locale: `1` Home, `2` Profiles, `3` AOD, `4` Sleep, `5` Usage;
    - locales: `en-US`, `es-ES`, `pt-BR`;
    - normalize to 1170×2340 (aspect 2.0) so `validate-fastlane.py` accepts them;
    - the README uses `1`, `2` and `4` directly from `fastlane`, so do not keep a second

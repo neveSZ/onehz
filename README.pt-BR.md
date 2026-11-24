@@ -89,7 +89,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Controles rápidos** | Pausa de uma hora, tile nas Configurações Rápidas, notificação com estado (opcionalmente fixada) e atalhos do app. |
 | **Regras de ativação** | Proteção de bateria baixa, carregador e janela de horário, cada uma apontando para um perfil salvo. |
 | **Alvos por app** | Seguir um perfil, fixar uma taxa ou devolver o controle ao sistema. |
-| **Uso** | Tempo por taxa, AOD e sem controle, além da divisão por perfil, tudo local. |
+| **Uso** | Quarta aba da barra inferior. Tempo por taxa, AOD e sem controle, além da divisão por perfil, tudo local. |
 | **Alterações no sistema** | Lista as chaves que o OneHZ pode gravar, mostra os valores originais, restaura tudo e exporta um relatório do painel. |
 | **Automação** | Broadcasts explícitos de pausa, retomada, perfil e alternância para ferramentas de automação. |
 | **Agenda noturna do AOD** | Janela de brilho somente Samsung dentro da faixa de segurança. |
@@ -105,7 +105,7 @@ Atualizações, desinstalação, canal beta, verificação do APK e comandos de 
 | **Backup e restauração** | Exportação/importação JSON versionada de perfis, atribuições, regras de ativação, vídeo, AOD, configurações do Sono e switch mestre. Medições do Sono, a notificação fixa e exceções do Doze não entram. |
 | **Pulso de despertar** | Aplica a primeira faixa ao ligar/destravar por cerca de um segundo. |
 | **Padrões por dispositivo** | Perfis coerentes em uma instalação nova. |
-| **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze e notificações. |
+| **Configuração guiada** | Compatibilidade da tela, Shizuku, bateria/Doze, notificações e um tile opcional nas Configurações Rápidas. |
 | **Sem wake locks** | O serviço opcional em primeiro plano não mantém o aparelho acordado. |
 | **Diagnóstico** | Log em memória, filtros, ações de teste e relatório copiável. |
 | **Aparência** | Temas sistema, claro, escuro e AMOLED. |

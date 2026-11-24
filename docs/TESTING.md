@@ -37,7 +37,7 @@ for comparisons.
 
 | Metric | 1.2.2-beta.1 | 1.3.0 |
 |---|---|---|
-| Cold start, median of 5 (`am start -W -S`) | 258 ms | 195 ms |
+| Cold start, median of 5 (`am start -W -S`) | 258 ms | 216 ms |
 | Idle CPU after 45 s (app processes) | 0% | 0% |
 | Wake locks held by the app | 0 | 0 |
 | Periodic alarms scheduled by the app | 0 | 0 |
@@ -82,6 +82,12 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Battery exemption is optional and works.
 - [ ] Doze exception toggle works.
 - [ ] Notification permission and persistent notification work.
+- [ ] The optional setup step offers only the Quick Settings tile, shows **Optional** and
+      **Added**, and does not complete setup; only **Finish and enable** does.
+- [ ] After adding the tile from setup or Settings, the row switches to **Added** while the
+      screen is still open; removing the tile in the Quick Settings panel switches it back
+      to **Optional**. Detection is best-effort: a tile that predates this version is only
+      noticed once the panel opens.
 
 ### Basic engine
 
@@ -97,8 +103,8 @@ Test on the target device with a clean install of the signed release APK.
 
 - [ ] With the pin off (default), swipe the OneHZ notification away; it disappears and does
       not return on rate/profile changes, but returns after opening OneHZ.
-- [ ] Open Settings → Advanced → **Pin notification**; the warning explains the Android 14+
-      swipe and that the service and battery behavior do not change.
+- [ ] Open Settings → Quick controls → **Pin notification**; the warning explains the
+      Android 14+ swipe and that the service and battery behavior do not change.
 - [ ] Confirm; the notification returns and the row says it stays visible.
 - [ ] Swipe it away; it returns within about two seconds. Pause/resume and Turn off still
       work.
@@ -165,7 +171,8 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] A quick screen-on shorter than two minutes does not split the rest session.
 - [ ] A charging session shows `—` instead of a battery rate.
 - [ ] With no history, the card says there are no measurements instead of zeroes.
-- [ ] `Test now` forces for ten seconds and leaves idle again.
+- [ ] `Test Doze now` in **Settings → System → Diagnostics** (Tests card) forces for ten
+      seconds and leaves idle again.
 
 ### Per-app profiles
 
@@ -218,6 +225,14 @@ Test on the target device with a clean install of the signed release APK.
 
 ### UI
 
+- [ ] Bottom bar shows Home, Apps, Usage and Settings; the Sleep link opens the Usage tab.
+- [ ] Settings sections are General, Quick controls, Automation, Data, System, Updates and
+      About; there is no Advanced section.
+- [ ] Home profile card: **Automate this profile** opens Settings → Automation →
+      Activation rules.
+- [ ] Usage refreshes on return, every 30 seconds while visible, and through the refresh
+      button.
+- [ ] With OneHZ off and no data, Usage shows one empty state with **Enable OneHZ**.
 - [ ] Switch PT-BR, English, and Spanish.
 - [ ] Switch system/light/dark/AMOLED themes.
 - [ ] Diagnostics: filters, pause, clear, copy report.
@@ -257,7 +272,7 @@ Test on the target device with a clean install of the signed release APK.
 - [ ] Turning the AOD master off on Home pauses rate and brightness but keeps both rows
       visible and editable.
 - [ ] Sleep detail with Sleep off shows the compact note, the "How it works" card and the
-      behavior options; "Test now" and pause require Sleep on.
+      behavior options; only pause requires Sleep on, and the screen embeds no test card.
 - [ ] The warning inside "How it works" can be dismissed with "Got it" and does not reopen
       after reopening the screen.
 - [ ] Active/paused/failure status appears as a single line, without a status card.

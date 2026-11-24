@@ -69,8 +69,8 @@ panel rejects a very low rate in AOD, the engine falls back to 30 Hz and logs th
 
 ### Can I back up my settings?
 
-Yes. Settings → **Backup and restore** exports a versioned JSON file through the system
-file picker. It includes all profiles, app assignments, video, AOD settings, Sleep
+Yes. Settings → Data → **Backup and restore** exports a versioned JSON file through the
+system file picker. It includes all profiles, app assignments, video, AOD settings, Sleep
 settings and the master switch. Theme, language, diagnostics, Sleep measurements and the
 system Doze exceptions are not included. Importing replaces the current behavior
 configuration and adapts unsupported rates to the current panel. A backup created before
@@ -116,11 +116,19 @@ it installs over the stable release and keeps your settings. The next stable has
 - Quick controls: one-hour pause, an on/off Quick Settings tile, a state-aware notification
   with an optional pinned mode, and launcher shortcuts. Pause restores the system values
   and resumes on its own.
-- Usage shows time per rate, AOD and uncontrolled time for today and seven days, plus the
-  Sleep/Doze summary and session history. The Sleep detail keeps a compact summary and
-  links to Usage.
+- Usage is the fourth bottom-bar tab (Home, Apps, Usage, Settings). It refreshes on return
+  and every 30 seconds while visible, and shows time per rate, AOD and uncontrolled time
+  for today and seven days, plus the Sleep/Doze summary and session history. The Sleep
+  detail keeps a compact summary and links to the Usage tab. With OneHZ off and no data,
+  the tab offers **Enable OneHZ**.
 - Activation rules for low battery, charging and a time window; per-app fixed rates and a
   system-default target. Profile schema 2 still reads schema 1.
+- Settings is organized into General, Quick controls, Automation, Data, System, Updates and
+  About; there is no Advanced section. The optional setup step is only the Quick Settings
+  tile, and only **Finish and enable** completes setup.
+- The Doze test moved from the Sleep screen to the **Tests** card in Diagnostics; with Sleep
+  off it offers **Open Sleep**. The Home profile card has **Automate this profile**, which
+  opens the activation rules.
 - Picture-in-picture is detected from the pinned task, and Samsung gets an AOD night
   schedule.
 - System changes lists the keys OneHZ may write and restores the captured values.
@@ -214,8 +222,8 @@ you enable it; there are no analytics, ads, or telemetry. See [PRIVACY](../PRIVA
 
 ### How do I open Diagnostics?
 
-Open **Settings → Diagnostics**. The report is generated locally, can be paused or cleared
-from that screen, and is only shared when you copy it.
+Open **Settings → System → Diagnostics**. The report is generated locally, can be paused or
+cleared from that screen, and is only shared when you copy it.
 
 ### The AOD brightness is stuck after uninstalling. What do I do?
 
@@ -225,7 +233,7 @@ Run:
 adb shell settings delete system debug_aod_brightness
 ```
 
-or reinstall OneHZ and use **Settings → Diagnostics → Restore system brightness**.
+or reinstall OneHZ and use **Settings → System → Diagnostics → Restore system brightness**.
 
 ### Why is the battery-saver profile called Economy?
 
@@ -326,8 +334,9 @@ tile or the launcher shortcut. Pausing restores the system values and resumes on
 ### What do activation rules do?
 
 They temporarily choose a saved profile based on low battery, the charger or a time
-window. The low-battery guard has hysteresis, and the active reason appears in
-Diagnostics and the activity is counted in Usage.
+window. They live in **Settings → Automation → Activation rules**. The low-battery guard
+has hysteresis, and the active reason appears in Diagnostics and the activity is counted
+in Usage.
 
 ### Can an app use a fixed rate instead of a profile?
 
@@ -336,9 +345,10 @@ to the system. Fixed rates ignore the video floor while that app is in the foreg
 
 ### What does the System changes screen show?
 
-The keys OneHZ may write, the current value and the captured original. **Restore
-everything** turns control off first and restores the rate, battery-saver and AOD
-brightness values. The panel report contains no installed-app list or personal data.
+The keys OneHZ may write, the current value and the captured original. It lives in
+**Settings → System**. **Restore everything** turns control off first and restores the rate,
+battery-saver and AOD brightness values. The panel report contains no installed-app list or
+personal data.
 
 ### Does Usage collect per-app data?
 
