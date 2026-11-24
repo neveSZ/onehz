@@ -60,10 +60,10 @@ adb shell dumpsys gfxinfo io.github.nevesz.onehz
 Budget for changes: start-up +5% at most, no new wake lock, no new periodic alarm (except
 the pause expiry), and no polling that shows up in idle CPU.
 
-### 1.3.1 local pre-release
+### 1.3.1
 
 The caches, probe layout and notification cadence are described in `docs/PERFORMANCE.md`.
-For this pre-release, compare:
+For this release, compare:
 
 - a video probe spawns at most five processes (it was about eleven, plus the engine's PiP
   check);
