@@ -761,7 +761,7 @@ class OneHzUserService : IOneHzService.Stub() {
             if (total >= maxBytes && started.isAlive) started.destroyForcibly()
             val done = started.waitFor(2, TimeUnit.SECONDS)
             val success = done && !timedOut.get() && started.exitValue() == 0
-            CommandResult(success, String(output.toByteArray(), Charsets.UTF_8))
+            CommandResult(success, output.toString(Charsets.UTF_8.name()))
         } catch (t: Throwable) {
             CommandResult(false, "")
         } finally {
