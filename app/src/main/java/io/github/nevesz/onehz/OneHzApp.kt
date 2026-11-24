@@ -1,7 +1,10 @@
 package io.github.nevesz.onehz
 
 import android.app.Application
+import android.content.res.Configuration
 import io.github.nevesz.onehz.core.DisplayGate
+import io.github.nevesz.onehz.core.DisplayProfileResolver
+import io.github.nevesz.onehz.core.DisplayRates
 import io.github.nevesz.onehz.core.OneHzPreferences
 import io.github.nevesz.onehz.core.prefs.PreferencesStore
 import io.github.nevesz.onehz.core.update.UpdateCenter
@@ -55,6 +58,13 @@ class OneHzApp : Application() {
             ShizukuGateway.refresh()
             OneHzKeepAliveService.start(this)
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        // Foldables change the supported rate list; the vendor/route cache follows.
+        DisplayProfileResolver.invalidate()
+        DisplayRates.invalidate()
     }
 
     override fun onTerminate() {
