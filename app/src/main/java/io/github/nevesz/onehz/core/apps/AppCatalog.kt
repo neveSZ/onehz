@@ -6,10 +6,10 @@ import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.util.LruCache
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.createBitmap
-import java.util.concurrent.ConcurrentHashMap
 
 data class InstalledApp(
     val packageName: String,
@@ -21,7 +21,7 @@ data class InstalledApp(
 /** Read-only catalog of installed apps for the per-app profile screen. */
 object AppCatalog {
 
-    private val iconCache = ConcurrentHashMap<String, ImageBitmap?>()
+    private val iconCache = LruCache<String, ImageBitmap>(96)
 
     fun load(context: Context, includeSystem: Boolean): List<InstalledApp> {
         val pm = context.packageManager
@@ -48,12 +48,12 @@ object AppCatalog {
     }.getOrDefault(packageName)
 
     fun icon(context: Context, packageName: String): ImageBitmap? {
-        iconCache[packageName]?.let { return it }
+        iconCache.get(packageName)?.let { return it }
         val bitmap = runCatching {
             val pm = context.packageManager
             drawableToBitmap(applicationInfo(pm, packageName).loadIcon(pm))
-        }.getOrNull()
-        iconCache[packageName] = bitmap
+        }.getOrNull() ?: return null
+        iconCache.put(packageName, bitmap)
         return bitmap
     }
 
