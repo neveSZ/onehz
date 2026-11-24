@@ -1,11 +1,7 @@
 package io.github.nevesz.onehz.ui.setup
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import android.os.PowerManager
-import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -47,7 +43,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -60,6 +55,7 @@ import io.github.nevesz.onehz.engine.OneHzEngine
 import io.github.nevesz.onehz.engine.OneHzKeepAliveService
 import io.github.nevesz.onehz.shizuku.ShizukuGateway
 import io.github.nevesz.onehz.shizuku.ShizukuState
+import io.github.nevesz.onehz.ui.components.BatteryOptimizationAccess
 import io.github.nevesz.onehz.ui.components.NotificationAccess
 import io.github.nevesz.onehz.ui.components.OneHzCard
 import io.github.nevesz.onehz.ui.components.StatusBadge
@@ -117,8 +113,7 @@ fun SetupScreen(
         }
     }
 
-    val pm = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
-    val batteryExempt = pm?.isIgnoringBatteryOptimizations(context.packageName) == true
+    val batteryExempt = BatteryOptimizationAccess.isExempt(context)
     val notifications = NotificationAccess.isEnabled(context)
     val liveTileAdded by TileStatus.added.collectAsStateWithLifecycle()
     val storedTileAdded = remember(refresh) { OneHzPreferences.tileAdded(context) }
@@ -237,7 +232,7 @@ fun SetupScreen(
                         granted = batteryExempt,
                         actionLabel = stringResource(R.string.setup_battery_button),
                         showAction = !batteryExempt,
-                        onAction = { requestBatteryExemption(context) }
+                        onAction = { BatteryOptimizationAccess.request(context) }
                     )
                     HorizontalDivider(Modifier.padding(vertical = 12.dp))
                     PermissionItem(
@@ -454,15 +449,3 @@ private fun PermissionItem(
     }
 }
 
-// Sideload-only app: the battery exemption is optional and requested explicitly by the user.
-@SuppressLint("BatteryLife")
-private fun requestBatteryExemption(context: Context) {
-    runCatching {
-        context.startActivity(
-            Intent(
-                Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                "package:${context.packageName}".toUri()
-            )
-        )
-    }
-}
