@@ -30,6 +30,9 @@ All notable changes to OneHZ are documented here. The format follows
   a dismissed one, so enabling access again restores it.
 - Video mode now follows the foreground app even without per-app assignments, so leaving a
   video app for an audio app without touching the screen releases the video floor.
+- Pausing a video releases the floor on builds whose media-session dump lists the sessions
+  stack without the summary header (seen on Android 16 / HyperOS 3); a paused player no
+  longer counts as video until playback resumes.
 
 ### Performance
 
