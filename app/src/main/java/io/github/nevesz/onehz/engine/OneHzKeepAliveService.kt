@@ -57,6 +57,7 @@ class OneHzKeepAliveService : Service() {
 
     private val postHandler = Handler(Looper.getMainLooper())
     private var lastPostAt = 0L
+    private var lastNotifyAt = 0L
     private var lastSignature: String? = null
     private var lastKind: NotificationKind? = null
     private var pendingPost = false
@@ -221,6 +222,7 @@ class OneHzKeepAliveService : Service() {
             buildNotification(spec),
             type
         )
+        lastNotifyAt = SystemClock.elapsedRealtime()
     }
 
     /** Immediate path used by actions and state changes. */
@@ -277,7 +279,9 @@ class OneHzKeepAliveService : Service() {
         }
         lastPostAt = SystemClock.elapsedRealtime()
         val pinned = OneHzPreferences.notificationPinned(this)
-        if (!pinned && notificationPosted) {
+        if (!pinned && notificationPosted &&
+            SystemClock.elapsedRealtime() - lastNotifyAt > NOTIFICATION_GRACE_MS
+        ) {
             val active = manager.activeNotifications.any { it.id == NOTIFICATION_ID }
             if (!active) notificationDismissed = true
         }
@@ -291,6 +295,7 @@ class OneHzKeepAliveService : Service() {
         if (spec.signature == lastSignature) return
         manager.notify(NOTIFICATION_ID, buildNotification(spec))
         notificationPosted = true
+        lastNotifyAt = SystemClock.elapsedRealtime()
         lastSignature = spec.signature
     }
 
@@ -427,6 +432,7 @@ class OneHzKeepAliveService : Service() {
         private const val NOTIFICATION_ID = 1001
         private const val RESTORE_DELAY_MS = 300L
         private const val POST_WINDOW_MS = 1_000L
+        private const val NOTIFICATION_GRACE_MS = 3_000L
         const val ACTION_STOP = "io.github.nevesz.onehz.STOP"
         const val ACTION_PAUSE = "io.github.nevesz.onehz.PAUSE"
         const val ACTION_RESUME = "io.github.nevesz.onehz.RESUME"
