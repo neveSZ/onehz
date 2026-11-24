@@ -108,12 +108,27 @@ object ActivationRulesCodec {
 object ActivationRulesStore {
     private const val KEY = "activation_rules"
 
-    fun get(context: Context): ActivationRules =
-        ActivationRulesCodec.decode(PreferencesStore.get(context).getString(KEY, null))
+    @Volatile
+    private var cachedRaw: String? = null
+
+    @Volatile
+    private var cached: ActivationRules? = null
+
+    fun get(context: Context): ActivationRules {
+        val raw = PreferencesStore.get(context).getString(KEY, null)
+        cached?.let { if (cachedRaw == raw) return it }
+        val decoded = ActivationRulesCodec.decode(raw)
+        cachedRaw = raw
+        cached = decoded
+        return decoded
+    }
 
     fun set(context: Context, rules: ActivationRules) {
+        val encoded = ActivationRulesCodec.encode(rules)
         PreferencesStore.get(context).edit {
-            putString(KEY, ActivationRulesCodec.encode(rules))
+            putString(KEY, encoded)
         }
+        cachedRaw = encoded
+        cached = rules
     }
 }

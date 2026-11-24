@@ -37,7 +37,27 @@ data class DisplayProfile(
 
 object DisplayProfileResolver {
 
+    @Volatile
+    private var cached: DisplayProfile? = null
+
+    /**
+     * Cached per process. The vendor and route keys do not change while the app runs, and the
+     * cache is cleared on a configuration change (fold/unfold) and when the privileged
+     * service reconnects. An unsupported result is not cached so a transient read failure
+     * during boot can recover.
+     */
     fun detect(context: Context): DisplayProfile {
+        cached?.let { return it }
+        val fresh = detectUncached(context)
+        if (fresh.supported) cached = fresh
+        return fresh
+    }
+
+    fun invalidate() {
+        cached = null
+    }
+
+    private fun detectUncached(context: Context): DisplayProfile {
         val manufacturer = (Build.MANUFACTURER ?: "").lowercase(Locale.ROOT)
         val brand = (Build.BRAND ?: "").lowercase(Locale.ROOT)
         val isSamsung = manufacturer.contains("samsung") || brand.contains("samsung")

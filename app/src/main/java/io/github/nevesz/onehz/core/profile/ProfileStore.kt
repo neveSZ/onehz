@@ -19,6 +19,16 @@ object ProfileStore {
 
     private val PACKAGE_PATTERN = Regex("""[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+""")
 
+    private data class StateCache(val raw: String?, val rates: List<Int>, val state: ProfileState)
+
+    /**
+     * The engine reads the profile state on every policy decision. The stored blob only
+     * changes through [save], so the decoded and normalized result is kept as long as the
+     * raw JSON and the panel rates are the same. Reading the preference is in-memory.
+     */
+    @Volatile
+    private var cache: StateCache? = null
+
     fun rates(context: Context): List<Int> =
         ProfileDefaults.normalizedRates(DisplayRates.main(context))
 
@@ -26,22 +36,36 @@ object ProfileStore {
         state(context, rates(context))
 
     fun state(context: Context, panelRates: List<Int>): ProfileState {
-        val stored = ProfileCodec.decode(
-            OneHzPreferences.prefs(context).getString(KEY_STATE, null)
-        )
-        return if (stored == null) {
-            migrate(context, panelRates)
-        } else {
-            normalize(stored, panelRates)
+        val raw = OneHzPreferences.prefs(context).getString(KEY_STATE, null)
+        cache?.let { cached ->
+            if (cached.raw == raw && cached.rates == panelRates) return cached.state
         }
+        val stored = ProfileCodec.decode(raw)
+        if (stored != null) {
+            val normalized = normalize(stored, panelRates)
+            cache = StateCache(raw, panelRates, normalized)
+            return normalized
+        }
+        val migrated = migrate(context, panelRates)
+        val migratedRaw = OneHzPreferences.prefs(context).getString(KEY_STATE, null)
+        cache = StateCache(migratedRaw, panelRates, migrated)
+        return migrated
+    }
+
+    /** Drops the decoded state, e.g. after an external blob change. */
+    fun invalidate() {
+        cache = null
     }
 
     fun save(context: Context, state: ProfileState) {
-        val normalized = normalize(state, rates(context))
+        val panelRates = rates(context)
+        val normalized = normalize(state, panelRates)
         backupLegacySchema(context)
+        val encoded = ProfileCodec.encode(normalized)
         OneHzPreferences.prefs(context).edit {
-            putString(KEY_STATE, ProfileCodec.encode(normalized))
+            putString(KEY_STATE, encoded)
         }
+        cache = StateCache(encoded, panelRates, normalized)
     }
 
     /**
