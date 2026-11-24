@@ -13,9 +13,12 @@ measure them.
 2. **OneHZ app resume.** Reopening the app reconciles the system state and refreshes the
    foreground/video at most once every five seconds. Screen-on keeps the immediate path.
 3. **Video detection.** A privileged probe runs on touch-up (1.8 s later) and when the
-   staircase reaches its resting step. The privileged service caches a positive verdict for
-   10 s and a negative one for 800 ms; the short negative window keeps the tap-to-play flow
-   while repeated checks reuse a confirmed playback.
+   staircase reaches its resting step. One direct activity dump feeds both the foreground
+   and the pinned/PiP task; `media_session`, `ps`, the codec list and audio are read
+   directly and parsed in-process, so a probe costs about five processes instead of eleven.
+   The privileged service caches a positive verdict for 10 s and a negative one for 800 ms;
+   the short negative window keeps the tap-to-play flow while repeated checks reuse a
+   confirmed playback.
 4. **Notification.** The service coalesces rate changes to one post per second, skips
    identical content and bypasses the window for state changes (pause, idle, AOD, profile).
    The pin/active check ignores posts from the last three seconds so our own update is never
@@ -41,10 +44,9 @@ editing a profile, importing a backup or restoring defaults is visible immediate
 
 ## Remaining work (tracked in the 1.3.1 plan)
 
-- **P-08**: merge the foreground/PiP/MediaSession/codec probes into fewer privileged
-  commands (currently about eleven processes per probe).
-- **P-09**: batch the Samsung peak/min writes into one shell command and remove the shell
-  calls from the `SessionArbiter` lock.
+- **P-09**: the Samsung peak/min pair is written with two `settings` processes; wrapping both
+  in a shell would add a third process, so the pair is left as is. The arbiter lock is kept
+  because `release`/`restorePending` can run from another thread while an apply is in flight.
 - **P-12/P-15**: move the Usage computations and the first profile decode off the main
   thread.
 

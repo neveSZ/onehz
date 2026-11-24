@@ -223,7 +223,9 @@ periodic foreground polling.
 ## Video detection
 
 The UserService resolves the foreground package and gathers the signals selected by
-`VideoConfig`:
+`VideoConfig` from a single direct activity dump (foreground and pinned task) plus
+`dumpsys media_session`, `ps` and the codec list, parsed in-process. The same probe reports a
+pinned/PiP task, so the engine does not run a second check.
 
 1. `dumpsys media_session` — the app's session state (when MediaSession is enabled);
 2. `dumpsys media.resource_manager` — processes holding a video codec (when the codec

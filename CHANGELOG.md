@@ -32,7 +32,11 @@ All notable changes to OneHZ are documented here. The format follows
 - Reopening the app reconciles the system state and refreshes the foreground/video at most
   once every five seconds; the session audit runs at most every fifteen seconds.
 - Video: the touch-down probe was removed, a positive verdict is reused for ten seconds and
-  a negative one for 800 ms.
+  a negative one for 800 ms. One activity dump now serves the foreground and the PiP task,
+  and the remaining dumps are parsed in-process, so a probe costs about five processes
+  instead of eleven.
+- AOD brightness ignores targets within two raw units of the applied one, uses a 600 ms
+  debounce and no longer reads the key back after writing it.
 - The notification coalesces rate changes to one post per second, skips identical content
   and ignores the dismissal fallback for three seconds after its own post.
 - The privileged service no longer compiles regexes per call or per `ps` line and uses the
