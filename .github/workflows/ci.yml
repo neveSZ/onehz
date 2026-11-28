@@ -41,7 +41,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Cache Android SDK
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ${{ env.ANDROID_HOME }}/platforms
